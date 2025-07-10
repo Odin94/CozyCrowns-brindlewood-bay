@@ -3,12 +3,12 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import type { Ability } from "@/types/character"
 
-interface AbilitiesSectionProps {
+type AbilitiesProps = {
     abilities: Ability[]
     setAbilities: (abilities: Ability[]) => void
 }
 
-const AbilitiesSection: React.FC<AbilitiesSectionProps> = ({ abilities, setAbilities }) => {
+const Abilities: React.FC<AbilitiesProps> = ({ abilities, setAbilities }) => {
     const handleAbilityChange = (index: number, value: number) => {
         const newAbilities = [...abilities]
         newAbilities[index].value = Math.max(-3, Math.min(3, value))
@@ -52,4 +52,4 @@ const AbilitiesSection: React.FC<AbilitiesSectionProps> = ({ abilities, setAbili
     )
 }
 
-export default AbilitiesSection
+export default Abilities

@@ -1,13 +1,13 @@
 import React, { useState } from "react"
-import NameSection from "@/components/character/NameSection"
-import StyleSection from "@/components/character/StyleSection"
-import CozyActivitySection from "@/components/character/CozyActivitySection"
-import AbilitiesSection from "@/components/character/AbilitiesSection"
-import XpTrackSection from "@/components/character/XpTrackSection"
-import ConditionsSection from "@/components/character/ConditionsSection"
-import EndOfSessionSection from "@/components/character/EndOfSessionSection"
-import AdvancementsSection from "@/components/character/AdvancementsSection"
-import MavenMovesSection from "@/components/character/MavenMovesSection"
+import Name from "@/components/character/Name"
+import Style from "@/components/character/Style"
+import CozyActivity from "@/components/character/CozyActivity"
+import Abilities from "@/components/character/Abilities"
+import XpTrack from "@/components/character/XpTrack"
+import Conditions from "@/components/character/Conditions"
+import EndOfSession from "@/components/character/EndOfSession"
+import Advancements from "@/components/character/Advancements"
+import MavenMoves from "@/components/character/MavenMoves"
 import type { Ability } from "@/types/character"
 
 const CharacterSheet: React.FC = () => {
@@ -35,19 +35,19 @@ const CharacterSheet: React.FC = () => {
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
                     {/* Column 1 */}
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6 min-h-0">
-                        <NameSection name={name} setName={setName} />
-                        <StyleSection style={style} setStyle={setStyle} />
-                        <CozyActivitySection activity={activity} setActivity={setActivity} />
-                        <AbilitiesSection abilities={abilities} setAbilities={setAbilities} />
-                        <XpTrackSection xpTrack={xpTrack} setXpTrack={setXpTrack} />
-                        <ConditionsSection conditions={conditions} setConditions={setConditions} />
+                        <Name name={name} setName={setName} />
+                        <Style style={style} setStyle={setStyle} />
+                        <CozyActivity activity={activity} setActivity={setActivity} />
+                        <Abilities abilities={abilities} setAbilities={setAbilities} />
+                        <XpTrack xpTrack={xpTrack} setXpTrack={setXpTrack} />
+                        <Conditions conditions={conditions} setConditions={setConditions} />
                     </div>
 
                     {/* Column 2 */}
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6 min-h-0">
-                        <EndOfSessionSection endOfSessionChecks={endOfSessionChecks} setEndOfSessionChecks={setEndOfSessionChecks} />
-                        <AdvancementsSection advancementChecks={advancementChecks} setAdvancementChecks={setAdvancementChecks} />
-                        <MavenMovesSection mavenMoves={mavenMoves} setMavenMoves={setMavenMoves} />
+                        <EndOfSession endOfSessionChecks={endOfSessionChecks} setEndOfSessionChecks={setEndOfSessionChecks} />
+                        <Advancements advancementChecks={advancementChecks} setAdvancementChecks={setAdvancementChecks} />
+                        <MavenMoves mavenMoves={mavenMoves} setMavenMoves={setMavenMoves} />
                     </div>
 
                     {/* Column 3 - Empty for now */}

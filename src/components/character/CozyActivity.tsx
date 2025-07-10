@@ -3,14 +3,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 
-interface CozyActivitySectionProps {
+type CozyActivityProps = {
     activity: string
     setActivity: (activity: string) => void
 }
 
 const sampleActivities = ["Reading", "Gardening", "Cooking", "Painting", "Walking"]
 
-const CozyActivitySection: React.FC<CozyActivitySectionProps> = ({ activity, setActivity }) => {
+const CozyActivity: React.FC<CozyActivityProps> = ({ activity, setActivity }) => {
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Cozy Activity</Label>
@@ -38,4 +38,4 @@ const CozyActivitySection: React.FC<CozyActivitySectionProps> = ({ activity, set
     )
 }
 
-export default CozyActivitySection
+export default CozyActivity

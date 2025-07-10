@@ -2,7 +2,7 @@ import React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
-interface EndOfSessionSectionProps {
+type EndOfSessionProps = {
     endOfSessionChecks: boolean[]
     setEndOfSessionChecks: (checks: boolean[]) => void
 }
@@ -17,7 +17,7 @@ const endOfSessionQuestions = [
     'Did you show someone that you\'ve "still got it?"',
 ]
 
-const EndOfSessionSection: React.FC<EndOfSessionSectionProps> = ({ endOfSessionChecks, setEndOfSessionChecks }) => {
+const EndOfSession: React.FC<EndOfSessionProps> = ({ endOfSessionChecks, setEndOfSessionChecks }) => {
     const handleCheckChange = (index: number, checked: boolean) => {
         const newChecks = [...endOfSessionChecks]
         newChecks[index] = checked
@@ -49,4 +49,4 @@ const EndOfSessionSection: React.FC<EndOfSessionSectionProps> = ({ endOfSessionC
     )
 }
 
-export default EndOfSessionSection
+export default EndOfSession

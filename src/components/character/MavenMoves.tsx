@@ -2,12 +2,12 @@ import React from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
-interface MavenMovesSectionProps {
+type MavenMovesProps = {
     mavenMoves: string
     setMavenMoves: (moves: string) => void
 }
 
-const MavenMovesSection: React.FC<MavenMovesSectionProps> = ({ mavenMoves, setMavenMoves }) => {
+const MavenMoves: React.FC<MavenMovesProps> = ({ mavenMoves, setMavenMoves }) => {
     return (
         <div className="space-y-3">
             <Label className="text-xl font-bold text-gray-800 dark:text-white">Maven Moves</Label>
@@ -21,4 +21,4 @@ const MavenMovesSection: React.FC<MavenMovesSectionProps> = ({ mavenMoves, setMa
     )
 }
 
-export default MavenMovesSection
+export default MavenMoves

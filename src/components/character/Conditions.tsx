@@ -2,12 +2,12 @@ import React from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
-interface ConditionsSectionProps {
+type ConditionsProps = {
     conditions: string
     setConditions: (conditions: string) => void
 }
 
-const ConditionsSection: React.FC<ConditionsSectionProps> = ({ conditions, setConditions }) => {
+const Conditions: React.FC<ConditionsProps> = ({ conditions, setConditions }) => {
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Conditions</Label>
@@ -21,4 +21,4 @@ const ConditionsSection: React.FC<ConditionsSectionProps> = ({ conditions, setCo
     )
 }
 
-export default ConditionsSection
+export default Conditions

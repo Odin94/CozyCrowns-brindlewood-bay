@@ -2,7 +2,7 @@ import React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
-interface AdvancementsSectionProps {
+type AdvancementsProps = {
     advancementChecks: boolean[]
     setAdvancementChecks: (checks: boolean[]) => void
 }
@@ -15,11 +15,13 @@ const advancementOptions = [
     "Unmark all the items in your Cozy Little Place.",
 ]
 
-const AdvancementsSection: React.FC<AdvancementsSectionProps> = ({ advancementChecks, setAdvancementChecks }) => {
+const Advancements: React.FC<AdvancementsProps> = ({ advancementChecks, setAdvancementChecks }) => {
     const handleCheckChange = (index: number, checked: boolean) => {
+        console.log(`Advancement ${index} changed to:`, checked)
         const newChecks = [...advancementChecks]
         newChecks[index] = checked
         setAdvancementChecks(newChecks)
+        console.log("New advancement checks:", newChecks)
     }
 
     return (
@@ -33,6 +35,7 @@ const AdvancementsSection: React.FC<AdvancementsSectionProps> = ({ advancementCh
                             checked={advancementChecks[index]}
                             onCheckedChange={(checked) => handleCheckChange(index, checked as boolean)}
                             className="mt-0.5"
+                            data-state={advancementChecks[index] ? "checked" : "unchecked"}
                         />
                         <Label
                             htmlFor={`advancement-${index}`}
@@ -47,4 +50,4 @@ const AdvancementsSection: React.FC<AdvancementsSectionProps> = ({ advancementCh
     )
 }
 
-export default AdvancementsSection
+export default Advancements

@@ -3,14 +3,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 
-interface StyleSectionProps {
+type StyleProps = {
     style: string
     setStyle: (style: string) => void
 }
 
 const sampleStyles = ["Detective", "Journalist", "Librarian", "Teacher", "Writer"]
 
-const StyleSection: React.FC<StyleSectionProps> = ({ style, setStyle }) => {
+const Style: React.FC<StyleProps> = ({ style, setStyle }) => {
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Style</Label>
@@ -33,4 +33,4 @@ const StyleSection: React.FC<StyleSectionProps> = ({ style, setStyle }) => {
     )
 }
 
-export default StyleSection
+export default Style

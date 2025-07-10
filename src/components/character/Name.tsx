@@ -3,14 +3,14 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
 
-interface NameSectionProps {
+type NameProps = {
     name: string
     setName: (name: string) => void
 }
 
 const sampleNames = ["Alice Johnson", "Bob Smith", "Carol Davis", "David Wilson", "Emma Brown"]
 
-const NameSection: React.FC<NameSectionProps> = ({ name, setName }) => {
+const Name: React.FC<NameProps> = ({ name, setName }) => {
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Name</Label>
@@ -33,4 +33,4 @@ const NameSection: React.FC<NameSectionProps> = ({ name, setName }) => {
     )
 }
 
-export default NameSection
+export default Name

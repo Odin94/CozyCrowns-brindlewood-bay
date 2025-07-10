@@ -2,12 +2,12 @@ import React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 
-interface XpTrackSectionProps {
+type XpTrackProps = {
     xpTrack: boolean[]
     setXpTrack: (xpTrack: boolean[]) => void
 }
 
-const XpTrackSection: React.FC<XpTrackSectionProps> = ({ xpTrack, setXpTrack }) => {
+const XpTrack: React.FC<XpTrackProps> = ({ xpTrack, setXpTrack }) => {
     const handleXpChange = (index: number, checked: boolean) => {
         const newXpTrack = [...xpTrack]
         newXpTrack[index] = checked
@@ -35,4 +35,4 @@ const XpTrackSection: React.FC<XpTrackSectionProps> = ({ xpTrack, setXpTrack }) 
     )
 }
 
-export default XpTrackSection
+export default XpTrack
