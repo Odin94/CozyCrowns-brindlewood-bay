@@ -30,7 +30,7 @@ const CharacterSheet: React.FC = () => {
     return (
         <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
             <div className="w-full max-w-none">
-                <h1 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">Character Sheet</h1>
+                <h1 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">👑</h1>
 
                 <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
                     {/* Column 1 */}
