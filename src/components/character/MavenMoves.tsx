@@ -10,7 +10,9 @@ type MavenMovesProps = {
 const MavenMoves: React.FC<MavenMovesProps> = ({ mavenMoves, setMavenMoves }) => {
     return (
         <div className="space-y-3">
-            <Label className="text-xl font-bold text-gray-800 dark:text-white">Maven Moves</Label>
+            <Label className="text-xl text-gray-800 dark:text-white">
+                <h2>Maven Moves</h2>
+            </Label>
             <Textarea
                 value={mavenMoves}
                 onChange={(e) => setMavenMoves(e.target.value)}

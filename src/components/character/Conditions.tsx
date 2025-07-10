@@ -10,7 +10,9 @@ type ConditionsProps = {
 const Conditions: React.FC<ConditionsProps> = ({ conditions, setConditions }) => {
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Conditions</Label>
+            <Label className="text-xl text-gray-800 dark:text-white">
+                <h2>Conditions</h2>
+            </Label>
             <Textarea
                 value={conditions}
                 onChange={(e) => setConditions(e.target.value)}

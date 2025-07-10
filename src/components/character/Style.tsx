@@ -1,7 +1,7 @@
 import React from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger } from "@/components/ui/select"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 
 type StyleProps = {
     style: string
@@ -16,18 +16,18 @@ const Style: React.FC<StyleProps> = ({ style, setStyle }) => {
             <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Style</Label>
             <div className="flex gap-2">
                 <Input value={style} onChange={(e) => setStyle(e.target.value)} placeholder="Enter character style" className="flex-1" />
-                <Select onValueChange={setStyle}>
-                    <SelectTrigger className="w-12">
-                        <span>✨</span>
-                    </SelectTrigger>
-                    <SelectContent>
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="w-12 h-10 px-3 py-2 text-sm border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
+                        ✨
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent>
                         {sampleStyles.map((sampleStyle) => (
-                            <SelectItem key={sampleStyle} value={sampleStyle}>
+                            <DropdownMenuItem key={sampleStyle} onClick={() => setStyle(sampleStyle)}>
                                 {sampleStyle}
-                            </SelectItem>
+                            </DropdownMenuItem>
                         ))}
-                    </SelectContent>
-                </Select>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </div>
     )
