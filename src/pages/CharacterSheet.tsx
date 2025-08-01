@@ -33,7 +33,7 @@ const CharacterSheet: React.FC = () => {
             <div className="w-full max-w-none">
                 <h1 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">👑</h1>
 
-                <div className="grid grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
                     {/* Column 1 */}
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-6 min-h-0">
                         <Name name={name} setName={setName} />
