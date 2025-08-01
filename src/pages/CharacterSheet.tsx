@@ -1,15 +1,15 @@
-import React, { useState } from "react"
+import Abilities from "@/components/character/Abilities"
+import Advancements from "@/components/character/Advancements"
+import Conditions from "@/components/character/Conditions"
+import CozyActivity from "@/components/character/CozyActivity"
+import EndOfSession from "@/components/character/EndOfSession"
+import MavenMoves from "@/components/character/MavenMoves"
 import Name from "@/components/character/Name"
 import Style from "@/components/character/Style"
-import CozyActivity from "@/components/character/CozyActivity"
-import Abilities from "@/components/character/Abilities"
 import XpTrack from "@/components/character/XpTrack"
-import Conditions from "@/components/character/Conditions"
-import EndOfSession from "@/components/character/EndOfSession"
-import Advancements from "@/components/character/Advancements"
-import MavenMoves from "@/components/character/MavenMoves"
-import type { Ability } from "@/types/character"
 import { advancementOptions, endOfSessionQuestions } from "@/game_data"
+import type { Ability } from "@/types/character"
+import { useState } from "react"
 
 const CharacterSheet = () => {
     const [name, setName] = useState("")
