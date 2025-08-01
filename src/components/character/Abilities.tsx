@@ -1,14 +1,14 @@
-import React from "react"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import type { Ability } from "@/types/character"
+import { PlusIcon, MinusIcon } from "lucide-react"
 
 type AbilitiesProps = {
     abilities: Ability[]
     setAbilities: (abilities: Ability[]) => void
 }
 
-const Abilities: React.FC<AbilitiesProps> = ({ abilities, setAbilities }) => {
+const Abilities = ({ abilities, setAbilities }: AbilitiesProps) => {
     const handleAbilityChange = (index: number, value: number) => {
         const newAbilities = [...abilities]
         newAbilities[index].value = Math.max(-3, Math.min(3, value))
@@ -17,7 +17,7 @@ const Abilities: React.FC<AbilitiesProps> = ({ abilities, setAbilities }) => {
 
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Abilities</Label>
+            <Label className="text-lg font-semibold text-secondary">Abilities</Label>
             <div className="space-y-2">
                 {abilities.map((ability, index) => (
                     <div key={ability.name} className="flex items-center justify-between">
@@ -28,9 +28,9 @@ const Abilities: React.FC<AbilitiesProps> = ({ abilities, setAbilities }) => {
                                 size="sm"
                                 onClick={() => handleAbilityChange(index, ability.value - 1)}
                                 disabled={ability.value <= -3}
-                                className="w-8 h-8 p-0"
+                                className="w-7 h-7 p-0"
                             >
-                                -
+                                <MinusIcon className="w-3 h-3" />
                             </Button>
                             <span className="w-8 text-center font-medium text-gray-700 dark:text-gray-200">
                                 {ability.value >= 0 ? `+${ability.value}` : ability.value}
@@ -40,9 +40,9 @@ const Abilities: React.FC<AbilitiesProps> = ({ abilities, setAbilities }) => {
                                 size="sm"
                                 onClick={() => handleAbilityChange(index, ability.value + 1)}
                                 disabled={ability.value >= 3}
-                                className="w-8 h-8 p-0"
+                                className="w-7 h-7 p-0"
                             >
-                                +
+                                <PlusIcon className="w-3 h-3" />
                             </Button>
                         </div>
                     </div>

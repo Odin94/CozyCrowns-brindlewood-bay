@@ -13,7 +13,7 @@ const sampleNames = ["Alice Johnson", "Bob Smith", "Carol Davis", "David Wilson"
 const Name: React.FC<NameProps> = ({ name, setName }) => {
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Name</Label>
+            <Label className="text-lg font-semibold text-secondary">Name</Label>
             <div className="flex gap-2">
                 <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter character name" className="flex-1" />
                 <DropdownMenu>

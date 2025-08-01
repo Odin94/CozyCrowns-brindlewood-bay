@@ -13,7 +13,7 @@ const sampleActivities = ["Reading", "Gardening", "Cooking", "Painting", "Walkin
 const CozyActivity: React.FC<CozyActivityProps> = ({ activity, setActivity }) => {
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Cozy Activity</Label>
+            <Label className="text-lg font-semibold text-secondary">Cozy Activity</Label>
             <div className="flex gap-2">
                 <Input
                     value={activity}

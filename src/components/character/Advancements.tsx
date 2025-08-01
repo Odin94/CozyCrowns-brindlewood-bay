@@ -1,21 +1,13 @@
-import React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { advancementOptions } from "../../game_data"
 
 type AdvancementsProps = {
     advancementChecks: boolean[]
     setAdvancementChecks: (checks: boolean[]) => void
 }
 
-const advancementOptions = [
-    "Increase an ability modifier by 1 (max +3).",
-    "Increase an ability modifier by 1 (max +3).",
-    "Choose an additional Maven move.",
-    "Choose an additional Maven move.",
-    "Unmark all the items in your Cozy Little Place.",
-]
-
-const Advancements: React.FC<AdvancementsProps> = ({ advancementChecks, setAdvancementChecks }) => {
+const Advancements = ({ advancementChecks, setAdvancementChecks }: AdvancementsProps) => {
     const handleCheckChange = (index: number, checked: boolean) => {
         console.log(`Advancement ${index} changed to:`, checked)
         const newChecks = [...advancementChecks]
@@ -26,7 +18,7 @@ const Advancements: React.FC<AdvancementsProps> = ({ advancementChecks, setAdvan
 
     return (
         <div className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">Advancements</h2>
+            <h2 className="text-xl font-bold text-secondary">Advancements</h2>
             <div className="space-y-3">
                 {advancementOptions.map((option, index) => (
                     <div key={index} className="flex items-start space-x-3">

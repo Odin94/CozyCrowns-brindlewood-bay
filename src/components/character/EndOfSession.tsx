@@ -1,23 +1,13 @@
-import React from "react"
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import { endOfSessionQuestions } from "../../game_data"
 
 type EndOfSessionProps = {
     endOfSessionChecks: boolean[]
     setEndOfSessionChecks: (checks: boolean[]) => void
 }
 
-const endOfSessionQuestions = [
-    "Did the Murder Mavens solve a mystery?",
-    "Did you secretly undermine the authority of a local official?",
-    "Did you share your wisdom with a young person?",
-    "Did you share a memory of a late family member?",
-    "Did you behave like a woman half your age?",
-    "Did you dote on someone?",
-    'Did you show someone that you\'ve "still got it?"',
-]
-
-const EndOfSession: React.FC<EndOfSessionProps> = ({ endOfSessionChecks, setEndOfSessionChecks }) => {
+const EndOfSession = ({ endOfSessionChecks, setEndOfSessionChecks }: EndOfSessionProps) => {
     const handleCheckChange = (index: number, checked: boolean) => {
         const newChecks = [...endOfSessionChecks]
         newChecks[index] = checked
@@ -26,7 +16,7 @@ const EndOfSession: React.FC<EndOfSessionProps> = ({ endOfSessionChecks, setEndO
 
     return (
         <div className="space-y-4">
-            <h2 className="text-xl font-bold text-gray-800 dark:text-white">End of Session</h2>
+            <h2 className="text-xl font-bold text-secondary">End of Session</h2>
             <div className="space-y-3">
                 {endOfSessionQuestions.map((question, index) => (
                     <div key={index} className="flex items-start space-x-3">

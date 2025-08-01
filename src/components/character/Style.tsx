@@ -13,7 +13,7 @@ const sampleStyles = ["Detective", "Journalist", "Librarian", "Teacher", "Writer
 const Style: React.FC<StyleProps> = ({ style, setStyle }) => {
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-gray-700 dark:text-gray-200">Style</Label>
+            <Label className="text-lg font-semibold text-secondary">Style</Label>
             <div className="flex gap-2">
                 <Input value={style} onChange={(e) => setStyle(e.target.value)} placeholder="Enter character style" className="flex-1" />
                 <DropdownMenu>

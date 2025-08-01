@@ -9,6 +9,7 @@ import EndOfSession from "@/components/character/EndOfSession"
 import Advancements from "@/components/character/Advancements"
 import MavenMoves from "@/components/character/MavenMoves"
 import type { Ability } from "@/types/character"
+import { advancementOptions, endOfSessionQuestions } from "@/game_data"
 
 const CharacterSheet: React.FC = () => {
     const [name, setName] = useState("")
@@ -23,8 +24,8 @@ const CharacterSheet: React.FC = () => {
     ])
     const [xp, setXp] = useState(0)
     const [conditions, setConditions] = useState("")
-    const [endOfSessionChecks, setEndOfSessionChecks] = useState([false, false, false, false, false, false, false])
-    const [advancementChecks, setAdvancementChecks] = useState([false, false, false, false, false])
+    const [endOfSessionChecks, setEndOfSessionChecks] = useState(endOfSessionQuestions.map(() => false))
+    const [advancementChecks, setAdvancementChecks] = useState(advancementOptions.map(() => false))
     const [mavenMoves, setMavenMoves] = useState("")
 
     return (
