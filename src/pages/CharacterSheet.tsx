@@ -21,7 +21,7 @@ const CharacterSheet: React.FC = () => {
         { name: "Presence", value: 0 },
         { name: "Sensitivity", value: 0 },
     ])
-    const [xpTrack, setXpTrack] = useState([false, false, false, false, false])
+    const [xp, setXp] = useState(0)
     const [conditions, setConditions] = useState("")
     const [endOfSessionChecks, setEndOfSessionChecks] = useState([false, false, false, false, false, false, false])
     const [advancementChecks, setAdvancementChecks] = useState([false, false, false, false, false])
@@ -39,7 +39,7 @@ const CharacterSheet: React.FC = () => {
                         <Style style={style} setStyle={setStyle} />
                         <CozyActivity activity={activity} setActivity={setActivity} />
                         <Abilities abilities={abilities} setAbilities={setAbilities} />
-                        <XpTrack xpTrack={xpTrack} setXpTrack={setXpTrack} />
+                        <XpTrack xp={xp} setXp={setXp} />
                         <Conditions conditions={conditions} setConditions={setConditions} />
                     </div>
 

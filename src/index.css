@@ -1,6 +1,17 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
+/* 
+Cool Colors I like:
+minty green from witchhazel bg: #ade5d3
+dark purple from witch hazel: #b8a2ce
+medium purple from computecuter: #B394F1
+medium pinkish red from computecuter: #FFBBD5
+
+Do floating crowns like the flowers in bg here? https://computecuter.com
+
+ */
+
 :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
@@ -107,30 +118,37 @@ button:focus-visible {
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background: 280 20% 70%; /* #b8a2ce */
-        --foreground: 280 30% 25%; /* Dark purple text */
-        --card: 280 15% 75%; /* Slightly lighter than background */
-        --card-foreground: 280 30% 25%;
-        --popover: 280 15% 75%;
-        --popover-foreground: 280 30% 25%;
-        --primary: 180 30% 85%; /* #d7eaec - soft mint primary */
-        --primary-foreground: 280 30% 25%;
-        --secondary: 280 25% 80%; /* Light purple secondary */
-        --secondary-foreground: 280 30% 25%;
-        --muted: 280 20% 85%; /* Very light purple muted */
-        --muted-foreground: 280 25% 40%;
-        --accent: 150 40% 75%; /* #a8e6cf - witch hazel minty green accent */
-        --accent-foreground: 280 30% 25%;
-        --destructive: 0 70% 70%; /* Soft red */
-        --destructive-foreground: 280 20% 95%;
-        --border: 280 25% 60%; /* Medium purple border */
-        --input: 280 20% 85%;
-        --ring: 280 40% 60%;
+        --background: hsl(280 20% 70%); /* #b8a2ce */
+        --foreground: hsl(280 30% 25%); /* Dark purple text */
+        --card: hsl(280 15% 75%); /* Slightly lighter than background */
+        --card-foreground: hsl(280 30% 25%);
+        --popover: hsl(280 15% 75%);
+        --popover-foreground: hsl(280 30% 25%);
+        --primary: hsl(180 30% 85%); /* #d7eaec - soft mint primary */
+        --primary-foreground: hsl(280 30% 25%);
+        --secondary: hsl(280 25% 80%); /* Light purple secondary */
+        --secondary-foreground: hsl(280 30% 25%);
+        --muted: hsl(280 20% 85%); /* Very light purple muted */
+        --muted-foreground: hsl(280 25% 40%);
+        --accent: hsl(150 40% 75%); /* #a8e6cf - witch hazel minty green accent */
+        --accent-foreground: hsl(280 30% 25%);
+        --destructive: hsl(0 70% 70%); /* Soft red */
+        --destructive-foreground: hsl(280 20% 95%);
+        --border: hsl(280 25% 60%); /* Medium purple border */
+        --input: hsl(280 20% 85%);
+        --ring: hsl(280 40% 60%);
         --tw-ring-color: hsl(280 40% 60%); /* Override Tailwind ring color to match theme */
         --tw-ring-shadow: 0 0 0 2px hsl(280 40% 60%); /* Override Tailwind ring shadow */
         --tw-inset-shadow: none; /* Remove inset shadow */
         --tw-inset-ring-shadow: none; /* Remove inset ring shadow */
         --tw-ring-offset-shadow: none; /* Remove ring offset shadow */
+        --theme-color: hsl(280 25% 80%); /* Theme color for icons and labels */
+    }
+
+    @theme {
+        --color-primary: hsl(180 30% 85%); /* #d7eaec - soft mint primary */
+        --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
+        --color-dark-secondary: hsl(280 30% 25%);
     }
 }
 
@@ -142,4 +160,9 @@ button:focus-visible {
     --tw-inset-shadow: none !important;
     --tw-inset-ring-shadow: none !important;
     --tw-ring-offset-shadow: none !important;
+}
+
+/* Theme color utility class */
+.theme-colored {
+    color: var(--theme-color);
 }

@@ -10,7 +10,7 @@ type ConditionsProps = {
 const Conditions: React.FC<ConditionsProps> = ({ conditions, setConditions }) => {
     return (
         <div className="space-y-3">
-            <Label className="text-xl text-gray-800 dark:text-white">
+            <Label className="text-xl text-secondary">
                 <h2>Conditions</h2>
             </Label>
             <Textarea
