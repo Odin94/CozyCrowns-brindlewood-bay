@@ -2,12 +2,13 @@ import Abilities from "@/components/character/Abilities"
 import Advancements from "@/components/character/Advancements"
 import Conditions from "@/components/character/Conditions"
 import CozyActivity from "@/components/character/CozyActivity"
+import CrownOfTheQueen from "@/components/character/CrownOfTheQueen"
 import EndOfSession from "@/components/character/EndOfSession"
 import MavenMoves from "@/components/character/MavenMoves"
 import Name from "@/components/character/Name"
 import Style from "@/components/character/Style"
 import XpTrack from "@/components/character/XpTrack"
-import { advancementOptions, endOfSessionQuestions } from "@/game_data"
+import { advancementOptions, crownsOfTheQueen, endOfSessionQuestions } from "@/game_data"
 import type { Ability } from "@/types/character"
 import { useState } from "react"
 
@@ -27,7 +28,7 @@ const CharacterSheet = () => {
     const [endOfSessionChecks, setEndOfSessionChecks] = useState(endOfSessionQuestions.map(() => false))
     const [advancementChecks, setAdvancementChecks] = useState(advancementOptions.map(() => false))
     const [mavenMoves, setMavenMoves] = useState("")
-
+    const [crownChecks, setCrownChecks] = useState(crownsOfTheQueen.map(() => false))
     return (
         <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
             <div className="w-full max-w-none">
@@ -56,12 +57,9 @@ const CharacterSheet = () => {
                         <MavenMoves mavenMoves={mavenMoves} setMavenMoves={setMavenMoves} />
                     </div>
 
-                    {/* Column 3 - Empty for now */}
+                    {/* Column 3 */}
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 min-h-0">
-                        <div className="text-center text-gray-500 dark:text-gray-400">
-                            <p>Column 3</p>
-                            <p className="text-sm">Content coming soon...</p>
-                        </div>
+                        <CrownOfTheQueen crownChecks={crownChecks} setCrownChecks={setCrownChecks} />
                     </div>
                 </div>
             </div>

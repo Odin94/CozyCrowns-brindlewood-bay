@@ -16,6 +16,16 @@ export const advancementOptions = [
     "Unmark all the items in your Cozy Little Place.",
 ]
 
+export const crownsOfTheQueen = [
+    "A flashback of your fondest memory of your late partner.",
+    "A flashback showing how you were an imperfect sister or daughter.",
+    "A flashback showing how you were an imperfect mother.",
+    "A flashback of your fondest memory with one of your children.",
+    "A scene in the present day showing a private side of you very few get to see.",
+    "A scene in the present day showing a burgeoning romance.",
+    "A scene in the present day showing how you satisfy your physical desires.",
+]
+
 export const sampleNames = [
     "Barbara",
     "Billy",
