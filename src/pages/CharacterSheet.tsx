@@ -11,7 +11,7 @@ import MavenMoves from "@/components/character/MavenMoves"
 import type { Ability } from "@/types/character"
 import { advancementOptions, endOfSessionQuestions } from "@/game_data"
 
-const CharacterSheet: React.FC = () => {
+const CharacterSheet = () => {
     const [name, setName] = useState("")
     const [style, setStyle] = useState("")
     const [activity, setActivity] = useState("")

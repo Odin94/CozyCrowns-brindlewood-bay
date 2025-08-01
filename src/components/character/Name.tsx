@@ -1,16 +1,14 @@
-import React from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { sampleNames } from "@/game_data"
 
 type NameProps = {
     name: string
     setName: (name: string) => void
 }
 
-const sampleNames = ["Alice Johnson", "Bob Smith", "Carol Davis", "David Wilson", "Emma Brown"]
-
-const Name: React.FC<NameProps> = ({ name, setName }) => {
+const Name = ({ name, setName }: NameProps) => {
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-secondary">Name</Label>

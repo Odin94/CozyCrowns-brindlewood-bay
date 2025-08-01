@@ -1,16 +1,14 @@
-import React from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { sampleActivities } from "@/game_data"
 
 type CozyActivityProps = {
     activity: string
     setActivity: (activity: string) => void
 }
 
-const sampleActivities = ["Reading", "Gardening", "Cooking", "Painting", "Walking"]
-
-const CozyActivity: React.FC<CozyActivityProps> = ({ activity, setActivity }) => {
+const CozyActivity = ({ activity, setActivity }: CozyActivityProps) => {
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-secondary">Cozy Activity</Label>

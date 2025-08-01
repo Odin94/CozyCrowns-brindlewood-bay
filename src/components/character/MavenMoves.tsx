@@ -1,4 +1,3 @@
-import React from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
@@ -7,7 +6,7 @@ type MavenMovesProps = {
     setMavenMoves: (moves: string) => void
 }
 
-const MavenMoves: React.FC<MavenMovesProps> = ({ mavenMoves, setMavenMoves }) => {
+const MavenMoves = ({ mavenMoves, setMavenMoves }: MavenMovesProps) => {
     return (
         <div className="space-y-3">
             <Label className="text-xl text-secondary">

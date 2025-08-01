@@ -1,16 +1,14 @@
-import React from "react"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { sampleStyles } from "@/game_data"
 
 type StyleProps = {
     style: string
     setStyle: (style: string) => void
 }
 
-const sampleStyles = ["Detective", "Journalist", "Librarian", "Teacher", "Writer"]
-
-const Style: React.FC<StyleProps> = ({ style, setStyle }) => {
+const Style = ({ style, setStyle }: StyleProps) => {
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-secondary">Style</Label>

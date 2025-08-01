@@ -1,4 +1,3 @@
-import React from "react"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 
@@ -7,7 +6,7 @@ type ConditionsProps = {
     setConditions: (conditions: string) => void
 }
 
-const Conditions: React.FC<ConditionsProps> = ({ conditions, setConditions }) => {
+const Conditions = ({ conditions, setConditions }: ConditionsProps) => {
     return (
         <div className="space-y-3">
             <Label className="text-xl text-secondary">
