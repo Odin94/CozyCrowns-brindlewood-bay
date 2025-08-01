@@ -17,6 +17,10 @@ const EndOfSession = ({ endOfSessionChecks, setEndOfSessionChecks }: EndOfSessio
     return (
         <div className="space-y-4">
             <h2 className="text-xl font-bold text-secondary">End of Session</h2>
+            <p className="text-sm text-gray-600 dark:text-gray-400 -mt-5 mb-2">
+                The first is always marked. At the beginning of a session, mark two more (three total marked).
+            </p>
+
             <div className="space-y-3">
                 {endOfSessionQuestions.map((question, index) => (
                     <div key={index} className="flex items-start space-x-3">

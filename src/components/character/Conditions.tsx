@@ -8,16 +8,18 @@ type ConditionsProps = {
 
 const Conditions = ({ conditions, setConditions }: ConditionsProps) => {
     return (
-        <div className="space-y-3">
+        <div className="flex flex-col h-full">
             <Label className="text-xl text-secondary">
                 <h2>Conditions</h2>
             </Label>
-            <Textarea
-                value={conditions}
-                onChange={(e) => setConditions(e.target.value)}
-                placeholder="Enter any conditions or notes..."
-                className="min-h-[100px] resize-none"
-            />
+            <div className="flex-1">
+                <Textarea
+                    value={conditions}
+                    onChange={(e) => setConditions(e.target.value)}
+                    placeholder="Enter any conditions or notes..."
+                    className="min-h-[150px] resize-none h-full"
+                />
+            </div>
         </div>
     )
 }
