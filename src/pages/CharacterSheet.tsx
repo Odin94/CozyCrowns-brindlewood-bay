@@ -31,7 +31,12 @@ const CharacterSheet = () => {
     return (
         <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
             <div className="w-full max-w-none">
-                <h1 className="text-3xl font-bold text-center mb-8 text-gray-800 dark:text-white">👑</h1>
+                <div className="text-center mb-8">
+                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-0">CozyCrowns 👑</h1>
+                    <div className="text-xs font-normal text-gray-400 dark:text-gray-300 font-sans -mt-4" style={{ marginLeft: "4.5rem" }}>
+                        by Odin
+                    </div>
+                </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
                     {/* Column 1 */}
