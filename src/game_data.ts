@@ -14,7 +14,10 @@ export const advancementOptions = [
     "Choose an additional Maven move.",
     "Choose an additional Maven move.",
     "Unmark all the items in your Cozy Little Place.",
-]export const sampleNames = ["Alice Johnson", "Bob Smith", "Carol Davis", "David Wilson", "Emma Brown"]
-export const sampleStyles = ["Detective", "Journalist", "Librarian", "Teacher", "Writer"]
-export const sampleActivities = ["Reading", "Gardening", "Cooking", "Painting", "Walking"]
+]
 
+export const sampleNames = ["Alice Johnson", "Bob Smith", "Carol Davis", "David Wilson", "Emma Brown"]
+
+export const sampleStyles = ["Detective", "Journalist", "Librarian", "Teacher", "Writer"]
+
+export const sampleActivities = ["Reading", "Gardening", "Cooking", "Painting", "Walking"]
