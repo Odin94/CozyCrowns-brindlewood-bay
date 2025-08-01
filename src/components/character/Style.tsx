@@ -18,9 +18,9 @@ const Style = ({ style, setStyle }: StyleProps) => {
                     <DropdownMenuTrigger className="w-8 h-8 flex items-center justify-center text-sm border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
                         ✨
                     </DropdownMenuTrigger>
-                    <DropdownMenuContent>
+                    <DropdownMenuContent className="grid grid-cols-2 p-2">
                         {sampleStyles.map((sampleStyle) => (
-                            <DropdownMenuItem key={sampleStyle} onClick={() => setStyle(sampleStyle)}>
+                            <DropdownMenuItem key={sampleStyle} onClick={() => setStyle(sampleStyle)} className="text-xs">
                                 {sampleStyle}
                             </DropdownMenuItem>
                         ))}

@@ -16,8 +16,57 @@ export const advancementOptions = [
     "Unmark all the items in your Cozy Little Place.",
 ]
 
-export const sampleNames = ["Alice Johnson", "Bob Smith", "Carol Davis", "David Wilson", "Emma Brown"]
+export const sampleNames = [
+    "Barbara",
+    "Billy",
+    "Birdie",
+    "Daisy",
+    "Doris",
+    "Ernestine",
+    "Georgina",
+    "Hyacinth",
+    "Jane",
+    "Jessica",
+    "Laura",
+    "Louise",
+    "Marilyn",
+    "Mavis",
+    "Maxine",
+    "Muriel",
+    "Nellie",
+    "Opal",
+    "Pearl",
+    "Rosemary",
+    "Ruby",
+    "Ruth",
+    "Violet",
+]
 
-export const sampleStyles = ["Detective", "Journalist", "Librarian", "Teacher", "Writer"]
+export const sampleStyles = [
+    "Alexis Carrington Colby",
+    "All the Cardigans",
+    "Blouse Barn",
+    "Dorothy Zbornak",
+    "Goin' Fishin'",
+    "Hippy Dippy",
+    "Jackie O",
+    "Martha's Vineyard",
+    "Office Hours",
+    "Speed Walkin'",
+    "Up in Pumps",
+]
 
-export const sampleActivities = ["Reading", "Gardening", "Cooking", "Painting", "Walking"]
+export const sampleActivities = [
+    "Antiques & Furniture",
+    "Baking",
+    "Birding",
+    "Charity Events",
+    "Collecting (Stamps, Buttons, Pressed Flowers, ...)",
+    "Cooking",
+    "Gardening",
+    "Knitting",
+    "Painting",
+    "Pottery",
+    "Quilting",
+    "Scrapbooking",
+]
