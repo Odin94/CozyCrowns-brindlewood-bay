@@ -126,7 +126,7 @@ button:focus-visible {
         --card-foreground: hsl(280 30% 25%);
         --popover: hsl(280 15% 75%);
         --popover-foreground: hsl(280 30% 25%);
-        --primary: hsl(180 30% 85%); /* #d7eaec - soft mint primary */
+        --primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
         --primary-foreground: hsl(280 30% 25%);
         --secondary: hsl(280 25% 80%); /* Light purple secondary */
         --secondary-foreground: hsl(280 30% 25%);
@@ -148,7 +148,7 @@ button:focus-visible {
     }
 
     @theme {
-        --color-primary: hsl(180 30% 85%); /* #d7eaec - soft mint primary */
+        --color-primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
         --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
         --color-dark-secondary: hsl(280 30% 25%);
     }

@@ -7,11 +7,9 @@ import { useCharacterStore } from "@/store/characterStore"
 const Advancements = () => {
     const { advancementChecks, setAdvancementChecks } = useCharacterStore()
     const handleCheckChange = (index: number, checked: boolean) => {
-        console.log(`Advancement ${index} changed to:`, checked)
         const newChecks = [...advancementChecks]
         newChecks[index] = checked
         setAdvancementChecks(newChecks)
-        console.log("New advancement checks:", newChecks)
     }
 
     return (
