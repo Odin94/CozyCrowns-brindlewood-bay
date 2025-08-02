@@ -26,7 +26,7 @@ const CozyLittlePlace = ({ cozyItems, setCozyItems }: CozyLittlePlaceProps) => {
                 <Headline>A Cozy Little Place</Headline>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {cozyItems.map((item, index) => (
                     <div key={index} className="flex items-center space-x-2">
                         <Checkbox
