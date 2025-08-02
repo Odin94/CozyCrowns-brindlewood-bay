@@ -1,9 +1,12 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
 import { crownOfTheVoid } from "@/game_data"
+import { InfoIcon } from "lucide-react"
+import { useState } from "react"
 
 type CrownOfTheVoidProps = {
     voidChecks: boolean[]
@@ -11,6 +14,8 @@ type CrownOfTheVoidProps = {
 }
 
 const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
+    const [openPopover, setOpenPopover] = useState<number | null>(null)
+
     const handleCheckChange = (index: number, checked: boolean) => {
         const newChecks = [...voidChecks]
         newChecks[index] = checked
@@ -47,6 +52,21 @@ const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
                                     <p className="max-w-xs text-black">{crown.description}</p>
                                 </TooltipContent>
                             </Tooltip>
+                            {/* Mobile only popover since tooltip doesn't work on mobile */}
+                            <Popover open={openPopover === index} onOpenChange={(open) => !open && setOpenPopover(null)}>
+                                <PopoverTrigger asChild>
+                                    <InfoIcon
+                                        className="w-3 h-3 text-gray-400 dark:text-primary md:hidden self-center cursor-pointer"
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            setOpenPopover(openPopover === index ? null : index)
+                                        }}
+                                    />
+                                </PopoverTrigger>
+                                <PopoverContent className="w-60 bg-primary text-gray-700">
+                                    <p className="text-sm">{crown.description}</p>
+                                </PopoverContent>
+                            </Popover>
                         </div>
                     ))}
                 </div>
