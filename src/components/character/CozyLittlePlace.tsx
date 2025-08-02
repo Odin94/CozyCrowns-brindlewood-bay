@@ -37,8 +37,8 @@ const CozyLittlePlace = ({ cozyItems, setCozyItems }: CozyLittlePlaceProps) => {
                         <Input
                             value={item.text}
                             onChange={(e) => handleTextChange(index, e.target.value)}
-                            placeholder="Enter cozy item..."
-                            className="flex-1 text-sm h-7 px-2 py-1"
+                            placeholder=""
+                            className="flex-1 text-sm h-5 px-2 py-1"
                         />
                     </div>
                 ))}

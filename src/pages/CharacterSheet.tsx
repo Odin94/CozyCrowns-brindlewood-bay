@@ -33,7 +33,7 @@ const CharacterSheet = () => {
     const [crownChecks, setCrownChecks] = useState(crownsOfTheQueen.map(() => false))
     const [voidChecks, setVoidChecks] = useState(crownOfTheVoid.map(() => false))
     const [cozyItems, setCozyItems] = useState(
-        Array(10)
+        Array(12)
             .fill(null)
             .map(() => ({ checked: false, text: "" }))
     )
