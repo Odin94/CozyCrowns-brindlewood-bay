@@ -1,13 +1,10 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Input } from "@/components/ui/input"
 import Headline from "@/components/ui/headline"
+import { useCharacterStore } from "@/store/characterStore"
 
-interface CozyLittlePlaceProps {
-    cozyItems: Array<{ checked: boolean; text: string }>
-    setCozyItems: (items: Array<{ checked: boolean; text: string }>) => void
-}
-
-const CozyLittlePlace = ({ cozyItems, setCozyItems }: CozyLittlePlaceProps) => {
+const CozyLittlePlace = () => {
+    const { cozyItems, setCozyItems } = useCharacterStore()
     const handleCheckChange = (index: number, checked: boolean) => {
         const newItems = [...cozyItems]
         newItems[index].checked = checked

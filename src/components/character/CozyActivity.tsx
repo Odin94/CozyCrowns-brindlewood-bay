@@ -2,13 +2,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { sampleActivities } from "@/game_data"
+import { useCharacterStore } from "@/store/characterStore"
 
-type CozyActivityProps = {
-    activity: string
-    setActivity: (activity: string) => void
-}
-
-const CozyActivity = ({ activity, setActivity }: CozyActivityProps) => {
+const CozyActivity = () => {
+    const { activity, setActivity } = useCharacterStore()
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-secondary">Cozy Activity</Label>

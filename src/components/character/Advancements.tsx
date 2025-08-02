@@ -2,13 +2,10 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
 import { advancementOptions } from "../../game_data"
+import { useCharacterStore } from "@/store/characterStore"
 
-type AdvancementsProps = {
-    advancementChecks: boolean[]
-    setAdvancementChecks: (checks: boolean[]) => void
-}
-
-const Advancements = ({ advancementChecks, setAdvancementChecks }: AdvancementsProps) => {
+const Advancements = () => {
+    const { advancementChecks, setAdvancementChecks } = useCharacterStore()
     const handleCheckChange = (index: number, checked: boolean) => {
         console.log(`Advancement ${index} changed to:`, checked)
         const newChecks = [...advancementChecks]

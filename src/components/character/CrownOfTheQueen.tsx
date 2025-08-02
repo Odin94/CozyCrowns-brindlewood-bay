@@ -3,13 +3,10 @@ import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
 import { crownsOfTheQueen } from "@/game_data"
+import { useCharacterStore } from "@/store/characterStore"
 
-type CrownOfTheQueenProps = {
-    crownChecks: boolean[]
-    setCrownChecks: (checks: boolean[]) => void
-}
-
-const CrownOfTheQueen = ({ crownChecks, setCrownChecks }: CrownOfTheQueenProps) => {
+const CrownOfTheQueen = () => {
+    const { crownChecks, setCrownChecks } = useCharacterStore()
     const handleCheckChange = (index: number, checked: boolean) => {
         const newChecks = [...crownChecks]
         newChecks[index] = checked

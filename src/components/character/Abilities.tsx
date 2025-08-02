@@ -1,14 +1,10 @@
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
-import type { Ability } from "@/types/character"
 import { PlusIcon, MinusIcon } from "lucide-react"
+import { useCharacterStore } from "@/store/characterStore"
 
-type AbilitiesProps = {
-    abilities: Ability[]
-    setAbilities: (abilities: Ability[]) => void
-}
-
-const Abilities = ({ abilities, setAbilities }: AbilitiesProps) => {
+const Abilities = () => {
+    const { abilities, setAbilities } = useCharacterStore()
     const handleAbilityChange = (index: number, value: number) => {
         const newAbilities = [...abilities]
         newAbilities[index].value = Math.max(-3, Math.min(3, value))

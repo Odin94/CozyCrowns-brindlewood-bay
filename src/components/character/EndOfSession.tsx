@@ -3,13 +3,10 @@ import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
 import { endOfSessionQuestions } from "../../game_data"
+import { useCharacterStore } from "@/store/characterStore"
 
-type EndOfSessionProps = {
-    endOfSessionChecks: boolean[]
-    setEndOfSessionChecks: (checks: boolean[]) => void
-}
-
-const EndOfSession = ({ endOfSessionChecks, setEndOfSessionChecks }: EndOfSessionProps) => {
+const EndOfSession = () => {
+    const { endOfSessionChecks, setEndOfSessionChecks } = useCharacterStore()
     const handleCheckChange = (index: number, checked: boolean) => {
         const newChecks = [...endOfSessionChecks]
         newChecks[index] = checked

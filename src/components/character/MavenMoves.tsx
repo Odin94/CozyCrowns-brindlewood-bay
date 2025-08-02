@@ -1,13 +1,10 @@
 import { Textarea } from "@/components/ui/textarea"
 import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
+import { useCharacterStore } from "@/store/characterStore"
 
-type MavenMovesProps = {
-    mavenMoves: string
-    setMavenMoves: (moves: string) => void
-}
-
-const MavenMoves = ({ mavenMoves, setMavenMoves }: MavenMovesProps) => {
+const MavenMoves = () => {
+    const { mavenMoves, setMavenMoves } = useCharacterStore()
     return (
         <div className="space-y-3 flex flex-col h-full">
             <Headline>Maven Moves</Headline>

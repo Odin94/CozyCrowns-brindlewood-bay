@@ -7,13 +7,10 @@ import SubHeadline from "@/components/ui/sub-headline"
 import { crownOfTheVoid } from "@/game_data"
 import { InfoIcon } from "lucide-react"
 import { useState } from "react"
+import { useCharacterStore } from "@/store/characterStore"
 
-type CrownOfTheVoidProps = {
-    voidChecks: boolean[]
-    setVoidChecks: (checks: boolean[]) => void
-}
-
-const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
+const CrownOfTheVoid = () => {
+    const { voidChecks, setVoidChecks } = useCharacterStore()
     const [openPopover, setOpenPopover] = useState<number | null>(null)
 
     const handleCheckChange = (index: number, checked: boolean) => {

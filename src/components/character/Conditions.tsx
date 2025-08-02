@@ -1,12 +1,9 @@
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
+import { useCharacterStore } from "@/store/characterStore"
 
-type ConditionsProps = {
-    conditions: string
-    setConditions: (conditions: string) => void
-}
-
-const Conditions = ({ conditions, setConditions }: ConditionsProps) => {
+const Conditions = () => {
+    const { conditions, setConditions } = useCharacterStore()
     return (
         <div className="flex flex-col h-full">
             <Label className="text-xl text-secondary">

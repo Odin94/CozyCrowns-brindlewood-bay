@@ -2,13 +2,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { sampleStyles } from "@/game_data"
+import { useCharacterStore } from "@/store/characterStore"
 
-type StyleProps = {
-    style: string
-    setStyle: (style: string) => void
-}
-
-const Style = ({ style, setStyle }: StyleProps) => {
+const Style = () => {
+    const { style, setStyle } = useCharacterStore()
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-secondary">Style</Label>
