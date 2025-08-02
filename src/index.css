@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "tw-animate-css";
+@import "./fonts.css";
 
 /* 
 Cool Colors I like:
@@ -69,12 +70,12 @@ h3,
 h4,
 h5,
 h6 {
-    font-family: "Patrick Hand", cursive;
+    font-family: "Patrick Hand", "Comic Sans MS", cursive;
 }
 
 h1 {
     font-size: 3.2em;
-    font-family: "Fuggles", cursive;
+    font-family: "Fuggles", "Brush Script MT", cursive;
 }
 
 h2 {
