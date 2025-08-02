@@ -41,15 +41,12 @@ const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
                             />
                             <Tooltip>
                                 <TooltipTrigger asChild>
-                                    <Label
-                                        htmlFor={`void-${index}`}
-                                        className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
-                                    >
+                                    <Label htmlFor={`void-${index}`} className="text-xs leading-relaxed cursor-pointer">
                                         <span className="text-secondary font-semibold">{crown.title}</span>
                                     </Label>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p className="max-w-xs text-black">{crown.description}</p>
+                                    <p className="max-w-xs dark:text-dark-secondary">{crown.description}</p>
                                 </TooltipContent>
                             </Tooltip>
                             {/* Mobile only popover since tooltip doesn't work on mobile */}
@@ -63,7 +60,7 @@ const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
                                         }}
                                     />
                                 </PopoverTrigger>
-                                <PopoverContent className="w-60 bg-primary text-gray-700">
+                                <PopoverContent className="w-60 mr-2 bg-primary text-dark-secondary">
                                     <p className="text-sm">{crown.description}</p>
                                 </PopoverContent>
                             </Popover>
