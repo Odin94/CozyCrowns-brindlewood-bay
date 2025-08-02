@@ -1,5 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import Headline from "@/components/ui/headline"
+import SubHeadline from "@/components/ui/sub-headline"
 import { endOfSessionQuestions } from "../../game_data"
 
 type EndOfSessionProps = {
@@ -16,10 +18,10 @@ const EndOfSession = ({ endOfSessionChecks, setEndOfSessionChecks }: EndOfSessio
 
     return (
         <div className="space-y-4">
-            <h2 className="text-xl font-bold text-secondary">End of Session</h2>
-            <p className="text-sm text-gray-600 dark:text-gray-400 -mt-5 mb-2">
+            <Headline>End of Session</Headline>
+            <SubHeadline className="-mt-5 mb-2">
                 The first is always marked. At the beginning of a session, mark two more (three total marked).
-            </p>
+            </SubHeadline>
 
             <div className="space-y-3">
                 {endOfSessionQuestions.map((question, index) => (
@@ -32,7 +34,7 @@ const EndOfSession = ({ endOfSessionChecks, setEndOfSessionChecks }: EndOfSessio
                         />
                         <Label
                             htmlFor={`end-session-${index}`}
-                            className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
+                            className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
                         >
                             {question}
                         </Label>

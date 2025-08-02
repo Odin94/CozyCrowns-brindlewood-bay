@@ -1,5 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import Headline from "@/components/ui/headline"
+import SubHeadline from "@/components/ui/sub-headline"
 import { crownsOfTheQueen } from "@/game_data"
 
 type CrownOfTheQueenProps = {
@@ -17,10 +19,8 @@ const CrownOfTheQueen = ({ crownChecks, setCrownChecks }: CrownOfTheQueenProps) 
     return (
         <div className="space-y-1">
             <div>
-                <h2 className="text-xl font-bold text-secondary">Crown of the Queen</h2>
-                <p className="text-sm text-gray-600 dark:text-gray-400 -mt-1 mb-2">
-                    When you put on this Crown, mark and narrate any you wish.
-                </p>
+                <Headline>Crown of the Queen</Headline>
+                <SubHeadline className="-mt-1 mb-2">When you put on this Crown, mark and narrate any you wish.</SubHeadline>
             </div>
             <div className="space-y-1">
                 {crownsOfTheQueen.map((crown, index) => (
@@ -33,7 +33,7 @@ const CrownOfTheQueen = ({ crownChecks, setCrownChecks }: CrownOfTheQueenProps) 
                         />
                         <Label
                             htmlFor={`crown-${index}`}
-                            className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
+                            className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
                         >
                             {crown}
                         </Label>

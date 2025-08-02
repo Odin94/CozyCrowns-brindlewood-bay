@@ -2,6 +2,7 @@ import Abilities from "@/components/character/Abilities"
 import Advancements from "@/components/character/Advancements"
 import Conditions from "@/components/character/Conditions"
 import CozyActivity from "@/components/character/CozyActivity"
+import CozyLittlePlace from "@/components/character/CozyLittlePlace"
 import CrownOfTheQueen from "@/components/character/CrownOfTheQueen"
 import CrownOfTheVoid from "@/components/character/CrownOfTheVoid"
 import EndOfSession from "@/components/character/EndOfSession"
@@ -31,6 +32,11 @@ const CharacterSheet = () => {
     const [mavenMoves, setMavenMoves] = useState("")
     const [crownChecks, setCrownChecks] = useState(crownsOfTheQueen.map(() => false))
     const [voidChecks, setVoidChecks] = useState(crownOfTheVoid.map(() => false))
+    const [cozyItems, setCozyItems] = useState(
+        Array(10)
+            .fill(null)
+            .map(() => ({ checked: false, text: "" }))
+    )
     return (
         <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
             <div className="w-full max-w-none">
@@ -63,6 +69,7 @@ const CharacterSheet = () => {
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0">
                         <CrownOfTheQueen crownChecks={crownChecks} setCrownChecks={setCrownChecks} />
                         <CrownOfTheVoid voidChecks={voidChecks} setVoidChecks={setVoidChecks} />
+                        <CozyLittlePlace cozyItems={cozyItems} setCozyItems={setCozyItems} />
                     </div>
                 </div>
             </div>

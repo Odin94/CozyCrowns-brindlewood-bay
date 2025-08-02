@@ -1,5 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
+import Headline from "@/components/ui/headline"
 import { advancementOptions } from "../../game_data"
 
 type AdvancementsProps = {
@@ -18,7 +19,7 @@ const Advancements = ({ advancementChecks, setAdvancementChecks }: AdvancementsP
 
     return (
         <div className="space-y-4">
-            <h2 className="text-xl font-bold text-secondary">Advancements</h2>
+            <Headline>Advancements</Headline>
             <div className="space-y-3">
                 {advancementOptions.map((option, index) => (
                     <div key={index} className="flex items-start space-x-3">
@@ -31,7 +32,7 @@ const Advancements = ({ advancementChecks, setAdvancementChecks }: AdvancementsP
                         />
                         <Label
                             htmlFor={`advancement-${index}`}
-                            className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
+                            className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
                         >
                             {option}
                         </Label>

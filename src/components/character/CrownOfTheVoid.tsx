@@ -1,6 +1,8 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import Headline from "@/components/ui/headline"
+import SubHeadline from "@/components/ui/sub-headline"
 import { crownOfTheVoid } from "@/game_data"
 
 type CrownOfTheVoidProps = {
@@ -19,8 +21,8 @@ const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
         <TooltipProvider>
             <div className="space-y-1">
                 <div>
-                    <h2 className="text-xl font-bold text-secondary">Crown of the Void</h2>
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">When you put on this Crown, mark the first empty box.</p>
+                    <Headline>Crown of the Void</Headline>
+                    <SubHeadline className="mt-1">When you put on this Crown, mark the first empty box.</SubHeadline>
                 </div>
                 <div className="space-y-1">
                     {crownOfTheVoid.map((crown, index) => (
@@ -35,7 +37,7 @@ const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
                                 <TooltipTrigger asChild>
                                     <Label
                                         htmlFor={`void-${index}`}
-                                        className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
+                                        className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
                                     >
                                         <span className="text-secondary font-semibold">{crown.title}</span>
                                     </Label>

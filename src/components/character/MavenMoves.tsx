@@ -1,5 +1,6 @@
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
+import Headline from "@/components/ui/headline"
+import SubHeadline from "@/components/ui/sub-headline"
 
 type MavenMovesProps = {
     mavenMoves: string
@@ -9,13 +10,10 @@ type MavenMovesProps = {
 const MavenMoves = ({ mavenMoves, setMavenMoves }: MavenMovesProps) => {
     return (
         <div className="space-y-3 flex flex-col h-full">
-            <Label className="text-xl text-secondary">
-                <h2>Maven Moves</h2>
-            </Label>
-            <p className="text-sm text-gray-600 dark:text-gray-400 -mt-5">
-                At the beginning of the game, select one move from the Maven Moves sheet. No two Mavens can have the same Maven move at the
-                beginning of the game.
-            </p>
+            <Headline>Maven Moves</Headline>
+            <SubHeadline className="-mt-5">
+                Select one Maven move at the start. No two Mavens can pick the same move at the start.
+            </SubHeadline>
             <div className="flex-1">
                 <Textarea
                     value={mavenMoves}
