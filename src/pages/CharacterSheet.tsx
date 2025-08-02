@@ -37,6 +37,8 @@ const CharacterSheet = () => {
             .fill(null)
             .map(() => ({ checked: false, text: "" }))
     )
+
+    // TODOdin: Make the button-menu-thingy a cthulhu tentacle that rises when you hover over it
     return (
         <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
             <div className="w-full max-w-none">

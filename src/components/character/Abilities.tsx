@@ -29,6 +29,7 @@ const Abilities = ({ abilities, setAbilities }: AbilitiesProps) => {
                                 onClick={() => handleAbilityChange(index, ability.value - 1)}
                                 disabled={ability.value <= -3}
                                 className="w-7 h-7 p-0"
+                                aria-label={`Decrease ${ability.name} ability score`}
                             >
                                 <MinusIcon className="w-3 h-3" />
                             </Button>
@@ -41,6 +42,7 @@ const Abilities = ({ abilities, setAbilities }: AbilitiesProps) => {
                                 onClick={() => handleAbilityChange(index, ability.value + 1)}
                                 disabled={ability.value >= 3}
                                 className="w-7 h-7 p-0"
+                                aria-label={`Increase ${ability.name} ability score`}
                             >
                                 <PlusIcon className="w-3 h-3" />
                             </Button>

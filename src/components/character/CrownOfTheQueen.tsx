@@ -30,6 +30,7 @@ const CrownOfTheQueen = ({ crownChecks, setCrownChecks }: CrownOfTheQueenProps) 
                             checked={crownChecks[index]}
                             onCheckedChange={(checked) => handleCheckChange(index, checked as boolean)}
                             className="mt-0.5"
+                            aria-label={`Mark Crown of the Queen: ${crown}`}
                         />
                         <Label
                             htmlFor={`crown-${index}`}

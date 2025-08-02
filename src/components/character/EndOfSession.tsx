@@ -31,6 +31,7 @@ const EndOfSession = ({ endOfSessionChecks, setEndOfSessionChecks }: EndOfSessio
                             checked={endOfSessionChecks[index]}
                             onCheckedChange={(checked) => handleCheckChange(index, checked as boolean)}
                             className="mt-0.5"
+                            aria-label={`Mark end of session question: ${question}`}
                         />
                         <Label
                             htmlFor={`end-session-${index}`}

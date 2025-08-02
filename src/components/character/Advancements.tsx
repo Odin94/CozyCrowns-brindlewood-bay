@@ -29,6 +29,7 @@ const Advancements = ({ advancementChecks, setAdvancementChecks }: AdvancementsP
                             onCheckedChange={(checked) => handleCheckChange(index, checked as boolean)}
                             className="mt-0.5"
                             data-state={advancementChecks[index] ? "checked" : "unchecked"}
+                            aria-label={`Mark advancement: ${option}`}
                         />
                         <Label
                             htmlFor={`advancement-${index}`}

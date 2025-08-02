@@ -32,6 +32,7 @@ const CrownOfTheVoid = ({ voidChecks, setVoidChecks }: CrownOfTheVoidProps) => {
                                 checked={voidChecks[index]}
                                 onCheckedChange={(checked) => handleCheckChange(index, checked as boolean)}
                                 className="mt-0.5"
+                                aria-label={`Mark Crown of the Void: ${crown.title}`}
                             />
                             <Tooltip>
                                 <TooltipTrigger asChild>

@@ -20,6 +20,7 @@ const XpTrack = ({ xp, setXp }: XpTrackProps) => {
                                 if (xp === i) setXp(0)
                                 else setXp(i)
                             }}
+                            aria-label={`Mark ${i} experience point${i === 1 ? "" : "s"}`}
                         />
                     </div>
                 ))}
