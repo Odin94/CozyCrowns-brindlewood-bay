@@ -164,6 +164,15 @@ button:focus-visible {
     --tw-ring-offset-shadow: none !important;
 }
 
+*:focus.dark-ring,
+*:focus-visible.dark-ring {
+    box-shadow: 0 0 0 2px hsl(280 40% 25%) !important;
+    --tw-ring-shadow: 0 0 0 2px hsl(280 40% 25%) !important;
+    --tw-inset-shadow: none !important;
+    --tw-inset-ring-shadow: none !important;
+    --tw-ring-offset-shadow: none !important;
+}
+
 /* Theme color utility class */
 .theme-colored {
     color: var(--theme-color);

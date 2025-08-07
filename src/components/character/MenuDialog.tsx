@@ -2,6 +2,9 @@ import { Button } from "@/components/ui/button"
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useCharacterStore } from "@/store/characterStore"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
+import { toast } from "sonner"
+import { useState } from "react"
+import { Trash2 } from "lucide-react"
 
 interface MenuDialogProps {
     onOpenChange?: (open: boolean) => void
@@ -9,6 +12,7 @@ interface MenuDialogProps {
 
 const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
     const characterStore = useCharacterStore()
+    const [showResetConfirm, setShowResetConfirm] = useState(false)
 
     const handleDownloadJSON = () => {
         const characterData = {
@@ -69,9 +73,9 @@ const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
                     characterStore.setCozyItems(characterData.cozyItems || [])
 
                     onOpenChange?.(false)
+                    toast.success("Character data loaded successfully!")
                 } catch {
-                    // TODOdin: Replace with toast and toast on successes as well
-                    alert("Error loading character data. Please check the file format.")
+                    toast.error("Error loading character data. Please check the file format.")
                 }
             }
             reader.readAsText(file)
@@ -81,36 +85,67 @@ const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
     }
 
     const handleResetCharacter = () => {
-        // TODOdin: Replace this confirm with a popover or something
-        const confirmed = confirm("Are you sure you want to reset your character? This will clear all data and cannot be undone.")
+        setShowResetConfirm(true)
+    }
 
-        if (confirmed) {
-            // TODOdin: Extract this to a function
-            characterStore.setName("")
-            characterStore.setStyle("")
-            characterStore.setActivity("")
-            characterStore.setAbilities([
-                { name: "Vitality", value: 0 },
-                { name: "Composure", value: 0 },
-                { name: "Reason", value: 0 },
-                { name: "Presence", value: 0 },
-                { name: "Sensitivity", value: 0 },
-            ])
-            characterStore.setXp(0)
-            characterStore.setConditions("")
-            characterStore.setEndOfSessionChecks(endOfSessionQuestions.map(() => false))
-            characterStore.setAdvancementChecks(advancementOptions.map(() => false))
-            characterStore.setMavenMoves("")
-            characterStore.setCrownChecks(crownOfTheVoid.map(() => false))
-            characterStore.setVoidChecks(crownOfTheVoid.map(() => false))
-            characterStore.setCozyItems(
-                Array(12)
-                    .fill(null)
-                    .map(() => ({ checked: false, text: "" }))
-            )
+    const confirmReset = () => {
+        characterStore.setName("")
+        characterStore.setStyle("")
+        characterStore.setActivity("")
+        characterStore.setAbilities([
+            { name: "Vitality", value: 0 },
+            { name: "Composure", value: 0 },
+            { name: "Reason", value: 0 },
+            { name: "Presence", value: 0 },
+            { name: "Sensitivity", value: 0 },
+        ])
+        characterStore.setXp(0)
+        characterStore.setConditions("")
+        characterStore.setEndOfSessionChecks(endOfSessionQuestions.map(() => false))
+        characterStore.setAdvancementChecks(advancementOptions.map(() => false))
+        characterStore.setMavenMoves("")
+        characterStore.setCrownChecks(crownOfTheVoid.map(() => false))
+        characterStore.setVoidChecks(crownOfTheVoid.map(() => false))
+        characterStore.setCozyItems(
+            Array(12)
+                .fill(null)
+                .map(() => ({ checked: false, text: "" }))
+        )
 
-            onOpenChange?.(false)
-        }
+        setShowResetConfirm(false)
+        onOpenChange?.(false)
+        toast.success("Character reset successfully!")
+    }
+
+    const cancelReset = () => {
+        setShowResetConfirm(false)
+    }
+
+    if (showResetConfirm) {
+        return (
+            <DialogContent className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none" style={{ boxShadow: "none" }}>
+                <DialogHeader>
+                    <DialogTitle className="text-gray-800">Confirm Reset</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <p className="text-sm text-gray-600 dark:text-gray-800">
+                        Are you sure you want to reset your character? This will clear all data and cannot be undone.
+                    </p>
+                    <div className="flex gap-2">
+                        <Button onClick={confirmReset} className="flex-1 text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring">
+                            <Trash2 className="w-4 h-4 mr-2" />
+                            Reset Character
+                        </Button>
+                        <Button
+                            onClick={cancelReset}
+                            className="flex-1 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+                        >
+                            Cancel
+                        </Button>
+                    </div>
+                </div>
+            </DialogContent>
+        )
     }
 
     return (
@@ -119,20 +154,23 @@ const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
                 <DialogTitle className="text-gray-800">Character Menu</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
-                <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90">
+                <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     Download JSON
                 </Button>
-                <Button onClick={handleLoadFromJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90">
+                <Button onClick={handleLoadFromJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     Load from JSON
                 </Button>
-                <Button onClick={handleResetCharacter} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90">
+                <Button
+                    onClick={handleResetCharacter}
+                    className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+                >
                     Reset Character
                 </Button>
                 <a
                     href="https://odin-matthias.de"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+                    className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 dark-ring"
                 >
                     Odin's Blog
                 </a>
