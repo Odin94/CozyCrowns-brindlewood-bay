@@ -68,7 +68,6 @@ const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
                     characterStore.setVoidChecks(characterData.voidChecks || [])
                     characterStore.setCozyItems(characterData.cozyItems || [])
 
-                    // Close dialog after successful load
                     onOpenChange?.(false)
                 } catch {
                     // TODOdin: Replace with toast and toast on successes as well
@@ -110,14 +109,8 @@ const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
                     .map(() => ({ checked: false, text: "" }))
             )
 
-            // Close dialog after successful reset
             onOpenChange?.(false)
         }
-    }
-
-    const handleOdinsBlog = () => {
-        // TODOdin: Just make the button a link instead
-        window.open("https://odin-matthias.de", "_blank")
     }
 
     return (
@@ -135,9 +128,14 @@ const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
                 <Button onClick={handleResetCharacter} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90">
                     Reset Character
                 </Button>
-                <Button onClick={handleOdinsBlog} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90">
+                <a
+                    href="https://odin-matthias.de"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2"
+                >
                     Odin's Blog
-                </Button>
+                </a>
             </div>
         </DialogContent>
     )

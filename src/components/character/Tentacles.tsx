@@ -21,7 +21,7 @@ const Tentacles = () => {
         <>
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogTrigger asChild>
-                    <div className="w-20">
+                    <div className="w-21">
                         <div
                             className={`pointer-events-auto transition-all ease-in-out cursor-pointer ${
                                 isAutoHovered ? "-mt-7" : "-mt-0"
