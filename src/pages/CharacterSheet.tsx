@@ -7,18 +7,17 @@ import CrownOfTheQueen from "@/components/character/CrownOfTheQueen"
 import CrownOfTheVoid from "@/components/character/CrownOfTheVoid"
 import EndOfSession from "@/components/character/EndOfSession"
 import MavenMoves from "@/components/character/MavenMoves"
+import MenuDialog from "@/components/character/MenuDialog"
 import Name from "@/components/character/Name"
 import Style from "@/components/character/Style"
 import Tentacles from "@/components/character/Tentacles"
 import XpTrack from "@/components/character/XpTrack"
-import { useState } from "react"
-import { Dialog, DialogTrigger } from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
-import MenuDialog from "@/components/character/MenuDialog"
+import { Dialog } from "@/components/ui/dialog"
+import { useState } from "react"
 
 const CharacterSheet = () => {
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-    const [desktopMenuOpen, setDesktopMenuOpen] = useState(false)
+    const [menuOpen, setMenuOpen] = useState(false)
 
     return (
         <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
@@ -34,7 +33,7 @@ const CharacterSheet = () => {
                     {/* Column 1 */}
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
                         <div className="absolute top-0 left-0 w-full -mt-8">
-                            <Tentacles />
+                            <Tentacles menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
                         </div>
                         <Name />
                         <Style />
@@ -58,29 +57,28 @@ const CharacterSheet = () => {
                         <CozyLittlePlace />
                     </div>
 
-                    {/* Desktop Menu Button - Only visible when mobile menu is hidden */}
+                    {/* Menu Button - Desktop version */}
                     <div className="hidden lg:block absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-                        <Dialog open={desktopMenuOpen} onOpenChange={setDesktopMenuOpen}>
-                            <DialogTrigger asChild>
-                                <Button className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10">
-                                    Menu
-                                </Button>
-                            </DialogTrigger>
-                            <MenuDialog onOpenChange={setDesktopMenuOpen} />
-                        </Dialog>
+                        <Button
+                            onClick={() => setMenuOpen(true)}
+                            className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
+                        >
+                            Menu
+                        </Button>
                     </div>
                 </div>
             </div>
 
-            {/* Mobile Menu Button - Only visible on mobile */}
+            {/* Menu Button - Mobile version */}
             <div className="lg:hidden flex justify-center mt-8">
-                <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
-                    <DialogTrigger asChild>
-                        <Button className="bg-dark-secondary hover:bg-dark-foreground/90">Menu</Button>
-                    </DialogTrigger>
-                    <MenuDialog onOpenChange={setMobileMenuOpen} />
-                </Dialog>
+                <Button onClick={() => setMenuOpen(true)} className="bg-dark-secondary hover:bg-dark-foreground/90">
+                    Menu
+                </Button>
             </div>
+
+            <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
+                <MenuDialog onOpenChange={setMenuOpen} open={menuOpen} />
+            </Dialog>
         </div>
     )
 }
