@@ -3,16 +3,25 @@ import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog
 import { useCharacterStore } from "@/store/characterStore"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 import { toast } from "sonner"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Trash2 } from "lucide-react"
+import { CharacterDataSchema } from "@/types/characterSchema"
 
 interface MenuDialogProps {
     onOpenChange?: (open: boolean) => void
+    open?: boolean
 }
 
-const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
+const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const characterStore = useCharacterStore()
     const [showResetConfirm, setShowResetConfirm] = useState(false)
+
+    // Reset confirmation state when dialog is closed
+    useEffect(() => {
+        if (!open) {
+            setShowResetConfirm(false)
+        }
+    }, [open])
 
     const handleDownloadJSON = () => {
         const characterData = {
@@ -57,25 +66,56 @@ const MenuDialog = ({ onOpenChange }: MenuDialogProps) => {
             const reader = new FileReader()
             reader.onload = (e) => {
                 try {
-                    const characterData = JSON.parse(e.target?.result as string)
+                    const rawData = JSON.parse(e.target?.result as string)
 
-                    characterStore.setName(characterData.name || "")
-                    characterStore.setStyle(characterData.style || "")
-                    characterStore.setActivity(characterData.activity || "")
-                    characterStore.setAbilities(characterData.abilities || [])
-                    characterStore.setXp(characterData.xp || 0)
-                    characterStore.setConditions(characterData.conditions || "")
-                    characterStore.setEndOfSessionChecks(characterData.endOfSessionChecks || [])
-                    characterStore.setAdvancementChecks(characterData.advancementChecks || [])
-                    characterStore.setMavenMoves(characterData.mavenMoves || "")
-                    characterStore.setCrownChecks(characterData.crownChecks || [])
-                    characterStore.setVoidChecks(characterData.voidChecks || [])
-                    characterStore.setCozyItems(characterData.cozyItems || [])
+                    const validationResult = CharacterDataSchema.safeParse(rawData)
+
+                    if (!validationResult.success) {
+                        const errorMessages = validationResult.error.issues.map((err) => `${err.path.join(".")}: ${err.message}`).join(", ")
+                        console.error(errorMessages)
+                        toast.error(`Invalid character data format: ${errorMessages}`)
+                        return
+                    }
+
+                    const characterData = validationResult.data
+
+                    characterStore.setName(characterData.name)
+                    characterStore.setStyle(characterData.style)
+                    characterStore.setActivity(characterData.activity)
+                    characterStore.setAbilities(characterData.abilities)
+                    characterStore.setXp(characterData.xp)
+                    characterStore.setConditions(characterData.conditions)
+                    characterStore.setEndOfSessionChecks(
+                        characterData.endOfSessionChecks.length > 0
+                            ? characterData.endOfSessionChecks
+                            : endOfSessionQuestions.map(() => false)
+                    )
+                    characterStore.setAdvancementChecks(
+                        characterData.advancementChecks.length > 0 ? characterData.advancementChecks : advancementOptions.map(() => false)
+                    )
+                    characterStore.setMavenMoves(characterData.mavenMoves)
+                    characterStore.setCrownChecks(
+                        characterData.crownChecks.length > 0 ? characterData.crownChecks : crownOfTheVoid.map(() => false)
+                    )
+                    characterStore.setVoidChecks(
+                        characterData.voidChecks.length > 0 ? characterData.voidChecks : crownOfTheVoid.map(() => false)
+                    )
+                    characterStore.setCozyItems(
+                        characterData.cozyItems.length > 0
+                            ? characterData.cozyItems
+                            : Array(12)
+                                  .fill(null)
+                                  .map(() => ({ checked: false, text: "" }))
+                    )
 
                     onOpenChange?.(false)
                     toast.success("Character data loaded successfully!")
-                } catch {
-                    toast.error("Error loading character data. Please check the file format.")
+                } catch (error) {
+                    if (error instanceof SyntaxError) {
+                        toast.error("Invalid JSON file format.")
+                    } else {
+                        toast.error("Error loading character data. Please check the file format.")
+                    }
                 }
             }
             reader.readAsText(file)

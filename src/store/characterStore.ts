@@ -1,9 +1,9 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { Ability } from "@/types/character"
+import type { Ability, CozyItem } from "@/types/characterSchema"
 import { advancementOptions, crownsOfTheQueen, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 
-interface CharacterState {
+type CharacterState = {
     name: string
     style: string
     activity: string
@@ -20,7 +20,7 @@ interface CharacterState {
     crownChecks: boolean[]
     voidChecks: boolean[]
 
-    cozyItems: Array<{ checked: boolean; text: string }>
+    cozyItems: CozyItem[]
 
     setName: (name: string) => void
     setStyle: (style: string) => void
