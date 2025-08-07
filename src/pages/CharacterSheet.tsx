@@ -18,6 +18,7 @@ import MenuDialog from "@/components/character/MenuDialog"
 
 const CharacterSheet = () => {
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+    const [desktopMenuOpen, setDesktopMenuOpen] = useState(false)
 
     return (
         <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
@@ -29,7 +30,7 @@ const CharacterSheet = () => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto relative">
                     {/* Column 1 */}
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
                         <div className="absolute top-0 left-0 w-full -mt-8">
@@ -44,23 +45,35 @@ const CharacterSheet = () => {
                     </div>
 
                     {/* Column 2 */}
-                    <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
+                    <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative z-20">
                         <EndOfSession />
                         <Advancements />
                         <MavenMoves />
                     </div>
 
                     {/* Column 3 */}
-                    <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0">
+                    <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
                         <CrownOfTheQueen />
                         <CrownOfTheVoid />
                         <CozyLittlePlace />
+                    </div>
+
+                    {/* Desktop Menu Button - Only visible when mobile menu is hidden */}
+                    <div className="hidden lg:block absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
+                        <Dialog open={desktopMenuOpen} onOpenChange={setDesktopMenuOpen}>
+                            <DialogTrigger asChild>
+                                <Button className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10">
+                                    Menu
+                                </Button>
+                            </DialogTrigger>
+                            <MenuDialog onOpenChange={setDesktopMenuOpen} />
+                        </Dialog>
                     </div>
                 </div>
             </div>
 
             {/* Mobile Menu Button - Only visible on mobile */}
-            <div className="md:hidden flex justify-center mt-8">
+            <div className="lg:hidden flex justify-center mt-8">
                 <Dialog open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
                     <DialogTrigger asChild>
                         <Button className="bg-dark-secondary hover:bg-dark-foreground/90">Menu</Button>
