@@ -33,7 +33,7 @@ const CharacterSheet = () => {
                     {/* Column 1 */}
                     <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
                         <div className="absolute top-0 left-0 w-full -mt-8">
-                            <Tentacles menuOpen={menuOpen} setMenuOpen={setMenuOpen} />
+                            <Tentacles setMenuOpen={setMenuOpen} />
                         </div>
                         <Name />
                         <Style />
