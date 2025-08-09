@@ -1,6 +1,7 @@
 ## CozyCrowns 👑
 A character sheet manager for the TTRPG [Brindlewood Bay](https://www.gauntlet-rpg.com/brindlewood-bay.html)
 
+You can check it out here: https://cozycrowns.odin-matthias.de
 
 ## How to run
 * `npm isntall` (yes, *isntall*)
