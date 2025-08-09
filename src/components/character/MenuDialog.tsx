@@ -16,9 +16,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const characterStore = useCharacterStore()
     const [showResetConfirm, setShowResetConfirm] = useState(false)
 
-    // Reset confirmation state when dialog is closed
+    // Reset confirmation state when dialog is re-opened
     useEffect(() => {
-        if (!open) {
+        if (open) {
             setShowResetConfirm(false)
         }
     }, [open])

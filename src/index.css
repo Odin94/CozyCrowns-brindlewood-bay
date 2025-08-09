@@ -82,21 +82,6 @@ h2 {
     font-size: 1.8em;
 }
 
-/* This button styling messes up the shadcn default styling for a bunch of stuff */
-/* button {
-    border-radius: 8px;
-    border: 1px solid transparent;
-    padding: 0.6em 1.2em;
-    font-size: 1em;
-    font-weight: 500;
-    font-family: inherit;
-    background-color: #b8a2ce;
-    cursor: pointer;
-    transition: border-color 0.25s;
-}
-button:hover {
-    border-color: #9b7bb8;
-}*/
 button:focus,
 button:focus-visible {
     outline: none !important;
