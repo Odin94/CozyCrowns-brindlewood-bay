@@ -151,6 +151,7 @@ button:focus-visible {
         --color-primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
         --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
         --color-dark-secondary: hsl(280 30% 25%);
+        --color-tertiary: hsl(278, 55%, 87%); /* near-white purple for subtle hover */
     }
 }
 
