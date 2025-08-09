@@ -1,5 +1,5 @@
 import { Checkbox } from "@/components/ui/checkbox"
-import { Input } from "@/components/ui/input"
+import { LineInput } from "@/components/ui/line-input"
 import Headline from "@/components/ui/headline"
 import { useCharacterStore } from "@/store/characterStore"
 
@@ -31,11 +31,11 @@ const CozyLittlePlace = () => {
                             onCheckedChange={(checked) => handleCheckChange(index, checked as boolean)}
                             className="flex-shrink-0"
                         />
-                        <Input
+                        <LineInput
                             value={item.text}
                             onChange={(e) => handleTextChange(index, e.target.value)}
                             placeholder=""
-                            className="flex-1 text-sm h-5 px-2 py-1"
+                            className="flex-1 h-5"
                         />
                     </div>
                 ))}
