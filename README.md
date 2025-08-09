@@ -18,5 +18,9 @@ A character sheet manager for the TTRPG [Brindlewood Bay](https://www.gauntlet-r
 
 ## Credits
 * Brindlewood Bay is published by [The Gauntlet](https://www.gauntlet-rpg.com/brindlewood-bay.html)
-* Queen SVG by Darius Dan on [svgrepo](https://www.svgrepo.com/svg/317455/queen)
+* Queen SVG by [Darius Dan on svgrepo](https://www.svgrepo.com/svg/317455/queen)
 * Tentacles icon by [Teewara soontorn on Noun Project](https://thenounproject.com/icon/tentacles-4112037/)
+<!-- 
+
+TODOdin: Add more eldritch elements to the site as void crowns get checked off
+ -->
