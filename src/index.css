@@ -51,7 +51,7 @@ Do floating crowns like the flowers in bg here? https://computecuter.com
 
 a {
     font-weight: 500;
-    color: #646cff;
+    color: hsl(280 30% 25%);
     text-decoration: inherit;
 }
 a:hover {
@@ -172,4 +172,14 @@ button:focus-visible {
 /* Theme color utility class */
 .theme-colored {
     color: var(--theme-color);
+}
+
+/* Ensure link-variant buttons use primary color and underline on hover */
+a.underline-offset-4,
+button.underline-offset-4 {
+    color: hsl(var(--primary)) !important;
+}
+a.underline-offset-4:hover,
+button.underline-offset-4:hover {
+    text-decoration: underline !important;
 }

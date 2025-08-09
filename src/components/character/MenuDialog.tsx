@@ -15,11 +15,13 @@ interface MenuDialogProps {
 const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const characterStore = useCharacterStore()
     const [showResetConfirm, setShowResetConfirm] = useState(false)
+    const [showCredits, setShowCredits] = useState(false)
 
-    // Reset confirmation state when dialog is re-opened
+    // Reset transient views when dialog is re-opened
     useEffect(() => {
         if (open) {
             setShowResetConfirm(false)
+            setShowCredits(false)
         }
     }, [open])
 
@@ -188,11 +190,75 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         )
     }
 
+    if (showCredits) {
+        return (
+            <DialogContent className="sm:max-w-[500px] bg-secondary/80 border-0 shadow-none" style={{ boxShadow: "none" }}>
+                <DialogHeader>
+                    <DialogTitle className="text-gray-800">Credits</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-3 py-2 text-sm text-gray-700 dark:text-gray-800">
+                    <p>
+                        Brindlewood Bay is published by{" "}
+                        <a
+                            href="https://www.gauntlet-rpg.com/brindlewood-bay.html"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="underline"
+                        >
+                            The Gauntlet
+                        </a>
+                        .
+                    </p>
+                    <p className="text-xs italic">
+                        CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet.
+                    </p>
+                    <div className="pt-1">
+                        <p className="font-semibold text-gray-800">Assets</p>
+                        <ul className="list-disc pl-5 space-y-1">
+                            <li>
+                                Queen SVG by{" "}
+                                <a
+                                    href="https://www.svgrepo.com/svg/317455/queen"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="underline"
+                                >
+                                    Darius Dan on svgrepo
+                                </a>
+                                .
+                            </li>
+                            <li>
+                                Tentacles icon by{" "}
+                                <a
+                                    href="https://thenounproject.com/icon/tentacles-4112037/"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="underline"
+                                >
+                                    Teewara soontorn on Noun Project
+                                </a>
+                                .
+                            </li>
+                        </ul>
+                    </div>
+                    <div className="flex gap-2 pt-2">
+                        <Button
+                            onClick={() => setShowCredits(false)}
+                            className="flex-1 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+                        >
+                            Back
+                        </Button>
+                    </div>
+                </div>
+            </DialogContent>
+        )
+    }
+
     return (
-        <DialogContent className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none" style={{ boxShadow: "none" }}>
-            <DialogHeader>
-                <DialogTitle className="text-gray-800">Character Menu</DialogTitle>
-            </DialogHeader>
+        <DialogContent
+            className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none [&>button:last-child]:hidden"
+            style={{ boxShadow: "none" }}
+        >
             <div className="grid gap-4 py-4">
                 <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     Download JSON
@@ -206,14 +272,21 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                 >
                     Reset Character
                 </Button>
-                <a
-                    href="https://odin-matthias.de"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 inline-flex items-center justify-center rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 dark-ring"
-                >
-                    Odin's Blog
-                </a>
+                <div className="grid grid-cols-3 gap-2">
+                    <Button variant="link" asChild>
+                        <a href="https://odin-matthias.de" target="_blank" rel="noopener noreferrer">
+                            Odin's Blog
+                        </a>
+                    </Button>
+                    <Button variant="link" asChild>
+                        <a href="https://github.com/Odin94/CozyCrowns-brindlewood-bay" target="_blank" rel="noopener noreferrer">
+                            Source Code
+                        </a>
+                    </Button>
+                    <Button variant="link" onClick={() => setShowCredits(true)}>
+                        Credits
+                    </Button>
+                </div>
             </div>
         </DialogContent>
     )
