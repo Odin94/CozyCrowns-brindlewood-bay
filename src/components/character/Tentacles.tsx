@@ -38,7 +38,7 @@ const Tentacles = ({ setMenuOpen }: TentaclesProps) => {
                     />
                 </div>
             </div>
-            <div className="absolute top-8 left-0 w-full h-8 bg-gray-800" />
+            <div className="absolute top-8 left-4 w-[50%] h-8 bg-gray-800" />
         </>
     )
 }
