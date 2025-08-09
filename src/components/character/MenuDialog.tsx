@@ -4,7 +4,7 @@ import { useCharacterStore } from "@/store/characterStore"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 import { toast } from "sonner"
 import { useState, useEffect } from "react"
-import { Trash2 } from "lucide-react"
+import { CoffeeIcon, Trash2 } from "lucide-react"
 import { CharacterDataSchema } from "@/types/characterSchema"
 
 interface MenuDialogProps {
@@ -169,7 +169,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                 <DialogHeader>
                     <DialogTitle className="text-gray-800">Confirm Reset</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-4">
                     <p className="text-sm text-gray-600 dark:text-gray-800">
                         Are you sure you want to reset your character? This will clear all data and cannot be undone.
                     </p>
@@ -259,7 +259,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
             className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none [&>button:last-child]:hidden"
             style={{ boxShadow: "none" }}
         >
-            <div className="grid gap-4 py-4">
+            <div className="grid gap-4">
                 <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     Download JSON
                 </Button>
@@ -287,6 +287,11 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                         Credits
                     </Button>
                 </div>
+                <Button variant="secondary" asChild className="w-full justify-center">
+                    <a href="https://ko-fi.com/odin_dev" target="_blank" rel="noopener noreferrer">
+                        Support Me <CoffeeIcon className="ml-2" />
+                    </a>
+                </Button>
             </div>
         </DialogContent>
     )
