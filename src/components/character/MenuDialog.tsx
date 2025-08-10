@@ -6,6 +6,7 @@ import { toast } from "sonner"
 import { useState, useEffect } from "react"
 import { CoffeeIcon, Trash2 } from "lucide-react"
 import { CharacterDataSchema } from "@/types/characterSchema"
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 
 interface MenuDialogProps {
     onOpenChange?: (open: boolean) => void
@@ -166,6 +167,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     if (showResetConfirm) {
         return (
             <DialogContent className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none" style={{ boxShadow: "none" }}>
+                <VisuallyHidden.Root asChild>
+                    <DialogTitle>Menu</DialogTitle>
+                </VisuallyHidden.Root>
                 <DialogHeader>
                     <DialogTitle className="text-gray-800">Confirm Reset</DialogTitle>
                 </DialogHeader>
@@ -193,6 +197,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     if (showCredits) {
         return (
             <DialogContent className="sm:max-w-[500px] bg-secondary/80 border-0 shadow-none" style={{ boxShadow: "none" }}>
+                <VisuallyHidden.Root asChild>
+                    <DialogTitle>Menu</DialogTitle>
+                </VisuallyHidden.Root>
                 <DialogHeader>
                     <DialogTitle className="text-gray-800">Credits</DialogTitle>
                 </DialogHeader>
@@ -259,6 +266,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
             className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none [&>button:last-child]:hidden"
             style={{ boxShadow: "none" }}
         >
+            <VisuallyHidden.Root asChild>
+                <DialogTitle>Menu</DialogTitle>
+            </VisuallyHidden.Root>
             <div className="grid gap-4">
                 <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     Download save file
