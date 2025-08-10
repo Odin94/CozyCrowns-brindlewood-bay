@@ -26,10 +26,7 @@ const Advancements = () => {
                             data-state={advancementChecks[index] ? "checked" : "unchecked"}
                             aria-label={`Mark advancement: ${option}`}
                         />
-                        <Label
-                            htmlFor={`advancement-${index}`}
-                            className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
-                        >
+                        <Label htmlFor={`advancement-${index}`} className="text-xs text-gray-300 leading-relaxed cursor-pointer">
                             {option}
                         </Label>
                     </div>

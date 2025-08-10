@@ -20,18 +20,18 @@ const CharacterSheet = () => {
     const [menuOpen, setMenuOpen] = useState(false)
 
     return (
-        <div className="min-h-screen w-full from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800 p-4 lg:p-6">
+        <div className="min-h-screen w-full from-gray-900 to-gray-800 p-4 lg:p-6">
             <div className="w-full max-w-none">
                 <div className="text-center mb-8">
-                    <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-0">CozyCrowns 👑</h1>
-                    <div className="text-xs font-normal text-gray-400 dark:text-gray-300 font-sans -mt-4" style={{ marginLeft: "4.5rem" }}>
+                    <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>
+                    <div className="text-xs font-normal text-gray-300 font-sans -mt-4" style={{ marginLeft: "4.5rem" }}>
                         by Odin
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto relative">
                     {/* Column 1 */}
-                    <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
+                    <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
                         <div className="absolute top-0 left-0 w-full -mt-8">
                             <Tentacles setMenuOpen={setMenuOpen} />
                         </div>
@@ -44,14 +44,14 @@ const CharacterSheet = () => {
                     </div>
 
                     {/* Column 2 */}
-                    <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative z-20">
+                    <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative z-20">
                         <EndOfSession />
                         <Advancements />
                         <MavenMoves />
                     </div>
 
                     {/* Column 3 */}
-                    <div className="col-span-1 bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
+                    <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
                         <CrownOfTheQueen />
                         <CrownOfTheVoid />
                         <CozyLittlePlace />

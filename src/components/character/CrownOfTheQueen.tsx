@@ -29,10 +29,7 @@ const CrownOfTheQueen = () => {
                             className="mt-0.5"
                             aria-label={`Mark Crown of the Queen: ${crown}`}
                         />
-                        <Label
-                            htmlFor={`crown-${index}`}
-                            className="text-xs text-gray-700 dark:text-gray-300 leading-relaxed cursor-pointer"
-                        >
+                        <Label htmlFor={`crown-${index}`} className="text-xs text-gray-300 leading-relaxed cursor-pointer">
                             {crown}
                         </Label>
                     </div>

@@ -43,14 +43,14 @@ const CrownOfTheVoid = () => {
                                     </Label>
                                 </TooltipTrigger>
                                 <TooltipContent>
-                                    <p className="max-w-xs dark:text-dark-secondary">{crown.description}</p>
+                                    <p className="max-w-xs text-dark-secondary">{crown.description}</p>
                                 </TooltipContent>
                             </Tooltip>
                             {/* Mobile only popover since tooltip doesn't work on mobile */}
                             <Popover open={openPopover === index} onOpenChange={(open) => !open && setOpenPopover(null)}>
                                 <PopoverTrigger asChild>
                                     <InfoIcon
-                                        className="w-3 h-3 text-gray-400 dark:text-primary md:hidden self-center cursor-pointer"
+                                        className="w-3 h-3 text-primary md:hidden self-center cursor-pointer"
                                         onClick={(e) => {
                                             e.preventDefault()
                                             setOpenPopover(openPopover === index ? null : index)

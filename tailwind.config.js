@@ -1,6 +1,5 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-    darkMode: ["class"],
     content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
     theme: {
         container: {
@@ -45,6 +44,8 @@ export default {
                     DEFAULT: "hsl(var(--card))",
                     foreground: "hsl(var(--card-foreground))",
                 },
+                "dark-secondary": "hsl(var(--dark-secondary))",
+                "dark-foreground": "hsl(var(--dark-foreground))",
             },
             borderRadius: {
                 lg: "var(--radius)",

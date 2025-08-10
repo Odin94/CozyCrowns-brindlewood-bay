@@ -6,7 +6,7 @@ interface SubHeadlineProps {
 }
 
 const SubHeadline = ({ children, className }: SubHeadlineProps) => {
-    return <p className={cn("text-xs text-gray-600 dark:text-gray-400", className)}>{children}</p>
+    return <p className={cn("text-xs text-gray-400", className)}>{children}</p>
 }
 
 export default SubHeadline

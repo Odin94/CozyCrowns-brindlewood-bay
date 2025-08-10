@@ -166,7 +166,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
 
     if (showResetConfirm) {
         return (
-            <DialogContent className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none" style={{ boxShadow: "none" }}>
+            <DialogContent className="sm:max-w-[425px] bg-secondary/90  border-0 shadow-none" style={{ boxShadow: "none" }}>
                 <VisuallyHidden.Root asChild>
                     <DialogTitle>Menu</DialogTitle>
                 </VisuallyHidden.Root>
@@ -174,7 +174,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                     <DialogTitle className="text-gray-800">Confirm Reset</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4">
-                    <p className="text-sm text-gray-600 dark:text-gray-800">
+                    <p className="text-sm text-gray-800">
                         Are you sure you want to reset your character? This will clear all data and cannot be undone.
                     </p>
                     <div className="flex gap-2">
@@ -196,14 +196,14 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
 
     if (showCredits) {
         return (
-            <DialogContent className="sm:max-w-[500px] bg-secondary/80 border-0 shadow-none" style={{ boxShadow: "none" }}>
+            <DialogContent className="sm:max-w-[500px] bg-secondary/90 border-0 shadow-none" style={{ boxShadow: "none" }}>
                 <VisuallyHidden.Root asChild>
                     <DialogTitle>Menu</DialogTitle>
                 </VisuallyHidden.Root>
                 <DialogHeader>
                     <DialogTitle className="text-gray-800">Credits</DialogTitle>
                 </DialogHeader>
-                <div className="grid gap-3 py-2 text-sm text-gray-700 dark:text-gray-800">
+                <div className="grid gap-3 py-2 text-sm text-gray-800">
                     <p>
                         Brindlewood Bay is published by{" "}
                         <a
@@ -220,7 +220,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                         CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet.
                     </p>
                     <div className="pt-1">
-                        <p className="font-semibold text-gray-800">Assets</p>
+                        <p className="font-semibold">Assets</p>
                         <ul className="list-disc pl-5 space-y-1">
                             <li>
                                 Queen SVG by{" "}
@@ -262,10 +262,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     }
 
     return (
-        <DialogContent
-            className="sm:max-w-[425px] bg-secondary/80 border-0 shadow-none [&>button:last-child]:hidden"
-            style={{ boxShadow: "none" }}
-        >
+        <DialogContent className="sm:max-w-[425px] bg-secondary/90 border-0 shadow-none" style={{ boxShadow: "none" }}>
             <VisuallyHidden.Root asChild>
                 <DialogTitle>Menu</DialogTitle>
             </VisuallyHidden.Root>

@@ -17,7 +17,7 @@ const Abilities = () => {
             <div className="space-y-2">
                 {abilities.map((ability, index) => (
                     <div key={ability.name} className="flex items-center justify-between">
-                        <Label className="text-sm text-gray-600 dark:text-gray-300 w-20">{ability.name}</Label>
+                        <Label className="text-sm text-gray-300 w-20">{ability.name}</Label>
                         <div className="flex items-center gap-2">
                             <Button
                                 variant="outline"
@@ -29,7 +29,7 @@ const Abilities = () => {
                             >
                                 <MinusIcon className="w-3 h-3" />
                             </Button>
-                            <span className="w-8 text-center font-medium text-gray-700 dark:text-gray-200">
+                            <span className="w-8 text-center font-medium text-gray-200">
                                 {ability.value >= 0 ? `+${ability.value}` : ability.value}
                             </span>
                             <Button

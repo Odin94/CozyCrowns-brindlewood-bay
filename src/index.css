@@ -14,26 +14,34 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
  */
 
 :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 210 40% 96%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 210 40% 96%;
-    --muted-foreground: 215.4 16.3% 46.9%;
-    --accent: 210 40% 96%;
-    --accent-foreground: 222.2 84% 4.9%;
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --background: 280 20% 70%; /* #b8a2ce */
+    --foreground: 280 30% 25%; /* Dark purple text */
+    --card: 280 15% 75%; /* Slightly lighter than background */
+    --card-foreground: 280 30% 25%;
+    --popover: 280 15% 75%;
+    --popover-foreground: 280 30% 25%;
+    --primary: 180 30% 85%; /* #CDE4E4 - soft mint primary */
+    --primary-foreground: 280 30% 25%;
+    --secondary: 280 25% 80%; /* Light purple secondary */
+    --secondary-foreground: 280 30% 25%;
+    --muted: 280 20% 85%; /* Very light purple muted */
+    --muted-foreground: 280 25% 40%;
+    --accent: 150 40% 75%; /* #a8e6cf - witch hazel minty green accent */
+    --accent-foreground: 280 30% 25%;
+    --destructive: 0 70% 70%; /* Soft red */
+    --destructive-foreground: 280 20% 95%;
+    --border: 280 25% 60%; /* Medium purple border */
+    --input: 280 20% 85%;
+    --ring: 280 40% 60%;
     --radius: 0.5rem;
+    --dark-secondary: 280 30% 25%; /* Dark purple for buttons */
+    --dark-foreground: 280 20% 95%; /* Very light purple for text on dark backgrounds */
+    --tw-ring-color: hsl(280 40% 60%); /* Override Tailwind ring color to match theme */
+    --tw-ring-shadow: 0 0 0 2px hsl(280 40% 60%); /* Override Tailwind ring shadow */
+    --tw-inset-shadow: none; /* Remove inset shadow */
+    --tw-inset-ring-shadow: none; /* Remove inset ring shadow */
+    --tw-ring-offset-shadow: none; /* Remove ring offset shadow */
+    --theme-color: 280 25% 80%; /* Theme color for icons and labels */
     font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
@@ -47,11 +55,18 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    @theme {
+        --color-primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
+        --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
+        --color-dark-secondary: hsl(280 30% 25%);
+        --color-tertiary: hsl(278, 55%, 87%); /* near-white purple for subtle hover */
+    }
 }
 
 a {
     font-weight: 500;
-    color: hsl(280 30% 25%);
+    color: hsl(var(--foreground));
     text-decoration: inherit;
 }
 a:hover {
@@ -87,64 +102,11 @@ button:focus-visible {
     outline: none !important;
 }
 
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
-    a:hover {
-        color: #747bff;
-    }
-    button {
-        background-color: #f9f9f9;
-    }
-    button:hover {
-        border-color: #9b7bb8;
-    }
-}
-
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: hsl(280 20% 70%); /* #b8a2ce */
-        --foreground: hsl(280 30% 25%); /* Dark purple text */
-        --card: hsl(280 15% 75%); /* Slightly lighter than background */
-        --card-foreground: hsl(280 30% 25%);
-        --popover: hsl(280 15% 75%);
-        --popover-foreground: hsl(280 30% 25%);
-        --primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
-        --primary-foreground: hsl(280 30% 25%);
-        --secondary: hsl(280 25% 80%); /* Light purple secondary */
-        --secondary-foreground: hsl(280 30% 25%);
-        --muted: hsl(280 20% 85%); /* Very light purple muted */
-        --muted-foreground: hsl(280 25% 40%);
-        --accent: hsl(150 40% 75%); /* #a8e6cf - witch hazel minty green accent */
-        --accent-foreground: hsl(280 30% 25%);
-        --destructive: hsl(0 70% 70%); /* Soft red */
-        --destructive-foreground: hsl(280 20% 95%);
-        --border: hsl(280 25% 60%); /* Medium purple border */
-        --input: hsl(280 20% 85%);
-        --ring: hsl(280 40% 60%);
-        --tw-ring-color: hsl(280 40% 60%); /* Override Tailwind ring color to match theme */
-        --tw-ring-shadow: 0 0 0 2px hsl(280 40% 60%); /* Override Tailwind ring shadow */
-        --tw-inset-shadow: none; /* Remove inset shadow */
-        --tw-inset-ring-shadow: none; /* Remove inset ring shadow */
-        --tw-ring-offset-shadow: none; /* Remove ring offset shadow */
-        --theme-color: hsl(280 25% 80%); /* Theme color for icons and labels */
-    }
-
-    @theme {
-        --color-primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
-        --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
-        --color-dark-secondary: hsl(280 30% 25%);
-        --color-tertiary: hsl(278, 55%, 87%); /* near-white purple for subtle hover */
-    }
-}
-
 /* Override Tailwind focus ring box-shadow with theme color */
 *:focus,
 *:focus-visible {
-    box-shadow: 0 0 0 2px hsl(280 40% 60%) !important;
-    --tw-ring-shadow: 0 0 0 2px hsl(280 40% 60%) !important;
+    box-shadow: 0 0 0 2px hsl(var(--ring)) !important;
+    --tw-ring-shadow: 0 0 0 2px hsl(var(--ring)) !important;
     --tw-inset-shadow: none !important;
     --tw-inset-ring-shadow: none !important;
     --tw-ring-offset-shadow: none !important;
@@ -152,8 +114,8 @@ button:focus-visible {
 
 *:focus.dark-ring,
 *:focus-visible.dark-ring {
-    box-shadow: 0 0 0 2px hsl(280 40% 25%) !important;
-    --tw-ring-shadow: 0 0 0 2px hsl(280 40% 25%) !important;
+    box-shadow: 0 0 0 2px hsl(var(--dark-secondary)) !important;
+    --tw-ring-shadow: 0 0 0 2px hsl(var(--dark-secondary)) !important;
     --tw-inset-shadow: none !important;
     --tw-inset-ring-shadow: none !important;
     --tw-ring-offset-shadow: none !important;
@@ -171,13 +133,13 @@ button:focus-visible {
 
 /* Theme color utility class */
 .theme-colored {
-    color: var(--theme-color);
+    color: hsl(var(--theme-color));
 }
 
 /* Ensure link-variant buttons use primary color and underline on hover */
 a.underline-offset-4,
 button.underline-offset-4 {
-    color: hsl(var(--primary)) !important;
+    color: white !important;
 }
 a.underline-offset-4:hover,
 button.underline-offset-4:hover {

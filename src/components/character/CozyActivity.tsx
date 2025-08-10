@@ -17,7 +17,7 @@ const CozyActivity = () => {
                     className="flex-1"
                 />
                 <DropdownMenu>
-                    <DropdownMenuTrigger className="w-8 h-8 flex items-center justify-center text-sm border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
+                    <DropdownMenuTrigger className="w-8 h-8 flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
                         ✨
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="grid grid-cols-1 sm:grid-cols-2 p-2">
