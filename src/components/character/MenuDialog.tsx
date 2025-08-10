@@ -261,10 +261,10 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         >
             <div className="grid gap-4">
                 <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
-                    Download JSON
+                    Download save file
                 </Button>
                 <Button onClick={handleLoadFromJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
-                    Load from JSON
+                    Load from save file
                 </Button>
                 <Button
                     onClick={handleResetCharacter}
