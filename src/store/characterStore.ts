@@ -3,7 +3,19 @@ import { persist } from "zustand/middleware"
 import type { Ability, CozyItem } from "@/types/characterSchema"
 import { advancementOptions, crownsOfTheQueen, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 
-type CharacterState = {
+export const defaultAbilities: Ability[] = [
+    { name: "Vitality", value: 0 },
+    { name: "Composure", value: 1 },
+    { name: "Reason", value: 1 },
+    { name: "Presence", value: 0 },
+    { name: "Sensitivity", value: -1 },
+]
+
+export const getDefaultAbilities = (): Ability[] => {
+    return defaultAbilities.map((ability) => ({ ...ability }))
+}
+
+export type CharacterState = {
     name: string
     style: string
     activity: string
@@ -42,13 +54,7 @@ export const useCharacterStore = create<CharacterState>()(
             name: "",
             style: "",
             activity: "",
-            abilities: [
-                { name: "Vitality", value: 0 },
-                { name: "Composure", value: 0 },
-                { name: "Reason", value: 0 },
-                { name: "Presence", value: 0 },
-                { name: "Sensitivity", value: 0 },
-            ],
+            abilities: getDefaultAbilities(),
             xp: 0,
             conditions: "",
             endOfSessionChecks: endOfSessionQuestions.map(() => false),

@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button"
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { useCharacterStore } from "@/store/characterStore"
+import { getDefaultAbilities, useCharacterStore } from "@/store/characterStore"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 import { toast } from "sonner"
 import { useState, useEffect } from "react"
@@ -127,21 +127,11 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         input.click()
     }
 
-    const handleResetCharacter = () => {
-        setShowResetConfirm(true)
-    }
-
     const confirmReset = () => {
         characterStore.setName("")
         characterStore.setStyle("")
         characterStore.setActivity("")
-        characterStore.setAbilities([
-            { name: "Vitality", value: 0 },
-            { name: "Composure", value: 0 },
-            { name: "Reason", value: 0 },
-            { name: "Presence", value: 0 },
-            { name: "Sensitivity", value: 0 },
-        ])
+        characterStore.setAbilities(getDefaultAbilities())
         characterStore.setXp(0)
         characterStore.setConditions("")
         characterStore.setEndOfSessionChecks(endOfSessionQuestions.map(() => false))
@@ -274,7 +264,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                     Load from save file
                 </Button>
                 <Button
-                    onClick={handleResetCharacter}
+                    onClick={() => setShowResetConfirm(true)}
                     className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
                 >
                     Reset Character

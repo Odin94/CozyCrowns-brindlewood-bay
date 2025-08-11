@@ -30,7 +30,7 @@ const Abilities = () => {
                                 <MinusIcon className="w-3 h-3" />
                             </Button>
                             <span className="w-8 text-center font-medium text-gray-200">
-                                {ability.value >= 0 ? `+${ability.value}` : ability.value}
+                                {ability.value > 0 ? `+${ability.value}` : ability.value}
                             </span>
                             <Button
                                 variant="outline"

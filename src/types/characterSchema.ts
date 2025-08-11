@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
+import { getDefaultAbilities } from "@/store/characterStore"
 
 export const AbilitySchema = z.object({
     name: z.string(),
@@ -15,16 +16,7 @@ export const CharacterDataSchema = z.object({
     name: z.string().optional().default(""),
     style: z.string().optional().default(""),
     activity: z.string().optional().default(""),
-    abilities: z
-        .array(AbilitySchema)
-        .optional()
-        .default([
-            { name: "Vitality", value: 0 },
-            { name: "Composure", value: 0 },
-            { name: "Reason", value: 0 },
-            { name: "Presence", value: 0 },
-            { name: "Sensitivity", value: 0 },
-        ]),
+    abilities: z.array(AbilitySchema).optional().default(getDefaultAbilities()),
     xp: z.number().optional().default(0),
     conditions: z.string().optional().default(""),
     endOfSessionChecks: z
