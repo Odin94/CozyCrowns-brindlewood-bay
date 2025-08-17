@@ -1,7 +1,7 @@
 import { Textarea } from "@/components/ui/textarea"
 import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const MavenMoves = () => {
     const { mavenMoves, setMavenMoves } = useCharacterStore()

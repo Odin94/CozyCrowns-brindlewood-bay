@@ -1,6 +1,6 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
-import type { Ability, CozyItem } from "@/types/characterSchema"
+import type { Ability, CharacterData, CozyItem } from "@/types/characterSchema"
 import { advancementOptions, crownsOfTheQueen, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 
 export const defaultAbilities: Ability[] = [
@@ -46,11 +46,12 @@ export type CharacterState = {
     setCrownChecks: (checks: boolean[]) => void
     setVoidChecks: (checks: boolean[]) => void
     setCozyItems: (items: Array<{ checked: boolean; text: string }>) => void
+    getCharacterData: () => CharacterData
 }
 
 export const useCharacterStore = create<CharacterState>()(
     persist(
-        (set) => ({
+        (set, get) => ({
             name: "",
             style: "",
             activity: "",
@@ -78,6 +79,7 @@ export const useCharacterStore = create<CharacterState>()(
             setCrownChecks: (crownChecks) => set({ crownChecks }),
             setVoidChecks: (voidChecks) => set({ voidChecks }),
             setCozyItems: (cozyItems) => set({ cozyItems }),
+            getCharacterData: (): CharacterData => get(),
         }),
         {
             name: "cozycrowns-character-storage",

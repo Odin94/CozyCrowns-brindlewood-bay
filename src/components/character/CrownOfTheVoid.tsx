@@ -7,7 +7,7 @@ import SubHeadline from "@/components/ui/sub-headline"
 import { crownOfTheVoid } from "@/game_data"
 import { InfoIcon } from "lucide-react"
 import { useState } from "react"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const CrownOfTheVoid = () => {
     const { voidChecks, setVoidChecks } = useCharacterStore()

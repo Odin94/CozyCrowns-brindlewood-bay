@@ -1,14 +1,15 @@
 import { Button } from "@/components/ui/button"
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { getDefaultAbilities, useCharacterStore } from "@/store/characterStore"
+import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 import { toast } from "sonner"
 import { useState, useEffect } from "react"
-import { CoffeeIcon, Trash2 } from "lucide-react"
+import { CoffeeIcon, Trash2, FileDown } from "lucide-react"
 import { CharacterDataSchema } from "@/types/characterSchema"
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
+import { downloadPdf } from "@/lib/pdf_generator"
 
-interface MenuDialogProps {
+type MenuDialogProps = {
     onOpenChange?: (open: boolean) => void
     open?: boolean
 }
@@ -27,20 +28,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     }, [open])
 
     const handleDownloadJSON = () => {
-        const characterData = {
-            name: characterStore.name,
-            style: characterStore.style,
-            activity: characterStore.activity,
-            abilities: characterStore.abilities,
-            xp: characterStore.xp,
-            conditions: characterStore.conditions,
-            endOfSessionChecks: characterStore.endOfSessionChecks,
-            advancementChecks: characterStore.advancementChecks,
-            mavenMoves: characterStore.mavenMoves,
-            crownChecks: characterStore.crownChecks,
-            voidChecks: characterStore.voidChecks,
-            cozyItems: characterStore.cozyItems,
-        }
+        const characterData = characterStore.getCharacterData()
 
         const jsonString = JSON.stringify(characterData, null, 2)
         const blob = new Blob([jsonString], { type: "application/json" })
@@ -55,6 +43,18 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         document.body.removeChild(link)
 
         URL.revokeObjectURL(url)
+    }
+
+    const handleDownloadPDF = async () => {
+        try {
+            const characterData = characterStore.getCharacterData()
+
+            await downloadPdf(characterData)
+            toast.success("PDF downloaded successfully!")
+        } catch (error) {
+            console.error("Error downloading PDF:", error)
+            toast.error("Failed to download PDF. Please try again.")
+        }
     }
 
     const handleLoadFromJSON = () => {
@@ -259,6 +259,10 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
             <div className="grid gap-4">
                 <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     Download save file
+                </Button>
+                <Button onClick={handleDownloadPDF} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
+                    <FileDown className="w-4 h-4 mr-2" />
+                    Download PDF
                 </Button>
                 <Button onClick={handleLoadFromJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     Load from save file

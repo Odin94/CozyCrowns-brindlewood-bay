@@ -2,7 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
 import { advancementOptions } from "../../game_data"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const Advancements = () => {
     const { advancementChecks, setAdvancementChecks } = useCharacterStore()

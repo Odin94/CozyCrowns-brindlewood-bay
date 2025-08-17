@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
-import { getDefaultAbilities } from "@/store/characterStore"
+import { getDefaultAbilities } from "@/lib/character_store"
 
 export const AbilitySchema = z.object({
     name: z.string(),

@@ -1,7 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { LineInput } from "@/components/ui/line-input"
 import Headline from "@/components/ui/headline"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const CozyLittlePlace = () => {
     const { cozyItems, setCozyItems } = useCharacterStore()

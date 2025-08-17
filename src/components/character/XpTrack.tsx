@@ -1,6 +1,6 @@
 import { Checkbox } from "@/components/ui/checkbox"
 import { Label } from "@/components/ui/label"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const XpTrack = () => {
     const { xp, setXp } = useCharacterStore()

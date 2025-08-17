@@ -3,7 +3,7 @@ import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
 import { endOfSessionQuestions } from "../../game_data"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const EndOfSession = () => {
     const { endOfSessionChecks, setEndOfSessionChecks } = useCharacterStore()

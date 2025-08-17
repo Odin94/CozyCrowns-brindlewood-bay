@@ -1,6 +1,6 @@
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const Conditions = () => {
     const { conditions, setConditions } = useCharacterStore()

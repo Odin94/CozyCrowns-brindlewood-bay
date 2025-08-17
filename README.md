@@ -24,4 +24,7 @@ You can check it out here: https://cozycrowns.odin-matthias.de
 <!-- 
 
 TODOdin: Add more eldritch elements to the site as void crowns get checked off
+TODOdin: Add u18n with https://github.com/lingui/js-lingui
+TODOdin: See if you can get some simple free storage with firebase or something..?
+TODOdin: Add Dark Conspiracy sheet
  -->

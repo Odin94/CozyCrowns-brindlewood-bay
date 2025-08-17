@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { PlusIcon, MinusIcon } from "lucide-react"
-import { useCharacterStore } from "@/store/characterStore"
+import { useCharacterStore } from "@/lib/character_store"
 
 const Abilities = () => {
     const { abilities, setAbilities } = useCharacterStore()
