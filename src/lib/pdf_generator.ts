@@ -5,144 +5,118 @@ import base64PdfData from "../resources/brindlewoodbay-charactersheet_fillable.b
 
 export const generatePdf = async (character: CharacterData): Promise<Uint8Array> => {
     try {
-        // Decode the base64 PDF data
         const binaryString = atob(base64PdfData)
         const pdfBytes = new Uint8Array(binaryString.length)
         for (let i = 0; i < binaryString.length; i++) {
             pdfBytes[i] = binaryString.charCodeAt(i)
         }
 
-        // Load the PDF document
         const pdfDoc = await PDFDocument.load(pdfBytes)
         const form = pdfDoc.getForm()
 
-        // Fill in character name fields
-        const nameFields = form.getFields().filter((field) => field.getName() === "NameButton")
-        nameFields.forEach((field) => {
-            if (field instanceof PDFTextField) {
-                field.setText(character.name || "")
-            }
+        const nameField = form.getField("Name") as PDFTextField
+        nameField.setText(character.name)
+
+        const styleField = form.getField("Style") as PDFTextField
+        styleField.setText(character.style)
+
+        const activityField = form.getField("Cozy Activity") as PDFTextField
+        activityField.setText(character.activity)
+
+        // Abilities
+        character.abilities.forEach((ability, index) => {
+            const abilityField = form.getField(`Ability.${index}`) as PDFTextField
+            abilityField.setText(`${ability.value}`)
         })
 
-        // Fill in style fields
-        const styleFields = form.getFields().filter((field) => field.getName() === "StyleButton")
-        styleFields.forEach((field) => {
-            if (field instanceof PDFTextField) {
-                field.setText(character.style || "")
+        // XP
+        for (let i = 0; i < 5; i++) {
+            const xpField = form.getField(`XP.${i}`) as PDFCheckBox
+            if (character.xp >= i) {
+                xpField.check()
+            } else {
+                xpField.uncheck()
             }
-        })
-
-        // Fill in activity field
-        const activityFields = form.getFields().filter((field) => field.getName() === "Activity")
-        activityFields.forEach((field) => {
-            if (field instanceof PDFTextField) {
-                field.setText(character.activity || "")
-            }
-        })
-
-        // Fill in cozy items
-        const cozyBoxFields = form.getFields().filter((field) => field.getName() === "Cozy_Box")
-        const cozyThingFields = form.getFields().filter((field) => field.getName() === "Cozy_Thing")
-        const cozyButtonFields = form.getFields().filter((field) => field.getName() === "CozyButton")
-
-        // Fill first cozy item if available
-        if (character.cozyItems.length > 0 && character.cozyItems[0].text) {
-            cozyBoxFields.forEach((field) => {
-                if (field instanceof PDFTextField) {
-                    field.setText(character.cozyItems[0].text)
-                }
-            })
-            cozyThingFields.forEach((field) => {
-                if (field instanceof PDFTextField) {
-                    field.setText(character.cozyItems[0].text)
-                }
-            })
         }
 
-        // Fill maven moves
-        const mavenMoveFields = form.getFields().filter((field) => field.getName() === "Maven Move")
-        mavenMoveFields.forEach((field) => {
-            if (field instanceof PDFTextField) {
-                field.setText(character.mavenMoves || "")
-            }
-        })
+        // Conditions
+        const [firstCondition, secondCondition, ...remainingConditions] = character.conditions.split(/\n+/)
+        const firstConditionField = form.getField("Condition.0") as PDFTextField
+        firstConditionField.setText(firstCondition)
+        const secondConditionField = form.getField("Condition.1") as PDFTextField
+        secondConditionField.setText(secondCondition)
+        const thirdConditionField = form.getField("Condition.2") as PDFTextField
+        thirdConditionField.setText(remainingConditions.join("\n"))
 
-        // Fill XP
-        const xpFields = form.getFields().filter((field) => field.getName() === "XP")
-        xpFields.forEach((field) => {
-            if (field instanceof PDFTextField) {
-                field.setText(character.xp.toString())
-            }
-        })
-
-        // Fill conditions
-        const conditionFields = form.getFields().filter((field) => field.getName() === "Condition")
-        conditionFields.forEach((field) => {
-            if (field instanceof PDFTextField) {
-                field.setText(character.conditions || "")
-            }
-        })
-
-        // Fill abilities (as a single field)
-        const abilityFields = form.getFields().filter((field) => field.getName() === "Ability")
-        const abilitiesText = character.abilities
-            .map((ability) => `${ability.name}: ${ability.value > 0 ? "+" : ""}${ability.value}`)
-            .join(", ")
-        abilityFields.forEach((field) => {
-            if (field instanceof PDFTextField) {
-                field.setText(abilitiesText)
-            }
-        })
-
-        // Handle checkboxes for end of session, advancements, crown checks, etc.
-        // These are more complex as they involve checking/unchecking boxes based on boolean arrays
-
-        // End of Session checks
-        const eosFields = form.getFields().filter((field) => field.getName() === "EOS")
-        character.endOfSessionChecks.forEach((checked, index) => {
-            if (eosFields[index] && eosFields[index] instanceof PDFCheckBox) {
-                if (checked) {
-                    ;(eosFields[index] as PDFCheckBox).check()
+        // Second Column
+        character.endOfSessionChecks.forEach((check, index) => {
+            // At 0 there is "Did the Murder Mavens solve a mystery?"
+            // Which doesn't have a selectable checkbox in the PDF
+            if (index !== 0) {
+                const checkField = form.getField(`EOS.${index - 1}`) as PDFCheckBox
+                if (check) {
+                    checkField.check()
                 } else {
-                    ;(eosFields[index] as PDFCheckBox).uncheck()
+                    checkField.uncheck()
                 }
             }
         })
 
-        // Crown checks
-        const crownQueenFields = form.getFields().filter((field) => field.getName() === "CrowdQueen")
-        const crownVoidFields = form.getFields().filter((field) => field.getName() === "CrowdVoid")
-
-        character.crownChecks.forEach((checked, index) => {
-            if (crownQueenFields[index] && crownQueenFields[index] instanceof PDFCheckBox) {
-                if (checked) {
-                    ;(crownQueenFields[index] as PDFCheckBox).check()
-                } else {
-                    ;(crownQueenFields[index] as PDFCheckBox).uncheck()
-                }
+        character.advancementChecks.forEach((check, index) => {
+            const checkField = form.getField(`Advancements.${index}`) as PDFCheckBox
+            if (check) {
+                checkField.check()
+            } else {
+                checkField.uncheck()
             }
         })
 
-        character.voidChecks.forEach((checked, index) => {
-            if (crownVoidFields[index] && crownVoidFields[index] instanceof PDFCheckBox) {
-                if (checked) {
-                    ;(crownVoidFields[index] as PDFCheckBox).check()
-                } else {
-                    ;(crownVoidFields[index] as PDFCheckBox).uncheck()
-                }
+        character.mavenMoves.split(/\n+/).forEach((move, index) => {
+            if (index <= 8) {
+                const moveField = form.getField(`Maven Move.${index}`) as PDFTextField
+                moveField.setText(move)
+            } else {
+                console.warn(`Maven Move ${index} is too long: ${move}`)
             }
         })
 
-        // Cozy items checkboxes
-        character.cozyItems.forEach((item, index) => {
-            if (cozyButtonFields[index] && cozyButtonFields[index] instanceof PDFCheckBox) {
-                if (item.checked) {
-                    ;(cozyButtonFields[index] as PDFCheckBox).check()
-                } else {
-                    ;(cozyButtonFields[index] as PDFCheckBox).uncheck()
-                }
+        // Third Column
+        character.crownChecks.forEach((check, index) => {
+            const checkField = form.getField(`CrowdQueen.${index}`) as PDFCheckBox
+            if (check) {
+                checkField.check()
+            } else {
+                checkField.uncheck()
             }
         })
+
+        character.voidChecks.forEach((check, index) => {
+            const checkField = form.getField(`CrowdVoid.${index}`) as PDFCheckBox
+            if (check) {
+                checkField.check()
+            } else {
+                checkField.uncheck()
+            }
+        })
+
+        // Set Cozy_Thing fields in order: 0.0, 0.1, 1.0, 1.1, 2.0, 2.1, etc.
+        for (let i = 0; i < 9; i++) {
+            for (let j = 0; j < 2; j++) {
+                const fieldIndex = i * 2 + j
+                if (fieldIndex < character.cozyItems.length) {
+                    const cozyItem = character.cozyItems[fieldIndex]
+                    const textField = form.getField(`Cozy_Thing.${i}.${j}`) as PDFTextField
+                    textField.setText(cozyItem.text)
+
+                    const checkField = form.getField(`Cozy_Box.${i}.${j}`) as PDFCheckBox
+                    if (cozyItem.checked) {
+                        checkField.check()
+                    } else {
+                        checkField.uncheck()
+                    }
+                }
+            }
+        }
 
         const filledPdfBytes = await pdfDoc.save()
 
@@ -174,94 +148,3 @@ export const downloadPdf = async (character: CharacterData, filename?: string) =
         throw error
     }
 }
-
-// [
-//     "Name",
-//     "Cozy_Box.0.1",
-//     "Cozy_Box.0.0",
-//     "Cozy_Box.1.0",
-//     "Cozy_Box.1.1",
-//     "Cozy_Box.2.0",
-//     "Cozy_Box.2.1",
-//     "Cozy_Box.3.0",
-//     "Cozy_Box.3.1",
-//     "Cozy_Box.4.0",
-//     "Cozy_Box.4.1",
-//     "Cozy_Box.5.0",
-//     "Cozy_Box.5.1",
-//     "Cozy_Box.6.0",
-//     "Cozy_Box.6.1",
-//     "Cozy_Box.7.0",
-//     "Cozy_Box.7.1",
-//     "Cozy_Box.8.0",
-//     "Cozy_Box.8.1",
-//     "Cozy_Thing.0.0",
-//     "Cozy_Thing.0.1",
-//     "Cozy_Thing.1.0",
-//     "Cozy_Thing.1.1",
-//     "Cozy_Thing.2.0",
-//     "Cozy_Thing.2.1",
-//     "Cozy_Thing.3.0",
-//     "Cozy_Thing.3.1",
-//     "Cozy_Thing.4.0",
-//     "Cozy_Thing.4.1",
-//     "Cozy_Thing.5.0",
-//     "Cozy_Thing.5.1",
-//     "Cozy_Thing.6.0",
-//     "Cozy_Thing.6.1",
-//     "Cozy_Thing.7.0",
-//     "Cozy_Thing.7.1",
-//     "Cozy_Thing.8.0",
-//     "Cozy_Thing.8.1",
-//     "Maven Move.0",
-//     "Maven Move.1",
-//     "Maven Move.2",
-//     "Maven Move.3",
-//     "Maven Move.4",
-//     "Maven Move.5",
-//     "Maven Move.6",
-//     "Maven Move.7",
-//     "Maven Move.8",
-//     "NameButton",
-//     "StyleButton",
-//     "Style",
-//     "Cozy Activity",
-//     "EOS.0",
-//     "EOS.1",
-//     "EOS.2",
-//     "EOS.3",
-//     "EOS.4",
-//     "EOS.5",
-//     "Advancements.0",
-//     "Advancements.1",
-//     "Advancements.2",
-//     "Advancements.3",
-//     "Advancements.4",
-//     "CrowdQueen.0",
-//     "CrowdQueen.1",
-//     "CrowdQueen.2",
-//     "CrowdQueen.3",
-//     "CrowdQueen.4",
-//     "CrowdQueen.5",
-//     "CrowdQueen.6",
-//     "CrowdVoid.0",
-//     "CrowdVoid.1",
-//     "CrowdVoid.2",
-//     "CrowdVoid.3",
-//     "CrowdVoid.4",
-//     "CozyButton",
-//     "Ability.0",
-//     "Ability.1",
-//     "Ability.2",
-//     "Ability.3",
-//     "Ability.4",
-//     "XP.0",
-//     "XP.1",
-//     "XP.2",
-//     "XP.3",
-//     "XP.4",
-//     "Collecting",
-//     "Condition.0",
-//     "Condition.1",
-//     "Condition.2"
-// ]
