@@ -1,19 +1,20 @@
 import { Button } from "@/components/ui/button"
 import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store"
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
-import { toast } from "sonner"
-import { useState, useEffect } from "react"
-import { CoffeeIcon, Trash2, FileDown } from "lucide-react"
+import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store"
+import { downloadPdf } from "@/lib/pdf_generator"
 import { CharacterDataSchema } from "@/types/characterSchema"
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
-import { downloadPdf } from "@/lib/pdf_generator"
+import { CoffeeIcon, Download, FileDown, Trash2, Upload } from "lucide-react"
+import { useEffect, useState } from "react"
+import { toast } from "sonner"
 
 type MenuDialogProps = {
     onOpenChange?: (open: boolean) => void
     open?: boolean
 }
 
+// TODOdin: Redesign the whole dialog content
 const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const characterStore = useCharacterStore()
     const [showResetConfirm, setShowResetConfirm] = useState(false)
@@ -257,20 +258,23 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                 <DialogTitle>Menu</DialogTitle>
             </VisuallyHidden.Root>
             <div className="grid gap-4">
-                <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
-                    Download save file
-                </Button>
                 <Button onClick={handleDownloadPDF} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     <FileDown className="w-4 h-4 mr-2" />
                     Download PDF
                 </Button>
+                <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
+                    <Download className="w-4 h-4 mr-2" />
+                    Download save file
+                </Button>
                 <Button onClick={handleLoadFromJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
+                    <Upload className="w-4 h-4 mr-2" />
                     Load from save file
                 </Button>
                 <Button
                     onClick={() => setShowResetConfirm(true)}
-                    className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+                    className="w-full text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring"
                 >
+                    <Trash2 className="w-4 h-4 mr-2" />
                     Reset Character
                 </Button>
                 <div className="grid grid-cols-3 gap-2">
