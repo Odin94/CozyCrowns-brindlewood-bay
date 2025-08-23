@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { PlusIcon, MinusIcon } from "lucide-react"
 import { useCharacterStore } from "@/lib/character_store"
+import { Trans } from "@lingui/react/macro"
 
 const Abilities = () => {
     const { abilities, setAbilities } = useCharacterStore()
@@ -13,7 +14,9 @@ const Abilities = () => {
 
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-secondary">Abilities</Label>
+            <Label className="text-lg font-semibold text-secondary">
+                <Trans>Abilities</Trans>
+            </Label>
             <div className="space-y-2">
                 {abilities.map((ability, index) => (
                     <div key={ability.name} className="flex items-center justify-between">

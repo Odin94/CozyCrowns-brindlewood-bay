@@ -7,9 +7,14 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "extract": "lingui extract",
+    "compile": "lingui compile --typescript"
   },
   "dependencies": {
+    "@lingui/core": "^5.4.1",
+    "@lingui/macro": "^5.4.1",
+    "@lingui/react": "^5.4.1",
     "@pdf-lib/fontkit": "^1.1.1",
     "@radix-ui/react-checkbox": "^1.3.2",
     "@radix-ui/react-dialog": "^1.1.14",
@@ -35,6 +40,8 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.30.1",
+    "@lingui/cli": "^5.4.1",
+    "@lingui/vite-plugin": "^5.4.1",
     "@shadcn/ui": "^0.0.4",
     "@tailwindcss/postcss": "^4.1.11",
     "@types/node": "^24.0.12",

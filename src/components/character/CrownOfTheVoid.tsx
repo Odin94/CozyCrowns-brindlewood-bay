@@ -1,13 +1,14 @@
 import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import Headline from "@/components/ui/headline"
+import { Label } from "@/components/ui/label"
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import SubHeadline from "@/components/ui/sub-headline"
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
 import { crownOfTheVoid } from "@/game_data"
+import { useCharacterStore } from "@/lib/character_store"
+import { Trans } from "@lingui/react/macro"
 import { InfoIcon } from "lucide-react"
 import { useState } from "react"
-import { useCharacterStore } from "@/lib/character_store"
 
 const CrownOfTheVoid = () => {
     const { voidChecks, setVoidChecks } = useCharacterStore()
@@ -23,8 +24,12 @@ const CrownOfTheVoid = () => {
         <TooltipProvider>
             <div className="space-y-1">
                 <div>
-                    <Headline>Crown of the Void</Headline>
-                    <SubHeadline className="mt-1">When you put on this Crown, mark the first empty box.</SubHeadline>
+                    <Headline>
+                        <Trans>Crown of the Void</Trans>
+                    </Headline>
+                    <SubHeadline className="mt-1">
+                        <Trans>When you put on this Crown, mark the first empty box.</Trans>
+                    </SubHeadline>
                 </div>
                 <div className="space-y-1">
                     {crownOfTheVoid.map((crown, index) => (

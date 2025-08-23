@@ -1,0 +1,444 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2025-08-22 00:33+0200\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+"Project-Id-Version: \n"
+"Report-Msgid-Bugs-To: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Plural-Forms: \n"
+
+#. js-lingui-explicit-id
+#: src/components/character/Style.tsx:20
+msgid "Enter character style"
+msgstr "Enter character style"
+
+#. js-lingui-explicit-id
+#: src/components/character/Name.tsx:20
+msgid "Enter character name"
+msgstr "Enter character name"
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:68
+msgid "PDF downloaded successfully!"
+msgstr "PDF downloaded successfully!"
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:71
+msgid "Failed to download PDF. Please try again."
+msgstr "Failed to download PDF. Please try again."
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:130
+msgid "Character data loaded successfully!"
+msgstr "Character data loaded successfully!"
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:133
+msgid "Invalid JSON file format."
+msgstr "Invalid JSON file format."
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:135
+msgid "Error loading character data. Please check the file format."
+msgstr "Error loading character data. Please check the file format."
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:165
+msgid "Character reset successfully!"
+msgstr "Character reset successfully!"
+
+#. js-lingui-explicit-id
+#: src/components/character/MavenMoves.tsx:22
+msgid "Enter your Maven moves..."
+msgstr "Enter your Maven moves..."
+
+#. js-lingui-explicit-id
+#: src/components/character/Conditions.tsx:20
+msgid "Enter any conditions or notes..."
+msgstr "Enter any conditions or notes..."
+
+#. js-lingui-explicit-id
+#: src/components/character/CozyActivity.tsx:20
+msgid "Enter cozy activity"
+msgstr "Enter cozy activity"
+
+#: src/components/character/CrownOfTheVoid.tsx:48
+#: src/components/character/CrownOfTheVoid.tsx:54
+#: src/components/character/CrownOfTheVoid.tsx:71
+#~ msgid "{0}"
+#~ msgstr "{0}"
+
+#: src/components/character/CrownOfTheQueen.tsx:39
+#~ msgid "{crown}"
+#~ msgstr "{crown}"
+
+#: src/components/character/Advancements.tsx:34
+#~ msgid "{option}"
+#~ msgstr "{option}"
+
+#: src/components/character/EndOfSession.tsx:38
+#~ msgid "{question}"
+#~ msgstr "{question}"
+
+#: src/components/character/CozyLittlePlace.tsx:25
+msgid "A Cozy Little Place"
+msgstr "A Cozy Little Place"
+
+#: src/game_data.ts:22
+msgid "A flashback of your fondest memory of your late partner."
+msgstr "A flashback of your fondest memory of your late partner."
+
+#: src/game_data.ts:25
+msgid "A flashback of your fondest memory with one of your children."
+msgstr "A flashback of your fondest memory with one of your children."
+
+#: src/game_data.ts:24
+msgid "A flashback showing how you were an imperfect mother."
+msgstr "A flashback showing how you were an imperfect mother."
+
+#: src/game_data.ts:23
+msgid "A flashback showing how you were an imperfect sister or daughter."
+msgstr "A flashback showing how you were an imperfect sister or daughter."
+
+#: src/game_data.ts:27
+msgid "A scene in the present day showing a burgeoning romance."
+msgstr "A scene in the present day showing a burgeoning romance."
+
+#: src/game_data.ts:26
+msgid "A scene in the present day showing a private side of you very few get to see."
+msgstr "A scene in the present day showing a private side of you very few get to see."
+
+#: src/game_data.ts:28
+msgid "A scene in the present day showing how you satisfy your physical desires."
+msgstr "A scene in the present day showing how you satisfy your physical desires."
+
+#: src/game_data.ts:33
+msgid "A Shadow in the Garden."
+msgstr "A Shadow in the Garden."
+
+#: src/components/character/Abilities.tsx:18
+msgid "Abilities"
+msgstr "Abilities"
+
+#: src/components/character/Advancements.tsx:19
+msgid "Advancements"
+msgstr "Advancements"
+
+#: src/game_data.ts:72
+msgid "Alexis Carrington Colby"
+msgstr "Alexis Carrington Colby"
+
+#: src/game_data.ts:73
+msgid "All the Cardigans"
+msgstr "All the Cardigans"
+
+#: src/game_data.ts:86
+msgid "Antiques & Furniture"
+msgstr "Antiques & Furniture"
+
+#: src/components/character/MenuDialog.tsx:185
+msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
+msgstr "Are you sure you want to reset your character? This will clear all data and cannot be undone."
+
+#: src/components/character/MenuDialog.tsx:235
+msgid "Assets"
+msgstr "Assets"
+
+#: src/components/character/MenuDialog.tsx:273
+msgid "Back"
+msgstr "Back"
+
+#: src/game_data.ts:87
+msgid "Baking"
+msgstr "Baking"
+
+#: src/game_data.ts:88
+msgid "Birding"
+msgstr "Birding"
+
+#: src/game_data.ts:74
+msgid "Blouse Barn"
+msgstr "Blouse Barn"
+
+#: src/components/character/MenuDialog.tsx:217
+msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
+msgstr "Brindlewood Bay is published by <0>The Gauntlet</0>."
+
+#: src/pages/CharacterSheet.tsx:29
+msgid "by Odin"
+msgstr "by Odin"
+
+#: src/components/character/MenuDialog.tsx:196
+msgid "Cancel"
+msgstr "Cancel"
+
+#: src/game_data.ts:89
+msgid "Charity Events"
+msgstr "Charity Events"
+
+#: src/game_data.ts:16
+#: src/game_data.ts:17
+msgid "Choose an additional Maven move."
+msgstr "Choose an additional Maven move."
+
+#: src/components/ui/dialog.tsx:64
+msgid "Close"
+msgstr "Close"
+
+#: src/game_data.ts:90
+msgid "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
+msgstr "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
+
+#: src/components/character/Conditions.tsx:13
+msgid "Conditions"
+msgstr "Conditions"
+
+#: src/components/character/MenuDialog.tsx:180
+msgid "Confirm Reset"
+msgstr "Confirm Reset"
+
+#: src/game_data.ts:91
+msgid "Cooking"
+msgstr "Cooking"
+
+#: src/components/character/CozyActivity.tsx:14
+msgid "Cozy Activity"
+msgstr "Cozy Activity"
+
+#: src/components/character/MenuDialog.tsx:231
+msgid "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
+msgstr "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
+
+#: src/components/character/MenuDialog.tsx:212
+#: src/components/character/MenuDialog.tsx:336
+msgid "Credits"
+msgstr "Credits"
+
+#: src/components/character/CrownOfTheQueen.tsx:21
+msgid "Crown of the Queen"
+msgstr "Crown of the Queen"
+
+#: src/components/character/CrownOfTheVoid.tsx:28
+msgid "Crown of the Void"
+msgstr "Crown of the Void"
+
+#: src/components/character/MenuDialog.tsx:299
+msgid "Deutsch"
+msgstr "Deutsch"
+
+#: src/game_data.ts:4
+msgid "Did the Murder Mavens solve a mystery?"
+msgstr "Did the Murder Mavens solve a mystery?"
+
+#: src/game_data.ts:8
+msgid "Did you behave like a woman half your age?"
+msgstr "Did you behave like a woman half your age?"
+
+#: src/game_data.ts:9
+msgid "Did you dote on someone?"
+msgstr "Did you dote on someone?"
+
+#: src/game_data.ts:5
+msgid "Did you secretly undermine the authority of a local official?"
+msgstr "Did you secretly undermine the authority of a local official?"
+
+#: src/game_data.ts:7
+msgid "Did you share a memory of a late family member?"
+msgstr "Did you share a memory of a late family member?"
+
+#: src/game_data.ts:6
+msgid "Did you share your wisdom with a young person?"
+msgstr "Did you share your wisdom with a young person?"
+
+#: src/game_data.ts:10
+msgid "Did you show someone that you've \"still got it?\""
+msgstr "Did you show someone that you've \"still got it?\""
+
+#: src/game_data.ts:75
+msgid "Dorothy Zbornak"
+msgstr "Dorothy Zbornak"
+
+#: src/components/character/MenuDialog.tsx:307
+msgid "Download PDF"
+msgstr "Download PDF"
+
+#: src/components/character/MenuDialog.tsx:311
+msgid "Download save file"
+msgstr "Download save file"
+
+#: src/components/character/EndOfSession.tsx:20
+msgid "End of Session"
+msgstr "End of Session"
+
+#: src/components/character/MenuDialog.tsx:296
+msgid "English"
+msgstr "English"
+
+#: src/game_data.ts:92
+msgid "Gardening"
+msgstr "Gardening"
+
+#: src/game_data.ts:76
+msgid "Goin' Fishin'"
+msgstr "Goin' Fishin'"
+
+#: src/game_data.ts:39
+msgid "Hereafter, during any intimate conversation with another character, you must make a casual reference to death, dying, the afterlife, or the End of All Things—no matter the subject at-hand."
+msgstr "Hereafter, during any intimate conversation with another character, you must make a casual reference to death, dying, the afterlife, or the End of All Things—no matter the subject at-hand."
+
+#: src/game_data.ts:34
+msgid "Hereafter, during cozy vignettes focused on you or Cozy Move scenes involving you, you must also narrate how dark entities subtly reveal themselves in the scene."
+msgstr "Hereafter, during cozy vignettes focused on you or Cozy Move scenes involving you, you must also narrate how dark entities subtly reveal themselves in the scene."
+
+#: src/game_data.ts:77
+msgid "Hippy Dippy"
+msgstr "Hippy Dippy"
+
+#: src/game_data.ts:14
+#: src/game_data.ts:15
+msgid "Increase an ability modifier by 1 (max +3)."
+msgstr "Increase an ability modifier by 1 (max +3)."
+
+#: src/game_data.ts:78
+msgid "Jackie O"
+msgstr "Jackie O"
+
+#: src/game_data.ts:93
+msgid "Knitting"
+msgstr "Knitting"
+
+#: src/components/character/MenuDialog.tsx:315
+msgid "Load from save file"
+msgstr "Load from save file"
+
+#: src/game_data.ts:79
+msgid "Martha's Vineyard"
+msgstr "Martha's Vineyard"
+
+#: src/components/character/MavenMoves.tsx:13
+msgid "Maven Moves"
+msgstr "Maven Moves"
+
+#: src/pages/CharacterSheet.tsx:67
+#: src/pages/CharacterSheet.tsx:76
+msgid "Menu"
+msgstr "Menu"
+
+#: src/components/character/Name.tsx:14
+msgid "Name"
+msgstr "Name"
+
+#: src/components/character/MenuDialog.tsx:327
+msgid "Odin's Blog"
+msgstr "Odin's Blog"
+
+#: src/game_data.ts:80
+msgid "Office Hours"
+msgstr "Office Hours"
+
+#: src/game_data.ts:94
+msgid "Painting"
+msgstr "Painting"
+
+#: src/game_data.ts:95
+msgid "Pottery"
+msgstr "Pottery"
+
+#: src/components/character/MenuDialog.tsx:239
+msgid "Queen SVG by <0>Darius Dan on svgrepo</0>."
+msgstr "Queen SVG by <0>Darius Dan on svgrepo</0>."
+
+#: src/game_data.ts:96
+msgid "Quilting"
+msgstr "Quilting"
+
+#: src/components/character/MenuDialog.tsx:190
+#: src/components/character/MenuDialog.tsx:322
+msgid "Reset Character"
+msgstr "Reset Character"
+
+#: src/game_data.ts:42
+msgid "Retire your character in a way that shows how they are lost to the Void."
+msgstr "Retire your character in a way that shows how they are lost to the Void."
+
+#: src/game_data.ts:97
+msgid "Scrapbooking"
+msgstr "Scrapbooking"
+
+#: src/components/character/MavenMoves.tsx:16
+msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
+msgstr "Select one Maven move at the start. No two Mavens can pick the same move at the start."
+
+#: src/components/character/MenuDialog.tsx:332
+msgid "Source Code"
+msgstr "Source Code"
+
+#: src/game_data.ts:81
+msgid "Speed Walkin'"
+msgstr "Speed Walkin'"
+
+#: src/components/character/Style.tsx:14
+msgid "Style"
+msgstr "Style"
+
+#: src/components/character/MenuDialog.tsx:341
+msgid "Support Me"
+msgstr "Support Me"
+
+#: src/components/character/MenuDialog.tsx:253
+msgid "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
+msgstr "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
+
+#: src/game_data.ts:36
+msgid "The Chariot."
+msgstr "The Chariot."
+
+#: src/components/character/EndOfSession.tsx:23
+msgid "The first is always marked. At the beginning of a session, mark two more (three total marked)."
+msgstr "The first is always marked. At the beginning of a session, mark two more (three total marked)."
+
+#: src/game_data.ts:38
+msgid "The Pallid Mask."
+msgstr "The Pallid Mask."
+
+#: src/game_data.ts:41
+msgid "The Pomegranate Kernel."
+msgstr "The Pomegranate Kernel."
+
+#: src/game_data.ts:42
+msgid "The Void."
+msgstr "The Void."
+
+#: src/game_data.ts:18
+msgid "Unmark all the items in your Cozy Little Place."
+msgstr "Unmark all the items in your Cozy Little Place."
+
+#: src/game_data.ts:82
+msgid "Up in Pumps"
+msgstr "Up in Pumps"
+
+#: src/components/character/CrownOfTheQueen.tsx:24
+msgid "When you put on this Crown, mark and narrate any you wish."
+msgstr "When you put on this Crown, mark and narrate any you wish."
+
+#: src/components/character/CrownOfTheVoid.tsx:31
+msgid "When you put on this Crown, mark the first empty box."
+msgstr "When you put on this Crown, mark the first empty box."
+
+#: src/components/character/XpTrack.tsx:11
+msgid "XP Track"
+msgstr "XP Track"
+
+#: src/game_data.ts:41
+msgid "You gain the condition 'Obsessed with the Void'. It can never be removed."
+msgstr "You gain the condition 'Obsessed with the Void'. It can never be removed."
+
+#: src/game_data.ts:36
+msgid "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
+msgstr "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."

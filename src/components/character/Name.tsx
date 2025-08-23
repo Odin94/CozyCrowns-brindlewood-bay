@@ -3,14 +3,23 @@ import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { sampleNames } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
+import { Trans, useLingui } from "@lingui/react/macro"
 
 const Name = () => {
     const { name, setName } = useCharacterStore()
+    const { i18n } = useLingui()
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-secondary">Name</Label>
+            <Label className="text-lg font-semibold text-secondary">
+                <Trans>Name</Trans>
+            </Label>
             <div className="flex gap-2 items-center">
-                <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Enter character name" className="flex-1" />
+                <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder={i18n._("Enter character name")}
+                    className="flex-1"
+                />
                 <DropdownMenu>
                     <DropdownMenuTrigger className="w-8 h-8 flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
                         ✨

@@ -2,6 +2,7 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { LineInput } from "@/components/ui/line-input"
 import Headline from "@/components/ui/headline"
 import { useCharacterStore } from "@/lib/character_store"
+import { Trans } from "@lingui/react/macro"
 
 const CozyLittlePlace = () => {
     const { cozyItems, setCozyItems } = useCharacterStore()
@@ -20,7 +21,9 @@ const CozyLittlePlace = () => {
     return (
         <div className="space-y-4">
             <div>
-                <Headline>A Cozy Little Place</Headline>
+                <Headline>
+                    <Trans>A Cozy Little Place</Trans>
+                </Headline>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

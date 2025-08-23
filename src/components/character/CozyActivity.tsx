@@ -3,17 +3,21 @@ import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { sampleActivities } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
+import { Trans, useLingui } from "@lingui/react/macro"
 
 const CozyActivity = () => {
     const { activity, setActivity } = useCharacterStore()
+    const { i18n } = useLingui()
     return (
         <div className="space-y-3">
-            <Label className="text-lg font-semibold text-secondary">Cozy Activity</Label>
+            <Label className="text-lg font-semibold text-secondary">
+                <Trans>Cozy Activity</Trans>
+            </Label>
             <div className="flex gap-2 items-center">
                 <Input
                     value={activity}
                     onChange={(e) => setActivity(e.target.value)}
-                    placeholder="Enter cozy activity"
+                    placeholder={i18n._("Enter cozy activity")}
                     className="flex-1"
                 />
                 <DropdownMenu>

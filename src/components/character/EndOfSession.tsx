@@ -4,6 +4,7 @@ import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
 import { endOfSessionQuestions } from "../../game_data"
 import { useCharacterStore } from "@/lib/character_store"
+import { Trans } from "@lingui/react/macro"
 
 const EndOfSession = () => {
     const { endOfSessionChecks, setEndOfSessionChecks } = useCharacterStore()
@@ -15,9 +16,11 @@ const EndOfSession = () => {
 
     return (
         <div className="space-y-4">
-            <Headline>End of Session</Headline>
+            <Headline>
+                <Trans>End of Session</Trans>
+            </Headline>
             <SubHeadline className="-mt-5 mb-2">
-                The first is always marked. At the beginning of a session, mark two more (three total marked).
+                <Trans>The first is always marked. At the beginning of a session, mark two more (three total marked).</Trans>
             </SubHeadline>
 
             <div className="space-y-3">

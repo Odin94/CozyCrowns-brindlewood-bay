@@ -3,6 +3,7 @@ import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
 import { advancementOptions } from "../../game_data"
 import { useCharacterStore } from "@/lib/character_store"
+import { Trans } from "@lingui/react/macro"
 
 const Advancements = () => {
     const { advancementChecks, setAdvancementChecks } = useCharacterStore()
@@ -14,7 +15,9 @@ const Advancements = () => {
 
     return (
         <div className="space-y-4">
-            <Headline>Advancements</Headline>
+            <Headline>
+                <Trans>Advancements</Trans>
+            </Headline>
             <div className="space-y-3">
                 {advancementOptions.map((option, index) => (
                     <div key={index} className="flex items-start space-x-3">

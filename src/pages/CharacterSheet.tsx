@@ -14,6 +14,7 @@ import Tentacles from "@/components/character/Tentacles"
 import XpTrack from "@/components/character/XpTrack"
 import { Button } from "@/components/ui/button"
 import { Dialog } from "@/components/ui/dialog"
+import { Trans } from "@lingui/react/macro"
 import { useState } from "react"
 
 const CharacterSheet = () => {
@@ -25,7 +26,7 @@ const CharacterSheet = () => {
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>
                     <div className="text-xs font-normal text-gray-300 font-sans -mt-4" style={{ marginLeft: "4.5rem" }}>
-                        by Odin
+                        <Trans>by Odin</Trans>
                     </div>
                 </div>
 
@@ -63,7 +64,7 @@ const CharacterSheet = () => {
                             onClick={() => setMenuOpen(true)}
                             className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
                         >
-                            Menu
+                            <Trans>Menu</Trans>
                         </Button>
                     </div>
                 </div>
@@ -72,7 +73,7 @@ const CharacterSheet = () => {
             {/* Menu Button - Mobile version */}
             <div className="lg:hidden flex justify-center mt-8">
                 <Button onClick={() => setMenuOpen(true)} className="bg-dark-secondary hover:bg-dark-foreground/90">
-                    Menu
+                    <Trans>Menu</Trans>
                 </Button>
             </div>
 

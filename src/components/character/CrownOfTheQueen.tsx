@@ -4,6 +4,7 @@ import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
 import { crownsOfTheQueen } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
+import { Trans } from "@lingui/react/macro"
 
 const CrownOfTheQueen = () => {
     const { crownChecks, setCrownChecks } = useCharacterStore()
@@ -16,8 +17,12 @@ const CrownOfTheQueen = () => {
     return (
         <div className="space-y-1">
             <div>
-                <Headline>Crown of the Queen</Headline>
-                <SubHeadline className="-mt-1 mb-2">When you put on this Crown, mark and narrate any you wish.</SubHeadline>
+                <Headline>
+                    <Trans>Crown of the Queen</Trans>
+                </Headline>
+                <SubHeadline className="-mt-1 mb-2">
+                    <Trans>When you put on this Crown, mark and narrate any you wish.</Trans>
+                </SubHeadline>
             </div>
             <div className="space-y-1">
                 {crownsOfTheQueen.map((crown, index) => (
