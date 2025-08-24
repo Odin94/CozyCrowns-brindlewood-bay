@@ -16,131 +16,113 @@ msgstr ""
 #. js-lingui-explicit-id
 #: src/components/character/Style.tsx:20
 msgid "Enter character style"
-msgstr ""
+msgstr "Trage den Stil deines Charakters ein"
 
 #. js-lingui-explicit-id
 #: src/components/character/Name.tsx:20
 msgid "Enter character name"
-msgstr ""
+msgstr "Trag den Namen deines Charakters ein"
 
 #. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:68
 msgid "PDF downloaded successfully!"
-msgstr ""
+msgstr "PDF erfoglreich heruntergeladen!"
 
 #. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:71
 msgid "Failed to download PDF. Please try again."
-msgstr ""
+msgstr "PDF herunterladen ist fehlgeschlaagen. Bitte versuche es erneut."
 
 #. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:130
 msgid "Character data loaded successfully!"
-msgstr ""
+msgstr "Charakter erfoglreich geladen!"
 
 #. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:133
 msgid "Invalid JSON file format."
-msgstr ""
+msgstr "Ungültiges JSON Datenformat."
 
 #. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:135
 msgid "Error loading character data. Please check the file format."
-msgstr ""
+msgstr "Fehler beim Laden der Charakterdaten. Bitte überprüfe das Datenformat."
 
 #. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:165
 msgid "Character reset successfully!"
-msgstr ""
+msgstr "Charakter erfolgreich zurückgesetzt!"
 
 #. js-lingui-explicit-id
 #: src/components/character/MavenMoves.tsx:22
 msgid "Enter your Maven moves..."
-msgstr ""
-
-#. js-lingui-explicit-id
-#: src/components/character/Conditions.tsx:20
-msgid "Enter any conditions or notes..."
-msgstr ""
+msgstr "Trag deine Kennerinen-Spielzüge ein..."
 
 #. js-lingui-explicit-id
 #: src/components/character/CozyActivity.tsx:20
 msgid "Enter cozy activity"
-msgstr ""
+msgstr "Wähle eine gemütliche Aktivität"
 
-#: src/components/character/CrownOfTheVoid.tsx:48
-#: src/components/character/CrownOfTheVoid.tsx:54
-#: src/components/character/CrownOfTheVoid.tsx:71
-#~ msgid "{0}"
-#~ msgstr ""
-
-#: src/components/character/CrownOfTheQueen.tsx:39
-#~ msgid "{crown}"
-#~ msgstr ""
-
-#: src/components/character/Advancements.tsx:34
-#~ msgid "{option}"
-#~ msgstr ""
-
-#: src/components/character/EndOfSession.tsx:38
-#~ msgid "{question}"
-#~ msgstr ""
+#. js-lingui-explicit-id
+#: src/components/character/Conditions.tsx:20
+msgid "Enter any conditions or notes..."
+msgstr "Trag deine Zustände ein..."
 
 #: src/components/character/CozyLittlePlace.tsx:25
 msgid "A Cozy Little Place"
-msgstr ""
+msgstr "Mein Gemütliches Zuhause"
 
 #: src/game_data.ts:22
 msgid "A flashback of your fondest memory of your late partner."
-msgstr ""
+msgstr "Erzähle eine Rückblende, in der Du Deine zärtlichste Erinnerung an Deine*n verstorbene*n Partner*in zeigst."
 
 #: src/game_data.ts:25
 msgid "A flashback of your fondest memory with one of your children."
-msgstr ""
+msgstr "Erzähle eine Rückblende, in der Du Deine zärtlichste Erinnerung an eins Deiner Kinder zeigst."
 
 #: src/game_data.ts:24
 msgid "A flashback showing how you were an imperfect mother."
-msgstr ""
+msgstr "Erzähle eine Rückblende, in der Du zeigst, wie Du Dich als Mutter schlecht verhalten hast."
 
 #: src/game_data.ts:23
 msgid "A flashback showing how you were an imperfect sister or daughter."
-msgstr ""
+msgstr "Erzähle eine Rückblende, in der Du zeigst, wie Du Dich als Schwester oder Tochter schlecht verhalten hast."
 
 #: src/game_data.ts:27
 msgid "A scene in the present day showing a burgeoning romance."
-msgstr ""
+msgstr "Erzähle eine Szene in der Gegenwart, in der Du eine aufkeimende Romanze zeigst."
 
 #: src/game_data.ts:26
 msgid "A scene in the present day showing a private side of you very few get to see."
-msgstr ""
+msgstr "Erzähle eine Szene in der Gegenwart, in der Du eine persönliche Seite zeigst, die nur wenige zu sehen bekommen."
 
 #: src/game_data.ts:28
 msgid "A scene in the present day showing how you satisfy your physical desires."
-msgstr ""
+msgstr "Erzähle eine Szene in der Gegenwart, in der Du zeigst, wie Du Dein körperliches Verlangen befriedigst."
 
 #: src/game_data.ts:33
 msgid "A Shadow in the Garden."
-msgstr ""
+msgstr "Ein Schatten im Garten."
 
 #: src/components/character/Abilities.tsx:18
 msgid "Abilities"
-msgstr ""
+msgstr "Attribute"
 
 #: src/components/character/Advancements.tsx:19
 msgid "Advancements"
-msgstr ""
+msgstr "Aufstieg"
 
 #: src/game_data.ts:72
 msgid "Alexis Carrington Colby"
-msgstr ""
+msgstr "Alexis Carrington Colby"
 
 #: src/game_data.ts:73
 msgid "All the Cardigans"
-msgstr ""
+msgstr "Alter Vamp"
 
 #: src/game_data.ts:86
 msgid "Antiques & Furniture"
-msgstr ""
+msgstr "Antiquitäten"
 
 #: src/components/character/MenuDialog.tsx:185
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
@@ -156,15 +138,15 @@ msgstr "Zurück"
 
 #: src/game_data.ts:87
 msgid "Baking"
-msgstr ""
+msgstr "Backen"
 
 #: src/game_data.ts:88
 msgid "Birding"
-msgstr ""
+msgstr "Vogelbeobachtung"
 
 #: src/game_data.ts:74
 msgid "Blouse Barn"
-msgstr ""
+msgstr "College-Professorin"
 
 #: src/components/character/MenuDialog.tsx:217
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
@@ -180,12 +162,12 @@ msgstr "Abbrechen"
 
 #: src/game_data.ts:89
 msgid "Charity Events"
-msgstr ""
+msgstr "Wohltätigkeitsveranstaltungen"
 
 #: src/game_data.ts:16
 #: src/game_data.ts:17
 msgid "Choose an additional Maven move."
-msgstr ""
+msgstr "Wähle einen zusätzlichen Kennerinnen-Spielzug aus."
 
 #: src/components/ui/dialog.tsx:64
 msgid "Close"
@@ -193,7 +175,11 @@ msgstr ""
 
 #: src/game_data.ts:90
 msgid "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
-msgstr ""
+msgstr "Sammeln"
+
+#: src/lib/character_store.ts:9
+msgid "Composure"
+msgstr "Gemütsruhe"
 
 #: src/components/character/Conditions.tsx:13
 msgid "Conditions"
@@ -205,7 +191,7 @@ msgstr "Zurücksetzen bestätigen"
 
 #: src/game_data.ts:91
 msgid "Cooking"
-msgstr ""
+msgstr "Kochen"
 
 #: src/components/character/CozyActivity.tsx:14
 msgid "Cozy Activity"
@@ -234,35 +220,35 @@ msgstr ""
 
 #: src/game_data.ts:4
 msgid "Did the Murder Mavens solve a mystery?"
-msgstr ""
+msgstr "Haben die Krimi-Kennerinnen einen Fall gelöst?"
 
 #: src/game_data.ts:8
 msgid "Did you behave like a woman half your age?"
-msgstr ""
+msgstr "Hast Du Dich benommen, als wärst Du halb so alt?"
 
 #: src/game_data.ts:9
 msgid "Did you dote on someone?"
-msgstr ""
+msgstr "Hast Du jemanden verwöhnt?"
 
 #: src/game_data.ts:5
 msgid "Did you secretly undermine the authority of a local official?"
-msgstr ""
+msgstr "Hast Du insgeheim die Autorität einer Amtsperson untergraben?"
 
 #: src/game_data.ts:7
 msgid "Did you share a memory of a late family member?"
-msgstr ""
+msgstr "Hast Du das Andenken an ein verstorbenes Familienmitglied geteilt?"
 
 #: src/game_data.ts:6
 msgid "Did you share your wisdom with a young person?"
-msgstr ""
+msgstr "Hast Du Deine Erfahrungen mit einer jungen Person geteilt?"
 
 #: src/game_data.ts:10
 msgid "Did you show someone that you've \"still got it?\""
-msgstr ""
+msgstr "Hast Du jemandem gezeigt, dass Du es immer noch draufhast?"
 
 #: src/game_data.ts:75
 msgid "Dorothy Zbornak"
-msgstr ""
+msgstr "Dorothy Zbornak"
 
 #: src/components/character/MenuDialog.tsx:307
 msgid "Download PDF"
@@ -282,7 +268,7 @@ msgstr ""
 
 #: src/game_data.ts:92
 msgid "Gardening"
-msgstr ""
+msgstr "Gärtnern"
 
 #: src/game_data.ts:76
 msgid "Goin' Fishin'"
@@ -290,28 +276,28 @@ msgstr ""
 
 #: src/game_data.ts:39
 msgid "Hereafter, during any intimate conversation with another character, you must make a casual reference to death, dying, the afterlife, or the End of All Things—no matter the subject at-hand."
-msgstr ""
+msgstr "In allen folgenden vertraulichen Unterhaltungen mit einem anderen Charakter, musst Du wie beiläufig den Tod erwähnen, oder das Sterben, das Jenseits oder das Ende aller Dinge – ganz gleich, was das eigentliche Gesprächsthema Eurer Unterhaltung ist."
 
 #: src/game_data.ts:34
 msgid "Hereafter, during cozy vignettes focused on you or Cozy Move scenes involving you, you must also narrate how dark entities subtly reveal themselves in the scene."
-msgstr ""
+msgstr "In allen folgenden Gemütlichen Vignetten, die aus dem Gemütlichen Spielzug hervorgehen, musst Du auch erzählen, wie sich dunkle Wesenheiten auf subtile Weise in der Szene offenbaren."
 
 #: src/game_data.ts:77
 msgid "Hippy Dippy"
-msgstr ""
+msgstr "Hippie-Oma"
 
 #: src/game_data.ts:14
 #: src/game_data.ts:15
 msgid "Increase an ability modifier by 1 (max +3)."
-msgstr ""
+msgstr "Steigere ein Attribut um 1 (bis max. +3)."
 
 #: src/game_data.ts:78
 msgid "Jackie O"
-msgstr ""
+msgstr "Jackie O"
 
 #: src/game_data.ts:93
 msgid "Knitting"
-msgstr ""
+msgstr "Stricken"
 
 #: src/components/character/MenuDialog.tsx:315
 msgid "Load from save file"
@@ -319,7 +305,7 @@ msgstr "Von Speicherdatei laden"
 
 #: src/game_data.ts:79
 msgid "Martha's Vineyard"
-msgstr ""
+msgstr "Nordic Walking"
 
 #: src/components/character/MavenMoves.tsx:13
 msgid "Maven Moves"
@@ -340,15 +326,19 @@ msgstr "Odins Blog"
 
 #: src/game_data.ts:80
 msgid "Office Hours"
-msgstr ""
+msgstr "Overall und Schraubenschlüssel"
 
 #: src/game_data.ts:94
 msgid "Painting"
-msgstr ""
+msgstr "Malen"
 
 #: src/game_data.ts:95
 msgid "Pottery"
-msgstr ""
+msgstr "Töpfern"
+
+#: src/lib/character_store.ts:11
+msgid "Presence"
+msgstr "Ausstrahlung"
 
 #: src/components/character/MenuDialog.tsx:239
 msgid "Queen SVG by <0>Darius Dan on svgrepo</0>."
@@ -358,6 +348,10 @@ msgstr "Queen SVG von <0>Darius Dan auf svgrepo</0>."
 msgid "Quilting"
 msgstr ""
 
+#: src/lib/character_store.ts:10
+msgid "Reason"
+msgstr "Verstand"
+
 #: src/components/character/MenuDialog.tsx:190
 #: src/components/character/MenuDialog.tsx:322
 msgid "Reset Character"
@@ -365,15 +359,19 @@ msgstr "Charakter zurücksetzen"
 
 #: src/game_data.ts:42
 msgid "Retire your character in a way that shows how they are lost to the Void."
-msgstr ""
+msgstr "Schicke Deine Krimi-Kennerin auf eine Weise in den Ruhestand, die zeigt, dass sie an den Abgrund verloren ist."
 
 #: src/game_data.ts:97
 msgid "Scrapbooking"
-msgstr ""
+msgstr "Scrapbooking"
 
 #: src/components/character/MavenMoves.tsx:16
 msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 msgstr ""
+
+#: src/lib/character_store.ts:12
+msgid "Sensitivity"
+msgstr "Gespür"
 
 #: src/components/character/MenuDialog.tsx:332
 msgid "Source Code"
@@ -381,7 +379,7 @@ msgstr "Quellcode"
 
 #: src/game_data.ts:81
 msgid "Speed Walkin'"
-msgstr ""
+msgstr "Steppjacke und Timberlands"
 
 #: src/components/character/Style.tsx:14
 msgid "Style"
@@ -397,7 +395,7 @@ msgstr "Tentakel-Icon von <0>Teewara soontorn auf Noun Project</0>."
 
 #: src/game_data.ts:36
 msgid "The Chariot."
-msgstr ""
+msgstr "Der Streitwagen."
 
 #: src/components/character/EndOfSession.tsx:23
 msgid "The first is always marked. At the beginning of a session, mark two more (three total marked)."
@@ -405,23 +403,27 @@ msgstr ""
 
 #: src/game_data.ts:38
 msgid "The Pallid Mask."
-msgstr ""
+msgstr "Die fahle Maske."
 
 #: src/game_data.ts:41
 msgid "The Pomegranate Kernel."
-msgstr ""
+msgstr "Der Granatapfelkern."
 
 #: src/game_data.ts:42
 msgid "The Void."
-msgstr ""
+msgstr "Der Abgrund."
 
 #: src/game_data.ts:18
 msgid "Unmark all the items in your Cozy Little Place."
-msgstr ""
+msgstr "Entferne die Markierungen aller Gegenstände in Deinem Gemütlichen Zuhause."
 
 #: src/game_data.ts:82
 msgid "Up in Pumps"
-msgstr ""
+msgstr "Strickjacke und Stulpen"
+
+#: src/lib/character_store.ts:8
+msgid "Vitality"
+msgstr "Vitalität"
 
 #: src/components/character/CrownOfTheQueen.tsx:24
 msgid "When you put on this Crown, mark and narrate any you wish."
@@ -437,8 +439,8 @@ msgstr ""
 
 #: src/game_data.ts:41
 msgid "You gain the condition 'Obsessed with the Void'. It can never be removed."
-msgstr ""
+msgstr "Du erhältst den Zustand „Besessen vom Abgrund\". Dieser Zustand kann nicht entfernt werden."
 
 #: src/game_data.ts:36
 msgid "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
-msgstr ""
+msgstr "Dein Verstand wird um 1 verringert. Dein Gespür wird um 1 erhöht."

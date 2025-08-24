@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store"
 import { downloadPdf } from "@/lib/pdf_generator"
+import { loadTranslations } from "@/lib/utils"
 import { CharacterDataSchema } from "@/types/characterSchema"
 import { Trans, useLingui } from "@lingui/react/macro"
 import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
@@ -24,13 +25,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const [showCredits, setShowCredits] = useState(false)
 
     const handleLanguageChange = async (locale: string) => {
-        if (locale === "en") {
-            const { messages } = await import("@/locales/en/messages.ts")
-            i18n.load(locale, messages)
-        } else if (locale === "de") {
-            const { messages } = await import("@/locales/de/messages.ts")
-            i18n.load(locale, messages)
-        }
+        await loadTranslations(locale)
         await i18n.activate(locale)
     }
 

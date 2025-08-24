@@ -2,13 +2,14 @@ import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Ability, CharacterData, CozyItem } from "@/types/characterSchema"
 import { advancementOptions, crownsOfTheQueen, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
+import { t } from "@lingui/core/macro"
 
 export const defaultAbilities: Ability[] = [
-    { name: "Vitality", value: 0 },
-    { name: "Composure", value: 1 },
-    { name: "Reason", value: 1 },
-    { name: "Presence", value: 0 },
-    { name: "Sensitivity", value: -1 },
+    { name: t`Vitality`, value: 0 },
+    { name: t`Composure`, value: 1 },
+    { name: t`Reason`, value: 1 },
+    { name: t`Presence`, value: 0 },
+    { name: t`Sensitivity`, value: -1 },
 ]
 
 export const getDefaultAbilities = (): Ability[] => {

@@ -13,6 +13,17 @@ You can check it out here: https://cozycrowns.odin-matthias.de
 * CozyCrowns uses fonts from [google fonts](https://fonts.google.com) that were tranformed into woff2 for effiency with [ttf2woff2](https://www.npmjs.com/package/ttf2woff2)
 
 
+## Translations
+Translations are managed with [lingui](https://lingui.dev). 
+
+To translate a new text:
+* Wrap it in either the `<Trans>` macro component or use the `t` macro for text outside of components
+* Run `npm run extract` to add new translation keys to all `messages.po` files under `src/locales`
+* Update the translations in each `messages.po`. The vite plugin will automatically load them, but you can also load them manually during build time with `npm run compile`
+
+To add a new language:
+* Add the new locale in `lingui.config.js` locales
+
 ## Analytics
 * CozyCrowns uses [posthog](https://posthog.com) for analytics
 * Create a `.env` file based on `.env.sample` to enable analytics with your API key

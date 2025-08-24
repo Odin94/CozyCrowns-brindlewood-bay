@@ -59,32 +59,14 @@ msgid "Enter your Maven moves..."
 msgstr "Enter your Maven moves..."
 
 #. js-lingui-explicit-id
-#: src/components/character/Conditions.tsx:20
-msgid "Enter any conditions or notes..."
-msgstr "Enter any conditions or notes..."
-
-#. js-lingui-explicit-id
 #: src/components/character/CozyActivity.tsx:20
 msgid "Enter cozy activity"
 msgstr "Enter cozy activity"
 
-#: src/components/character/CrownOfTheVoid.tsx:48
-#: src/components/character/CrownOfTheVoid.tsx:54
-#: src/components/character/CrownOfTheVoid.tsx:71
-#~ msgid "{0}"
-#~ msgstr "{0}"
-
-#: src/components/character/CrownOfTheQueen.tsx:39
-#~ msgid "{crown}"
-#~ msgstr "{crown}"
-
-#: src/components/character/Advancements.tsx:34
-#~ msgid "{option}"
-#~ msgstr "{option}"
-
-#: src/components/character/EndOfSession.tsx:38
-#~ msgid "{question}"
-#~ msgstr "{question}"
+#. js-lingui-explicit-id
+#: src/components/character/Conditions.tsx:20
+msgid "Enter any conditions or notes..."
+msgstr "Enter any conditions or notes..."
 
 #: src/components/character/CozyLittlePlace.tsx:25
 msgid "A Cozy Little Place"
@@ -194,6 +176,10 @@ msgstr "Close"
 #: src/game_data.ts:90
 msgid "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
 msgstr "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
+
+#: src/lib/character_store.ts:9
+msgid "Composure"
+msgstr "Composure"
 
 #: src/components/character/Conditions.tsx:13
 msgid "Conditions"
@@ -350,6 +336,10 @@ msgstr "Painting"
 msgid "Pottery"
 msgstr "Pottery"
 
+#: src/lib/character_store.ts:11
+msgid "Presence"
+msgstr "Presence"
+
 #: src/components/character/MenuDialog.tsx:239
 msgid "Queen SVG by <0>Darius Dan on svgrepo</0>."
 msgstr "Queen SVG by <0>Darius Dan on svgrepo</0>."
@@ -357,6 +347,10 @@ msgstr "Queen SVG by <0>Darius Dan on svgrepo</0>."
 #: src/game_data.ts:96
 msgid "Quilting"
 msgstr "Quilting"
+
+#: src/lib/character_store.ts:10
+msgid "Reason"
+msgstr "Reason"
 
 #: src/components/character/MenuDialog.tsx:190
 #: src/components/character/MenuDialog.tsx:322
@@ -374,6 +368,10 @@ msgstr "Scrapbooking"
 #: src/components/character/MavenMoves.tsx:16
 msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 msgstr "Select one Maven move at the start. No two Mavens can pick the same move at the start."
+
+#: src/lib/character_store.ts:12
+msgid "Sensitivity"
+msgstr "Sensitivity"
 
 #: src/components/character/MenuDialog.tsx:332
 msgid "Source Code"
@@ -422,6 +420,10 @@ msgstr "Unmark all the items in your Cozy Little Place."
 #: src/game_data.ts:82
 msgid "Up in Pumps"
 msgstr "Up in Pumps"
+
+#: src/lib/character_store.ts:8
+msgid "Vitality"
+msgstr "Vitality"
 
 #: src/components/character/CrownOfTheQueen.tsx:24
 msgid "When you put on this Crown, mark and narrate any you wish."
