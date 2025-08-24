@@ -24,39 +24,39 @@ msgid "Enter character name"
 msgstr "Trag den Namen deines Charakters ein"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:68
+#: src/components/character/MavenMoves.tsx:22
+msgid "Enter your Maven moves..."
+msgstr "Trag deine Kennerinen-Spielzüge ein..."
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:63
 msgid "PDF downloaded successfully!"
 msgstr "PDF erfoglreich heruntergeladen!"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:71
+#: src/components/character/MenuDialog.tsx:66
 msgid "Failed to download PDF. Please try again."
 msgstr "PDF herunterladen ist fehlgeschlaagen. Bitte versuche es erneut."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:130
+#: src/components/character/MenuDialog.tsx:125
 msgid "Character data loaded successfully!"
 msgstr "Charakter erfoglreich geladen!"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:133
+#: src/components/character/MenuDialog.tsx:128
 msgid "Invalid JSON file format."
 msgstr "Ungültiges JSON Datenformat."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:135
+#: src/components/character/MenuDialog.tsx:130
 msgid "Error loading character data. Please check the file format."
 msgstr "Fehler beim Laden der Charakterdaten. Bitte überprüfe das Datenformat."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:165
+#: src/components/character/MenuDialog.tsx:160
 msgid "Character reset successfully!"
 msgstr "Charakter erfolgreich zurückgesetzt!"
-
-#. js-lingui-explicit-id
-#: src/components/character/MavenMoves.tsx:22
-msgid "Enter your Maven moves..."
-msgstr "Trag deine Kennerinen-Spielzüge ein..."
 
 #. js-lingui-explicit-id
 #: src/components/character/CozyActivity.tsx:20
@@ -124,15 +124,15 @@ msgstr "Alter Vamp"
 msgid "Antiques & Furniture"
 msgstr "Antiquitäten"
 
-#: src/components/character/MenuDialog.tsx:185
+#: src/components/character/MenuDialog.tsx:180
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Bist du sicher, dass du deinen Charakter zurücksetzen möchtest? Dies wird alle Daten löschen und kann nicht rückgängig gemacht werden."
 
-#: src/components/character/MenuDialog.tsx:235
+#: src/components/character/MenuDialog.tsx:230
 msgid "Assets"
 msgstr "Assets"
 
-#: src/components/character/MenuDialog.tsx:273
+#: src/components/character/MenuDialog.tsx:268
 msgid "Back"
 msgstr "Zurück"
 
@@ -148,15 +148,15 @@ msgstr "Vogelbeobachtung"
 msgid "Blouse Barn"
 msgstr "College-Professorin"
 
-#: src/components/character/MenuDialog.tsx:217
+#: src/components/character/MenuDialog.tsx:212
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay wird veröffentlicht von <0>The Gauntlet</0>."
 
 #: src/pages/CharacterSheet.tsx:29
 msgid "by Odin"
-msgstr ""
+msgstr "von Odin"
 
-#: src/components/character/MenuDialog.tsx:196
+#: src/components/character/MenuDialog.tsx:191
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -171,7 +171,7 @@ msgstr "Wähle einen zusätzlichen Kennerinnen-Spielzug aus."
 
 #: src/components/ui/dialog.tsx:64
 msgid "Close"
-msgstr ""
+msgstr "Schliessen"
 
 #: src/game_data.ts:90
 msgid "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
@@ -183,9 +183,9 @@ msgstr "Gemütsruhe"
 
 #: src/components/character/Conditions.tsx:13
 msgid "Conditions"
-msgstr ""
+msgstr "Zustände"
 
-#: src/components/character/MenuDialog.tsx:180
+#: src/components/character/MenuDialog.tsx:175
 msgid "Confirm Reset"
 msgstr "Zurücksetzen bestätigen"
 
@@ -195,28 +195,28 @@ msgstr "Kochen"
 
 #: src/components/character/CozyActivity.tsx:14
 msgid "Cozy Activity"
-msgstr ""
+msgstr "Gemütliche Aktivität"
 
-#: src/components/character/MenuDialog.tsx:231
+#: src/components/character/MenuDialog.tsx:226
 msgid "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
 msgstr "CozyCrowns ist eine unabhängige Produktion von Odin und ist nicht mit The Gauntlet verbunden."
 
-#: src/components/character/MenuDialog.tsx:212
-#: src/components/character/MenuDialog.tsx:336
+#: src/components/character/MenuDialog.tsx:207
+#: src/components/character/MenuDialog.tsx:331
 msgid "Credits"
 msgstr "Credits"
 
 #: src/components/character/CrownOfTheQueen.tsx:21
 msgid "Crown of the Queen"
-msgstr ""
+msgstr "Die Krone der Königin"
 
 #: src/components/character/CrownOfTheVoid.tsx:28
 msgid "Crown of the Void"
-msgstr ""
+msgstr "Die Krone des Abgrunds"
 
-#: src/components/character/MenuDialog.tsx:299
+#: src/components/character/MenuDialog.tsx:294
 msgid "Deutsch"
-msgstr ""
+msgstr "Deutsch"
 
 #: src/game_data.ts:4
 msgid "Did the Murder Mavens solve a mystery?"
@@ -250,21 +250,21 @@ msgstr "Hast Du jemandem gezeigt, dass Du es immer noch draufhast?"
 msgid "Dorothy Zbornak"
 msgstr "Dorothy Zbornak"
 
-#: src/components/character/MenuDialog.tsx:307
+#: src/components/character/MenuDialog.tsx:302
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: src/components/character/MenuDialog.tsx:311
+#: src/components/character/MenuDialog.tsx:306
 msgid "Download save file"
 msgstr "Speicherdatei herunterladen"
 
 #: src/components/character/EndOfSession.tsx:20
 msgid "End of Session"
-msgstr ""
+msgstr "Ende der Sitzung"
 
-#: src/components/character/MenuDialog.tsx:296
+#: src/components/character/MenuDialog.tsx:291
 msgid "English"
-msgstr ""
+msgstr "English"
 
 #: src/game_data.ts:92
 msgid "Gardening"
@@ -272,7 +272,7 @@ msgstr "Gärtnern"
 
 #: src/game_data.ts:76
 msgid "Goin' Fishin'"
-msgstr ""
+msgstr "Steppjacke und Timberlands"
 
 #: src/game_data.ts:39
 msgid "Hereafter, during any intimate conversation with another character, you must make a casual reference to death, dying, the afterlife, or the End of All Things—no matter the subject at-hand."
@@ -299,7 +299,7 @@ msgstr "Jackie O"
 msgid "Knitting"
 msgstr "Stricken"
 
-#: src/components/character/MenuDialog.tsx:315
+#: src/components/character/MenuDialog.tsx:310
 msgid "Load from save file"
 msgstr "Von Speicherdatei laden"
 
@@ -309,18 +309,18 @@ msgstr "Nordic Walking"
 
 #: src/components/character/MavenMoves.tsx:13
 msgid "Maven Moves"
-msgstr ""
+msgstr "Kennerinnen-Spielzüge"
 
 #: src/pages/CharacterSheet.tsx:67
 #: src/pages/CharacterSheet.tsx:76
 msgid "Menu"
-msgstr ""
+msgstr "Menü"
 
 #: src/components/character/Name.tsx:14
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
-#: src/components/character/MenuDialog.tsx:327
+#: src/components/character/MenuDialog.tsx:322
 msgid "Odin's Blog"
 msgstr "Odins Blog"
 
@@ -340,20 +340,20 @@ msgstr "Töpfern"
 msgid "Presence"
 msgstr "Ausstrahlung"
 
-#: src/components/character/MenuDialog.tsx:239
+#: src/components/character/MenuDialog.tsx:234
 msgid "Queen SVG by <0>Darius Dan on svgrepo</0>."
 msgstr "Queen SVG von <0>Darius Dan auf svgrepo</0>."
 
 #: src/game_data.ts:96
 msgid "Quilting"
-msgstr ""
+msgstr "Sticken"
 
 #: src/lib/character_store.ts:10
 msgid "Reason"
 msgstr "Verstand"
 
-#: src/components/character/MenuDialog.tsx:190
-#: src/components/character/MenuDialog.tsx:322
+#: src/components/character/MenuDialog.tsx:185
+#: src/components/character/MenuDialog.tsx:317
 msgid "Reset Character"
 msgstr "Charakter zurücksetzen"
 
@@ -367,29 +367,29 @@ msgstr "Scrapbooking"
 
 #: src/components/character/MavenMoves.tsx:16
 msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
-msgstr ""
+msgstr "Wähle zu Beginn einen Spielzug. Zu Beginn darf kein Spielzug von mehr als einem Charakter gewählt werden."
 
 #: src/lib/character_store.ts:12
 msgid "Sensitivity"
 msgstr "Gespür"
 
-#: src/components/character/MenuDialog.tsx:332
+#: src/components/character/MenuDialog.tsx:327
 msgid "Source Code"
 msgstr "Quellcode"
 
 #: src/game_data.ts:81
 msgid "Speed Walkin'"
-msgstr "Steppjacke und Timberlands"
+msgstr "Nordic Walking"
 
 #: src/components/character/Style.tsx:14
 msgid "Style"
-msgstr ""
+msgstr "Stil"
 
-#: src/components/character/MenuDialog.tsx:341
+#: src/components/character/MenuDialog.tsx:336
 msgid "Support Me"
 msgstr "Unterstütze mich"
 
-#: src/components/character/MenuDialog.tsx:253
+#: src/components/character/MenuDialog.tsx:248
 msgid "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 msgstr "Tentakel-Icon von <0>Teewara soontorn auf Noun Project</0>."
 
@@ -399,7 +399,7 @@ msgstr "Der Streitwagen."
 
 #: src/components/character/EndOfSession.tsx:23
 msgid "The first is always marked. At the beginning of a session, mark two more (three total marked)."
-msgstr ""
+msgstr "Das erste ist immer angekreuzt. Kreuze beim Sitzungsbeginn zwei weitere an (3 insgesamt angekreuzt)."
 
 #: src/game_data.ts:38
 msgid "The Pallid Mask."
@@ -427,15 +427,15 @@ msgstr "Vitalität"
 
 #: src/components/character/CrownOfTheQueen.tsx:24
 msgid "When you put on this Crown, mark and narrate any you wish."
-msgstr ""
+msgstr "Wenn Du diese Krone aufsetzt, kreuze ein beliebiges Kästchen an."
 
 #: src/components/character/CrownOfTheVoid.tsx:31
 msgid "When you put on this Crown, mark the first empty box."
-msgstr ""
+msgstr "Wenn Du diese Krone aufsetzt, kreuze das erste freie Kästchen an."
 
 #: src/components/character/XpTrack.tsx:11
 msgid "XP Track"
-msgstr ""
+msgstr "EP-Leiste"
 
 #: src/game_data.ts:41
 msgid "You gain the condition 'Obsessed with the Void'. It can never be removed."

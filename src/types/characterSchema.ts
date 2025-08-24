@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
+import { getAdvancementOptions, getCrownOfTheVoid, getEndOfSessionQuestions } from "@/game_data"
 import { getDefaultAbilities } from "@/lib/character_store"
 
 export const AbilitySchema = z.object({
@@ -22,20 +22,20 @@ export const CharacterDataSchema = z.object({
     endOfSessionChecks: z
         .array(z.boolean())
         .optional()
-        .default(endOfSessionQuestions.map(() => false)),
+        .default(getEndOfSessionQuestions().map(() => false)),
     advancementChecks: z
         .array(z.boolean())
         .optional()
-        .default(advancementOptions.map(() => false)),
+        .default(getAdvancementOptions().map(() => false)),
     mavenMoves: z.string().optional().default(""),
     crownChecks: z
         .array(z.boolean())
         .optional()
-        .default(crownOfTheVoid.map(() => false)),
+        .default(getCrownOfTheVoid().map(() => false)),
     voidChecks: z
         .array(z.boolean())
         .optional()
-        .default(crownOfTheVoid.map(() => false)),
+        .default(getCrownOfTheVoid().map(() => false)),
     cozyItems: z.array(CozyItemSchema).optional().default([]),
 })
 

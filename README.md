@@ -19,10 +19,14 @@ Translations are managed with [lingui](https://lingui.dev).
 To translate a new text:
 * Wrap it in either the `<Trans>` macro component or use the `t` macro for text outside of components
 * Run `npm run extract` to add new translation keys to all `messages.po` files under `src/locales`
-* Update the translations in each `messages.po`. The vite plugin will automatically load them, but you can also load them manually during build time with `npm run compile`
+* Update the translations in each `messages.po`
+* Run `npm run compile` to update the `message.ts` files with latest translations
 
 To add a new language:
 * Add the new locale in `lingui.config.js` locales
+* Run `npm run extract` to create `src/locales/{your-locale}/messages.po`
+* Fill your translations into that file & run `npm run compile`
+* Add your new locale to `loadTranslations` in `src/lib/utils.ts`
 
 ## Analytics
 * CozyCrowns uses [posthog](https://posthog.com) for analytics

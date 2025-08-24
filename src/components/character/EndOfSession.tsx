@@ -1,8 +1,8 @@
 import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
+import { Label } from "@/components/ui/label"
 import SubHeadline from "@/components/ui/sub-headline"
-import { endOfSessionQuestions } from "../../game_data"
+import { getEndOfSessionQuestions } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
 import { Trans } from "@lingui/react/macro"
 
@@ -24,7 +24,7 @@ const EndOfSession = () => {
             </SubHeadline>
 
             <div className="space-y-3">
-                {endOfSessionQuestions.map((question, index) => (
+                {getEndOfSessionQuestions().map((question, index) => (
                     <div key={index} className="flex items-start space-x-3">
                         <Checkbox
                             id={`end-session-${index}`}

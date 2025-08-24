@@ -4,11 +4,14 @@ import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import "./index.css"
 import { loadTranslations } from "./lib/utils.ts"
+import { useSettingsStore } from "./lib/settings_store.ts"
 
-// Initialize i18n before importing any modules that use t macros
 const initializeApp = async () => {
-    await loadTranslations("en")
-    i18n.activate("en")
+    // Need to use `getState()` here because we're outside a react component
+    const storedLocale = useSettingsStore.getState().locale
+
+    await loadTranslations(storedLocale)
+    i18n.activate(storedLocale)
 
     // Only import App after i18n is initialized
     const { default: App } = await import("./App.tsx")

@@ -24,39 +24,39 @@ msgid "Enter character name"
 msgstr "Enter character name"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:68
+#: src/components/character/MavenMoves.tsx:22
+msgid "Enter your Maven moves..."
+msgstr "Enter your Maven moves..."
+
+#. js-lingui-explicit-id
+#: src/components/character/MenuDialog.tsx:63
 msgid "PDF downloaded successfully!"
 msgstr "PDF downloaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:71
+#: src/components/character/MenuDialog.tsx:66
 msgid "Failed to download PDF. Please try again."
 msgstr "Failed to download PDF. Please try again."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:130
+#: src/components/character/MenuDialog.tsx:125
 msgid "Character data loaded successfully!"
 msgstr "Character data loaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:133
+#: src/components/character/MenuDialog.tsx:128
 msgid "Invalid JSON file format."
 msgstr "Invalid JSON file format."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:135
+#: src/components/character/MenuDialog.tsx:130
 msgid "Error loading character data. Please check the file format."
 msgstr "Error loading character data. Please check the file format."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:165
+#: src/components/character/MenuDialog.tsx:160
 msgid "Character reset successfully!"
 msgstr "Character reset successfully!"
-
-#. js-lingui-explicit-id
-#: src/components/character/MavenMoves.tsx:22
-msgid "Enter your Maven moves..."
-msgstr "Enter your Maven moves..."
 
 #. js-lingui-explicit-id
 #: src/components/character/CozyActivity.tsx:20
@@ -124,15 +124,15 @@ msgstr "All the Cardigans"
 msgid "Antiques & Furniture"
 msgstr "Antiques & Furniture"
 
-#: src/components/character/MenuDialog.tsx:185
+#: src/components/character/MenuDialog.tsx:180
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 
-#: src/components/character/MenuDialog.tsx:235
+#: src/components/character/MenuDialog.tsx:230
 msgid "Assets"
 msgstr "Assets"
 
-#: src/components/character/MenuDialog.tsx:273
+#: src/components/character/MenuDialog.tsx:268
 msgid "Back"
 msgstr "Back"
 
@@ -148,7 +148,7 @@ msgstr "Birding"
 msgid "Blouse Barn"
 msgstr "Blouse Barn"
 
-#: src/components/character/MenuDialog.tsx:217
+#: src/components/character/MenuDialog.tsx:212
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay is published by <0>The Gauntlet</0>."
 
@@ -156,7 +156,7 @@ msgstr "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgid "by Odin"
 msgstr "by Odin"
 
-#: src/components/character/MenuDialog.tsx:196
+#: src/components/character/MenuDialog.tsx:191
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -185,7 +185,7 @@ msgstr "Composure"
 msgid "Conditions"
 msgstr "Conditions"
 
-#: src/components/character/MenuDialog.tsx:180
+#: src/components/character/MenuDialog.tsx:175
 msgid "Confirm Reset"
 msgstr "Confirm Reset"
 
@@ -197,12 +197,12 @@ msgstr "Cooking"
 msgid "Cozy Activity"
 msgstr "Cozy Activity"
 
-#: src/components/character/MenuDialog.tsx:231
+#: src/components/character/MenuDialog.tsx:226
 msgid "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
 msgstr "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
 
-#: src/components/character/MenuDialog.tsx:212
-#: src/components/character/MenuDialog.tsx:336
+#: src/components/character/MenuDialog.tsx:207
+#: src/components/character/MenuDialog.tsx:331
 msgid "Credits"
 msgstr "Credits"
 
@@ -214,7 +214,7 @@ msgstr "Crown of the Queen"
 msgid "Crown of the Void"
 msgstr "Crown of the Void"
 
-#: src/components/character/MenuDialog.tsx:299
+#: src/components/character/MenuDialog.tsx:294
 msgid "Deutsch"
 msgstr "Deutsch"
 
@@ -250,11 +250,11 @@ msgstr "Did you show someone that you've \"still got it?\""
 msgid "Dorothy Zbornak"
 msgstr "Dorothy Zbornak"
 
-#: src/components/character/MenuDialog.tsx:307
+#: src/components/character/MenuDialog.tsx:302
 msgid "Download PDF"
 msgstr "Download PDF"
 
-#: src/components/character/MenuDialog.tsx:311
+#: src/components/character/MenuDialog.tsx:306
 msgid "Download save file"
 msgstr "Download save file"
 
@@ -262,7 +262,7 @@ msgstr "Download save file"
 msgid "End of Session"
 msgstr "End of Session"
 
-#: src/components/character/MenuDialog.tsx:296
+#: src/components/character/MenuDialog.tsx:291
 msgid "English"
 msgstr "English"
 
@@ -299,7 +299,7 @@ msgstr "Jackie O"
 msgid "Knitting"
 msgstr "Knitting"
 
-#: src/components/character/MenuDialog.tsx:315
+#: src/components/character/MenuDialog.tsx:310
 msgid "Load from save file"
 msgstr "Load from save file"
 
@@ -320,7 +320,7 @@ msgstr "Menu"
 msgid "Name"
 msgstr "Name"
 
-#: src/components/character/MenuDialog.tsx:327
+#: src/components/character/MenuDialog.tsx:322
 msgid "Odin's Blog"
 msgstr "Odin's Blog"
 
@@ -340,7 +340,7 @@ msgstr "Pottery"
 msgid "Presence"
 msgstr "Presence"
 
-#: src/components/character/MenuDialog.tsx:239
+#: src/components/character/MenuDialog.tsx:234
 msgid "Queen SVG by <0>Darius Dan on svgrepo</0>."
 msgstr "Queen SVG by <0>Darius Dan on svgrepo</0>."
 
@@ -352,8 +352,8 @@ msgstr "Quilting"
 msgid "Reason"
 msgstr "Reason"
 
-#: src/components/character/MenuDialog.tsx:190
-#: src/components/character/MenuDialog.tsx:322
+#: src/components/character/MenuDialog.tsx:185
+#: src/components/character/MenuDialog.tsx:317
 msgid "Reset Character"
 msgstr "Reset Character"
 
@@ -373,7 +373,7 @@ msgstr "Select one Maven move at the start. No two Mavens can pick the same move
 msgid "Sensitivity"
 msgstr "Sensitivity"
 
-#: src/components/character/MenuDialog.tsx:332
+#: src/components/character/MenuDialog.tsx:327
 msgid "Source Code"
 msgstr "Source Code"
 
@@ -385,11 +385,11 @@ msgstr "Speed Walkin'"
 msgid "Style"
 msgstr "Style"
 
-#: src/components/character/MenuDialog.tsx:341
+#: src/components/character/MenuDialog.tsx:336
 msgid "Support Me"
 msgstr "Support Me"
 
-#: src/components/character/MenuDialog.tsx:253
+#: src/components/character/MenuDialog.tsx:248
 msgid "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 msgstr "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 

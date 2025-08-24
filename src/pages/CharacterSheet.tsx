@@ -14,10 +14,12 @@ import Tentacles from "@/components/character/Tentacles"
 import XpTrack from "@/components/character/XpTrack"
 import { Button } from "@/components/ui/button"
 import { Dialog } from "@/components/ui/dialog"
+import { useLingui } from "@lingui/react"
 import { Trans } from "@lingui/react/macro"
 import { useState } from "react"
 
 const CharacterSheet = () => {
+    useLingui()
     const [menuOpen, setMenuOpen] = useState(false)
 
     return (

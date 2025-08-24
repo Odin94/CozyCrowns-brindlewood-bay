@@ -4,7 +4,7 @@ import { Label } from "@/components/ui/label"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import SubHeadline from "@/components/ui/sub-headline"
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
-import { crownOfTheVoid } from "@/game_data"
+import { getCrownOfTheVoid } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
 import { Trans } from "@lingui/react/macro"
 import { InfoIcon } from "lucide-react"
@@ -32,7 +32,7 @@ const CrownOfTheVoid = () => {
                     </SubHeadline>
                 </div>
                 <div className="space-y-1">
-                    {crownOfTheVoid.map((crown, index) => (
+                    {getCrownOfTheVoid().map((crown, index) => (
                         <div key={index} className="flex items-start space-x-3">
                             <Checkbox
                                 id={`void-${index}`}

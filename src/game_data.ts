@@ -1,6 +1,6 @@
 import { t } from "@lingui/core/macro"
 
-export const endOfSessionQuestions = [
+export const getEndOfSessionQuestions = () => [
     t`Did the Murder Mavens solve a mystery?`,
     t`Did you secretly undermine the authority of a local official?`,
     t`Did you share your wisdom with a young person?`,
@@ -10,7 +10,7 @@ export const endOfSessionQuestions = [
     t`Did you show someone that you've "still got it?"`,
 ]
 
-export const advancementOptions = [
+export const getAdvancementOptions = () => [
     t`Increase an ability modifier by 1 (max +3).`,
     t`Increase an ability modifier by 1 (max +3).`,
     t`Choose an additional Maven move.`,
@@ -18,7 +18,7 @@ export const advancementOptions = [
     t`Unmark all the items in your Cozy Little Place.`,
 ]
 
-export const crownsOfTheQueen = [
+export const getCrownsOfTheQueen = () => [
     t`A flashback of your fondest memory of your late partner.`,
     t`A flashback showing how you were an imperfect sister or daughter.`,
     t`A flashback showing how you were an imperfect mother.`,
@@ -28,7 +28,7 @@ export const crownsOfTheQueen = [
     t`A scene in the present day showing how you satisfy your physical desires.`,
 ]
 
-export const crownOfTheVoid = [
+export const getCrownOfTheVoid = () => [
     {
         title: t`A Shadow in the Garden.`,
         description: t`Hereafter, during cozy vignettes focused on you or Cozy Move scenes involving you, you must also narrate how dark entities subtly reveal themselves in the scene.`,
@@ -68,7 +68,7 @@ export const sampleNames = [
     "Violet",
 ]
 
-export const sampleStyles = [
+export const getSampleStyles = () => [
     t`Alexis Carrington Colby`,
     t`All the Cardigans`,
     t`Blouse Barn`,
@@ -82,7 +82,7 @@ export const sampleStyles = [
     t`Up in Pumps`,
 ]
 
-export const sampleActivities = [
+export const getSampleActivities = () => [
     t`Antiques & Furniture`,
     t`Baking`,
     t`Birding`,

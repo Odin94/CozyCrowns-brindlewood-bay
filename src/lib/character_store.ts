@@ -1,7 +1,7 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 import type { Ability, CharacterData, CozyItem } from "@/types/characterSchema"
-import { advancementOptions, crownsOfTheQueen, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
+import { getAdvancementOptions, getCrownsOfTheQueen, getCrownOfTheVoid, getEndOfSessionQuestions } from "@/game_data"
 import { t } from "@lingui/core/macro"
 
 export const defaultAbilities: Ability[] = [
@@ -59,11 +59,11 @@ export const useCharacterStore = create<CharacterState>()(
             abilities: getDefaultAbilities(),
             xp: 0,
             conditions: "",
-            endOfSessionChecks: endOfSessionQuestions.map(() => false),
-            advancementChecks: advancementOptions.map(() => false),
+            endOfSessionChecks: getEndOfSessionQuestions().map(() => false),
+            advancementChecks: getAdvancementOptions().map(() => false),
             mavenMoves: "",
-            crownChecks: crownsOfTheQueen.map(() => false),
-            voidChecks: crownOfTheVoid.map(() => false),
+            crownChecks: getCrownsOfTheQueen().map(() => false),
+            voidChecks: getCrownOfTheVoid().map(() => false),
             cozyItems: Array(12)
                 .fill(null)
                 .map(() => ({ checked: false, text: "" })),

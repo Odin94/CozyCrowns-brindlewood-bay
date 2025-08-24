@@ -1,7 +1,7 @@
 import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
 import Headline from "@/components/ui/headline"
-import { advancementOptions } from "../../game_data"
+import { Label } from "@/components/ui/label"
+import { getAdvancementOptions } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
 import { Trans } from "@lingui/react/macro"
 
@@ -19,7 +19,7 @@ const Advancements = () => {
                 <Trans>Advancements</Trans>
             </Headline>
             <div className="space-y-3">
-                {advancementOptions.map((option, index) => (
+                {getAdvancementOptions().map((option, index) => (
                     <div key={index} className="flex items-start space-x-3">
                         <Checkbox
                             id={`advancement-${index}`}

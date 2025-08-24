@@ -1,13 +1,16 @@
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { sampleActivities } from "@/game_data"
+import { getSampleActivities } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
-import { Trans, useLingui } from "@lingui/react/macro"
+import { Trans } from "@lingui/react/macro"
 
 const CozyActivity = () => {
     const { activity, setActivity } = useCharacterStore()
-    const { i18n } = useLingui()
+
+    // Get the activities dynamically so they update when locale changes
+    const sampleActivities = getSampleActivities()
+
     return (
         <div className="space-y-3">
             <Label className="text-lg font-semibold text-secondary">
@@ -17,7 +20,7 @@ const CozyActivity = () => {
                 <Input
                     value={activity}
                     onChange={(e) => setActivity(e.target.value)}
-                    placeholder={i18n._("Enter cozy activity")}
+                    placeholder="Enter cozy activity"
                     className="flex-1"
                 />
                 <DropdownMenu>

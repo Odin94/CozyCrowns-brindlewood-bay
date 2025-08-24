@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button"
-import { DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { advancementOptions, crownOfTheVoid, endOfSessionQuestions } from "@/game_data"
+import { getAdvancementOptions, getCrownOfTheVoid, getEndOfSessionQuestions } from "@/game_data"
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store"
+import { useSettingsStore } from "@/lib/settings_store"
 import { downloadPdf } from "@/lib/pdf_generator"
 import { loadTranslations } from "@/lib/utils"
 import { CharacterDataSchema } from "@/types/characterSchema"
@@ -20,13 +21,20 @@ type MenuDialogProps = {
 // TODOdin: Redesign the whole dialog content
 const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const characterStore = useCharacterStore()
+    const { setLocale } = useSettingsStore()
     const { i18n } = useLingui()
     const [showResetConfirm, setShowResetConfirm] = useState(false)
     const [showCredits, setShowCredits] = useState(false)
 
+    // Get the data dynamically so they update when locale changes
+    const endOfSessionQuestions = getEndOfSessionQuestions()
+    const advancementOptions = getAdvancementOptions()
+    const crownOfTheVoid = getCrownOfTheVoid()
+
     const handleLanguageChange = async (locale: string) => {
         await loadTranslations(locale)
         await i18n.activate(locale)
+        setLocale(locale)
     }
 
     // Reset transient views when dialog is re-opened
@@ -174,6 +182,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                     <DialogTitle className="text-gray-800">
                         <Trans>Confirm Reset</Trans>
                     </DialogTitle>
+                    <DialogDescription className="text-gray-800">
+                        <Trans>This action will permanently delete all your character data.</Trans>
+                    </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-4">
                     <p className="text-sm text-gray-800">
@@ -206,6 +217,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                     <DialogTitle className="text-gray-800">
                         <Trans>Credits</Trans>
                     </DialogTitle>
+                    <DialogDescription className="text-gray-800">
+                        <Trans>Information about the game and its creators.</Trans>
+                    </DialogDescription>
                 </DialogHeader>
                 <div className="grid gap-3 py-2 text-sm text-gray-800">
                     <p>
@@ -278,6 +292,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
             <VisuallyHidden.Root asChild>
                 <DialogTitle>Menu</DialogTitle>
             </VisuallyHidden.Root>
+            <DialogDescription className="sr-only">
+                <Trans>Manage your character and game settings.</Trans>
+            </DialogDescription>
             <div className="flex justify-between items-center mb-4">
                 <div></div>
                 <DropdownMenu>
