@@ -19,6 +19,7 @@ import { Trans } from "@lingui/react/macro"
 import { useState } from "react"
 
 const CharacterSheet = () => {
+    // useLingui() is Required to ensure component rerenders when locale changes
     useLingui()
     const [menuOpen, setMenuOpen] = useState(false)
 
