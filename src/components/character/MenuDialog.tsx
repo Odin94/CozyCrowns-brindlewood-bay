@@ -217,11 +217,11 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                     <DialogTitle className="text-gray-800">
                         <Trans>Credits</Trans>
                     </DialogTitle>
-                    <DialogDescription className="text-gray-800">
-                        <Trans>Information about the game and its creators.</Trans>
+                    <DialogDescription className="sr-only">
+                        <Trans>Information about the game, its creators and sources of assets.</Trans>
                     </DialogDescription>
                 </DialogHeader>
-                <div className="grid gap-3 py-2 text-sm text-gray-800">
+                <div className="grid gap-3 text-sm text-gray-800">
                     <p>
                         <Trans>
                             Brindlewood Bay is published by{" "}
@@ -293,7 +293,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                 <DialogTitle>Menu</DialogTitle>
             </VisuallyHidden.Root>
             <DialogDescription className="sr-only">
-                <Trans>Manage your character and game settings.</Trans>
+                <Trans>Manage your character and settings.</Trans>
             </DialogDescription>
             <div className="flex justify-between items-center mb-4">
                 <div></div>

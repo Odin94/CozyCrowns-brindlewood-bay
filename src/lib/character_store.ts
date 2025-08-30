@@ -4,17 +4,13 @@ import type { Ability, CharacterData, CozyItem } from "@/types/characterSchema"
 import { getAdvancementOptions, getCrownsOfTheQueen, getCrownOfTheVoid, getEndOfSessionQuestions } from "@/game_data"
 import { t } from "@lingui/core/macro"
 
-export const defaultAbilities: Ability[] = [
+export const getDefaultAbilities = (): Ability[] => [
     { name: t`Vitality`, value: 0 },
     { name: t`Composure`, value: 1 },
     { name: t`Reason`, value: 1 },
     { name: t`Presence`, value: 0 },
     { name: t`Sensitivity`, value: -1 },
 ]
-
-export const getDefaultAbilities = (): Ability[] => {
-    return defaultAbilities.map((ability) => ({ ...ability }))
-}
 
 export type CharacterState = {
     name: string
