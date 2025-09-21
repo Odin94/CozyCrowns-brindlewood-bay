@@ -3,16 +3,20 @@ import Headline from "@/components/ui/headline"
 import SubHeadline from "@/components/ui/sub-headline"
 import { useCharacterStore } from "@/lib/character_store"
 import { Trans, useLingui } from "@lingui/react/macro"
+import MavenMovesPicker from "./MavenMovesPicker"
 
 const MavenMoves = () => {
     const { mavenMoves, setMavenMoves } = useCharacterStore()
     const { i18n } = useLingui()
     return (
         <div className="space-y-3 flex flex-col h-full">
-            <Headline>
-                <Trans>Maven Moves</Trans>
-            </Headline>
-            <SubHeadline className="-mt-5">
+            <div className="flex items-center justify-between">
+                <Headline>
+                    <Trans>Maven Moves</Trans>
+                </Headline>
+                <MavenMovesPicker />
+            </div>
+            <SubHeadline className="-mt-4">
                 <Trans>Select one Maven move at the start. No two Mavens can pick the same move at the start.</Trans>
             </SubHeadline>
             <div className="flex-1">

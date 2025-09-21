@@ -60,7 +60,7 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
         --color-primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
         --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
         --color-dark-secondary: hsl(280 30% 25%);
-        --color-tertiary: hsl(278, 55%, 87%); /* near-white purple for subtle hover */
+        --color-tertiary: hsl(278, 55%, 87%); /* #e3ccf0 - near-white purple for subtle hover */
     }
 }
 
@@ -144,4 +144,30 @@ button.underline-offset-4 {
 a.underline-offset-4:hover,
 button.underline-offset-4:hover {
     text-decoration: underline !important;
+}
+
+/* Fix selection/highlight background */
+::selection {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+::-moz-selection {
+    background-color: hsl(var(--accent));
+    color: hsl(var(--accent-foreground));
+}
+
+/* Ensure bg-background class has proper non-transparent background */
+.bg-background {
+    background-color: var(--color-gray-800);
+}
+
+/* Ensure bg-popover class has proper non-transparent background */
+.bg-popover {
+    background-color: hsl(var(--popover));
+}
+
+/* Ensure bg-card class has proper non-transparent background */
+.bg-card {
+    background-color: hsl(var(--card));
 }

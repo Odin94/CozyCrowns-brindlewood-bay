@@ -27,7 +27,7 @@ const CrownOfTheVoid = () => {
                     <Headline>
                         <Trans>Crown of the Void</Trans>
                     </Headline>
-                    <SubHeadline className="mt-1">
+                    <SubHeadline className="-mt-1 mb-2">
                         <Trans>When you put on this Crown, mark the first empty box.</Trans>
                     </SubHeadline>
                 </div>

@@ -96,3 +96,81 @@ export const getSampleActivities = () => [
     t`Quilting`,
     t`Scrapbooking`,
 ]
+
+export const getMavenMoves = () => [
+    {
+        title: t`B.A. Baracus`,
+        summary: t`Avoid physical harm once per mystery`,
+        description: t`Once per mystery, if you and/or any number of your fellow Mavens would suffer physical harm, you can describe how that physical harm is just narrowly avoided.`,
+    },
+    {
+        title: t`Tom Hanson`,
+        summary: t`Pass for younger with advantage on rolls`,
+        description: t`You can easily pass for someone much younger. If you're in a situation or environment where being younger is a benefit, your rolls are made with advantage.`,
+    },
+    {
+        title: t`Milton Hardcastle`,
+        summary: t`End of Session: "Did you inflict extrajudicial punishment on a wrongdoer?"`,
+        description: t`You have an additional End of Session question that is always marked: "Did you inflict extrajudicial punishment on a wrongdoer?"`,
+    },
+    {
+        title: t`Jonathan Hart`,
+        summary: t`+1 Presence from jet set lifestyle`,
+        description: t`You used to live a globetrotting, jet set life, and you still have a touch of glamor about you that will never fade. Add 1 to your Presence (max 3).`,
+    },
+    {
+        title: t`Angus MacGyver`,
+        summary: t`Improvise with objects for automatic 12+`,
+        description: t`When you improvise in a situation using whatever is at-hand, ask the other players and Keeper to name three objects you find in the environment. So long as you can give a plausible explanation for how these three objects together are helpful in the current situation, you get an automatic 12+ on a single associated die roll. This move can be used once per mystery.`,
+    },
+    {
+        title: t`Thomas Magnum`,
+        summary: t`Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits`,
+        description: t`You are a secret personal friend of Robin Masterson, the mysterious author of The Gold Crown Mysteries. You have access to Robin's resources whenever you are outside Brindlewood Bay: her homes, her vehicles, and even her checking account. Additionally, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose.`,
+    },
+    {
+        title: t`Fox Mulder`,
+        summary: t`Dark conspiracy informant helps with Void Clues`,
+        description: t`Someone connected to the dark conspiracy is helping you behind the scenes. Tell the Keeper that the thresholds for each layer of the dark conspiracy are reduced by 1. Once per mystery, after at least one Void Clue has been encountered, you can have a secret meeting with this informant, who is always shrouded in darkness or otherwise disguised. You need only describe what the scene looks like—the location, the physical environment, how the mysterious person arrives on the scene, etc. The actual conversation happens off-screen. Then, you can declare that a Void Clue encountered during the mystery is now a regular Clue. The informant will only fully reveal themselves during the Void Mystery, at which point you can have normal scenes with them. No two Mavens can have this move at the same time.`,
+    },
+    {
+        title: t`Michael Knight`,
+        summary: t`Trusty vehicle for advantage on rolls`,
+        description: t`You have a trusty mode of transportation—an oversized sedan, a motorbike, or an old truck—that has gotten you out of more than one sticky situation. Give it a name and add it to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked.`,
+    },
+    {
+        title: t`Rick & A.J.`,
+        summary: t`Opposite sibling for help, gives advantage (but helps at a cost)`,
+        description: t`You have a sibling who is your polar opposite in terms of fashion sense and personality. Describe them to the Keeper and name them. You can always request a scene with your sibling. You can also call on them for help, in which case you take advantage on any die rolls associated with actions they assist you with. However, that help always comes at a cost.`,
+    },
+    {
+        title: t`R. Quincy`,
+        summary: t`Medical background and Medical Bag that never gets marked`,
+        description: t`You have a medical background; describe it. Then add a Medical Bag to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked.`,
+    },
+    {
+        title: t`Jim Rockford`,
+        summary: t`Mysterious answering machine messages give tasks for XP`,
+        description: t`At the beginning of each session, the Keeper will narrate an answering machine message you received. The message is always from the same unknown person, and they will ask you to do some particular task, seemingly unrelated to the mystery. If you complete the task in the same session it was assigned, mark XP. The messages and tasks will get increasingly strange and disturbing the more marks you have on The Crown of the Void. No two Mavens can ever have this move at the same time.`,
+    },
+    {
+        title: t`Scarecrow`,
+        summary: t`Receive mysterious Clues each session`,
+        description: t`At the beginning of each session, a stranger presses something into your hand or leaves something in a place where you find it. The Keeper will tell you what it is. It functions as a Clue, but isn't attached to any particular mystery—you can use it in the present mystery or save it for the future.`,
+    },
+    {
+        title: t`Colt Seavers`,
+        summary: t`12+ on wild physical feats once per mystery`,
+        description: t`Once per mystery, you can take a 12+ on a single roll related to a wild or daring physical feat.`,
+    },
+    {
+        title: t`Gordon Shumway`,
+        summary: t`Extraordinary cat companion for advantage that never gets marked`,
+        description: t`You have a feline friend with whom you share a strong bond. This extraordinary kitty can do tricks and follow simple commands. Name your precocious puss and add them to your Cozy Little Place. When you use the cat to get an advantage on a roll, leave it unmarked.`,
+    },
+    {
+        title: t`Remington Steele`,
+        summary: t`Master of disguise with any needed ID`,
+        description: t`You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place.`,
+    },
+]
