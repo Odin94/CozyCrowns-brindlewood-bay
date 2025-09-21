@@ -8,7 +8,6 @@ import { useState } from "react"
 
 const MavenMovesPicker = () => {
     const { mavenMoves, setMavenMoves } = useCharacterStore()
-    // const { i18n } = useLingui()
     const [isOpen, setIsOpen] = useState(false)
 
     const mavenMovesList = getMavenMoves()
@@ -55,9 +54,9 @@ const MavenMovesPicker = () => {
                         return (
                             <div
                                 key={mavenMove.title}
-                                className={`border-1 p-2 border-green-200 ${
-                                    index === 0 ? "border-t" : "border-t-0"
-                                } cursor-pointer hover:bg-tertiary/30 ${isSelected ? "border border-[#999999] bg-green-100/30" : ""}`}
+                                className={`border-1 p-2 border-green-200 ${index === 0 ? "border-t" : "border-t-0"} cursor-pointer ${
+                                    isSelected ? "border border-[#999999] bg-green-100/20 hover:bg-green-100/30" : "hover:bg-tertiary/30"
+                                }`}
                                 onClick={() => handleMavenMoveSelect(mavenMove)}
                             >
                                 <div className="relative">
