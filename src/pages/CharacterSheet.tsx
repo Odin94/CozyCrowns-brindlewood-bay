@@ -1,5 +1,6 @@
 import Abilities from "@/components/character/Abilities"
 import Advancements from "@/components/character/Advancements"
+import CharacterTabs from "@/components/character/CharacterTabs"
 import Conditions from "@/components/character/Conditions"
 import CozyActivity from "@/components/character/CozyActivity"
 import CozyLittlePlace from "@/components/character/CozyLittlePlace"
@@ -83,6 +84,8 @@ const CharacterSheet = () => {
             <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
                 <MenuDialog onOpenChange={setMenuOpen} open={menuOpen} />
             </Dialog>
+
+            <CharacterTabs />
         </div>
     )
 }
