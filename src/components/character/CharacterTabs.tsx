@@ -26,9 +26,13 @@ const CharacterTabs = ({ onDeleteCharacter }: CharacterTabsProps) => {
         return (
             <div
                 key={index}
-                className={`relative group flex items-center gap-2 ${"pl-6 py-3 w-40 ml-[-10px] hover:ml-0 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in"} ${
-                    currentCharacterIndex === index ? "bg-dark-secondary" : "bg-dark-secondary/40 hover:bg-dark-secondary/60"
-                }`}
+                className={`relative group flex items-center gap-2 pl-6 py-3 w-40 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in ${
+                    currentCharacterIndex === index
+                        ? "bg-dark-secondary text-tertiary"
+                        : "bg-dark-secondary/40 hover:bg-dark-secondary/60 text-tertiary/80"
+                }
+                ${isLargeScreen ? "ml-[-10px] hover:ml-0" : "rounded-l-lg"}
+                `}
                 onClick={() => setCurrentCharacter(index)}
                 style={{
                     transition: "margin 0.5s ease-in-out, transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out",
@@ -66,7 +70,7 @@ const CharacterTabs = ({ onDeleteCharacter }: CharacterTabsProps) => {
         <>
             {/* Desktop version - Left side (screens >= 2100px) */}
             {isLargeScreen && (
-                <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-1 transition-all duration-500 text-tertiary">
+                <div className="fixed left-0 top-1/2 transform -translate-y-1/2 z-50 flex flex-col gap-1 transition-all duration-500">
                     {characters.map(renderCharacterTab)}
 
                     {renderAddCharacterButton()}

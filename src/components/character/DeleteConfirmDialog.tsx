@@ -27,9 +27,7 @@ const DeleteConfirmDialog = ({ characterIndex, onConfirm, onCancel }: DeleteConf
                 <DialogTitle className="text-gray-800">
                     <Trans>Delete "{characterName}"</Trans>
                 </DialogTitle>
-                <DialogDescription className="text-gray-800">
-                    <Trans>This action will permanently delete the character.</Trans>
-                </DialogDescription>
+                <DialogDescription></DialogDescription>
             </DialogHeader>
             <div className="grid gap-4">
                 <p className="text-sm text-gray-800">

@@ -14,11 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/components/character/Name.tsx:20
-msgid "Enter character name"
-msgstr "Trag den Namen deines Charakters ein"
-
-#. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:71
 msgid "PDF downloaded successfully!"
 msgstr "PDF erfoglreich heruntergeladen!"
@@ -47,6 +42,11 @@ msgstr "Fehler beim Laden der Charakterdaten. Bitte überprüfe das Datenformat.
 #: src/components/character/MenuDialog.tsx:168
 msgid "Character reset successfully!"
 msgstr "Charakter erfolgreich zurückgesetzt!"
+
+#. js-lingui-explicit-id
+#: src/components/character/Name.tsx:20
+msgid "Enter character name"
+msgstr "Trag den Namen deines Charakters ein"
 
 #. js-lingui-explicit-id
 #: src/components/character/MavenMoves.tsx:26
@@ -136,6 +136,10 @@ msgstr "Alter Vamp"
 msgid "Antiques & Furniture"
 msgstr "Antiquitäten"
 
+#: src/components/character/DeleteConfirmDialog.tsx:36
+msgid "Are you sure you want to delete \"{characterName}\"? This will clear all data and cannot be undone."
+msgstr "Bist du sicher, dass du \"{characterName}\" löschen willst? Das lässt sich nicht rückgängig machen."
+
 #: src/components/character/MenuDialog.tsx:191
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Bist du sicher, dass du deinen Charakter zurücksetzen möchtest? Dies wird alle Daten löschen und kann nicht rückgängig gemacht werden."
@@ -176,10 +180,11 @@ msgstr "College-Professorin"
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay wird veröffentlicht von <0>The Gauntlet</0>."
 
-#: src/pages/CharacterSheet.tsx:32
+#: src/pages/CharacterSheet.tsx:39
 msgid "by Odin"
 msgstr "von Odin"
 
+#: src/components/character/DeleteConfirmDialog.tsx:48
 #: src/components/character/MenuDialog.tsx:202
 msgid "Cancel"
 msgstr "Abbrechen"
@@ -193,7 +198,7 @@ msgstr "Wohltätigkeitsveranstaltungen"
 msgid "Choose an additional Maven move."
 msgstr "Wähle einen zusätzlichen Kennerinnen-Spielzug aus."
 
-#: src/components/character/MavenMovesPicker.tsx:47
+#: src/components/character/MavenMovesPicker.tsx:46
 msgid "Choose Maven Moves"
 msgstr "Wähle deine Spielzüge"
 
@@ -245,6 +250,14 @@ msgstr "Die Krone des Abgrunds"
 #: src/game_data.ts:133
 msgid "Dark conspiracy informant helps with Void Clues"
 msgstr "Dunkler Verschwörungs-Informant hilft bei Leere-Hinweisen"
+
+#: src/components/character/DeleteConfirmDialog.tsx:28
+msgid "Delete \"{characterName}\""
+msgstr "\"{characterName}\" löschen"
+
+#: src/components/character/DeleteConfirmDialog.tsx:41
+msgid "Delete Character"
+msgstr "Charakter löschen"
 
 #: src/components/character/MenuDialog.tsx:311
 msgid "Deutsch"
@@ -375,8 +388,8 @@ msgstr "Kennerinnen-Spielzüge"
 msgid "Medical background and Medical Bag that never gets marked"
 msgstr "Medizinischer Hintergrund und Medizintasche, die nie markiert wird"
 
-#: src/pages/CharacterSheet.tsx:70
-#: src/pages/CharacterSheet.tsx:79
+#: src/pages/CharacterSheet.tsx:77
+#: src/pages/CharacterSheet.tsx:86
 msgid "Menu"
 msgstr "Menü"
 

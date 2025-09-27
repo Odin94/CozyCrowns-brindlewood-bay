@@ -14,11 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/components/character/Name.tsx:20
-msgid "Enter character name"
-msgstr "Enter character name"
-
-#. js-lingui-explicit-id
 #: src/components/character/MenuDialog.tsx:71
 msgid "PDF downloaded successfully!"
 msgstr "PDF downloaded successfully!"
@@ -47,6 +42,11 @@ msgstr "Error loading character data. Please check the file format."
 #: src/components/character/MenuDialog.tsx:168
 msgid "Character reset successfully!"
 msgstr "Character reset successfully!"
+
+#. js-lingui-explicit-id
+#: src/components/character/Name.tsx:20
+msgid "Enter character name"
+msgstr "Enter character name"
 
 #. js-lingui-explicit-id
 #: src/components/character/MavenMoves.tsx:26
@@ -136,6 +136,10 @@ msgstr "All the Cardigans"
 msgid "Antiques & Furniture"
 msgstr "Antiques & Furniture"
 
+#: src/components/character/DeleteConfirmDialog.tsx:36
+msgid "Are you sure you want to delete \"{characterName}\"? This will clear all data and cannot be undone."
+msgstr "Are you sure you want to delete \"{characterName}\"? This will clear all data and cannot be undone."
+
 #: src/components/character/MenuDialog.tsx:191
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Are you sure you want to reset your character? This will clear all data and cannot be undone."
@@ -176,10 +180,11 @@ msgstr "Blouse Barn"
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay is published by <0>The Gauntlet</0>."
 
-#: src/pages/CharacterSheet.tsx:32
+#: src/pages/CharacterSheet.tsx:39
 msgid "by Odin"
 msgstr "by Odin"
 
+#: src/components/character/DeleteConfirmDialog.tsx:48
 #: src/components/character/MenuDialog.tsx:202
 msgid "Cancel"
 msgstr "Cancel"
@@ -193,7 +198,7 @@ msgstr "Charity Events"
 msgid "Choose an additional Maven move."
 msgstr "Choose an additional Maven move."
 
-#: src/components/character/MavenMovesPicker.tsx:47
+#: src/components/character/MavenMovesPicker.tsx:46
 msgid "Choose Maven Moves"
 msgstr "Choose Maven Moves"
 
@@ -245,6 +250,14 @@ msgstr "Crown of the Void"
 #: src/game_data.ts:133
 msgid "Dark conspiracy informant helps with Void Clues"
 msgstr "Dark conspiracy informant helps with Void Clues"
+
+#: src/components/character/DeleteConfirmDialog.tsx:28
+msgid "Delete \"{characterName}\""
+msgstr "Delete \"{characterName}\""
+
+#: src/components/character/DeleteConfirmDialog.tsx:41
+msgid "Delete Character"
+msgstr "Delete Character"
 
 #: src/components/character/MenuDialog.tsx:311
 msgid "Deutsch"
@@ -379,8 +392,8 @@ msgstr "Maven Moves"
 msgid "Medical background and Medical Bag that never gets marked"
 msgstr "Medical background and Medical Bag that never gets marked"
 
-#: src/pages/CharacterSheet.tsx:70
-#: src/pages/CharacterSheet.tsx:79
+#: src/pages/CharacterSheet.tsx:77
+#: src/pages/CharacterSheet.tsx:86
 msgid "Menu"
 msgstr "Menu"
 
