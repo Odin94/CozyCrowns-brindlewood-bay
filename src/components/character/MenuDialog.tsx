@@ -174,7 +174,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
 
     if (showResetConfirm) {
         return (
-            <DialogContent className="sm:max-w-[525px] bg-secondary/90  border-0 shadow-none" style={{ boxShadow: "none" }}>
+            <DialogContent className="sm:max-w-[525px] bg-secondary/90 border-0 shadow-none" style={{ boxShadow: "none" }}>
                 <VisuallyHidden.Root asChild>
                     <DialogTitle>Menu</DialogTitle>
                 </VisuallyHidden.Root>

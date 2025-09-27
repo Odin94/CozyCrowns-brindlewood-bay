@@ -6,6 +6,9 @@ import CozyActivity from "@/components/character/CozyActivity"
 import CozyLittlePlace from "@/components/character/CozyLittlePlace"
 import CrownOfTheQueen from "@/components/character/CrownOfTheQueen"
 import CrownOfTheVoid from "@/components/character/CrownOfTheVoid"
+import DeleteConfirmDialog from "@/components/character/DeleteConfirmDialog"
+import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation"
+import { useIsLargeScreen } from "@/hooks/useIsLargeScreen"
 import EndOfSession from "@/components/character/EndOfSession"
 import MavenMoves from "@/components/character/MavenMoves"
 import MenuDialog from "@/components/character/MenuDialog"
@@ -23,9 +26,12 @@ const CharacterSheet = () => {
     // useLingui() is Required to ensure component rerenders when locale changes
     useLingui()
     const [menuOpen, setMenuOpen] = useState(false)
+    const isLargeScreen = useIsLargeScreen()
+    const { deleteConfirmOpen, deleteConfirmIndex, handleDeleteCharacter, confirmDelete, cancelDelete, setDeleteConfirmOpen } =
+        useDeleteConfirmation()
 
     return (
-        <div className="min-h-screen w-full from-gray-900 to-gray-800 p-4 lg:p-6">
+        <div className={`min-h-screen w-full from-gray-900 to-gray-800 p-4 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}>
             <div className="w-full max-w-none">
                 <div className="text-center mb-8">
                     <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>
@@ -85,7 +91,12 @@ const CharacterSheet = () => {
                 <MenuDialog onOpenChange={setMenuOpen} open={menuOpen} />
             </Dialog>
 
-            <CharacterTabs />
+            {/* Delete confirmation for character tabs */}
+            <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
+                <DeleteConfirmDialog characterIndex={deleteConfirmIndex} onConfirm={confirmDelete} onCancel={cancelDelete} />
+            </Dialog>
+
+            <CharacterTabs onDeleteCharacter={handleDeleteCharacter} />
         </div>
     )
 }
