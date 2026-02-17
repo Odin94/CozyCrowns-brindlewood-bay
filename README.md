@@ -4,9 +4,25 @@ A character sheet manager for the TTRPG [Brindlewood Bay](https://www.gauntlet-r
 You can check it out here: https://cozycrowns.odin-matthias.de
 
 ## How to run
-* `npm isntall` (yes, *isntall*)
-* `npm run dev` to start dev server
-* `npm run build` to generate production build
+You can run everything locally using `mprocs` (after running npm install in `frontend` and `backend` and creating `.env`s):
+* `npm install -g mprocs`
+* `mprocs`
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### Backend
+```bash
+cd backend
+npm install
+npm run db:generate
+npm run db:migrate
+npm run dev
+```
 
 
 ## Fonts

@@ -1,0 +1,64 @@
+import { NodeSDK } from "@opentelemetry/sdk-node"
+import { OTLPLogExporter } from "@opentelemetry/exporter-logs-otlp-http"
+import { BatchLogRecordProcessor } from "@opentelemetry/sdk-logs"
+import { resourceFromAttributes } from "@opentelemetry/resources"
+import { logs } from "@opentelemetry/api-logs"
+import { env } from "../config/env.js"
+
+let sdk: NodeSDK | null = null
+// Initialize with empty logger
+export let posthogLogger: ReturnType<typeof logs.getLogger> = {
+    emit: () => {},
+}
+
+export const initializePostHogLogging = () => {
+    if (env.NODE_ENV === "development") {
+        console.log("Skipping PostHog logging initialization in development mode")
+        return
+    }
+    if (!env.PUBLIC_POSTHOG_KEY) {
+        console.log("PostHog API key not configured, skipping PostHog logging initialization")
+        return
+    }
+    if (!env.PUBLIC_POSTHOG_HOST) {
+        console.log("PostHog host not configured, skipping PostHog logging initialization")
+        return
+    }
+
+    const logsUrl = `${env.PUBLIC_POSTHOG_HOST}/i/v1/logs`
+
+    try {
+        sdk = new NodeSDK({
+            resource: resourceFromAttributes({
+                "service.name": "progeny-backend",
+                "service.environment": env.NODE_ENV,
+            }),
+            logRecordProcessor: new BatchLogRecordProcessor(
+                new OTLPLogExporter({
+                    url: logsUrl,
+                    headers: {
+                        Authorization: `Bearer ${env.PUBLIC_POSTHOG_KEY}`,
+                    },
+                }),
+            ),
+        })
+
+        sdk.start()
+
+        posthogLogger = logs.getLogger("progeny-backend")
+
+        console.log(`PostHog logging initialized (endpoint: ${logsUrl})`)
+    } catch (error) {
+        console.error("Failed to initialize PostHog logging:", error)
+    }
+}
+
+export const shutdownPostHogLogging = async () => {
+    if (sdk) {
+        await sdk.shutdown()
+        sdk = null
+        posthogLogger = {
+            emit: () => {},
+        }
+    }
+}

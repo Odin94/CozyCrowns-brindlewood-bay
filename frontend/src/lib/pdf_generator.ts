@@ -131,7 +131,7 @@ export const downloadPdf = async (character: CharacterData, filename?: string) =
     try {
         const pdfBytes = await generatePdf(character)
 
-        const blob = new Blob([pdfBytes], { type: "application/pdf" })
+        const blob = new Blob([pdfBytes as BlobPart], { type: "application/pdf" })
 
         const url = URL.createObjectURL(blob)
         const link = document.createElement("a")
