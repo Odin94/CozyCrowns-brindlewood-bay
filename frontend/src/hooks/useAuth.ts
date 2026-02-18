@@ -1,20 +1,32 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useEffect } from "react"
-import { api, API_URL } from "../utils/api"
+import { api, API_URL, tokenStorage } from "../utils/api"
 import posthog from "posthog-js"
 
 export const useAuth = () => {
     const queryClient = useQueryClient()
 
     const {
-        data: user,
+        data: userData,
         isLoading: loading,
         refetch,
     } = useQuery({
         queryKey: ["auth", "me"],
-        queryFn: () => api.getCurrentUser(),
+        queryFn: async () => {
+            const data = await api.getCurrentUser()
+            if (data.token) {
+                tokenStorage.set(data.token)
+            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            const { token, ...user } = data
+            return user
+        },
         retry: (failureCount, error) => {
             const status = (error as Error & { status?: number })?.status
+            if (status === 401) {
+                tokenStorage.remove()
+                return false
+            }
             if (status && status >= 400 && status < 500) {
                 return false
             }
@@ -25,7 +37,10 @@ export const useAuth = () => {
         },
         retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 3000),
         staleTime: 5 * 60 * 1000,
+        enabled: !!tokenStorage.get(),
     })
+
+    const user = userData || null
 
     useEffect(() => {
         if (user) {
@@ -49,6 +64,7 @@ export const useAuth = () => {
     const logoutMutation = useMutation({
         mutationFn: () => api.logout(),
         onSuccess: (data) => {
+            tokenStorage.remove()
             queryClient.setQueryData(["auth", "me"], null)
 
             try {
@@ -64,6 +80,7 @@ export const useAuth = () => {
             }
         },
         onError: () => {
+            tokenStorage.remove()
             queryClient.setQueryData(["auth", "me"], null)
 
             try {
@@ -79,6 +96,9 @@ export const useAuth = () => {
     const handleCallbackMutation = useMutation({
         mutationFn: ({ code, state }: { code: string; state?: string }) => api.handleAuthCallback(code, state),
         onSuccess: (data) => {
+            if (data.token) {
+                tokenStorage.set(data.token)
+            }
             queryClient.setQueryData(["auth", "me"], data.user)
             queryClient.invalidateQueries({ queryKey: ["auth", "me"] })
 

@@ -29,7 +29,6 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const [showResetConfirm, setShowResetConfirm] = useState(false)
     const [showCredits, setShowCredits] = useState(false)
     const [showMe, setShowMe] = useState(false)
-    const [nickname, setNickname] = useState("")
 
     // Get the data dynamically so they update when locale changes
     const endOfSessionQuestions = getEndOfSessionQuestions()
@@ -51,16 +50,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         }
     }, [open])
 
-    // Sync nickname with user data when showing Me page
-    useEffect(() => {
-        if (showMe && user) {
-            setNickname(user.nickname || "")
-        }
-    }, [showMe, user])
-
-    const handleUpdateProfile = async () => {
+    const handleUpdateProfile = async (nickname: string | null) => {
         try {
-            await updateProfile({ nickname: nickname || null })
+            await updateProfile({ nickname })
             toast.success(i18n._("Profile updated successfully!"))
         } catch (error) {
             console.error("Error updating profile:", error)
@@ -215,8 +207,6 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
             ) : showMe ? (
                 <MeView
                     user={user}
-                    nickname={nickname}
-                    onNicknameChange={setNickname}
                     onUpdateProfile={handleUpdateProfile}
                     onLogout={handleLogout}
                     onBack={() => setShowMe(false)}

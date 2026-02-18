@@ -7,7 +7,6 @@ Fastify backend for CozyCrowns character management system.
 - WorkOS authentication
 - Character CRUD operations
 - Character sharing between users
-- CSRF protection
 - SQLite database with Drizzle ORM
 
 ## Setup

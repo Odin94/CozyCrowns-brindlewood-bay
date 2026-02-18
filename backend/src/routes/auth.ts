@@ -152,25 +152,6 @@ export async function authRoutes(fastify: FastifyInstance) {
                 )
             }
 
-            const cookieOptions = {
-                path: "/",
-                httpOnly: true,
-                secure: env.NODE_ENV === "production",
-                sameSite: (env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
-            }
-
-            reply.setCookie("wos-session", sealedSession, cookieOptions)
-
-            if (env.NODE_ENV === "development") {
-                fastify.log.info(
-                    {
-                        hasSealedSession: !!sealedSession,
-                        sessionLength: sealedSession?.length,
-                    },
-                    "Cookie set in /auth/callback",
-                )
-            }
-
             const dbUser = await db.query.users.findFirst({
                 where: eq(schema.users.id, user.id),
             })
@@ -189,6 +170,7 @@ export async function authRoutes(fastify: FastifyInstance) {
 
             reply.send({
                 success: true,
+                token: sealedSession,
                 user: {
                     id: user.id,
                     email: user.email,
@@ -226,13 +208,14 @@ export async function authRoutes(fastify: FastifyInstance) {
                     return
                 }
 
-                const sessionData = request.cookies["wos-session"]
+                const authHeader = request.headers.authorization
+                const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null
                 let logoutUrl: string | null = null
 
-                if (sessionData) {
+                if (token) {
                     try {
                         const session = workos.userManagement.loadSealedSession({
-                            sessionData,
+                            sessionData: token,
                             cookiePassword,
                         })
 
@@ -247,13 +230,6 @@ export async function authRoutes(fastify: FastifyInstance) {
                         fastify.log.warn({ err: error }, "Failed to get WorkOS logout URL")
                     }
                 }
-
-                reply.clearCookie("wos-session", {
-                    path: "/",
-                    httpOnly: true,
-                    secure: env.NODE_ENV === "production",
-                    sameSite: (env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
-                })
 
                 await trackEvent(
                     "auth_logout",
@@ -275,12 +251,6 @@ export async function authRoutes(fastify: FastifyInstance) {
                 logger.error("Logout error", error, {
                     endpoint: "/auth/logout",
                     method: "GET",
-                })
-                reply.clearCookie("wos-session", {
-                    path: "/",
-                    httpOnly: true,
-                    secure: env.NODE_ENV === "production",
-                    sameSite: (env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
                 })
                 reply.send({
                     success: true,
@@ -305,18 +275,19 @@ export async function authRoutes(fastify: FastifyInstance) {
                 return
             }
 
-            const sessionData = request.cookies["wos-session"]
+            const authHeader = request.headers.authorization
+            const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null
 
-            if (!sessionData) {
+            if (!token) {
                 reply.code(401).send({
                     error: "Unauthorized",
-                    message: "No session found",
+                    message: "No token provided",
                 })
                 return
             }
 
             const session = workos.userManagement.loadSealedSession({
-                sessionData,
+                sessionData: token,
                 cookiePassword,
             })
 
@@ -331,13 +302,6 @@ export async function authRoutes(fastify: FastifyInstance) {
                         "user" in refreshResult &&
                         refreshResult.sealedSession
                     ) {
-                        reply.setCookie("wos-session", refreshResult.sealedSession, {
-                            path: "/",
-                            httpOnly: true,
-                            secure: env.NODE_ENV === "production",
-                            sameSite: (env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
-                        })
-
                         const dbUser = await db.query.users.findFirst({
                             where: eq(schema.users.id, refreshResult.user.id),
                         })
@@ -354,12 +318,14 @@ export async function authRoutes(fastify: FastifyInstance) {
                             request,
                         )
 
+                        reply.header("X-New-Token", refreshResult.sealedSession)
                         reply.send({
                             id: refreshResult.user.id,
                             email: refreshResult.user.email,
                             firstName: refreshResult.user.firstName,
                             lastName: refreshResult.user.lastName,
                             nickname: dbUser?.nickname || null,
+                            token: refreshResult.sealedSession,
                         })
                         return
                     }
@@ -468,25 +434,7 @@ export async function authRoutes(fastify: FastifyInstance) {
                     return
                 }
 
-                const cookiePassword = env.WORKOS_COOKIE_PASSWORD
-                let workosUser = null
-                if (cookiePassword) {
-                    const sessionData = request.cookies["wos-session"]
-                    if (sessionData) {
-                        try {
-                            const session = workos.userManagement.loadSealedSession({
-                                sessionData,
-                                cookiePassword,
-                            })
-                            const authResult = await session.authenticate()
-                            if (authResult.authenticated && "user" in authResult) {
-                                workosUser = authResult.user
-                            }
-                        } catch (error) {
-                            fastify.log.warn({ err: error }, "Failed to get WorkOS user data")
-                        }
-                    }
-                }
+                const workosUser = request.user || null
 
                 logger.info("User profile updated", {
                     endpoint: "/auth/me",

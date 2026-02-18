@@ -33,19 +33,20 @@ export const authenticateUser = async (request: FastifyRequest, reply: FastifyRe
         return
     }
 
-    const sessionData = request.cookies["wos-session"]
+    const authHeader = request.headers.authorization
+    const token = authHeader?.startsWith("Bearer ") ? authHeader.substring(7) : null
 
-    if (!sessionData) {
+    if (!token) {
         reply.code(401).send({
             error: "Unauthorized",
-            message: "No session found",
+            message: "No token provided",
         })
         return
     }
 
     try {
         const session = workos.userManagement.loadSealedSession({
-            sessionData,
+            sessionData: token,
             cookiePassword,
         })
 
@@ -60,13 +61,7 @@ export const authenticateUser = async (request: FastifyRequest, reply: FastifyRe
                     "user" in refreshResult &&
                     refreshResult.sealedSession
                 ) {
-                    reply.setCookie("wos-session", refreshResult.sealedSession, {
-                        path: "/",
-                        httpOnly: true,
-                        secure: env.NODE_ENV === "production",
-                        sameSite: (env.NODE_ENV === "production" ? "none" : "lax") as "none" | "lax",
-                    })
-
+                    reply.header("X-New-Token", refreshResult.sealedSession)
                     request.user = refreshResult.user
                     request.userId = refreshResult.user.id
                     return

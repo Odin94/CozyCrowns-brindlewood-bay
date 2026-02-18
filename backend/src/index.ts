@@ -8,7 +8,6 @@ import { shareRoutes } from "./routes/shares.js"
 import { authRoutes } from "./routes/auth.js"
 import { env } from "./config/env.js"
 import { generateRequestId, setRequestId } from "./middleware/requestId.js"
-import { CSRF_TOKEN_HEADER_NAME, generateCsrfToken, setCsrfToken, validateCsrfToken } from "./middleware/csrf.js"
 
 const httpsOptions =
     env.SSL_CERT_PATH && env.SSL_KEY_PATH
@@ -60,8 +59,8 @@ await fastify.register(cors, {
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization", "X-CSRF-Token", CSRF_TOKEN_HEADER_NAME, "X-Request-Id"],
-    exposedHeaders: ["X-Request-Id", "X-CSRF-Token", CSRF_TOKEN_HEADER_NAME],
+    allowedHeaders: ["Content-Type", "Authorization", "X-Request-Id"],
+    exposedHeaders: ["X-Request-Id"],
 })
 
 await fastify.register(cookie, {
@@ -77,25 +76,6 @@ await fastify.register(rateLimit, {
 fastify.addHook("onRequest", async (request, reply) => {
     const requestId = (request.headers["x-request-id"] as string | undefined) || generateRequestId()
     setRequestId(request, reply, requestId)
-})
-
-fastify.addHook("onRequest", async (request, reply) => {
-    if (request.method === "GET" && !request.url.startsWith("/ws/")) {
-        const existingToken = request.cookies["csrf-token"]
-        const token = existingToken ?? generateCsrfToken()
-        if (!existingToken) {
-            setCsrfToken(reply, token, request)
-        }
-        reply.header("X-CSRF-Token", token)
-    }
-})
-
-fastify.addHook("onRequest", async (request, reply) => {
-    try {
-        await validateCsrfToken(request, reply)
-    } catch (error) {
-        throw error
-    }
 })
 
 await fastify.register(authRoutes)
