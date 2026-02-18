@@ -12,7 +12,7 @@ export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
 
     if (loading) {
         return (
-            <Button disabled variant="secondary" className="w-25 justify-center text-foreground">
+            <Button size="sm" disabled variant="secondary" className="w-25 justify-center text-foreground">
                 <Trans>Loading...</Trans>
             </Button>
         )
@@ -21,6 +21,7 @@ export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
     if (isAuthenticated && user) {
         return (
             <Button
+                size="sm"
                 variant="secondary"
                 className="w-25 justify-center text-foreground"
                 onClick={onMeClick}
@@ -32,7 +33,7 @@ export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
     }
 
     return (
-        <Button onClick={signIn} variant="secondary" className="w-25 justify-center text-foreground">
+        <Button size="sm" onClick={signIn} variant="secondary" className="w-25 justify-center text-foreground">
             <LogIn className="w-4 h-4 mr-2" />
             <Trans>Sign In</Trans>
         </Button>
