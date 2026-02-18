@@ -1,4 +1,6 @@
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3001"
+import { env } from "../config/env.ts"
+
+const API_URL = env.VITE_API_URL
 const TOKEN_STORAGE_KEY = "auth_token"
 
 type User = {

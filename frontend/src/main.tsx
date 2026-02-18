@@ -2,6 +2,7 @@ import { i18n } from "@lingui/core"
 import { PostHogProvider } from "posthog-js/react"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
+import { env } from "./config/env.ts"
 import "./index.css"
 import { loadTranslations } from "./lib/utils.ts"
 import { useSettingsStore } from "./lib/settings_store.ts"
@@ -16,8 +17,8 @@ const initializeApp = async () => {
     // Only import App after i18n is initialized
     const { default: App } = await import("./App.tsx")
 
-    const posthogKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY
-    const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST
+    const posthogKey = env.VITE_PUBLIC_POSTHOG_KEY
+    const posthogHost = env.VITE_PUBLIC_POSTHOG_HOST
 
     const appContent = posthogKey ? (
         <PostHogProvider
@@ -26,7 +27,6 @@ const initializeApp = async () => {
                 api_host: posthogHost,
                 defaults: "2025-05-24",
                 capture_exceptions: true,
-                debug: import.meta.env.MODE === "development",
             }}
         >
             <App />
