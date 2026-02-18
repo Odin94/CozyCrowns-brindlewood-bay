@@ -27,3 +27,5 @@ dist-ssr
 
 .oprocs.lock
 oprocs/
+
+.pm2/

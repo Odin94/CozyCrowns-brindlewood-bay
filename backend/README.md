@@ -96,3 +96,9 @@ Start the production server:
 ```bash
 npm start
 ```
+
+
+
+## Running on Hetzner server
+* Set up caddy, pm2, dependencies etc. with `setupServer.sh` from progeny (includes caddyfile for reverse-proxying to cozycrowns at port 3001)
+* Pull cozycrowns repo into /opt/
