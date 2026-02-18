@@ -13,6 +13,9 @@ export const CozyItemSchema = z.object({
 })
 
 export const CharacterDataSchema = z.object({
+    id: z.string().optional(),
+    version: z.number().optional(),
+    schemaVersion: z.number().optional().default(1),
     name: z.string().optional().default(""),
     style: z.string().optional().default(""),
     activity: z.string().optional().default(""),

@@ -39,10 +39,11 @@ export const tokenStorage = {
     },
 }
 
-const getAuthHeaders = (): HeadersInit => {
+const getAuthHeaders = ({ includeContentType = true }: { includeContentType?: boolean } = {}): HeadersInit => {
     const token = tokenStorage.get()
-    const headers: HeadersInit = {
-        "Content-Type": "application/json",
+    const headers: HeadersInit = {}
+    if (includeContentType) {
+        headers["Content-Type"] = "application/json"
     }
     if (token) {
         headers.Authorization = `Bearer ${token}`
@@ -67,7 +68,7 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 export const api = {
     getCurrentUser: async (): Promise<User & { token?: string }> => {
         const response = await fetch(`${API_URL}/auth/me`, {
-            headers: getAuthHeaders(),
+            headers: getAuthHeaders({ includeContentType: false }),
         })
         return handleResponse<User & { token?: string }>(response)
     },
@@ -87,7 +88,7 @@ export const api = {
 
     logout: async (): Promise<LogoutResponse> => {
         const response = await fetch(`${API_URL}/auth/logout`, {
-            headers: getAuthHeaders(),
+            headers: getAuthHeaders({ includeContentType: false }),
         })
         const data = await handleResponse<LogoutResponse>(response)
         tokenStorage.remove()
@@ -101,6 +102,73 @@ export const api = {
             body: JSON.stringify(data),
         })
         return handleResponse<User>(response)
+    },
+
+    getCharacters: async (): Promise<{
+        characters: Array<{
+            id: string
+            name: string
+            data: any
+            version: number
+            characterVersion: number
+            createdAt: Date
+            updatedAt: Date
+            owned: boolean
+        }>
+    }> => {
+        const response = await fetch(`${API_URL}/characters`, {
+            headers: getAuthHeaders({ includeContentType: false }),
+        })
+        return handleResponse(response)
+    },
+
+    createCharacter: async (data: {
+        name: string
+        data: any
+        version?: number
+    }): Promise<{
+        id: string
+        name: string
+        data: any
+        version: number
+        characterVersion: number
+        createdAt: Date
+        updatedAt: Date
+    }> => {
+        const response = await fetch(`${API_URL}/characters`, {
+            method: "POST",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        })
+        return handleResponse(response)
+    },
+
+    updateCharacter: async (
+        id: string,
+        data: { name?: string; data?: any; version?: number },
+    ): Promise<{
+        id: string
+        name: string
+        data: any
+        version: number
+        characterVersion: number
+        createdAt: Date
+        updatedAt: Date
+    }> => {
+        const response = await fetch(`${API_URL}/characters/${id}`, {
+            method: "PUT",
+            headers: getAuthHeaders(),
+            body: JSON.stringify(data),
+        })
+        return handleResponse(response)
+    },
+
+    deleteCharacter: async (id: string): Promise<{ success: boolean }> => {
+        const response = await fetch(`${API_URL}/characters/${id}`, {
+            method: "DELETE",
+            headers: getAuthHeaders({ includeContentType: false }),
+        })
+        return handleResponse(response)
     },
 }
 

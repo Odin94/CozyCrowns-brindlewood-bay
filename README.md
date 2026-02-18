@@ -55,7 +55,10 @@ To add a new language:
 <!-- 
 
 TODOdin: Add more eldritch elements to the site as void crowns get checked off
-TODOdin: Add u18n with https://github.com/lingui/js-lingui
-TODOdin: See if you can get some simple free storage with firebase or something..?
 TODOdin: Add Dark Conspiracy sheet
+
+TODOdin: Update translations
+TODOdin: Add sessions, allow sharing (read-only) view of characters in same session (add some sort of session view?)
+    Maybe session view could be some popup that contains tabs for dice rolls & friends, and in friends you can roll down a summary of other's characters
+TODOdin: Add dice rolling & sharing dice rolls with session
  -->

@@ -30,6 +30,9 @@ export const getDefaultCharacterData = (): CharacterData => ({
 })
 
 export type CharacterData = {
+    id?: string
+    version?: number
+    schemaVersion?: number
     name: string
     style: string
     activity: string
@@ -42,6 +45,14 @@ export type CharacterData = {
     crownChecks: boolean[]
     voidChecks: boolean[]
     cozyItems: CozyItem[]
+}
+
+export type BackendCharacterData = Omit<CharacterData, "id" | "version">
+
+export type BackendCharacter = {
+    id: string
+    version: number
+    data: BackendCharacterData
 }
 
 export type CharacterState = {
@@ -78,6 +89,9 @@ export type CharacterState = {
     removeCharacter: (index: number) => void
     setCurrentCharacter: (index: number) => void
     getCharacterData: () => CharacterData
+    updateCharacterIdAndVersion: (index: number, id: string, version: number) => void
+    clearCurrentCharacterIdAndVersion: () => void
+    syncCharactersFromBackend: (backendCharacters: BackendCharacter[]) => void
 }
 
 export const useCharacterStore = create<CharacterState>()(
@@ -213,10 +227,82 @@ export const useCharacterStore = create<CharacterState>()(
                     }
                 },
                 getCharacterData: () => getCurrentCharacter(),
+                updateCharacterIdAndVersion: (index, id, version) => {
+                    const state = get()
+                    const newCharacters = [...state.characters]
+                    if (newCharacters[index]) {
+                        newCharacters[index] = { ...newCharacters[index], id, version }
+                        set({ characters: newCharacters })
+                    }
+                },
+                clearCurrentCharacterIdAndVersion: () => {
+                    const state = get()
+                    const newCharacters = [...state.characters]
+                    const currentIndex = state.currentCharacterIndex
+                    if (newCharacters[currentIndex]) {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        const { id, version, ...rest } = newCharacters[currentIndex]
+                        newCharacters[currentIndex] = rest as CharacterData
+                        set({ characters: newCharacters })
+                    }
+                },
+                syncCharactersFromBackend: (backendCharacters) => {
+                    const state = get()
+                    const existingCharacters = state.characters
+                    const updatedCharacters = [...existingCharacters]
+
+                    backendCharacters.forEach((backendCharacter) => {
+                        const existingIndex = updatedCharacters.findIndex(
+                            (character) => character.id === backendCharacter.id,
+                        )
+
+                        if (existingIndex === -1) {
+                            const defaultCharacter = getDefaultCharacterData()
+                            updatedCharacters.push({
+                                ...defaultCharacter,
+                                ...backendCharacter.data,
+                                id: backendCharacter.id,
+                                version: backendCharacter.version,
+                            })
+                        } else {
+                            const existingCharacter = updatedCharacters[existingIndex]
+                            const existingVersion = existingCharacter.version ?? 0
+
+                            if (backendCharacter.version > existingVersion) {
+                                updatedCharacters[existingIndex] = {
+                                    ...existingCharacter,
+                                    ...backendCharacter.data,
+                                    id: backendCharacter.id,
+                                    version: backendCharacter.version,
+                                }
+                            }
+                        }
+                    })
+
+                    const newIndex = Math.min(state.currentCharacterIndex, updatedCharacters.length - 1)
+                    const currentCharacter = updatedCharacters[newIndex] || getDefaultCharacterData()
+
+                    set({
+                        characters: updatedCharacters,
+                        currentCharacterIndex: Math.max(0, newIndex),
+                        name: currentCharacter.name,
+                        style: currentCharacter.style,
+                        activity: currentCharacter.activity,
+                        abilities: currentCharacter.abilities,
+                        xp: currentCharacter.xp,
+                        conditions: currentCharacter.conditions,
+                        endOfSessionChecks: currentCharacter.endOfSessionChecks,
+                        advancementChecks: currentCharacter.advancementChecks,
+                        mavenMoves: currentCharacter.mavenMoves,
+                        crownChecks: currentCharacter.crownChecks,
+                        voidChecks: currentCharacter.voidChecks,
+                        cozyItems: currentCharacter.cozyItems,
+                    })
+                },
             }
         },
         {
             name: "cozycrowns-character-storage",
-        }
-    )
+        },
+    ),
 )

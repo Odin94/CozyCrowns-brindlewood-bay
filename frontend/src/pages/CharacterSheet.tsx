@@ -9,6 +9,11 @@ import CrownOfTheVoid from "@/components/character/CrownOfTheVoid"
 import DeleteConfirmDialog from "@/components/character/DeleteConfirmDialog"
 import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation"
 import { useIsLargeScreen } from "@/hooks/useIsLargeScreen"
+import { useCharacterSave } from "@/hooks/useCharacterSave"
+import { useBackendCharactersSync } from "@/hooks/useBackendCharactersSync"
+import { SaveFailureDialog } from "@/components/MenuDialog/SaveFailureDialog"
+import { useCharacterStore } from "@/lib/character_store"
+import { useAuth } from "@/hooks/useAuth"
 import EndOfSession from "@/components/character/EndOfSession"
 import MavenMoves from "@/components/character/MavenMoves"
 import MenuDialog from "@/components/MenuDialog/MenuDialog"
@@ -25,10 +30,39 @@ import { useState } from "react"
 const CharacterSheet = () => {
     // useLingui() is Required to ensure component rerenders when locale changes
     useLingui()
+    useBackendCharactersSync()
     const [menuOpen, setMenuOpen] = useState(false)
+    const [saveFailureOpen, setSaveFailureOpen] = useState(false)
+    const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null)
     const isLargeScreen = useIsLargeScreen()
     const { deleteConfirmOpen, deleteConfirmIndex, handleDeleteCharacter, confirmDelete, cancelDelete, setDeleteConfirmOpen } =
         useDeleteConfirmation()
+    const { saveCurrentCharacter } = useCharacterSave()
+    const { setCurrentCharacter } = useCharacterStore()
+    const { isAuthenticated } = useAuth()
+
+    const handleSwitchCharacter = async (index: number): Promise<boolean> => {
+        const saveSuccess = await saveCurrentCharacter()
+        if (!saveSuccess) {
+            setPendingSwitchIndex(index)
+            setSaveFailureOpen(true)
+            return false
+        }
+        return true
+    }
+
+    const handleSaveFailureContinue = () => {
+        if (pendingSwitchIndex !== null) {
+            setCurrentCharacter(pendingSwitchIndex)
+            setPendingSwitchIndex(null)
+        }
+        setSaveFailureOpen(false)
+    }
+
+    const handleSaveFailureCancel = () => {
+        setPendingSwitchIndex(null)
+        setSaveFailureOpen(false)
+    }
 
     return (
         <div className={`min-h-screen w-full from-gray-900 to-gray-800 p-4 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}>
@@ -93,10 +127,20 @@ const CharacterSheet = () => {
 
             {/* Delete confirmation for character tabs */}
             <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
-                <DeleteConfirmDialog characterIndex={deleteConfirmIndex} onConfirm={confirmDelete} onCancel={cancelDelete} />
+                <DeleteConfirmDialog
+                    characterIndex={deleteConfirmIndex}
+                    onConfirm={confirmDelete}
+                    onCancel={cancelDelete}
+                    isAuthenticated={isAuthenticated}
+                />
             </Dialog>
 
-            <CharacterTabs onDeleteCharacter={handleDeleteCharacter} />
+            {/* Save failure dialog */}
+            <Dialog open={saveFailureOpen} onOpenChange={setSaveFailureOpen}>
+                <SaveFailureDialog onContinue={handleSaveFailureContinue} onCancel={handleSaveFailureCancel} />
+            </Dialog>
+
+            <CharacterTabs onDeleteCharacter={handleDeleteCharacter} onSwitchCharacter={handleSwitchCharacter} />
         </div>
     )
 }

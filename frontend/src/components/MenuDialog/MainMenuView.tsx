@@ -3,7 +3,7 @@ import { DialogDescription } from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { AuthButton } from "@/components/AuthButton"
 import { Trans } from "@lingui/react/macro"
-import { CoffeeIcon, Download, FileDown, Globe, Trash2, Upload } from "lucide-react"
+import { CoffeeIcon, Download, FileDown, Globe, Save, Trash2, Upload } from "lucide-react"
 
 type MainMenuViewProps = {
     onDownloadPDF: () => void
@@ -13,6 +13,8 @@ type MainMenuViewProps = {
     onCreditsClick: () => void
     onMeClick: () => void
     onLanguageChange: (locale: string) => void
+    onSaveToBackend?: () => void
+    isAuthenticated?: boolean
 }
 
 export const MainMenuView = ({
@@ -23,6 +25,8 @@ export const MainMenuView = ({
     onCreditsClick,
     onMeClick,
     onLanguageChange,
+    onSaveToBackend,
+    isAuthenticated,
 }: MainMenuViewProps) => {
     return (
         <>
@@ -52,6 +56,12 @@ export const MainMenuView = ({
                     <FileDown className="w-4 h-4 mr-2" />
                     <Trans>Download PDF</Trans>
                 </Button>
+                {isAuthenticated && onSaveToBackend ? (
+                    <Button onClick={onSaveToBackend} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
+                        <Save className="w-4 h-4 mr-2" />
+                        <Trans>Save to Backend</Trans>
+                    </Button>
+                ) : null}
                 <Button onClick={onDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
                     <Download className="w-4 h-4 mr-2" />
                     <Trans>Download save file</Trans>

@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify"
 import { db } from "../db/index.js"
 import { characters, characterShares, users } from "../db/schema.js"
-import { eq, and } from "drizzle-orm"
+import { eq, and, isNull } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { authenticateUser } from "../middleware/auth.js"
 import { zodToFastifySchema } from "../utils/zodToFastifySchema.js"
@@ -27,7 +27,12 @@ export const shareRoutes = async (fastify: FastifyInstance) => {
             const userId = request.userId!
             const { id } = request.params
 
-            const character = await db.select().from(characters).where(eq(characters.id, id)).limit(1).get()
+            const character = await db
+                .select()
+                .from(characters)
+                .where(and(eq(characters.id, id), isNull(characters.deletedAt)))
+                .limit(1)
+                .get()
 
             if (!character) {
                 reply.code(404)
@@ -74,7 +79,12 @@ export const shareRoutes = async (fastify: FastifyInstance) => {
             const { id } = request.params
             const body = request.body
 
-            const character = await db.select().from(characters).where(eq(characters.id, id)).limit(1).get()
+            const character = await db
+                .select()
+                .from(characters)
+                .where(and(eq(characters.id, id), isNull(characters.deletedAt)))
+                .limit(1)
+                .get()
 
             if (!character) {
                 reply.code(404)
@@ -144,7 +154,12 @@ export const shareRoutes = async (fastify: FastifyInstance) => {
             const userId = request.userId!
             const { id, shareId } = request.params
 
-            const character = await db.select().from(characters).where(eq(characters.id, id)).limit(1).get()
+            const character = await db
+                .select()
+                .from(characters)
+                .where(and(eq(characters.id, id), isNull(characters.deletedAt)))
+                .limit(1)
+                .get()
 
             if (!character) {
                 reply.code(404)
@@ -191,7 +206,7 @@ export const shareRoutes = async (fastify: FastifyInstance) => {
             .from(characterShares)
             .innerJoin(characters, eq(characterShares.characterId, characters.id))
             .innerJoin(users, eq(characterShares.sharedById, users.id))
-            .where(eq(characterShares.sharedWithUserId, userId))
+            .where(and(eq(characterShares.sharedWithUserId, userId), isNull(characters.deletedAt)))
 
         return {
             characters: sharedCharacters.map((char) => ({
@@ -231,7 +246,12 @@ export const shareRoutes = async (fastify: FastifyInstance) => {
                 return { error: "Shared character not found" }
             }
 
-            const character = await db.select().from(characters).where(eq(characters.id, id)).limit(1).get()
+            const character = await db
+                .select()
+                .from(characters)
+                .where(and(eq(characters.id, id), isNull(characters.deletedAt)))
+                .limit(1)
+                .get()
 
             if (!character) {
                 reply.code(404)

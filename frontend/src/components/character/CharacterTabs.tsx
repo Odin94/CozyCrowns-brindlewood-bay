@@ -5,12 +5,24 @@ import { useState } from "react"
 
 interface CharacterTabsProps {
     onDeleteCharacter: (index: number) => void
+    onSwitchCharacter?: (index: number) => Promise<boolean>
 }
 
-const CharacterTabs = ({ onDeleteCharacter }: CharacterTabsProps) => {
+const CharacterTabs = ({ onDeleteCharacter, onSwitchCharacter }: CharacterTabsProps) => {
     const { characters, currentCharacterIndex, setCurrentCharacter, addCharacter } = useCharacterStore()
     const isLargeScreen = useIsLargeScreen()
     const [isMobileTabsVisible, setIsMobileTabsVisible] = useState(false)
+
+    const handleCharacterSwitch = async (index: number) => {
+        if (index === currentCharacterIndex) return
+
+        if (onSwitchCharacter) {
+            const canSwitch = await onSwitchCharacter(index)
+            if (!canSwitch) return
+        }
+
+        setCurrentCharacter(index)
+    }
 
     const handleRemoveCharacter = (index: number, e: React.MouseEvent) => {
         e.stopPropagation()
@@ -26,14 +38,13 @@ const CharacterTabs = ({ onDeleteCharacter }: CharacterTabsProps) => {
         return (
             <div
                 key={index}
-                className={`relative group flex items-center gap-2 pl-6 py-3 w-40 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in ${
-                    currentCharacterIndex === index
+                className={`relative group flex items-center gap-2 pl-6 py-3 w-40 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in ${currentCharacterIndex === index
                         ? "bg-dark-secondary text-tertiary"
                         : "bg-dark-secondary/40 hover:bg-dark-secondary/60 text-tertiary/80"
-                }
+                    }
                 ${isLargeScreen ? "ml-[-10px] hover:ml-0" : "rounded-l-lg"}
                 `}
-                onClick={() => setCurrentCharacter(index)}
+                onClick={() => handleCharacterSwitch(index)}
                 style={{
                     transition: "margin 0.5s ease-in-out, transform 0.5s ease-in-out, box-shadow 0.5s ease-in-out",
                 }}
@@ -42,9 +53,8 @@ const CharacterTabs = ({ onDeleteCharacter }: CharacterTabsProps) => {
                 {characters.length > 1 && (
                     <button
                         onClick={(e) => handleRemoveCharacter(index, e)}
-                        className={`${
-                            isLargeScreen ? "opacity-0" : "opacity-100"
-                        } group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-500 hover:text-white rounded p-1 ml-2`}
+                        className={`${isLargeScreen ? "opacity-0" : "opacity-100"
+                            } group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-500 hover:text-white rounded p-1 ml-2`}
                     >
                         <X size={12} />
                     </button>
@@ -95,9 +105,8 @@ const CharacterTabs = ({ onDeleteCharacter }: CharacterTabsProps) => {
 
                     {/* Bottom bar - slides up/down */}
                     <div
-                        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-                            isMobileTabsVisible ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-                        }`}
+                        className={`overflow-hidden transition-all duration-300 ease-in-out ${isMobileTabsVisible ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+                            }`}
                     >
                         <div className="bg-gray-800/90 backdrop-blur-sm border-t border-gray-700 rounded-lg">
                             <div className="flex flex-col items-center gap-3 p-4">

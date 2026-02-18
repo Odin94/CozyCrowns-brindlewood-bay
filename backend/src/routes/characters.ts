@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify"
 import { db } from "../db/index.js"
 import { characters, characterShares } from "../db/schema.js"
-import { eq, and, sql } from "drizzle-orm"
+import { eq, and, sql, isNull } from "drizzle-orm"
 import { nanoid } from "nanoid"
 import { trackEvent } from "../utils/tracker.js"
 import { logger } from "../utils/logger.js"
@@ -20,7 +20,10 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
     fastify.get("/characters", { preHandler: authenticateUser }, async (request, reply) => {
         const userId = request.userId!
 
-        const userCharacters = await db.select().from(characters).where(eq(characters.userId, userId))
+        const userCharacters = await db
+            .select()
+            .from(characters)
+            .where(and(eq(characters.userId, userId), isNull(characters.deletedAt)))
 
         const sharedCharacters = await db
             .select({
@@ -34,7 +37,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
             })
             .from(characterShares)
             .innerJoin(characters, eq(characterShares.characterId, characters.id))
-            .where(eq(characterShares.sharedWithUserId, userId))
+            .where(and(eq(characterShares.sharedWithUserId, userId), isNull(characters.deletedAt)))
 
         const allCharacters = [
             ...userCharacters.map((char) => ({
@@ -76,7 +79,12 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
             const userId = request.userId!
             const { id } = request.params
 
-            const character = await db.select().from(characters).where(eq(characters.id, id)).limit(1).get()
+            const character = await db
+                .select()
+                .from(characters)
+                .where(and(eq(characters.id, id), isNull(characters.deletedAt)))
+                .limit(1)
+                .get()
 
             if (!character) {
                 reply.code(404)
@@ -106,7 +114,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
                 createdAt: character.createdAt,
                 updatedAt: character.updatedAt,
             }
-        }
+        },
     )
 
     fastify.post<{ Body: CreateCharacterInput }>(
@@ -124,7 +132,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
             const characterCount = await db
                 .select({ count: sql<number>`count(*)` })
                 .from(characters)
-                .where(eq(characters.userId, userId))
+                .where(and(eq(characters.userId, userId), isNull(characters.deletedAt)))
 
             if (characterCount[0]?.count >= 100) {
                 logger.warn("Character limit reached", {
@@ -147,7 +155,8 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
                 )
                 reply.code(403).send({
                     error: "Character limit reached",
-                    message: "You have reached the maximum limit of 100 characters. Please delete some characters before creating new ones.",
+                    message:
+                        "You have reached the maximum limit of 100 characters. Please delete some characters before creating new ones.",
                 })
                 return
             }
@@ -178,7 +187,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
                 createdAt: character.createdAt,
                 updatedAt: character.updatedAt,
             }
-        }
+        },
     )
 
     fastify.put<{ Params: CharacterParams; Body: UpdateCharacterInput }>(
@@ -195,7 +204,12 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
             const { id } = request.params
             const body = request.body
 
-            const existing = await db.select().from(characters).where(eq(characters.id, id)).limit(1).get()
+            const existing = await db
+                .select()
+                .from(characters)
+                .where(and(eq(characters.id, id), isNull(characters.deletedAt)))
+                .limit(1)
+                .get()
 
             if (!existing) {
                 reply.code(404)
@@ -207,9 +221,19 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
                 return { error: "Forbidden" }
             }
 
+            const existingData = JSON.parse(existing.data)
+            let hasDataChanges = false
+
+            if (body.data !== undefined) {
+                const newDataStr = JSON.stringify(body.data)
+                const existingDataStr = JSON.stringify(existingData)
+                hasDataChanges = newDataStr !== existingDataStr
+            }
+
+            const hasNameChange = body.name !== undefined && body.name !== existing.name
+
             const updates: any = {
                 updatedAt: new Date(),
-                version: body.version ?? existing.version + 1,
             }
 
             if (body.name !== undefined) {
@@ -218,7 +242,15 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
 
             if (body.data !== undefined) {
                 updates.data = JSON.stringify(body.data)
-                updates.characterVersion = existing.characterVersion + 1
+                if (hasDataChanges) {
+                    updates.characterVersion = existing.characterVersion + 1
+                }
+            }
+
+            if (hasDataChanges || hasNameChange) {
+                updates.version = (body.version ?? existing.version) + 1
+            } else {
+                updates.version = existing.version
             }
 
             const [character] = await db.update(characters).set(updates).where(eq(characters.id, id)).returning()
@@ -232,7 +264,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
                 createdAt: character.createdAt,
                 updatedAt: character.updatedAt,
             }
-        }
+        },
     )
 
     fastify.delete<{ Params: CharacterParams }>(
@@ -247,7 +279,12 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
             const userId = request.userId!
             const { id } = request.params
 
-            const existing = await db.select().from(characters).where(eq(characters.id, id)).limit(1).get()
+            const existing = await db
+                .select()
+                .from(characters)
+                .where(and(eq(characters.id, id), isNull(characters.deletedAt)))
+                .limit(1)
+                .get()
 
             if (!existing) {
                 reply.code(404)
@@ -259,9 +296,9 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
                 return { error: "Forbidden" }
             }
 
-            await db.delete(characters).where(eq(characters.id, id))
+            await db.update(characters).set({ deletedAt: new Date() }).where(eq(characters.id, id))
 
             return { success: true }
-        }
+        },
     )
 }

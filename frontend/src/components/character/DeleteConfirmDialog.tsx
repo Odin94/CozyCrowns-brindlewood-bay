@@ -9,9 +9,10 @@ type DeleteConfirmDialogProps = {
     characterIndex: number | null
     onConfirm: () => void
     onCancel: () => void
+    isAuthenticated?: boolean
 }
 
-const DeleteConfirmDialog = ({ characterIndex, onConfirm, onCancel }: DeleteConfirmDialogProps) => {
+const DeleteConfirmDialog = ({ characterIndex, onConfirm, onCancel, isAuthenticated }: DeleteConfirmDialogProps) => {
     const { characters } = useCharacterStore()
 
     if (characterIndex === null) return null
@@ -33,6 +34,11 @@ const DeleteConfirmDialog = ({ characterIndex, onConfirm, onCancel }: DeleteConf
                 <p className="text-sm text-gray-800">
                     <Trans>Are you sure you want to delete "{characterName}"? This will clear all data and cannot be undone.</Trans>
                 </p>
+                {isAuthenticated ? (
+                    <p className="text-sm text-red-600 font-medium">
+                        <Trans>This will also delete the character from the backend.</Trans>
+                    </p>
+                ) : null}
                 <div className="flex gap-2">
                     <Button onClick={onConfirm} className="flex-1 text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring">
                         <Trash2 className="w-4 h-4 mr-2" />

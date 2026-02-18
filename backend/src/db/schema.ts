@@ -27,6 +27,7 @@ export const characters = sqliteTable(
         data: text("data").notNull(),
         version: integer("version").notNull().default(1),
         characterVersion: integer("character_version").notNull().default(0),
+        deletedAt: integer("deleted_at", { mode: "timestamp" }),
         createdAt: integer("created_at", { mode: "timestamp" })
             .notNull()
             .default(sql`(unixepoch())`),
