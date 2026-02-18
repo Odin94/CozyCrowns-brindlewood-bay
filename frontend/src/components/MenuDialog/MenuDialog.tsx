@@ -92,10 +92,16 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         try {
             const characterData = characterStore.getCharacterData()
 
-            await downloadPdf(characterData)
+            // Ensure schemaVersion is always a number (not undefined)
+            const pdfData = {
+                ...characterData,
+                schemaVersion: characterData.schemaVersion ?? 1,
+            }
+
+            await downloadPdf(pdfData);
             toast.success(i18n._("PDF downloaded successfully!"))
         } catch (error) {
-            console.error("Error downloading PDF:", error)
+            console.error("Error downloading PDF:", error);
             toast.error(i18n._("Failed to download PDF. Please try again."))
         }
     }

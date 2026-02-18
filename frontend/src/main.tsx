@@ -16,21 +16,26 @@ const initializeApp = async () => {
     // Only import App after i18n is initialized
     const { default: App } = await import("./App.tsx")
 
-    createRoot(document.getElementById("root")!).render(
-        <StrictMode>
-            <PostHogProvider
-                apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-                options={{
-                    api_host: import.meta.env.VITE_PUBLIC_POSTHOG_HOST,
-                    defaults: "2025-05-24",
-                    capture_exceptions: true,
-                    debug: import.meta.env.MODE === "development",
-                }}
-            >
-                <App />
-            </PostHogProvider>
-        </StrictMode>
+    const posthogKey = import.meta.env.VITE_PUBLIC_POSTHOG_KEY
+    const posthogHost = import.meta.env.VITE_PUBLIC_POSTHOG_HOST
+
+    const appContent = posthogKey ? (
+        <PostHogProvider
+            apiKey={posthogKey}
+            options={{
+                api_host: posthogHost,
+                defaults: "2025-05-24",
+                capture_exceptions: true,
+                debug: import.meta.env.MODE === "development",
+            }}
+        >
+            <App />
+        </PostHogProvider>
+    ) : (
+        <App />
     )
+
+    createRoot(document.getElementById("root")!).render(<StrictMode>{appContent}</StrictMode>)
 }
 
 initializeApp().catch(console.error)
