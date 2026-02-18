@@ -11,3 +11,4 @@ const __dirname = dirname(__filename)
 const dbPath = resolve(__dirname, "../../db.sqlite")
 const sqlite = new Database(dbPath)
 export const db = drizzle(sqlite, { schema })
+export { schema }

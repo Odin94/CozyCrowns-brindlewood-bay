@@ -1,17 +1,19 @@
-import { Button } from "@/components/ui/button"
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { getAdvancementOptions, getCrownOfTheVoid, getEndOfSessionQuestions } from "@/game_data"
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store"
 import { useSettingsStore } from "@/lib/settings_store"
 import { downloadPdf } from "@/lib/pdf_generator"
 import { loadTranslations } from "@/lib/utils"
 import { CharacterDataSchema } from "@/types/characterSchema"
-import { Trans, useLingui } from "@lingui/react/macro"
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
-import { CoffeeIcon, Download, FileDown, Globe, Trash2, Upload } from "lucide-react"
+import { useLingui } from "@lingui/react/macro"
 import { useEffect, useState } from "react"
 import { toast } from "sonner"
+import { useAuth } from "@/hooks/useAuth"
+import { ResetConfirmView } from "@/components/MenuDialog/ResetConfirmView"
+import { MeView } from "@/components/MenuDialog/MeView"
+import { CreditsView } from "@/components/MenuDialog/CreditsView"
+import { MainMenuView } from "@/components/MenuDialog/MainMenuView"
+import { DialogContent, DialogTitle } from "@/components/ui/dialog"
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden"
 
 type MenuDialogProps = {
     onOpenChange?: (open: boolean) => void
@@ -23,8 +25,11 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
     const characterStore = useCharacterStore()
     const { setLocale } = useSettingsStore()
     const { i18n } = useLingui()
+    const { user, updateProfile, isUpdatingProfile, signOut } = useAuth()
     const [showResetConfirm, setShowResetConfirm] = useState(false)
     const [showCredits, setShowCredits] = useState(false)
+    const [showMe, setShowMe] = useState(false)
+    const [nickname, setNickname] = useState("")
 
     // Get the data dynamically so they update when locale changes
     const endOfSessionQuestions = getEndOfSessionQuestions()
@@ -42,8 +47,30 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         if (open) {
             setShowResetConfirm(false)
             setShowCredits(false)
+            setShowMe(false)
         }
     }, [open])
+
+    // Sync nickname with user data when showing Me page
+    useEffect(() => {
+        if (showMe && user) {
+            setNickname(user.nickname || "")
+        }
+    }, [showMe, user])
+
+    const handleUpdateProfile = async () => {
+        try {
+            await updateProfile({ nickname: nickname || null })
+            toast.success(i18n._("Profile updated successfully!"))
+        } catch (error) {
+            console.error("Error updating profile:", error)
+            toast.error(i18n._("Failed to update profile. Please try again."))
+        }
+    }
+
+    const handleLogout = () => {
+        signOut()
+    }
 
     const handleDownloadJSON = () => {
         const characterData = characterStore.getCharacterData()
@@ -125,8 +152,8 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                         characterData.cozyItems.length > 0
                             ? characterData.cozyItems
                             : Array(12)
-                                  .fill(null)
-                                  .map(() => ({ checked: false, text: "" }))
+                                .fill(null)
+                                .map(() => ({ checked: false, text: "" }))
                     )
 
                     onOpenChange?.(false)
@@ -172,188 +199,42 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         setShowResetConfirm(false)
     }
 
-    if (showResetConfirm) {
-        return (
-            <DialogContent className="sm:max-w-[525px] bg-secondary/90 border-0 shadow-none" style={{ boxShadow: "none" }}>
-                <VisuallyHidden.Root asChild>
-                    <DialogTitle>Menu</DialogTitle>
-                </VisuallyHidden.Root>
-                <DialogHeader>
-                    <DialogTitle className="text-gray-800">
-                        <Trans>Confirm Reset</Trans>
-                    </DialogTitle>
-                    <DialogDescription className="text-gray-800">
-                        <Trans>This action will permanently delete all your character data.</Trans>
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4">
-                    <p className="text-sm text-gray-800">
-                        <Trans>Are you sure you want to reset your character? This will clear all data and cannot be undone.</Trans>
-                    </p>
-                    <div className="flex gap-2">
-                        <Button onClick={confirmReset} className="flex-1 text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring">
-                            <Trash2 className="w-4 h-4 mr-2" />
-                            <Trans>Reset Character</Trans>
-                        </Button>
-                        <Button
-                            onClick={cancelReset}
-                            className="flex-1 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
-                        >
-                            <Trans>Cancel</Trans>
-                        </Button>
-                    </div>
-                </div>
-            </DialogContent>
-        )
-    }
-
-    if (showCredits) {
-        return (
-            <DialogContent className="sm:max-w-[500px] bg-secondary/90 border-0 shadow-none" style={{ boxShadow: "none" }}>
-                <VisuallyHidden.Root asChild>
-                    <DialogTitle>Menu</DialogTitle>
-                </VisuallyHidden.Root>
-                <DialogHeader>
-                    <DialogTitle className="text-gray-800">
-                        <Trans>Credits</Trans>
-                    </DialogTitle>
-                    <DialogDescription className="sr-only">
-                        <Trans>Information about the game, its creators and sources of assets.</Trans>
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-3 text-sm text-gray-800">
-                    <p>
-                        <Trans>
-                            Brindlewood Bay is published by{" "}
-                            <a
-                                href="https://www.gauntlet-rpg.com/brindlewood-bay.html"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="underline"
-                            >
-                                The Gauntlet
-                            </a>
-                            .
-                        </Trans>
-                    </p>
-                    <p className="text-xs italic">
-                        <Trans>CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet.</Trans>
-                    </p>
-                    <div className="pt-1">
-                        <p className="font-semibold">
-                            <Trans>Assets</Trans>
-                        </p>
-                        <ul className="list-disc pl-5 space-y-1">
-                            <li>
-                                <Trans>
-                                    Queen SVG by{" "}
-                                    <a
-                                        href="https://www.svgrepo.com/svg/317455/queen"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="underline"
-                                    >
-                                        Darius Dan on svgrepo
-                                    </a>
-                                    .
-                                </Trans>
-                            </li>
-                            <li>
-                                <Trans>
-                                    Tentacles icon by{" "}
-                                    <a
-                                        href="https://thenounproject.com/icon/tentacles-4112037/"
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="underline"
-                                    >
-                                        Teewara soontorn on Noun Project
-                                    </a>
-                                    .
-                                </Trans>
-                            </li>
-                        </ul>
-                    </div>
-                    <div className="flex gap-2 pt-2">
-                        <Button
-                            onClick={() => setShowCredits(false)}
-                            className="flex-1 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
-                        >
-                            <Trans>Back</Trans>
-                        </Button>
-                    </div>
-                </div>
-            </DialogContent>
-        )
+    const getMaxWidth = () => {
+        if (showResetConfirm) return "sm:max-w-[525px]"
+        if (showMe || showCredits) return "sm:max-w-[500px]"
+        return "sm:max-w-[425px]"
     }
 
     return (
-        <DialogContent className="sm:max-w-[425px] bg-secondary/90 border-0 shadow-none" style={{ boxShadow: "none" }}>
+        <DialogContent className={`${getMaxWidth()} bg-secondary/90 border-0 shadow-none`} style={{ boxShadow: "none" }}>
             <VisuallyHidden.Root asChild>
                 <DialogTitle>Menu</DialogTitle>
             </VisuallyHidden.Root>
-            <DialogDescription className="sr-only">
-                <Trans>Manage your character and settings.</Trans>
-            </DialogDescription>
-            <div className="flex justify-between items-center mb-4">
-                <div></div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
-                            <Globe className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => handleLanguageChange("en")}>
-                            <Trans>English</Trans>
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => handleLanguageChange("de")}>
-                            <Trans>Deutsch</Trans>
-                        </DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-            <div className="grid gap-4">
-                <Button onClick={handleDownloadPDF} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
-                    <FileDown className="w-4 h-4 mr-2" />
-                    <Trans>Download PDF</Trans>
-                </Button>
-                <Button onClick={handleDownloadJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
-                    <Download className="w-4 h-4 mr-2" />
-                    <Trans>Download save file</Trans>
-                </Button>
-                <Button onClick={handleLoadFromJSON} className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring">
-                    <Upload className="w-4 h-4 mr-2" />
-                    <Trans>Load from save file</Trans>
-                </Button>
-                <Button
-                    onClick={() => setShowResetConfirm(true)}
-                    className="w-full text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring"
-                >
-                    <Trash2 className="w-4 h-4 mr-2" />
-                    <Trans>Reset Character</Trans>
-                </Button>
-                <div className="grid grid-cols-3 gap-2">
-                    <Button variant="link" asChild>
-                        <a href="https://odin-matthias.de" target="_blank" rel="noopener noreferrer">
-                            <Trans>Odin's Blog</Trans>
-                        </a>
-                    </Button>
-                    <Button variant="link" asChild>
-                        <a href="https://github.com/Odin94/CozyCrowns-brindlewood-bay" target="_blank" rel="noopener noreferrer">
-                            <Trans>Source Code</Trans>
-                        </a>
-                    </Button>
-                    <Button variant="link" onClick={() => setShowCredits(true)}>
-                        <Trans>Credits</Trans>
-                    </Button>
-                </div>
-                <Button variant="secondary" asChild className="w-full justify-center">
-                    <a href="https://ko-fi.com/odin_dev" target="_blank" rel="noopener noreferrer">
-                        <Trans>Support Me</Trans> <CoffeeIcon className="ml-2" />
-                    </a>
-                </Button>
-            </div>
+            {showResetConfirm ? (
+                <ResetConfirmView onConfirm={confirmReset} onCancel={cancelReset} />
+            ) : showMe ? (
+                <MeView
+                    user={user}
+                    nickname={nickname}
+                    onNicknameChange={setNickname}
+                    onUpdateProfile={handleUpdateProfile}
+                    onLogout={handleLogout}
+                    onBack={() => setShowMe(false)}
+                    isUpdatingProfile={isUpdatingProfile}
+                />
+            ) : showCredits ? (
+                <CreditsView onBack={() => setShowCredits(false)} />
+            ) : (
+                <MainMenuView
+                    onDownloadPDF={handleDownloadPDF}
+                    onDownloadJSON={handleDownloadJSON}
+                    onLoadFromJSON={handleLoadFromJSON}
+                    onResetClick={() => setShowResetConfirm(true)}
+                    onCreditsClick={() => setShowCredits(true)}
+                    onMeClick={() => setShowMe(true)}
+                    onLanguageChange={handleLanguageChange}
+                />
+            )}
         </DialogContent>
     )
 }

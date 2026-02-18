@@ -42,7 +42,15 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
     --tw-inset-ring-shadow: none; /* Remove inset ring shadow */
     --tw-ring-offset-shadow: none; /* Remove ring offset shadow */
     --theme-color: 280 25% 80%; /* Theme color for icons and labels */
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family:
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        "Helvetica Neue",
+        Arial,
+        sans-serif;
     line-height: 1.5;
     font-weight: 400;
     font-size: 1.3rem;
@@ -62,6 +70,7 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
         --color-dark-primary: hsl(180 30% 25%); /* Dark mint primary */
         --color-dark-secondary: hsl(280 30% 25%);
         --color-tertiary: hsl(278, 55%, 87%); /* #e3ccf0 - near-white purple for subtle hover */
+        --color-foreground: hsl(280 30% 25%); /* dark purple */
     }
 }
 
