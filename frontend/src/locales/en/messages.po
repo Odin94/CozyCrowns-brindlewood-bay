@@ -14,32 +14,60 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:71
+#: src/components/MenuDialog/MeView.tsx:98
+msgid "Enter your nickname"
+msgstr "Enter your nickname"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:62
+msgid "Profile updated successfully!"
+msgstr "Profile updated successfully!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:65
+msgid "Failed to update profile. Please try again."
+msgstr "Failed to update profile. Please try again."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:274
+msgid "Character saved successfully!"
+msgstr "Character saved successfully!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:276
+msgid "Failed to save character. Please try again."
+msgstr "Failed to save character. Please try again."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:102
 msgid "PDF downloaded successfully!"
 msgstr "PDF downloaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:74
+#: src/components/MenuDialog/MenuDialog.tsx:105
 msgid "Failed to download PDF. Please try again."
 msgstr "Failed to download PDF. Please try again."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:133
+#: src/components/MenuDialog/MenuDialog.tsx:175
+#: src/components/MenuDialog/MenuDialog.tsx:256
 msgid "Character data loaded successfully!"
 msgstr "Character data loaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:136
+#: src/components/MenuDialog/MenuDialog.tsx:178
+#: src/components/MenuDialog/MenuDialog.tsx:259
 msgid "Invalid JSON file format."
 msgstr "Invalid JSON file format."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:138
+#: src/components/MenuDialog/MenuDialog.tsx:180
+#: src/components/MenuDialog/MenuDialog.tsx:261
 msgid "Error loading character data. Please check the file format."
 msgstr "Error loading character data. Please check the file format."
 
 #. js-lingui-explicit-id
-#: src/components/character/MenuDialog.tsx:168
+#: src/components/MenuDialog/MenuDialog.tsx:313
 msgid "Character reset successfully!"
 msgstr "Character reset successfully!"
 
@@ -136,15 +164,15 @@ msgstr "All the Cardigans"
 msgid "Antiques & Furniture"
 msgstr "Antiques & Furniture"
 
-#: src/components/character/DeleteConfirmDialog.tsx:36
+#: src/components/character/DeleteConfirmDialog.tsx:35
 msgid "Are you sure you want to delete \"{characterName}\"? This will clear all data and cannot be undone."
 msgstr "Are you sure you want to delete \"{characterName}\"? This will clear all data and cannot be undone."
 
-#: src/components/character/MenuDialog.tsx:191
+#: src/components/MenuDialog/ResetConfirmView.tsx:24
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 
-#: src/components/character/MenuDialog.tsx:244
+#: src/components/MenuDialog/CreditsView.tsx:40
 msgid "Assets"
 msgstr "Assets"
 
@@ -160,7 +188,9 @@ msgstr "At the beginning of each session, the Keeper will narrate an answering m
 msgid "Avoid physical harm once per mystery"
 msgstr "Avoid physical harm once per mystery"
 
-#: src/components/character/MenuDialog.tsx:282
+#: src/components/MenuDialog/CreditsView.tsx:75
+#: src/components/MenuDialog/MeView.tsx:143
+#: src/components/MenuDialog/MeView.tsx:153
 msgid "Back"
 msgstr "Back"
 
@@ -176,16 +206,17 @@ msgstr "Birding"
 msgid "Blouse Barn"
 msgstr "Blouse Barn"
 
-#: src/components/character/MenuDialog.tsx:226
+#: src/components/MenuDialog/CreditsView.tsx:22
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay is published by <0>The Gauntlet</0>."
 
-#: src/pages/CharacterSheet.tsx:39
+#: src/pages/CharacterSheet.tsx:73
 msgid "by Odin"
 msgstr "by Odin"
 
-#: src/components/character/DeleteConfirmDialog.tsx:48
-#: src/components/character/MenuDialog.tsx:202
+#: src/components/character/DeleteConfirmDialog.tsx:52
+#: src/components/MenuDialog/ResetConfirmView.tsx:32
+#: src/components/MenuDialog/SaveFailureDialog.tsx:42
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -218,9 +249,13 @@ msgstr "Composure"
 msgid "Conditions"
 msgstr "Conditions"
 
-#: src/components/character/MenuDialog.tsx:183
+#: src/components/MenuDialog/ResetConfirmView.tsx:16
 msgid "Confirm Reset"
 msgstr "Confirm Reset"
+
+#: src/components/MenuDialog/SaveFailureDialog.tsx:35
+msgid "Continue"
+msgstr "Continue"
 
 #: src/game_data.ts:91
 msgid "Cooking"
@@ -230,12 +265,12 @@ msgstr "Cooking"
 msgid "Cozy Activity"
 msgstr "Cozy Activity"
 
-#: src/components/character/MenuDialog.tsx:240
+#: src/components/MenuDialog/CreditsView.tsx:36
 msgid "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
 msgstr "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
 
-#: src/components/character/MenuDialog.tsx:218
-#: src/components/character/MenuDialog.tsx:348
+#: src/components/MenuDialog/CreditsView.tsx:14
+#: src/components/MenuDialog/MainMenuView.tsx:89
 msgid "Credits"
 msgstr "Credits"
 
@@ -251,15 +286,15 @@ msgstr "Crown of the Void"
 msgid "Dark conspiracy informant helps with Void Clues"
 msgstr "Dark conspiracy informant helps with Void Clues"
 
-#: src/components/character/DeleteConfirmDialog.tsx:28
+#: src/components/character/DeleteConfirmDialog.tsx:29
 msgid "Delete \"{characterName}\""
 msgstr "Delete \"{characterName}\""
 
-#: src/components/character/DeleteConfirmDialog.tsx:41
+#: src/components/character/DeleteConfirmDialog.tsx:45
 msgid "Delete Character"
 msgstr "Delete Character"
 
-#: src/components/character/MenuDialog.tsx:311
+#: src/components/MenuDialog/MainMenuView.tsx:49
 msgid "Deutsch"
 msgstr "Deutsch"
 
@@ -295,13 +330,17 @@ msgstr "Did you show someone that you've \"still got it?\""
 msgid "Dorothy Zbornak"
 msgstr "Dorothy Zbornak"
 
-#: src/components/character/MenuDialog.tsx:319
+#: src/components/MenuDialog/MainMenuView.tsx:57
 msgid "Download PDF"
 msgstr "Download PDF"
 
-#: src/components/character/MenuDialog.tsx:323
+#: src/components/MenuDialog/MainMenuView.tsx:67
 msgid "Download save file"
 msgstr "Download save file"
+
+#: src/components/MenuDialog/MeView.tsx:84
+msgid "Email"
+msgstr "Email"
 
 #: src/components/character/EndOfSession.tsx:20
 msgid "End of Session"
@@ -311,7 +350,7 @@ msgstr "End of Session"
 msgid "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 msgstr "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 
-#: src/components/character/MenuDialog.tsx:308
+#: src/components/MenuDialog/MainMenuView.tsx:46
 msgid "English"
 msgstr "English"
 
@@ -352,7 +391,7 @@ msgstr "Increase an ability modifier by 1 (max +3)."
 #~ msgid "Information about the game and its creators."
 #~ msgstr "Information about the game and its creators."
 
-#: src/components/character/MenuDialog.tsx:221
+#: src/components/MenuDialog/CreditsView.tsx:17
 msgid "Information about the game, its creators and sources of assets."
 msgstr "Information about the game, its creators and sources of assets."
 
@@ -364,17 +403,29 @@ msgstr "Jackie O"
 msgid "Knitting"
 msgstr "Knitting"
 
-#: src/components/character/MenuDialog.tsx:327
+#: src/components/MenuDialog/MainMenuView.tsx:71
 msgid "Load from save file"
 msgstr "Load from save file"
+
+#: src/components/AuthButton.tsx:16
+msgid "Loading..."
+msgstr "Loading..."
+
+#: src/components/MenuDialog/MeView.tsx:71
+msgid "Logout"
+msgstr "Logout"
 
 #: src/components/character/MenuDialog.tsx:294
 #~ msgid "Manage your character and game settings."
 #~ msgstr "Manage your character and game settings."
 
-#: src/components/character/MenuDialog.tsx:296
+#: src/components/MenuDialog/MainMenuView.tsx:34
 msgid "Manage your character and settings."
 msgstr "Manage your character and settings."
+
+#: src/components/MenuDialog/MeView.tsx:76
+msgid "Manage your profile settings."
+msgstr "Manage your profile settings."
 
 #: src/game_data.ts:79
 msgid "Martha's Vineyard"
@@ -388,12 +439,16 @@ msgstr "Master of disguise with any needed ID"
 msgid "Maven Moves"
 msgstr "Maven Moves"
 
+#: src/components/AuthButton.tsx:29
+msgid "Me"
+msgstr "Me"
+
 #: src/game_data.ts:148
 msgid "Medical background and Medical Bag that never gets marked"
 msgstr "Medical background and Medical Bag that never gets marked"
 
-#: src/pages/CharacterSheet.tsx:77
-#: src/pages/CharacterSheet.tsx:86
+#: src/pages/CharacterSheet.tsx:111
+#: src/pages/CharacterSheet.tsx:120
 msgid "Menu"
 msgstr "Menu"
 
@@ -405,7 +460,11 @@ msgstr "Mysterious answering machine messages give tasks for XP"
 msgid "Name"
 msgstr "Name"
 
-#: src/components/character/MenuDialog.tsx:339
+#: src/components/MenuDialog/MeView.tsx:90
+msgid "Nickname"
+msgstr "Nickname"
+
+#: src/components/MenuDialog/MainMenuView.tsx:80
 msgid "Odin's Blog"
 msgstr "Odin's Blog"
 
@@ -433,6 +492,10 @@ msgstr "Painting"
 msgid "Pass for younger with advantage on rolls"
 msgstr "Pass for younger with advantage on rolls"
 
+#: src/components/MenuDialog/MeView.tsx:150
+msgid "Please sign in to view your profile."
+msgstr "Please sign in to view your profile."
+
 #: src/game_data.ts:95
 msgid "Pottery"
 msgstr "Pottery"
@@ -441,7 +504,11 @@ msgstr "Pottery"
 msgid "Presence"
 msgstr "Presence"
 
-#: src/components/character/MenuDialog.tsx:248
+#: src/components/MenuDialog/MeView.tsx:66
+msgid "Profile"
+msgstr "Profile"
+
+#: src/components/MenuDialog/CreditsView.tsx:44
 msgid "Queen SVG by <0>Darius Dan on svgrepo</0>."
 msgstr "Queen SVG by <0>Darius Dan on svgrepo</0>."
 
@@ -457,14 +524,27 @@ msgstr "Reason"
 msgid "Receive mysterious Clues each session"
 msgstr "Receive mysterious Clues each session"
 
-#: src/components/character/MenuDialog.tsx:196
-#: src/components/character/MenuDialog.tsx:334
+#: src/components/MenuDialog/MainMenuView.tsx:75
+#: src/components/MenuDialog/ResetConfirmView.tsx:29
 msgid "Reset Character"
 msgstr "Reset Character"
 
 #: src/game_data.ts:42
 msgid "Retire your character in a way that shows how they are lost to the Void."
 msgstr "Retire your character in a way that shows how they are lost to the Void."
+
+#: src/components/MenuDialog/MainMenuView.tsx:62
+msgid "Save to Backend"
+msgstr "Save to Backend"
+
+#: src/components/MenuDialog/SaveFailureDialog.tsx:29
+msgid "Saving current character failed. If you continue loading/switching, you will lose changes to your current character."
+msgstr "Saving current character failed. If you continue loading/switching, you will lose changes to your current character."
+
+#: src/components/MenuDialog/SaveFailureDialog.tsx:17
+#: src/components/MenuDialog/SaveFailureDialog.tsx:23
+msgid "Saving Failed"
+msgstr "Saving Failed"
 
 #: src/game_data.ts:97
 msgid "Scrapbooking"
@@ -478,11 +558,15 @@ msgstr "Select one Maven move at the start. No two Mavens can pick the same move
 msgid "Sensitivity"
 msgstr "Sensitivity"
 
+#: src/components/AuthButton.tsx:37
+msgid "Sign In"
+msgstr "Sign In"
+
 #: src/game_data.ts:134
 msgid "Someone connected to the dark conspiracy is helping you behind the scenes. Tell the Keeper that the thresholds for each layer of the dark conspiracy are reduced by 1. Once per mystery, after at least one Void Clue has been encountered, you can have a secret meeting with this informant, who is always shrouded in darkness or otherwise disguised. You need only describe what the scene looks like—the location, the physical environment, how the mysterious person arrives on the scene, etc. The actual conversation happens off-screen. Then, you can declare that a Void Clue encountered during the mystery is now a regular Clue. The informant will only fully reveal themselves during the Void Mystery, at which point you can have normal scenes with them. No two Mavens can have this move at the same time."
 msgstr "Someone connected to the dark conspiracy is helping you behind the scenes. Tell the Keeper that the thresholds for each layer of the dark conspiracy are reduced by 1. Once per mystery, after at least one Void Clue has been encountered, you can have a secret meeting with this informant, who is always shrouded in darkness or otherwise disguised. You need only describe what the scene looks like—the location, the physical environment, how the mysterious person arrives on the scene, etc. The actual conversation happens off-screen. Then, you can declare that a Void Clue encountered during the mystery is now a regular Clue. The informant will only fully reveal themselves during the Void Mystery, at which point you can have normal scenes with them. No two Mavens can have this move at the same time."
 
-#: src/components/character/MenuDialog.tsx:344
+#: src/components/MenuDialog/MainMenuView.tsx:85
 msgid "Source Code"
 msgstr "Source Code"
 
@@ -494,11 +578,11 @@ msgstr "Speed Walkin'"
 msgid "Style"
 msgstr "Style"
 
-#: src/components/character/MenuDialog.tsx:353
+#: src/components/MenuDialog/MainMenuView.tsx:94
 msgid "Support Me"
 msgstr "Support Me"
 
-#: src/components/character/MenuDialog.tsx:262
+#: src/components/MenuDialog/CreditsView.tsx:58
 msgid "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 msgstr "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 
@@ -522,9 +606,13 @@ msgstr "The Pomegranate Kernel."
 msgid "The Void."
 msgstr "The Void."
 
-#: src/components/character/MenuDialog.tsx:186
+#: src/components/MenuDialog/ResetConfirmView.tsx:19
 msgid "This action will permanently delete all your character data."
 msgstr "This action will permanently delete all your character data."
+
+#: src/components/character/DeleteConfirmDialog.tsx:39
+msgid "This will also delete the character from the backend."
+msgstr "This will also delete the character from the backend."
 
 #: src/game_data.ts:138
 msgid "Trusty vehicle for advantage on rolls"
