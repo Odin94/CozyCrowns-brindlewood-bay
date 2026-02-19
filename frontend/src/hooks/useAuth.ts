@@ -1,7 +1,7 @@
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import posthog from "posthog-js"
 import { useEffect } from "react"
 import { api, API_URL, tokenStorage } from "../utils/api"
-import posthog from "posthog-js"
 
 export const useAuth = () => {
     const queryClient = useQueryClient()
@@ -23,11 +23,10 @@ export const useAuth = () => {
         },
         retry: (failureCount, error) => {
             const status = (error as Error & { status?: number })?.status
-            if (status === 401) {
-                tokenStorage.remove()
-                return false
-            }
-            if (status && status >= 400 && status < 500) {
+            if (status !== undefined && status >= 400 && status < 500) {
+                if (status === 401) {
+                    tokenStorage.remove()
+                }
                 return false
             }
             if (failureCount < 2) {

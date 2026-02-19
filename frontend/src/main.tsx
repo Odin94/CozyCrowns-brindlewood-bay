@@ -4,8 +4,8 @@ import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
 import { env } from "./config/env.ts"
 import "./index.css"
-import { loadTranslations } from "./lib/utils.ts"
 import { useSettingsStore } from "./lib/settings_store.ts"
+import { loadTranslations } from "./lib/utils.ts"
 
 const initializeApp = async () => {
     // Need to use `getState()` here because we're outside a react component
@@ -25,8 +25,9 @@ const initializeApp = async () => {
             apiKey={posthogKey}
             options={{
                 api_host: posthogHost,
-                defaults: "2025-05-24",
+                defaults: '2026-01-30',
                 capture_exceptions: true,
+                cookieless_mode: 'on_reject',
             }}
         >
             <App />

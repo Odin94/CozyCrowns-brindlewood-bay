@@ -101,4 +101,5 @@ npm start
 
 ## Running on Hetzner server
 * Set up caddy, pm2, dependencies etc. with `setupServer.sh` from progeny (includes caddyfile for reverse-proxying to cozycrowns at port 3001)
-* Pull cozycrowns repo into /opt/
+* Use scp to bring `./scripts/cozySetupServer.sh` to your server, (if you're on windows `dos2unix` it), `chmod +x` it if necessary and run it
+* Follow final instructions printed by the script

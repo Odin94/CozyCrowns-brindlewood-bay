@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { Toaster } from "sonner"
 import CharacterSheet from "./pages/CharacterSheet"
 import { AuthCallback } from "./pages/AuthCallback"
+import { CookieConsent } from "./components/cookie-consent"
 
 const queryClient = new QueryClient()
 
@@ -15,6 +16,7 @@ function App() {
             <QueryClientProvider client={queryClient}>
                 <I18nProvider i18n={i18n}>
                     {pathname === "/auth/callback" ? <AuthCallback /> : <CharacterSheet />}
+                    <CookieConsent variant="small" />
                     <Toaster
                         theme="light"
                         className="toaster"

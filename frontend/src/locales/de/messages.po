@@ -14,11 +14,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MeView.tsx:98
-msgid "Enter your nickname"
-msgstr "Nicknamen eingeben"
-
-#. js-lingui-explicit-id
 #: src/components/MenuDialog/MenuDialog.tsx:62
 msgid "Profile updated successfully!"
 msgstr "Profil erfolgreich geupdated"
@@ -27,16 +22,6 @@ msgstr "Profil erfolgreich geupdated"
 #: src/components/MenuDialog/MenuDialog.tsx:65
 msgid "Failed to update profile. Please try again."
 msgstr "Konnte Profil nicht updaten. Versuch es bitte nochmal."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:274
-msgid "Character saved successfully!"
-msgstr "Charakter erfolgreich gespeichert!"
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:276
-msgid "Failed to save character. Please try again."
-msgstr "Konnte Charakter nicht speichern. Bitte versuch es nochmal."
 
 #. js-lingui-explicit-id
 #: src/components/MenuDialog/MenuDialog.tsx:102
@@ -67,9 +52,24 @@ msgid "Error loading character data. Please check the file format."
 msgstr "Fehler beim Laden der Charakterdaten. Bitte überprüfe das Datenformat."
 
 #. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:274
+msgid "Character saved successfully!"
+msgstr "Charakter erfolgreich gespeichert!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:276
+msgid "Failed to save character. Please try again."
+msgstr "Konnte Charakter nicht speichern. Bitte versuch es nochmal."
+
+#. js-lingui-explicit-id
 #: src/components/MenuDialog/MenuDialog.tsx:313
 msgid "Character reset successfully!"
 msgstr "Charakter erfolgreich zurückgesetzt!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MeView.tsx:98
+msgid "Enter your nickname"
+msgstr "Nicknamen eingeben"
 
 #. js-lingui-explicit-id
 #: src/components/character/Name.tsx:20
@@ -143,6 +143,12 @@ msgstr "Ein Schatten im Garten."
 #: src/components/character/Abilities.tsx:18
 msgid "Abilities"
 msgstr "Attribute"
+
+#: src/components/cookie-consent.tsx:163
+#: src/components/cookie-consent.tsx:196
+#: src/components/cookie-consent.tsx:198
+msgid "Accept"
+msgstr "Akzeptieren"
 
 #: src/game_data.ts:128
 msgid "Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits"
@@ -286,6 +292,12 @@ msgstr "Die Krone des Abgrunds"
 msgid "Dark conspiracy informant helps with Void Clues"
 msgstr "Dunkler Verschwörungs-Informant hilft bei Leere-Hinweisen"
 
+#: src/components/cookie-consent.tsx:156
+#: src/components/cookie-consent.tsx:186
+#: src/components/cookie-consent.tsx:188
+msgid "Decline"
+msgstr "Ablehnen"
+
 #: src/components/character/DeleteConfirmDialog.tsx:29
 msgid "Delete \"{characterName}\""
 msgstr "\"{characterName}\" löschen"
@@ -366,6 +378,10 @@ msgstr "Gärtnern"
 msgid "Goin' Fishin'"
 msgstr "Steppjacke und Timberlands"
 
+#: src/components/cookie-consent.tsx:27
+msgid "Have some cookies from grandma's jar!"
+msgstr "Greif in Oma's Keksdose!"
+
 #: src/game_data.ts:39
 msgid "Hereafter, during any intimate conversation with another character, you must make a casual reference to death, dying, the afterlife, or the End of All Things—no matter the subject at-hand."
 msgstr "In allen folgenden vertraulichen Unterhaltungen mit einem anderen Charakter, musst Du wie beiläufig den Tod erwähnen, oder das Sterben, das Jenseits oder das Ende aller Dinge – ganz gleich, was das eigentliche Gesprächsthema Eurer Unterhaltung ist."
@@ -377,6 +393,10 @@ msgstr "In allen folgenden Gemütlichen Vignetten, die aus dem Gemütlichen Spie
 #: src/game_data.ts:77
 msgid "Hippy Dippy"
 msgstr "Hippie-Oma"
+
+#: src/components/cookie-consent.tsx:38
+msgid "I use cookies to get better insights on usage patterns, which helps me improve Cozycrowns for everyone.<0/>More info: <1>privacy policy</1>."
+msgstr "Ich verwende Cookies um Muster im Nutzungsverhalten zu verstehen und Cozycrowns für alle besser zu machen. <0/>Mehr Infos: <1>Datenschutzerklärung</1>"
 
 #: src/game_data.ts:123
 msgid "Improvise with objects for automatic 12+"
@@ -435,7 +455,7 @@ msgstr "Meister der Verkleidung mit jedem benötigten Ausweis"
 msgid "Maven Moves"
 msgstr "Kennerinnen-Spielzüge"
 
-#: src/components/AuthButton.tsx:29
+#: src/components/AuthButton.tsx:30
 msgid "Me"
 msgstr "Ich"
 
@@ -554,7 +574,7 @@ msgstr "Wähle zu Beginn einen Spielzug. Zu Beginn darf kein Spielzug von mehr a
 msgid "Sensitivity"
 msgstr "Gespür"
 
-#: src/components/AuthButton.tsx:37
+#: src/components/AuthButton.tsx:38
 msgid "Sign In"
 msgstr "Einloggen"
 
