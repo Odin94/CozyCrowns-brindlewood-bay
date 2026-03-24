@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { getSampleActivities } from "@/game_data"
 import { useCharacterStore } from "@/lib/character_store"
 import { Trans } from "@lingui/react/macro"
+import { ScrollText } from "lucide-react"
 
 const CozyActivity = () => {
     const { activity, setActivity } = useCharacterStore()
@@ -25,7 +26,7 @@ const CozyActivity = () => {
                 />
                 <DropdownMenu>
                     <DropdownMenuTrigger className="w-8 h-8 flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
-                        ✨
+                        <ScrollText className="w-4 h-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="grid grid-cols-1 sm:grid-cols-2 p-2">
                         {sampleActivities.map((sampleActivity) => (

@@ -5,6 +5,7 @@ import { useCharacterStore } from "@/lib/character_store"
 import { getMavenMoves } from "@/game_data"
 import { Trans } from "@lingui/react/macro"
 import { useState } from "react"
+import { ScrollText } from "lucide-react"
 
 const MavenMovesPicker = () => {
     const { mavenMoves, setMavenMoves } = useCharacterStore()
@@ -37,7 +38,7 @@ const MavenMovesPicker = () => {
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
                 <Button variant="outline" size="sm" className="bg-transparent border-none hover:bg-secondary/40">
-                    <span className="text-lg">✨</span>
+                    <ScrollText className="w-4 h-4" />
                 </Button>
             </DialogTrigger>
             <DialogContent className="w-96 h-[600px] max-w-[90vw] max-h-[90vh]" showCloseButton={true}>
