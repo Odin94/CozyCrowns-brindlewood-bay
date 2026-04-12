@@ -1,4 +1,5 @@
 import { i18n } from "@lingui/core"
+import posthog from "posthog-js"
 import { PostHogProvider } from "posthog-js/react"
 import { StrictMode } from "react"
 import { createRoot } from "react-dom/client"
@@ -20,16 +21,17 @@ const initializeApp = async () => {
     const posthogKey = env.VITE_PUBLIC_POSTHOG_KEY
     const posthogHost = env.VITE_PUBLIC_POSTHOG_HOST
 
+    if (posthogKey) {
+        posthog.init(posthogKey, {
+            api_host: posthogHost,
+            defaults: '2026-01-30',
+            capture_exceptions: true,
+            cookieless_mode: 'on_reject',
+        })
+    }
+
     const appContent = posthogKey ? (
-        <PostHogProvider
-            apiKey={posthogKey}
-            options={{
-                api_host: posthogHost,
-                defaults: '2026-01-30',
-                capture_exceptions: true,
-                cookieless_mode: 'on_reject',
-            }}
-        >
+        <PostHogProvider client={posthog}>
             <App />
         </PostHogProvider>
     ) : (
