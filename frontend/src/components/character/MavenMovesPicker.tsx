@@ -1,5 +1,4 @@
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { useCharacterStore } from "@/lib/character_store"
 import { getClassicMavenMoves, getAlternateMavenMoves } from "@/game_data"
@@ -41,11 +40,9 @@ const MavenMovesPicker = () => {
 
     return (
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
-            <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="bg-transparent border-none hover:bg-secondary/40">
-                    <ScrollText className="w-4 h-4" />
-                </Button>
-            </DialogTrigger>
+            <button onClick={() => setIsOpen(true)} className="w-8 h-8 mb-3 cursor-pointer flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
+                <ScrollText className="w-4 h-4" />
+            </button>
             {/* flex flex-col lets the inner flex-1 child fill remaining height */}
             <DialogContent className="w-96 h-[600px] max-w-[90vw] max-h-[90vh] flex flex-col" showCloseButton={true}>
                 <DialogHeader>
