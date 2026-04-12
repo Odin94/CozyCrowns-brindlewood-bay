@@ -56,6 +56,7 @@ To add a new language:
 
 TODOdin: Add more eldritch elements to the site as void crowns get checked off
 TODOdin: Add Dark Conspiracy sheet
+TODOdin: Add section for noting down clues, void clues, general notes
 
 TODOdin: Update translations
 TODOdin: Add sessions, allow sharing (read-only) view of characters in same session (add some sort of session view?)
