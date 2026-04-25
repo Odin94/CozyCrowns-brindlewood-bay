@@ -1,19 +1,19 @@
-import { create } from "zustand"
-import { persist } from "zustand/middleware"
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
 
 export type SettingsState = {
-    locale: string
-    setLocale: (locale: string) => void
-}
+  locale: string;
+  setLocale: (locale: string) => void;
+};
 
 export const useSettingsStore = create<SettingsState>()(
-    persist(
-        (set) => ({
-            locale: "en",
-            setLocale: (locale) => set({ locale }),
-        }),
-        {
-            name: "cozycrowns-settings-storage",
-        }
-    )
-)
+  persist(
+    (set) => ({
+      locale: "en",
+      setLocale: (locale) => set({ locale }),
+    }),
+    {
+      name: "cozycrowns-settings-storage",
+    },
+  ),
+);

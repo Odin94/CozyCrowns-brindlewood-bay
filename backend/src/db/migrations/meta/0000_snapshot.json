@@ -47,24 +47,17 @@
       "indexes": {
         "character_shares_character_id_idx": {
           "name": "character_shares_character_id_idx",
-          "columns": [
-            "character_id"
-          ],
+          "columns": ["character_id"],
           "isUnique": false
         },
         "character_shares_shared_with_user_id_idx": {
           "name": "character_shares_shared_with_user_id_idx",
-          "columns": [
-            "shared_with_user_id"
-          ],
+          "columns": ["shared_with_user_id"],
           "isUnique": false
         },
         "character_shares_unique_idx": {
           "name": "character_shares_unique_idx",
-          "columns": [
-            "character_id",
-            "shared_with_user_id"
-          ],
+          "columns": ["character_id", "shared_with_user_id"],
           "isUnique": false
         }
       },
@@ -73,12 +66,8 @@
           "name": "character_shares_character_id_characters_id_fk",
           "tableFrom": "character_shares",
           "tableTo": "characters",
-          "columnsFrom": [
-            "character_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["character_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -86,12 +75,8 @@
           "name": "character_shares_shared_with_user_id_users_id_fk",
           "tableFrom": "character_shares",
           "tableTo": "users",
-          "columnsFrom": [
-            "shared_with_user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["shared_with_user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
@@ -99,12 +84,8 @@
           "name": "character_shares_shared_by_id_users_id_fk",
           "tableFrom": "character_shares",
           "tableTo": "users",
-          "columnsFrom": [
-            "shared_by_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["shared_by_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -180,9 +161,7 @@
       "indexes": {
         "characters_user_id_idx": {
           "name": "characters_user_id_idx",
-          "columns": [
-            "user_id"
-          ],
+          "columns": ["user_id"],
           "isUnique": false
         }
       },
@@ -191,12 +170,8 @@
           "name": "characters_user_id_users_id_fk",
           "tableFrom": "characters",
           "tableTo": "users",
-          "columnsFrom": [
-            "user_id"
-          ],
-          "columnsTo": [
-            "id"
-          ],
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
           "onDelete": "cascade",
           "onUpdate": "no action"
         }
@@ -263,16 +238,12 @@
       "indexes": {
         "users_email_unique": {
           "name": "users_email_unique",
-          "columns": [
-            "email"
-          ],
+          "columns": ["email"],
           "isUnique": true
         },
         "users_nickname_unique": {
           "name": "users_nickname_unique",
-          "columns": [
-            "nickname"
-          ],
+          "columns": ["nickname"],
           "isUnique": true
         }
       },

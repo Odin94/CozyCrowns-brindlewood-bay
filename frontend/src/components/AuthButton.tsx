@@ -1,41 +1,51 @@
-import { Trans } from "@lingui/react/macro"
-import { ChessQueen, LogIn } from "lucide-react"
-import { useAuth } from "../hooks/useAuth"
-import { Button } from "./ui/button"
+import { Trans } from "@lingui/react/macro";
+import { ChessQueen, LogIn } from "lucide-react";
+import { useAuth } from "../hooks/useAuth";
+import { Button } from "./ui/button";
 
 type AuthButtonProps = {
-    onMeClick: () => void
-}
+  onMeClick: () => void;
+};
 
 export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
-    const { user, loading, isAuthenticated, signIn } = useAuth()
+  const { user, loading, isAuthenticated, signIn } = useAuth();
 
-    if (loading) {
-        return (
-            <Button size="sm" disabled variant="secondary" className="w-25 justify-center text-foreground">
-                <Trans>Loading...</Trans>
-            </Button>
-        )
-    }
-
-    if (isAuthenticated && user) {
-        return (
-            <Button
-                size="sm"
-                variant="secondary"
-                className="w-25 justify-center text-foreground"
-                onClick={onMeClick}
-            >
-                <ChessQueen className="w-4 h-4 mr-2" />
-                <Trans>Me</Trans>
-            </Button>
-        )
-    }
-
+  if (loading) {
     return (
-        <Button size="sm" onClick={signIn} variant="secondary" className="w-25 justify-center text-foreground">
-            <LogIn className="w-4 h-4 mr-2" />
-            <Trans>Sign In</Trans>
-        </Button>
-    )
-}
+      <Button
+        size="sm"
+        disabled
+        variant="secondary"
+        className="w-25 justify-center text-foreground"
+      >
+        <Trans>Loading...</Trans>
+      </Button>
+    );
+  }
+
+  if (isAuthenticated && user) {
+    return (
+      <Button
+        size="sm"
+        variant="secondary"
+        className="w-25 justify-center text-foreground"
+        onClick={onMeClick}
+      >
+        <ChessQueen className="w-4 h-4 mr-2" />
+        <Trans>Me</Trans>
+      </Button>
+    );
+  }
+
+  return (
+    <Button
+      size="sm"
+      onClick={signIn}
+      variant="secondary"
+      className="w-25 justify-center text-foreground"
+    >
+      <LogIn className="w-4 h-4 mr-2" />
+      <Trans>Sign In</Trans>
+    </Button>
+  );
+};

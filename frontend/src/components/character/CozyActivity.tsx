@@ -1,44 +1,53 @@
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { getSampleActivities } from "@/game_data"
-import { useCharacterStore } from "@/lib/character_store"
-import { Trans } from "@lingui/react/macro"
-import { ScrollText } from "lucide-react"
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { getSampleActivities } from "@/game_data";
+import { useCharacterStore } from "@/lib/character_store";
+import { Trans } from "@lingui/react/macro";
+import { ScrollText } from "lucide-react";
 
 const CozyActivity = () => {
-    const { activity, setActivity } = useCharacterStore()
+  const { activity, setActivity } = useCharacterStore();
 
-    // Get the activities dynamically so they update when locale changes
-    const sampleActivities = getSampleActivities()
+  // Get the activities dynamically so they update when locale changes
+  const sampleActivities = getSampleActivities();
 
-    return (
-        <div className="space-y-3">
-            <Label className="text-lg font-semibold text-secondary">
-                <Trans>Cozy Activity</Trans>
-            </Label>
-            <div className="flex gap-2 items-center">
-                <Input
-                    value={activity}
-                    onChange={(e) => setActivity(e.target.value)}
-                    placeholder="Enter cozy activity"
-                    className="flex-1"
-                />
-                <DropdownMenu>
-                    <DropdownMenuTrigger className="w-8 h-8 flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
-                        <ScrollText className="w-4 h-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent className="grid grid-cols-1 sm:grid-cols-2 p-2">
-                        {sampleActivities.map((sampleActivity) => (
-                            <DropdownMenuItem key={sampleActivity} onClick={() => setActivity(sampleActivity)} className="text-xs">
-                                {sampleActivity}
-                            </DropdownMenuItem>
-                        ))}
-                    </DropdownMenuContent>
-                </DropdownMenu>
-            </div>
-        </div>
-    )
-}
+  return (
+    <div className="space-y-3">
+      <Label className="text-lg font-semibold text-secondary">
+        <Trans>Cozy Activity</Trans>
+      </Label>
+      <div className="flex gap-2 items-center">
+        <Input
+          value={activity}
+          onChange={(e) => setActivity(e.target.value)}
+          placeholder="Enter cozy activity"
+          className="flex-1"
+        />
+        <DropdownMenu>
+          <DropdownMenuTrigger className="w-8 h-8 flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200">
+            <ScrollText className="w-4 h-4" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent className="grid grid-cols-1 sm:grid-cols-2 p-2">
+            {sampleActivities.map((sampleActivity) => (
+              <DropdownMenuItem
+                key={sampleActivity}
+                onClick={() => setActivity(sampleActivity)}
+                className="text-xs"
+              >
+                {sampleActivity}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+    </div>
+  );
+};
 
-export default CozyActivity
+export default CozyActivity;
