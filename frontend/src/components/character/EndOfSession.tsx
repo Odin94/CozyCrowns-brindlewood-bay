@@ -25,7 +25,7 @@ const EndOfSession = () => {
 
             <div className="space-y-3">
                 {getEndOfSessionQuestions().map((question, index) => (
-                    <div key={index} className="flex items-start space-x-3">
+                    <div key={question} className="flex items-start space-x-3">
                         <Checkbox
                             id={`end-session-${index}`}
                             checked={endOfSessionChecks[index]}

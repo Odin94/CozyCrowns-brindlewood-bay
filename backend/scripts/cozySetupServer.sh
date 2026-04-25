@@ -33,13 +33,13 @@ else
     runuser -u "$APP_USER" -- git clone https://github.com/Odin94/CozyCrowns-brindlewood-bay.git "$APP_DIR"
 fi
 
-# Install dependencies
+# Install dependencies (uses pnpm — install once at the repo root for the workspace)
 echo -e "${YELLOW}📦 Installing dependencies...${NC}"
-runuser -u "$APP_USER" -- bash -c "cd $APP_DIR/backend && npm install"
+runuser -u "$APP_USER" -- bash -c "cd $APP_DIR && pnpm install --frozen-lockfile"
 
 # Build backend
 echo -e "${YELLOW}🔨 Building backend...${NC}"
-runuser -u "$APP_USER" -- bash -c "cd $APP_DIR/backend && npm run build"
+runuser -u "$APP_USER" -- bash -c "cd $APP_DIR/backend && pnpm build"
 
 # Create systemd service for PM2 (uses $HOME/.pm2 = $APP_DIR/.pm2)
 echo -e "${YELLOW}⚙️  Setting up PM2 startup script...${NC}"
@@ -48,5 +48,5 @@ eval "$PM2_STARTUP"
 
 
 echo "Please create your .env from /opt/cozycrowns/backend/.env.sample"
-echo "Then run npm run db:generate && npm run db:migrate in /opt/cozycrowns/backend/"
+echo "Then run pnpm db:generate && pnpm db:migrate in /opt/cozycrowns/backend/"
 echo "Finally, start the service with pm2 start ecosystem.config.cjs and pm2 save"

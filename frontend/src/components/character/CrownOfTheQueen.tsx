@@ -26,7 +26,7 @@ const CrownOfTheQueen = () => {
             </div>
             <div className="space-y-1">
                 {getCrownsOfTheQueen().map((crown, index) => (
-                    <div key={index} className="flex items-start space-x-3">
+                    <div key={crown} className="flex items-start space-x-3">
                         <Checkbox
                             id={`crown-${index}`}
                             checked={crownChecks[index]}

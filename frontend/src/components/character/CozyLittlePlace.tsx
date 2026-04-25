@@ -28,6 +28,7 @@ const CozyLittlePlace = () => {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 {cozyItems.map((item, index) => (
+                    // eslint-disable-next-line react/no-array-index-key -- positional slots; index is the stable identity
                     <div key={index} className="flex items-center space-x-2">
                         <Checkbox
                             checked={item.checked}

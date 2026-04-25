@@ -20,7 +20,7 @@ const Advancements = () => {
             </Headline>
             <div className="space-y-3">
                 {getAdvancementOptions().map((option, index) => (
-                    <div key={index} className="flex items-start space-x-3">
+                    <div key={option} className="flex items-start space-x-3">
                         <Checkbox
                             id={`advancement-${index}`}
                             checked={advancementChecks[index]}

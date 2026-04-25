@@ -8,11 +8,11 @@ echo "Backed up database.sqlite to $BACKUP_FILE"
 
 git pull
 echo "Pulled latest code from git"
-npm install
+pnpm install --frozen-lockfile
 echo "Installed dependencies"
-npm run build
+pnpm build
 echo "Built the code"
-npm run db:migrate
+pnpm db:migrate
 echo "Migrated the database"
 pm2 restart cozycrowns-backend
 echo "Restarted the backend"

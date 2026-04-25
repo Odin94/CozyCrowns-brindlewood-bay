@@ -11,9 +11,9 @@ This file is the on-demand guide for where changes usually belong. Use it when a
 - Update `frontend/src/lib/pdf_generator.ts` if the new field should appear in the exported PDF.
 - Usually no SQL migration is needed for JSON-only field changes. A migration is only needed if table columns or indexes change.
 - Verify with:
-  - `cd frontend && npm run lint`
-  - `cd frontend && npm run build`
-  - `cd backend && npm run build`
+  - `cd frontend && pnpm lint`
+  - `cd frontend && pnpm build`
+  - `cd backend && pnpm build`
   - a manual JSON import/export round-trip
 
 ## Changing Auth Or User Profile Behavior
@@ -29,7 +29,7 @@ This file is the on-demand guide for where changes usually belong. Use it when a
   - `backend/src/config/env.ts`
   - `backend/src/config/workos.ts`
 - Watch for token refresh behavior through `X-New-Token`; it is easy to break silently if only one side changes.
-- Verify with `cd backend && npm run build` and a manual login/logout/profile smoke test when credentials are available.
+- Verify with `cd backend && pnpm build` and a manual login/logout/profile smoke test when credentials are available.
 
 ## Changing Save Or Sync Behavior
 - Frontend save/sync code lives in:
@@ -46,17 +46,17 @@ This file is the on-demand guide for where changes usually belong. Use it when a
 
 ## Changing Database Schema
 - Update `backend/src/db/schema.ts`.
-- Generate migration SQL with `cd backend && npm run db:generate`.
+- Generate migration SQL with `cd backend && pnpm db:generate`.
 - Review the SQL under `backend/src/db/migrations/` before applying it.
-- Apply locally with `cd backend && npm run db:migrate`.
+- Apply locally with `cd backend && pnpm db:migrate`.
 - If the change affects API payloads or validation, update the matching route/schema files in the same pass.
 
 ## Changing Translations Or User-Facing Copy
 - Wrap UI text with Lingui macros instead of hardcoding plain strings in components.
 - After copy changes run:
-  - `cd frontend && npm run extract`
-  - `cd frontend && npm run compile`
-  - `cd frontend && npm run build`
+  - `cd frontend && pnpm extract`
+  - `cd frontend && pnpm compile`
+  - `cd frontend && pnpm build`
 - Translation catalogs live under `frontend/src/locales/`.
 
 ## Changing PDF Export

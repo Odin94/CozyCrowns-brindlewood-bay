@@ -1,3 +1,12 @@
+[build]
+# The workspace pnpm-lock.yaml lives at the repo root, so build from there.
+base = "."
+command = "pnpm install --frozen-lockfile && pnpm --filter cozycrowns-brindlewood-bay build"
+publish = "frontend/dist"
+
+[build.environment]
+PNPM_VERSION = "10.33.0"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"

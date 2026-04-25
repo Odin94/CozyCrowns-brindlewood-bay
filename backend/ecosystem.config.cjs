@@ -2,7 +2,7 @@ module.exports = {
     apps: [
         {
             name: "cozycrowns-backend",
-            script: "npm",
+            script: "pnpm",
             args: "start",
             cwd: "/opt/cozycrowns/backend",
             instances: 1,

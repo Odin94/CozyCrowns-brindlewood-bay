@@ -20,7 +20,7 @@ const loadEnv = (): Env => {
     } catch (error) {
         if (error instanceof z.ZodError) {
             const missingVars = error.issues.map((e) => `${e.path.join(".")}: ${e.message}`).join("\n")
-            throw new Error(`Environment validation failed:\n${missingVars}`)
+            throw new Error(`Environment validation failed:\n${missingVars}`, { cause: error })
         }
         throw error
     }

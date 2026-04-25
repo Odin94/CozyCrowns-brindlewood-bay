@@ -6,13 +6,15 @@
 - Deeper docs live in `docs/architecture.md` and `docs/change-map.md`.
 
 ## Commands
-- Install dependencies: `(cd frontend && npm install)` and `(cd backend && npm install)`
-- Frontend dev server: `cd frontend && npm run dev`
-- Frontend checks: `cd frontend && npm run lint` and `cd frontend && npm run build`
-- Frontend translations: `cd frontend && npm run extract && npm run compile`
-- Backend dev server: `cd backend && npm run dev`
-- Backend checks: `cd backend && npm run build`
-- Database workflow: `cd backend && npm run db:generate` after schema changes, then `cd backend && npm run db:migrate`
+- Package manager: `pnpm` (workspace at repo root). `npm` is no longer used.
+- Install dependencies: `pnpm install` from the repo root (installs both workspaces).
+- Frontend dev server: `cd frontend && pnpm dev`
+- Frontend checks: `cd frontend && pnpm lint` (oxlint) and `cd frontend && pnpm build`
+- Frontend translations: `cd frontend && pnpm extract && pnpm compile`
+- Backend dev server: `cd backend && pnpm dev`
+- Backend checks: `cd backend && pnpm build`
+- Database workflow: `cd backend && pnpm db:generate` after schema changes, then `cd backend && pnpm db:migrate`
+- Linting/formatting is handled by [oxlint](https://oxc.rs/docs/guide/usage/linter) (config at `frontend/.oxlintrc.json`). Use `pnpm format` in `frontend/` to autofix.
 - Full smoke verification for most changes: frontend lint + frontend build + backend build
 
 ## Non-Negotiable Invariants

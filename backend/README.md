@@ -13,7 +13,7 @@ Fastify backend for CozyCrowns character management system.
 
 1. Install dependencies:
 ```bash
-npm install
+pnpm install
 ```
 
 2. Create a `.env` file based on `.env.example`:
@@ -30,19 +30,19 @@ cp .env.example .env
 
 4. Generate database migrations:
 ```bash
-npm run db:generate
+pnpm db:generate
 ```
 
 5. Run migrations:
 ```bash
-npm run db:migrate
+pnpm db:migrate
 ```
 
 ## Development
 
 Start the development server:
 ```bash
-npm run dev
+pnpm dev
 ```
 
 The server will start on `http://localhost:3001` (or your configured port).
@@ -61,7 +61,7 @@ The backend uses SQLite with Drizzle ORM. The database file (`db.sqlite`) will b
 
 View and edit the database using Drizzle Studio:
 ```bash
-npm run db:studio
+pnpm db:studio
 ```
 
 ## API Routes
@@ -89,12 +89,12 @@ npm run db:studio
 
 Build the project:
 ```bash
-npm run build
+pnpm build
 ```
 
 Start the production server:
 ```bash
-npm start
+pnpm start
 ```
 
 

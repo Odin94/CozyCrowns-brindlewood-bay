@@ -114,12 +114,12 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                 input.type = "file"
                 input.accept = ".json"
 
-                input.onchange = (event) => {
+                input.addEventListener("change", (event) => {
                     const file = (event.target as HTMLInputElement).files?.[0]
                     if (!file) return
 
                     const reader = new FileReader()
-                    reader.onload = (e) => {
+                    reader.addEventListener("load", (e) => {
                         try {
                             const rawData = JSON.parse(e.target?.result as string)
 
@@ -180,9 +180,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                                 toast.error(i18n._("Error loading character data. Please check the file format."))
                             }
                         }
-                    }
+                    })
                     reader.readAsText(file)
-                }
+                })
 
                 input.click()
             }
@@ -195,12 +195,12 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
         input.type = "file"
         input.accept = ".json"
 
-        input.onchange = (event) => {
+        input.addEventListener("change", (event) => {
             const file = (event.target as HTMLInputElement).files?.[0]
             if (!file) return
 
             const reader = new FileReader()
-            reader.onload = (e) => {
+            reader.addEventListener("load", (e) => {
                 try {
                     const rawData = JSON.parse(e.target?.result as string)
 
@@ -261,9 +261,9 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                         toast.error(i18n._("Error loading character data. Please check the file format."))
                     }
                 }
-            }
+            })
             reader.readAsText(file)
-        }
+        })
 
         input.click()
     }

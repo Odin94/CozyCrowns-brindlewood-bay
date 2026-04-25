@@ -81,17 +81,17 @@ CozyCrowns is a Brindlewood Bay character sheet that works offline in the browse
 ## Verification Contracts
 
 ### Frontend UI Or State Changes
-- Run `cd frontend && npm run lint`
-- Run `cd frontend && npm run build`
+- Run `cd frontend && pnpm lint`
+- Run `cd frontend && pnpm build`
 - Manually smoke-test the edited flow in the browser if the change affects interaction or rendering
 
 ### Character Schema Or Serialization Changes
-- Run `cd frontend && npm run lint`
-- Run `cd frontend && npm run build`
-- Run `cd backend && npm run build`
+- Run `cd frontend && pnpm lint`
+- Run `cd frontend && pnpm build`
+- Run `cd backend && pnpm build`
 - Manually test JSON import/export and, if relevant, PDF export
 
 ### Backend Route Or Auth Changes
-- Run `cd backend && npm run build`
-- If frontend behavior changed too, also run `cd frontend && npm run build`
+- Run `cd backend && pnpm build`
+- If frontend behavior changed too, also run `cd frontend && pnpm build`
 - If WorkOS behavior is involved and credentials are unavailable, leave a concrete manual verification note

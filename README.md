@@ -4,24 +4,23 @@ A character sheet manager for the TTRPG [Brindlewood Bay](https://www.gauntlet-r
 You can check it out here: https://cozycrowns.odin-matthias.de
 
 ## How to run
-You can run everything locally using `mprocs` (after running npm install in `frontend` and `backend` and creating `.env`s):
-* `npm install -g mprocs`
+You can run everything locally using `mprocs` (after running `pnpm install` at the repo root and creating `.env`s):
+* `pnpm add -g mprocs`
+* `pnpm install` (from the repo root — installs the `frontend` and `backend` workspaces)
 * `mprocs`
 
 ### Frontend
 ```bash
 cd frontend
-npm install
-npm run dev
+pnpm dev
 ```
 
 ### Backend
 ```bash
 cd backend
-npm install
-npm run db:generate
-npm run db:migrate
-npm run dev
+pnpm db:generate
+pnpm db:migrate
+pnpm dev
 ```
 
 
@@ -34,14 +33,14 @@ Translations are managed with [lingui](https://lingui.dev).
 
 To translate a new text:
 * Wrap it in either the `<Trans>` macro component or use the `t` macro for text outside of components
-* Run `npm run extract` to add new translation keys to all `messages.po` files under `src/locales`
+* Run `pnpm extract` to add new translation keys to all `messages.po` files under `src/locales`
 * Update the translations in each `messages.po`
-* Run `npm run compile` to update the `message.ts` files with latest translations
+* Run `pnpm compile` to update the `message.ts` files with latest translations
 
 To add a new language:
 * Add the new locale in `lingui.config.js` locales
-* Run `npm run extract` to create `src/locales/{your-locale}/messages.po`
-* Fill your translations into that file & run `npm run compile`
+* Run `pnpm extract` to create `src/locales/{your-locale}/messages.po`
+* Fill your translations into that file & run `pnpm compile`
 * Add your new locale to `loadTranslations` in `src/lib/utils.ts`
 
 ## Analytics

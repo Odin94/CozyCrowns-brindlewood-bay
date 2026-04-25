@@ -123,7 +123,7 @@ export const generatePdf = async (character: CharacterData): Promise<Uint8Array>
         return filledPdfBytes
     } catch (error) {
         console.error("Error generating PDF:", error)
-        throw new Error(`Failed to generate PDF: ${error}`)
+        throw new Error(`Failed to generate PDF: ${error}`, { cause: error })
     }
 }
 
