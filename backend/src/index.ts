@@ -4,6 +4,7 @@ import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
 import { readFileSync } from "fs";
 import { characterRoutes } from "./routes/characters.js";
+import { darkConspiracyRoutes } from "./routes/darkConspiracies.js";
 import { shareRoutes } from "./routes/shares.js";
 import { authRoutes } from "./routes/auth.js";
 import { env } from "./config/env.js";
@@ -80,6 +81,7 @@ fastify.addHook("onRequest", async (request, reply) => {
 
 await fastify.register(authRoutes);
 await fastify.register(characterRoutes);
+await fastify.register(darkConspiracyRoutes);
 await fastify.register(shareRoutes);
 
 fastify.get(

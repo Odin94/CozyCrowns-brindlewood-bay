@@ -17,6 +17,16 @@ Fastify backend for CozyCrowns character management system.
 pnpm install
 ```
 
+`better-sqlite3` uses a native SQLite binding. From the monorepo root, `pnpm install` is configured to allow the required install/build script via `pnpm.onlyBuiltDependencies`, so fresh installs on Node 24 should work without extra prompts.
+
+If you installed with scripts disabled, or Drizzle Studio reports that it "Could not locate the bindings file", rebuild the native binding:
+
+```bash
+pnpm --filter cozycrowns-backend rebuild better-sqlite3
+```
+
+If the package cannot download a prebuilt binary and falls back to `node-gyp`, Windows machines need Python and the Visual Studio Build Tools C++ workload installed.
+
 2. Create a `.env` file based on `.env.example`:
 
 ```bash

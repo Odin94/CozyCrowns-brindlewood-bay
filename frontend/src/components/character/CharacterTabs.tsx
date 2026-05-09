@@ -1,21 +1,33 @@
 import { useIsLargeScreen } from "@/hooks/useIsLargeScreen";
 import { type CharacterData, useCharacterStore } from "@/lib/character_store";
-import { ChevronDown, Plus, X } from "lucide-react";
+import { ChevronDown, Eye, Plus, X } from "lucide-react";
 import { useState } from "react";
 
 interface CharacterTabsProps {
   onDeleteCharacter: (index: number) => void;
   onSwitchCharacter?: (index: number) => Promise<boolean>;
+  activeView?: "character" | "darkConspiracy";
+  onSwitchToCharacter?: () => void;
+  onSwitchToDarkConspiracy?: () => void;
 }
 
-const CharacterTabs = ({ onDeleteCharacter, onSwitchCharacter }: CharacterTabsProps) => {
+const CharacterTabs = ({
+  onDeleteCharacter,
+  onSwitchCharacter,
+  activeView = "character",
+  onSwitchToCharacter,
+  onSwitchToDarkConspiracy,
+}: CharacterTabsProps) => {
   const { characters, currentCharacterIndex, setCurrentCharacter, addCharacter } =
     useCharacterStore();
   const isLargeScreen = useIsLargeScreen();
   const [isMobileTabsVisible, setIsMobileTabsVisible] = useState(false);
 
   const handleCharacterSwitch = async (index: number) => {
-    if (index === currentCharacterIndex) return;
+    if (index === currentCharacterIndex) {
+      onSwitchToCharacter?.();
+      return;
+    }
 
     if (onSwitchCharacter) {
       const canSwitch = await onSwitchCharacter(index);
@@ -23,6 +35,7 @@ const CharacterTabs = ({ onDeleteCharacter, onSwitchCharacter }: CharacterTabsPr
     }
 
     setCurrentCharacter(index);
+    onSwitchToCharacter?.();
   };
 
   const handleRemoveCharacter = (index: number, e: React.MouseEvent) => {
@@ -30,6 +43,11 @@ const CharacterTabs = ({ onDeleteCharacter, onSwitchCharacter }: CharacterTabsPr
     if (characters.length > 1) {
       onDeleteCharacter(index);
     }
+  };
+
+  const handleAddCharacter = () => {
+    addCharacter();
+    onSwitchToCharacter?.();
   };
 
   const renderCharacterTab = (character: CharacterData, index: number) => {
@@ -41,7 +59,7 @@ const CharacterTabs = ({ onDeleteCharacter, onSwitchCharacter }: CharacterTabsPr
       <div
         key={index}
         className={`relative group flex items-center gap-2 pl-6 py-3 w-40 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in ${
-          currentCharacterIndex === index
+          activeView === "character" && currentCharacterIndex === index
             ? "bg-dark-secondary text-tertiary"
             : "bg-dark-secondary/40 hover:bg-dark-secondary/60 text-tertiary/80"
         }
@@ -70,12 +88,24 @@ const CharacterTabs = ({ onDeleteCharacter, onSwitchCharacter }: CharacterTabsPr
 
   const renderAddCharacterButton = () => {
     return (
-      <div className="flex justify-center mt-3 transition-all duration-500 w-40">
+      <div className="flex justify-center gap-3 mt-3 transition-all duration-500 w-40">
         <div
           className="relative group flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-all duration-500 text-gray-300 bg-dark-secondary/40 hover:bg-dark-secondary/60 hover:scale-110"
-          onClick={addCharacter}
+          onClick={handleAddCharacter}
+          title="Add character"
         >
           <Plus size={16} />
+        </div>
+        <div
+          className={`relative group flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-all duration-500 hover:scale-110 ${
+            activeView === "darkConspiracy"
+              ? "bg-dark-secondary text-tertiary shadow-xl"
+              : "bg-dark-secondary/40 text-gray-300 hover:bg-dark-secondary/60"
+          }`}
+          onClick={onSwitchToDarkConspiracy}
+          title="Dark conspiracy"
+        >
+          <Eye size={16} />
         </div>
       </div>
     );

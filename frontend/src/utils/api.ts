@@ -176,6 +176,61 @@ export const api = {
     });
     return handleResponse(response);
   },
+
+  getDarkConspiracies: async (): Promise<{
+    darkConspiracies: Array<{
+      id: string;
+      title: string;
+      data: any;
+      version: number;
+      createdAt: Date;
+      updatedAt: Date;
+    }>;
+  }> => {
+    const response = await fetch(`${API_URL}/dark-conspiracies`, {
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  createDarkConspiracy: async (data: {
+    title: string;
+    data: any;
+    version?: number;
+  }): Promise<{
+    id: string;
+    title: string;
+    data: any;
+    version: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }> => {
+    const response = await fetch(`${API_URL}/dark-conspiracies`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  updateDarkConspiracy: async (
+    id: string,
+    data: { title?: string; data?: any; version?: number },
+  ): Promise<{
+    id: string;
+    title: string;
+    data: any;
+    version: number;
+    createdAt: Date;
+    updatedAt: Date;
+  }> => {
+    const response = await fetch(`${API_URL}/dark-conspiracies/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
 };
 
 export { API_URL };

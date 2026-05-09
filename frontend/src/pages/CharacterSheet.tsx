@@ -11,9 +11,11 @@ import { useDeleteConfirmation } from "@/hooks/useDeleteConfirmation";
 import { useIsLargeScreen } from "@/hooks/useIsLargeScreen";
 import { useCharacterSave } from "@/hooks/useCharacterSave";
 import { useBackendCharactersSync } from "@/hooks/useBackendCharactersSync";
+import { useBackendDarkConspiraciesSync } from "@/hooks/useBackendDarkConspiraciesSync";
 import { SaveFailureDialog } from "@/components/MenuDialog/SaveFailureDialog";
 import { useCharacterStore } from "@/lib/character_store";
 import { useAuth } from "@/hooks/useAuth";
+import DarkConspiracySheet from "@/pages/DarkConspiracySheet";
 import EndOfSession from "@/components/character/EndOfSession";
 import MavenMoves from "@/components/character/MavenMoves";
 import MenuDialog from "@/components/MenuDialog/MenuDialog";
@@ -31,9 +33,11 @@ const CharacterSheet = () => {
   // useLingui() is Required to ensure component rerenders when locale changes
   useLingui();
   useBackendCharactersSync();
+  useBackendDarkConspiraciesSync();
   const [menuOpen, setMenuOpen] = useState(false);
   const [saveFailureOpen, setSaveFailureOpen] = useState(false);
   const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
+  const [activeView, setActiveView] = useState<"character" | "darkConspiracy">("character");
   const isLargeScreen = useIsLargeScreen();
   const {
     deleteConfirmOpen,
@@ -85,44 +89,50 @@ const CharacterSheet = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto relative">
-          {/* Column 1 */}
-          <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
-            <div className="absolute top-0 left-0 w-full -mt-8">
-              <Tentacles setMenuOpen={setMenuOpen} />
+        {activeView === "character" ? (
+          <div className="conspiracy-view-enter grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto relative">
+            {/* Column 1 */}
+            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
+              <div className="absolute top-0 left-0 w-full -mt-8">
+                <Tentacles setMenuOpen={setMenuOpen} />
+              </div>
+              <Name />
+              <Style />
+              <CozyActivity />
+              <Abilities />
+              <XpTrack />
+              <Conditions />
             </div>
-            <Name />
-            <Style />
-            <CozyActivity />
-            <Abilities />
-            <XpTrack />
-            <Conditions />
-          </div>
 
-          {/* Column 2 */}
-          <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative z-20">
-            <EndOfSession />
-            <Advancements />
-            <MavenMoves />
-          </div>
+            {/* Column 2 */}
+            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative z-20">
+              <EndOfSession />
+              <Advancements />
+              <MavenMoves />
+            </div>
 
-          {/* Column 3 */}
-          <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
-            <CrownOfTheQueen />
-            <CrownOfTheVoid />
-            <CozyLittlePlace />
-          </div>
+            {/* Column 3 */}
+            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
+              <CrownOfTheQueen />
+              <CrownOfTheVoid />
+              <CozyLittlePlace />
+            </div>
 
-          {/* Menu Button - Desktop version */}
-          <div className="hidden lg:block absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
-            <Button
-              onClick={() => setMenuOpen(true)}
-              className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
-            >
-              <Trans>Menu</Trans>
-            </Button>
+            {/* Menu Button - Desktop version */}
+            <div className="hidden lg:block absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
+              <Button
+                onClick={() => setMenuOpen(true)}
+                className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
+              >
+                <Trans>Menu</Trans>
+              </Button>
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="conspiracy-view-enter">
+            <DarkConspiracySheet />
+          </div>
+        )}
       </div>
 
       {/* Menu Button - Mobile version */}
@@ -160,6 +170,9 @@ const CharacterSheet = () => {
       <CharacterTabs
         onDeleteCharacter={handleDeleteCharacter}
         onSwitchCharacter={handleSwitchCharacter}
+        activeView={activeView}
+        onSwitchToCharacter={() => setActiveView("character")}
+        onSwitchToDarkConspiracy={() => setActiveView("darkConspiracy")}
       />
     </div>
   );

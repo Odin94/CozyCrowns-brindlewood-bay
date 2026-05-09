@@ -9,6 +9,17 @@ You can run everything locally using `mprocs` (after running `pnpm install` at t
 * `pnpm install` (from the repo root — installs the `frontend` and `backend` workspaces)
 * `mprocs`
 
+### Native dependencies
+The backend uses `better-sqlite3`, which ships a native SQLite binding. The repo is configured with `pnpm.onlyBuiltDependencies` so a normal `pnpm install` is allowed to run the install/build scripts needed by `better-sqlite3` on fresh installs, including Node 24.
+
+If you installed with scripts disabled, or Drizzle Studio reports that it "Could not locate the bindings file", rebuild the native package:
+
+```bash
+pnpm --filter cozycrowns-backend rebuild better-sqlite3
+```
+
+If that rebuild falls back to `node-gyp`, make sure Python and the Visual Studio Build Tools C++ workload are installed on Windows.
+
 ### Frontend
 ```bash
 cd frontend

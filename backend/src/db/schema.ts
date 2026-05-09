@@ -40,6 +40,29 @@ export const characters = sqliteTable(
   }),
 );
 
+export const darkConspiracies = sqliteTable(
+  "dark_conspiracies",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    data: text("data").notNull(),
+    version: integer("version").notNull().default(1),
+    deletedAt: integer("deleted_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    userIdIdx: index("dark_conspiracies_user_id_idx").on(table.userId),
+  }),
+);
+
 export const characterShares = sqliteTable(
   "character_shares",
   {
@@ -68,6 +91,7 @@ export const characterShares = sqliteTable(
 
 export const usersRelations = relations(users, ({ many }) => ({
   characters: many(characters),
+  darkConspiracies: many(darkConspiracies),
   sharedCharacters: many(characterShares, { relationName: "sharedWith" }),
   sharedBy: many(characterShares, { relationName: "sharedBy" }),
 }));
@@ -78,6 +102,13 @@ export const charactersRelations = relations(characters, ({ one, many }) => ({
     references: [users.id],
   }),
   shares: many(characterShares),
+}));
+
+export const darkConspiraciesRelations = relations(darkConspiracies, ({ one }) => ({
+  user: one(users, {
+    fields: [darkConspiracies.userId],
+    references: [users.id],
+  }),
 }));
 
 export const characterSharesRelations = relations(characterShares, ({ one }) => ({
