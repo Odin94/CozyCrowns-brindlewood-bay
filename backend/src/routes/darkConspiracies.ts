@@ -140,7 +140,10 @@ export const darkConspiracyRoutes = async (fastify: FastifyInstance) => {
         updates.data = JSON.stringify(body.data);
       }
 
-      updates.version = hasDataChanges || hasTitleChange ? (body.version ?? existing.version) + 1 : existing.version;
+      updates.version =
+        hasDataChanges || hasTitleChange
+          ? (body.version ?? existing.version) + 1
+          : existing.version;
 
       const [conspiracy] = await db
         .update(darkConspiracies)

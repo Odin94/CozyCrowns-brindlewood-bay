@@ -199,7 +199,7 @@ export const shareRoutes = async (fastify: FastifyInstance) => {
     },
   );
 
-  fastify.get("/shared-characters", { preHandler: authenticateUser }, async (request, reply) => {
+  fastify.get("/shared-characters", { preHandler: authenticateUser }, async (request) => {
     const userId = request.userId!;
 
     const sharedCharacters = await db

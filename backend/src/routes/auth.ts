@@ -86,7 +86,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         return;
       }
 
-      const { code, state } = queryResult.data;
+      const { code } = queryResult.data;
 
       const cookiePassword = env.WORKOS_COOKIE_PASSWORD;
 
@@ -330,7 +330,7 @@ export async function authRoutes(fastify: FastifyInstance) {
             });
             return;
           }
-        } catch (_refreshError) {
+        } catch {
           // Refresh failed, return unauthorized
         }
 

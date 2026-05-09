@@ -6,15 +6,16 @@
 - Deeper docs live in `docs/architecture.md` and `docs/change-map.md`.
 
 ## Commands
-- Package manager: `pnpm` (workspace at repo root). `npm` is no longer used.
-- Install dependencies: `pnpm install` from the repo root (installs both workspaces).
+- Package manager: `pnpm`. `npm` is no longer used.
+- Install dependencies from the app that needs them: `cd frontend && pnpm install` or `cd backend && pnpm install`.
+- The repo root has a scripts-only `package.json`; use it for repo-wide checks like `pnpm run lint` and `pnpm run fmt`, not dependency installation.
 - Frontend dev server: `cd frontend && pnpm dev`
 - Frontend checks: `cd frontend && pnpm lint` (oxlint) and `cd frontend && pnpm build`
 - Frontend translations: `cd frontend && pnpm extract && pnpm compile`
 - Backend dev server: `cd backend && pnpm dev`
 - Backend checks: `cd backend && pnpm build`
 - Database workflow: `cd backend && pnpm db:generate` after schema changes, then `cd backend && pnpm db:migrate`
-- Linting/formatting is handled by [oxlint](https://oxc.rs/docs/guide/usage/linter) (config at `frontend/.oxlintrc.json`). Use `pnpm format` in `frontend/` to autofix.
+- Linting/formatting is handled by [oxlint](https://oxc.rs/docs/guide/usage/linter) (config at `frontend/.oxlintrc.json`). Use `pnpm run fmt` at the repo root to format both apps.
 - Full smoke verification for most changes: frontend lint + frontend build + backend build
 
 ## Non-Negotiable Invariants

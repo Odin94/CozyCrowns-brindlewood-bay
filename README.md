@@ -4,18 +4,20 @@ A character sheet manager for the TTRPG [Brindlewood Bay](https://www.gauntlet-r
 You can check it out here: https://cozycrowns.odin-matthias.de
 
 ## How to run
-You can run everything locally using `mprocs` (after running `pnpm install` at the repo root and creating `.env`s):
+You can run everything locally using `mprocs` (after installing dependencies in each app folder and creating `.env`s):
 * `pnpm add -g mprocs`
-* `pnpm install` (from the repo root — installs the `frontend` and `backend` workspaces)
+* `cd frontend && pnpm install`
+* `cd backend && pnpm install`
 * `mprocs`
 
 ### Native dependencies
-The backend uses `better-sqlite3`, which ships a native SQLite binding. The repo is configured with `pnpm.onlyBuiltDependencies` so a normal `pnpm install` is allowed to run the install/build scripts needed by `better-sqlite3` on fresh installs, including Node 24.
+The backend uses `better-sqlite3`, which ships a native SQLite binding. The backend package is configured with `pnpm.onlyBuiltDependencies` so a normal `pnpm install` inside `backend/` is allowed to run the install/build scripts needed by `better-sqlite3` on fresh installs, including Node 24.
 
 If you installed with scripts disabled, or Drizzle Studio reports that it "Could not locate the bindings file", rebuild the native package:
 
 ```bash
-pnpm --filter cozycrowns-backend rebuild better-sqlite3
+cd backend
+pnpm rebuild better-sqlite3
 ```
 
 If that rebuild falls back to `node-gyp`, make sure Python and the Visual Studio Build Tools C++ workload are installed on Windows.

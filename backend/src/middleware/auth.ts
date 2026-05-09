@@ -69,7 +69,7 @@ export const authenticateUser = async (
           request.userId = refreshResult.user.id;
           return;
         }
-      } catch (_refreshError) {
+      } catch {
         // Refresh failed, continue to unauthorized
       }
 
@@ -89,7 +89,7 @@ export const authenticateUser = async (
         message: "Session is invalid",
       });
     }
-  } catch (error) {
+  } catch {
     reply.code(401).send({
       error: "Unauthorized",
       message: "Failed to authenticate session",

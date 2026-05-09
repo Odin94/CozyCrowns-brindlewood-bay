@@ -33,9 +33,9 @@ else
     runuser -u "$APP_USER" -- git clone https://github.com/Odin94/CozyCrowns-brindlewood-bay.git "$APP_DIR"
 fi
 
-# Install dependencies (uses pnpm — install once at the repo root for the workspace)
+# Install backend dependencies
 echo -e "${YELLOW}📦 Installing dependencies...${NC}"
-runuser -u "$APP_USER" -- bash -c "cd $APP_DIR && pnpm install --frozen-lockfile"
+runuser -u "$APP_USER" -- bash -c "cd $APP_DIR/backend && pnpm install --frozen-lockfile"
 
 # Build backend
 echo -e "${YELLOW}🔨 Building backend...${NC}"

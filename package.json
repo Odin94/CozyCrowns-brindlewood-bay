@@ -1,20 +1,13 @@
 {
-  "name": "cozycrowns-monorepo",
+  "name": "cozycrowns-repo-scripts",
   "private": true,
   "version": "0.0.0",
   "packageManager": "pnpm@10.33.0",
   "scripts": {
-    "dev:frontend": "pnpm --filter cozycrowns-brindlewood-bay dev",
-    "dev:backend": "pnpm --filter cozycrowns-backend dev",
-    "build": "pnpm -r build",
-    "lint": "pnpm --filter cozycrowns-brindlewood-bay lint"
-  },
-  "pnpm": {
-    "onlyBuiltDependencies": [
-      "better-sqlite3",
-      "core-js",
-      "esbuild",
-      "protobufjs"
-    ]
+    "dev:frontend": "pnpm --dir frontend dev",
+    "dev:backend": "pnpm --dir backend dev",
+    "build": "pnpm --dir frontend build && pnpm --dir backend build",
+    "lint": "pnpm --dir frontend lint && pnpm --dir backend lint",
+    "fmt": "pnpm --dir frontend fmt && pnpm --dir backend fmt"
   }
 }

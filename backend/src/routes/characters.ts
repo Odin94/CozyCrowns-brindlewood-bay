@@ -17,7 +17,7 @@ import {
 } from "../schema/character.js";
 
 export const characterRoutes = async (fastify: FastifyInstance) => {
-  fastify.get("/characters", { preHandler: authenticateUser }, async (request, reply) => {
+  fastify.get("/characters", { preHandler: authenticateUser }, async (request) => {
     const userId = request.userId!;
 
     const userCharacters = await db

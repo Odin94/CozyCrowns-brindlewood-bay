@@ -2,6 +2,7 @@ import { z } from "zod";
 
 export const zodToFastifySchema = (schema: z.ZodTypeAny): Record<string, unknown> => {
   const jsonSchema = schema.toJSONSchema();
-  const { $schema, ...schemaWithoutMeta } = jsonSchema;
+  const schemaWithoutMeta = { ...jsonSchema };
+  delete schemaWithoutMeta.$schema;
   return schemaWithoutMeta as Record<string, unknown>;
 };
