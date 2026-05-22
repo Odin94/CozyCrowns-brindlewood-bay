@@ -21,6 +21,7 @@ type CookieConsentProps = {
 } & React.HTMLAttributes<HTMLDivElement>;
 
 const LEARN_MORE_HREF = "https://odin-matthias.de/datenschutzerklaerung";
+const noop = () => {};
 
 const CookieHeader = () => (
   <div className="flex items-center gap-2">
@@ -52,8 +53,8 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
     {
       variant = "small",
       demo = false,
-      onAcceptCallback = () => {},
-      onDeclineCallback = () => {},
+      onAcceptCallback = noop,
+      onDeclineCallback = noop,
       className,
       ...props
     },

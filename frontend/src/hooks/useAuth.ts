@@ -3,6 +3,10 @@ import posthog from "posthog-js";
 import { useEffect } from "react";
 import { api, API_URL, tokenStorage } from "../utils/api";
 
+const signIn = () => {
+  window.location.href = `${API_URL}/auth/login`;
+};
+
 export const useAuth = () => {
   const queryClient = useQueryClient();
 
@@ -115,10 +119,6 @@ export const useAuth = () => {
       window.location.href = "/";
     },
   });
-
-  const signIn = () => {
-    window.location.href = `${API_URL}/auth/login`;
-  };
 
   const signOut = () => {
     logoutMutation.mutate();

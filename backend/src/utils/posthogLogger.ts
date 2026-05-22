@@ -6,10 +6,13 @@ import { logs } from "@opentelemetry/api-logs";
 import { env } from "../config/env.js";
 
 let sdk: NodeSDK | null = null;
-// Initialize with empty logger
-export let posthogLogger: ReturnType<typeof logs.getLogger> = {
+const noopPosthogLogger: ReturnType<typeof logs.getLogger> = {
   emit: () => {},
+  enabled: () => false,
 };
+
+// Initialize with empty logger
+export let posthogLogger: ReturnType<typeof logs.getLogger> = noopPosthogLogger;
 
 export const initializePostHogLogging = () => {
   if (env.NODE_ENV === "development") {
@@ -57,8 +60,6 @@ export const shutdownPostHogLogging = async () => {
   if (sdk) {
     await sdk.shutdown();
     sdk = null;
-    posthogLogger = {
-      emit: () => {},
-    };
+    posthogLogger = noopPosthogLogger;
   }
 };

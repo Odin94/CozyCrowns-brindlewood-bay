@@ -4,6 +4,7 @@ import { useSettingsStore } from "@/lib/settings_store";
 import { downloadPdf } from "@/lib/pdf_generator";
 import { loadTranslations } from "@/lib/utils";
 import { CharacterDataSchema } from "@/types/characterSchema";
+import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react/macro";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -130,7 +131,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
                   .map((err) => `${err.path.join(".")}: ${err.message}`)
                   .join(", ");
                 console.error(errorMessages);
-                toast.error(i18n._(`Invalid character data format: ${errorMessages}`));
+                toast.error(i18n._(msg`Invalid character data format: ${errorMessages}`));
                 return;
               }
 
@@ -213,7 +214,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
               .map((err) => `${err.path.join(".")}: ${err.message}`)
               .join(", ");
             console.error(errorMessages);
-            toast.error(i18n._(`Invalid character data format: ${errorMessages}`));
+            toast.error(i18n._(msg`Invalid character data format: ${errorMessages}`));
             return;
           }
 

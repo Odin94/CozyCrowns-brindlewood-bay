@@ -14,14 +14,62 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/components/character/MavenMoves.tsx:26
-msgid "Enter your Maven moves..."
-msgstr "Trag deine Kennerinen-Spielzüge ein..."
+#: src/components/MenuDialog/MenuDialog.tsx:63
+msgid "Profile updated successfully!"
+msgstr "Profil erfolgreich geupdated"
 
 #. js-lingui-explicit-id
-#: src/components/character/Name.tsx:21
-msgid "Enter character name"
-msgstr "Trag den Namen deines Charakters ein"
+#: src/components/MenuDialog/MenuDialog.tsx:66
+msgid "Failed to update profile. Please try again."
+msgstr "Konnte Profil nicht updaten. Versuch es bitte nochmal."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:103
+msgid "PDF downloaded successfully!"
+msgstr "PDF erfoglreich heruntergeladen!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:106
+msgid "Failed to download PDF. Please try again."
+msgstr "PDF herunterladen ist fehlgeschlaagen. Bitte versuche es erneut."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:178
+#: src/components/MenuDialog/MenuDialog.tsx:261
+msgid "Character data loaded successfully!"
+msgstr "Charakter erfoglreich geladen!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:181
+#: src/components/MenuDialog/MenuDialog.tsx:264
+msgid "Invalid JSON file format."
+msgstr "Ungültiges JSON Datenformat."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:183
+#: src/components/MenuDialog/MenuDialog.tsx:266
+msgid "Error loading character data. Please check the file format."
+msgstr "Fehler beim Laden der Charakterdaten. Bitte überprüfe das Datenformat."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:279
+msgid "Character saved successfully!"
+msgstr "Charakter erfolgreich gespeichert!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:281
+msgid "Failed to save character. Please try again."
+msgstr "Konnte Charakter nicht speichern. Bitte versuch es nochmal."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:318
+msgid "Character reset successfully!"
+msgstr "Charakter erfolgreich zurückgesetzt!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MeView.tsx:102
+msgid "Enter your nickname"
+msgstr "Nicknamen eingeben"
 
 #. js-lingui-explicit-id
 #: src/components/character/Conditions.tsx:20
@@ -29,62 +77,14 @@ msgid "Enter any conditions or notes..."
 msgstr "Trag deine Zustände ein..."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:62
-msgid "Profile updated successfully!"
-msgstr "Profil erfolgreich geupdated"
+#: src/components/character/MavenMoves.tsx:28
+msgid "Enter your Maven moves..."
+msgstr "Trag deine Kennerinen-Spielzüge ein..."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:65
-msgid "Failed to update profile. Please try again."
-msgstr "Konnte Profil nicht updaten. Versuch es bitte nochmal."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:102
-msgid "PDF downloaded successfully!"
-msgstr "PDF erfoglreich heruntergeladen!"
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:105
-msgid "Failed to download PDF. Please try again."
-msgstr "PDF herunterladen ist fehlgeschlaagen. Bitte versuche es erneut."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:175
-#: src/components/MenuDialog/MenuDialog.tsx:256
-msgid "Character data loaded successfully!"
-msgstr "Charakter erfoglreich geladen!"
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:178
-#: src/components/MenuDialog/MenuDialog.tsx:259
-msgid "Invalid JSON file format."
-msgstr "Ungültiges JSON Datenformat."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:180
-#: src/components/MenuDialog/MenuDialog.tsx:261
-msgid "Error loading character data. Please check the file format."
-msgstr "Fehler beim Laden der Charakterdaten. Bitte überprüfe das Datenformat."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:274
-msgid "Character saved successfully!"
-msgstr "Charakter erfolgreich gespeichert!"
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:276
-msgid "Failed to save character. Please try again."
-msgstr "Konnte Charakter nicht speichern. Bitte versuch es nochmal."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:313
-msgid "Character reset successfully!"
-msgstr "Charakter erfolgreich zurückgesetzt!"
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MeView.tsx:98
-msgid "Enter your nickname"
-msgstr "Nicknamen eingeben"
+#: src/components/character/Name.tsx:26
+msgid "Enter character name"
+msgstr "Trag den Namen deines Charakters ein"
 
 #. js-lingui-explicit-id
 #: src/components/character/Style.tsx:20
@@ -96,19 +96,19 @@ msgstr "Nicknamen eingeben"
 #~ msgid "Enter cozy activity"
 #~ msgstr "Wähle eine gemütliche Aktivität"
 
-#: src/game_data.ts:118
+#: src/game_data.ts:127
 msgid "+1 Presence from jet set lifestyle"
 msgstr "+1 Präsenz durch Jetset-Lebensstil"
 
-#: src/game_data.ts:196
+#: src/game_data.ts:205
 msgid "+1 Reason (max 3)"
 msgstr "+1 Verstand (max 3)"
 
-#: src/game_data.ts:256
+#: src/game_data.ts:265
 msgid "+1 Vitality (max 3)"
 msgstr "+1 Vitalität (max 3)"
 
-#: src/game_data.ts:163
+#: src/game_data.ts:172
 msgid "12+ on wild physical feats once per mystery"
 msgstr "12+ bei wilden körperlichen Leistungen einmal pro Fall"
 
@@ -152,13 +152,13 @@ msgstr "Ein Schatten im Garten."
 msgid "Abilities"
 msgstr "Attribute"
 
-#: src/components/cookie-consent.tsx:163
-#: src/components/cookie-consent.tsx:196
-#: src/components/cookie-consent.tsx:198
+#: src/components/cookie-consent.tsx:164
+#: src/components/cookie-consent.tsx:200
+#: src/components/cookie-consent.tsx:202
 msgid "Accept"
 msgstr "Akzeptieren"
 
-#: src/game_data.ts:128
+#: src/game_data.ts:137
 msgid "Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits"
 msgstr "Zugang zu Robins Ressourcen außerhalb von Brindlewood Bay und beide Gold Crown Vorteile"
 
@@ -166,23 +166,23 @@ msgstr "Zugang zu Robins Ressourcen außerhalb von Brindlewood Bay und beide Gol
 msgid "Advancements"
 msgstr "Aufstieg"
 
-#: src/game_data.ts:72
+#: src/game_data.ts:81
 msgid "Alexis Carrington Colby"
 msgstr "Alexis Carrington Colby"
 
-#: src/game_data.ts:73
+#: src/game_data.ts:82
 msgid "All the Cardigans"
 msgstr "Alter Vamp"
 
-#: src/components/character/MavenMovesPicker.tsx:79
+#: src/components/character/MavenMovesPicker.tsx:94
 msgid "Alternate"
 msgstr "Alternativ"
 
-#: src/game_data.ts:86
+#: src/game_data.ts:95
 msgid "Antiques & Furniture"
 msgstr "Antiquitäten"
 
-#: src/components/character/DeleteConfirmDialog.tsx:35
+#: src/components/character/DeleteConfirmDialog.tsx:48
 msgid "Are you sure you want to delete \"{characterName}\"? This will clear all data and cannot be undone."
 msgstr "Bist du sicher, dass du \"{characterName}\" löschen willst? Das lässt sich nicht rückgängig machen."
 
@@ -190,45 +190,45 @@ msgstr "Bist du sicher, dass du \"{characterName}\" löschen willst? Das lässt 
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Bist du sicher, dass du deinen Charakter zurücksetzen möchtest? Dies wird alle Daten löschen und kann nicht rückgängig gemacht werden."
 
-#: src/game_data.ts:181
+#: src/game_data.ts:190
 msgid "Ask the Keeper what's about to happen when entering a Location"
 msgstr "Frage die Spielleiter/in, was gleich passieren wird, wenn du einen Ort betrittst"
 
-#: src/components/MenuDialog/CreditsView.tsx:40
+#: src/components/MenuDialog/CreditsView.tsx:42
 msgid "Assets"
 msgstr "Assets"
 
-#: src/game_data.ts:159
+#: src/game_data.ts:168
 msgid "At the beginning of each session, a stranger presses something into your hand or leaves something in a place where you find it. The Keeper will tell you what it is. It functions as a Clue, but isn't attached to any particular mystery—you can use it in the present mystery or save it for the future."
 msgstr "Zu Beginn jeder Sitzung drückt ein Fremder dir etwas in die Hand oder lässt etwas an einem Ort zurück, wo du es findest. Die Spielleiter/in wird dir sagen, was es ist. Es funktioniert als Hinweis, ist aber an keinen bestimmten Fall gebunden—du kannst es im aktuellen Fall verwenden oder für die Zukunft aufbewahren."
 
-#: src/game_data.ts:154
+#: src/game_data.ts:163
 msgid "At the beginning of each session, the Keeper will narrate an answering machine message you received. The message is always from the same unknown person, and they will ask you to do some particular task, seemingly unrelated to the mystery. If you complete the task in the same session it was assigned, mark XP. The messages and tasks will get increasingly strange and disturbing the more marks you have on The Crown of the Void. No two Mavens can ever have this move at the same time."
 msgstr "Zu Beginn jeder Sitzung wird die Spielleiter/in eine Anrufbeantworter-Nachricht erzählen, die du erhalten hast. Die Nachricht ist immer von derselben unbekannten Person, und sie werden dich bitten, eine bestimmte Aufgabe zu erledigen, die scheinbar nichts mit dem Fall zu tun hat. Wenn du die Aufgabe in derselben Sitzung erledigst, in der sie zugewiesen wurde, markiere EP. Die Nachrichten und Aufgaben werden immer seltsamer und verstörender, je mehr Markierungen du auf der Krone des Abgrunds hast. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/game_data.ts:211
+#: src/game_data.ts:220
 msgid "Avoid grave harm; wake up rattled in the perfect place once per mystery"
 msgstr "Schweren Schaden vermeiden; einmal pro Fall benommen am perfekten Ort aufwachen"
 
-#: src/game_data.ts:103
+#: src/game_data.ts:112
 msgid "Avoid physical harm once per mystery"
 msgstr "Einmal pro Fall körperlichen Schaden vermeiden"
 
-#: src/components/MenuDialog/CreditsView.tsx:75
-#: src/components/MenuDialog/MeView.tsx:143
-#: src/components/MenuDialog/MeView.tsx:153
+#: src/components/MenuDialog/CreditsView.tsx:80
+#: src/components/MenuDialog/MeView.tsx:150
+#: src/components/MenuDialog/MeView.tsx:163
 msgid "Back"
 msgstr "Zurück"
 
-#: src/game_data.ts:87
+#: src/game_data.ts:96
 msgid "Baking"
 msgstr "Backen"
 
-#: src/game_data.ts:88
+#: src/game_data.ts:97
 msgid "Birding"
 msgstr "Vogelbeobachtung"
 
-#: src/game_data.ts:74
+#: src/game_data.ts:83
 msgid "Blouse Barn"
 msgstr "College-Professorin"
 
@@ -236,21 +236,21 @@ msgstr "College-Professorin"
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay wird veröffentlicht von <0>The Gauntlet</0>."
 
-#: src/pages/CharacterSheet.tsx:73
+#: src/pages/CharacterSheet.tsx:88
 msgid "by Odin"
 msgstr "von Odin"
 
-#: src/components/character/DeleteConfirmDialog.tsx:52
-#: src/components/MenuDialog/ResetConfirmView.tsx:32
-#: src/components/MenuDialog/SaveFailureDialog.tsx:42
+#: src/components/character/DeleteConfirmDialog.tsx:71
+#: src/components/MenuDialog/ResetConfirmView.tsx:41
+#: src/components/MenuDialog/SaveFailureDialog.tsx:54
 msgid "Cancel"
 msgstr "Abbrechen"
 
-#: src/game_data.ts:251
+#: src/game_data.ts:260
 msgid "Canine companion that gains the power of speech when Layer 5 is unlocked"
 msgstr "Hundebegleiter, der die Gabe der Sprache erhält, wenn Ebene 5 freigeschaltet wird"
 
-#: src/game_data.ts:89
+#: src/game_data.ts:98
 msgid "Charity Events"
 msgstr "Wohltätigkeitsveranstaltungen"
 
@@ -259,23 +259,23 @@ msgstr "Wohltätigkeitsveranstaltungen"
 msgid "Choose an additional Maven move."
 msgstr "Wähle einen zusätzlichen Kennerinnen-Spielzug aus."
 
-#: src/components/character/MavenMovesPicker.tsx:53
+#: src/components/character/MavenMovesPicker.tsx:66
 msgid "Choose Maven Moves"
 msgstr "Wähle deine Spielzüge"
 
-#: src/components/character/MavenMovesPicker.tsx:69
+#: src/components/character/MavenMovesPicker.tsx:83
 msgid "Classic"
 msgstr "Klassisch"
 
-#: src/components/ui/dialog.tsx:64
+#: src/components/ui/dialog.tsx:67
 msgid "Close"
 msgstr "Schliessen"
 
-#: src/game_data.ts:90
+#: src/game_data.ts:99
 msgid "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
 msgstr "Sammeln"
 
-#: src/lib/character_store.ts:9
+#: src/lib/character_store.ts:14
 msgid "Composure"
 msgstr "Gemütsruhe"
 
@@ -287,19 +287,19 @@ msgstr "Zustände"
 msgid "Confirm Reset"
 msgstr "Zurücksetzen bestätigen"
 
-#: src/components/MenuDialog/SaveFailureDialog.tsx:35
+#: src/components/MenuDialog/SaveFailureDialog.tsx:47
 msgid "Continue"
 msgstr "Fortfahren"
 
-#: src/game_data.ts:221
+#: src/game_data.ts:230
 msgid "Convert a Clue to a Void Clue once per mystery; reduces Dark Conspiracy thresholds"
 msgstr "Einmal pro Fall einen Hinweis in einen Leere-Hinweis umwandeln; reduziert Schwellenwerte der Dunklen Verschwörung"
 
-#: src/game_data.ts:91
+#: src/game_data.ts:100
 msgid "Cooking"
 msgstr "Kochen"
 
-#: src/components/character/CozyActivity.tsx:18
+#: src/components/character/CozyActivity.tsx:23
 msgid "Cozy Activity"
 msgstr "Gemütliche Aktivität"
 
@@ -308,7 +308,7 @@ msgid "CozyCrowns is an independent production by Odin and is not affiliated wit
 msgstr "CozyCrowns ist eine unabhängige Produktion von Odin und ist nicht mit The Gauntlet verbunden."
 
 #: src/components/MenuDialog/CreditsView.tsx:14
-#: src/components/MenuDialog/MainMenuView.tsx:89
+#: src/components/MenuDialog/MainMenuView.tsx:113
 msgid "Credits"
 msgstr "Credits"
 
@@ -320,29 +320,29 @@ msgstr "Die Krone der Königin"
 msgid "Crown of the Void"
 msgstr "Die Krone des Abgrunds"
 
-#: src/game_data.ts:133
+#: src/game_data.ts:142
 msgid "Dark conspiracy informant helps with Void Clues"
 msgstr "Dunkler Verschwörungs-Informant hilft bei Leere-Hinweisen"
 
-#: src/game_data.ts:216
+#: src/game_data.ts:225
 msgid "Declare an absolute truth about a Suspect from their appearance"
 msgstr "Eine absolute Wahrheit über einen Verdächtigen anhand seines Aussehens verkünden"
 
-#: src/components/cookie-consent.tsx:156
-#: src/components/cookie-consent.tsx:186
-#: src/components/cookie-consent.tsx:188
+#: src/components/cookie-consent.tsx:157
+#: src/components/cookie-consent.tsx:190
+#: src/components/cookie-consent.tsx:192
 msgid "Decline"
 msgstr "Ablehnen"
 
-#: src/components/character/DeleteConfirmDialog.tsx:29
+#: src/components/character/DeleteConfirmDialog.tsx:42
 msgid "Delete \"{characterName}\""
 msgstr "\"{characterName}\" löschen"
 
-#: src/components/character/DeleteConfirmDialog.tsx:45
+#: src/components/character/DeleteConfirmDialog.tsx:64
 msgid "Delete Character"
 msgstr "Charakter löschen"
 
-#: src/components/MenuDialog/MainMenuView.tsx:49
+#: src/components/MenuDialog/MainMenuView.tsx:54
 msgid "Deutsch"
 msgstr "Deutsch"
 
@@ -374,23 +374,23 @@ msgstr "Hast Du Deine Erfahrungen mit einer jungen Person geteilt?"
 msgid "Did you show someone that you've \"still got it?\""
 msgstr "Hast Du jemandem gezeigt, dass Du es immer noch draufhast?"
 
-#: src/game_data.ts:75
+#: src/game_data.ts:84
 msgid "Dorothy Zbornak"
 msgstr "Dorothy Zbornak"
 
-#: src/components/MenuDialog/MainMenuView.tsx:57
+#: src/components/MenuDialog/MainMenuView.tsx:65
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: src/components/MenuDialog/MainMenuView.tsx:67
+#: src/components/MenuDialog/MainMenuView.tsx:81
 msgid "Download save file"
 msgstr "Speicherdatei herunterladen"
 
-#: src/game_data.ts:232
+#: src/game_data.ts:241
 msgid "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "Tagsüber kannst du jeden Ort betreten, den du möchtest, und dich frei bewegen, sobald du drinnen bist, solange du nichts aktiv Feindseliges gegenüber den anwesenden Personen tust."
 
-#: src/components/MenuDialog/MeView.tsx:84
+#: src/components/MenuDialog/MeView.tsx:89
 msgid "Email"
 msgstr "Email"
 
@@ -398,43 +398,43 @@ msgstr "Email"
 msgid "End of Session"
 msgstr "Ende der Sitzung"
 
-#: src/game_data.ts:113
+#: src/game_data.ts:122
 msgid "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 msgstr "Ende der Sitzung: \"Hast du einem Übeltäter außergerichtliche Bestrafung zugefügt?\""
 
-#: src/components/MenuDialog/MainMenuView.tsx:46
+#: src/components/MenuDialog/MainMenuView.tsx:51
 msgid "English"
 msgstr "English"
 
-#: src/game_data.ts:246
+#: src/game_data.ts:255
 msgid "Enter any place freely at night"
 msgstr "Nachts jeden Ort frei betreten"
 
-#: src/game_data.ts:231
+#: src/game_data.ts:240
 msgid "Enter any place freely during the day"
 msgstr "Tagsüber jeden Ort frei betreten"
 
-#: src/game_data.ts:168
+#: src/game_data.ts:177
 msgid "Extraordinary cat companion for advantage that never gets marked"
 msgstr "Außergewöhnliche Katze für Vorteil, der nie markiert wird"
 
-#: src/game_data.ts:92
+#: src/game_data.ts:101
 msgid "Gardening"
 msgstr "Gärtnern"
 
-#: src/game_data.ts:76
+#: src/game_data.ts:85
 msgid "Goin' Fishin'"
 msgstr "Steppjacke und Timberlands"
 
-#: src/components/cookie-consent.tsx:27
+#: src/components/cookie-consent.tsx:28
 msgid "Have some cookies from grandma's jar!"
 msgstr "Greif in Oma's Keksdose!"
 
-#: src/game_data.ts:201
+#: src/game_data.ts:210
 msgid "Herbalism Cozy Activity; brew helpful tinctures to add to your Cozy Little Place"
 msgstr "Kräuterkunde als Gemütliche Aktivität; hilfreiche Tinkturen brauen und zum Gemütlichen Zuhause hinzufügen"
 
-#: src/game_data.ts:39
+#: src/game_data.ts:42
 msgid "Hereafter, during any intimate conversation with another character, you must make a casual reference to death, dying, the afterlife, or the End of All Things—no matter the subject at-hand."
 msgstr "In allen folgenden vertraulichen Unterhaltungen mit einem anderen Charakter, musst Du wie beiläufig den Tod erwähnen, oder das Sterben, das Jenseits oder das Ende aller Dinge – ganz gleich, was das eigentliche Gesprächsthema Eurer Unterhaltung ist."
 
@@ -442,15 +442,15 @@ msgstr "In allen folgenden vertraulichen Unterhaltungen mit einem anderen Charak
 msgid "Hereafter, during cozy vignettes focused on you or Cozy Move scenes involving you, you must also narrate how dark entities subtly reveal themselves in the scene."
 msgstr "In allen folgenden Gemütlichen Vignetten, die aus dem Gemütlichen Spielzug hervorgehen, musst Du auch erzählen, wie sich dunkle Wesenheiten auf subtile Weise in der Szene offenbaren."
 
-#: src/game_data.ts:77
+#: src/game_data.ts:86
 msgid "Hippy Dippy"
 msgstr "Hippie-Oma"
 
-#: src/components/cookie-consent.tsx:38
+#: src/components/cookie-consent.tsx:34
 msgid "I use cookies to get better insights on usage patterns, which helps me improve Cozycrowns for everyone.<0/>More info: <1>privacy policy</1>."
 msgstr "Ich verwende Cookies um Muster im Nutzungsverhalten zu verstehen und Cozycrowns für alle besser zu machen. <0/>Mehr Infos: <1>Datenschutzerklärung</1>"
 
-#: src/game_data.ts:123
+#: src/game_data.ts:132
 msgid "Improvise with objects for automatic 12+"
 msgstr "Mit Gegenständen improvisieren für automatische 12+"
 
@@ -459,11 +459,11 @@ msgstr "Mit Gegenständen improvisieren für automatische 12+"
 msgid "Increase an ability modifier by 1 (max +3)."
 msgstr "Steigere ein Attribut um 1 (bis max. +3)."
 
-#: src/game_data.ts:197
+#: src/game_data.ts:206
 msgid "Increase your Reason by 1 (max 3)."
 msgstr "Erhöhe deinen Verstand um 1 (max 3)."
 
-#: src/game_data.ts:257
+#: src/game_data.ts:266
 msgid "Increase your Vitality by 1 (max 3)."
 msgstr "Erhöhe deine Vitalität um 1 (max 3)."
 
@@ -475,47 +475,52 @@ msgstr "Erhöhe deine Vitalität um 1 (max 3)."
 msgid "Information about the game, its creators and sources of assets."
 msgstr "Informationen zum Spiel, seinen Authoren und den Quellen von Assets."
 
-#: src/game_data.ts:186
+#: src/game_data.ts:195
 msgid "Introduce trivia as a Clue once per mystery"
 msgstr "Einmal pro Fall Trivia-Wissen als Hinweis einbringen"
 
-#: src/game_data.ts:78
+#: src/components/MenuDialog/MenuDialog.tsx:134
+#: src/components/MenuDialog/MenuDialog.tsx:217
+msgid "Invalid character data format: {errorMessages}"
+msgstr "Ungültiges Charakterdatenformat: {errorMessages}"
+
+#: src/game_data.ts:87
 msgid "Jackie O"
 msgstr "Jackie O"
 
-#: src/game_data.ts:93
+#: src/game_data.ts:102
 msgid "Knitting"
 msgstr "Stricken"
 
-#: src/game_data.ts:261
+#: src/game_data.ts:270
 msgid "Lavish Cozy Little Place: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, and House Boy"
 msgstr "Luxuriöses Gemütliches Zuhause: Gourmet-Vorratskammer, Orchidarium, Vollbar, Privataufzug und Hausdiener"
 
-#: src/components/MenuDialog/MainMenuView.tsx:71
+#: src/components/MenuDialog/MainMenuView.tsx:88
 msgid "Load from save file"
 msgstr "Von Speicherdatei laden"
 
-#: src/components/AuthButton.tsx:16
+#: src/components/AuthButton.tsx:21
 msgid "Loading..."
 msgstr "Lade..."
 
-#: src/components/MenuDialog/MeView.tsx:71
+#: src/components/MenuDialog/MeView.tsx:76
 msgid "Logout"
 msgstr "Logout"
 
-#: src/components/MenuDialog/MainMenuView.tsx:34
+#: src/components/MenuDialog/MainMenuView.tsx:39
 msgid "Manage your character and settings."
 msgstr "Verwalte deinen Charakter und Einstellungen."
 
-#: src/components/MenuDialog/MeView.tsx:76
+#: src/components/MenuDialog/MeView.tsx:81
 msgid "Manage your profile settings."
 msgstr "Verwalte deine Profileinstellungen."
 
-#: src/game_data.ts:79
+#: src/game_data.ts:88
 msgid "Martha's Vineyard"
 msgstr "Nordic Walking"
 
-#: src/game_data.ts:173
+#: src/game_data.ts:182
 msgid "Master of disguise with any needed ID"
 msgstr "Meister der Verkleidung mit jedem benötigten Ausweis"
 
@@ -523,100 +528,100 @@ msgstr "Meister der Verkleidung mit jedem benötigten Ausweis"
 msgid "Maven Moves"
 msgstr "Kennerinnen-Spielzüge"
 
-#: src/components/AuthButton.tsx:30
+#: src/components/AuthButton.tsx:35
 msgid "Me"
 msgstr "Ich"
 
-#: src/game_data.ts:148
+#: src/game_data.ts:157
 msgid "Medical background and Medical Bag that never gets marked"
 msgstr "Medizinischer Hintergrund und Medizintasche, die nie markiert wird"
 
-#: src/pages/CharacterSheet.tsx:111
-#: src/pages/CharacterSheet.tsx:120
+#: src/pages/CharacterSheet.tsx:127
+#: src/pages/CharacterSheet.tsx:144
 msgid "Menu"
 msgstr "Menü"
 
-#: src/game_data.ts:153
+#: src/game_data.ts:162
 msgid "Mysterious answering machine messages give tasks for XP"
 msgstr "Mysteriöse Anrufbeantworter-Nachrichten geben Aufgaben für EP"
 
-#: src/components/character/Name.tsx:15
+#: src/components/character/Name.tsx:20
 msgid "Name"
 msgstr "Name"
 
-#: src/game_data.ts:241
+#: src/game_data.ts:250
 msgid "Name an imprisoned Suspect as Consultant; interview them once per mystery (behavior varies with Void marks)"
 msgstr "Einen inhaftierten Verdächtigen als Berater benennen; einmal pro Fall befragen (Verhalten variiert mit Abgrund-Markierungen)"
 
-#: src/game_data.ts:226
+#: src/game_data.ts:235
 msgid "Narrate a true first-person arrival or encounter once per mystery when alone"
 msgstr "Einmal pro Fall eine wahre Ich-Erzählung einer Ankunft oder Begegnung, wenn allein"
 
-#: src/game_data.ts:191
+#: src/game_data.ts:200
 msgid "Narrate the killer's flashback to define a Clue once per mystery"
 msgstr "Einmal pro Fall eine Rückblende des Mörders erzählen, um einen Hinweis zu bestimmen"
 
-#: src/components/MenuDialog/MeView.tsx:90
+#: src/components/MenuDialog/MeView.tsx:94
 msgid "Nickname"
 msgstr "Nickname"
 
-#: src/components/MenuDialog/MainMenuView.tsx:80
+#: src/components/MenuDialog/MainMenuView.tsx:100
 msgid "Odin's Blog"
 msgstr "Odins Blog"
 
-#: src/game_data.ts:80
+#: src/game_data.ts:89
 msgid "Office Hours"
 msgstr "Overall und Schraubenschlüssel"
 
-#: src/game_data.ts:104
+#: src/game_data.ts:113
 msgid "Once per mystery, if you and/or any number of your fellow Mavens would suffer physical harm, you can describe how that physical harm is just narrowly avoided."
 msgstr "Einmal pro Fall kannst du beschreiben, wie körperlicher Schaden gerade noch vermieden wird, wenn du und/oder eine beliebige Anzahl deiner Mit-Krimi-Kennerinnen körperlichen Schaden erleiden würden."
 
-#: src/game_data.ts:227
+#: src/game_data.ts:236
 msgid "Once per mystery, so long as no other Maven is in the scene, you can do a first person narration of your arrival in a Location or your first encounter with a Suspect. Whatever you narrate is true, but it cannot conclusively solve the mystery. No two Mavens can have this move at the same time."
 msgstr "Einmal pro Fall, solange keine andere Krimi-Kennerin in der Szene ist, kannst du eine Ich-Erzählung deiner Ankunft an einem Ort oder deiner ersten Begegnung mit einem Verdächtigen machen. Was auch immer du erzählst, ist wahr, kann aber den Fall nicht abschließend lösen. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/game_data.ts:212
+#: src/game_data.ts:221
 msgid "Once per mystery, when you would suffer grave physical harm, describe how you are knocked unconscious instead. Take the Condition: A Little Rattled. You always wake up in the perfect place to continue the investigation."
 msgstr "Einmal pro Fall, wenn du schweren körperlichen Schaden erleiden würdest, beschreibe stattdessen, wie du bewusstlos geschlagen wirst. Nimm den Zustand: Etwas Benommen. Du wachst immer am perfekten Ort auf, um die Ermittlung fortzusetzen."
 
-#: src/game_data.ts:222
+#: src/game_data.ts:231
 msgid "Once per mystery, you can change a physical object that is a Clue into a Void Clue by describing secret markings, unusual patterns, or otherwise strange, occult details that are on it. If you have unlocked Layer Three of the Dark Conspiracy, tell the Keeper that the thresholds for each remaining layer are reduced by one Void Clue. No two Mavens can have this move at the same time. This move and the Clarice Starling move cannot be in the same game."
 msgstr "Einmal pro Fall kannst du einen physischen Gegenstand, der ein Hinweis ist, in einen Leere-Hinweis verwandeln, indem du geheime Markierungen, ungewöhnliche Muster oder anderweitig seltsame, okkulte Details daran beschreibst. Wenn du Ebene Drei der Dunklen Verschwörung freigeschaltet hast, sage der Spielleiter/in, dass die Schwellenwerte für jede verbleibende Ebene um einen Leere-Hinweis reduziert werden. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben. Dieser Spielzug und der Clarice-Starling-Spielzug können nicht im selben Spiel sein."
 
-#: src/game_data.ts:187
+#: src/game_data.ts:196
 msgid "Once per mystery, you can introduce a piece of real-world trivia about something in a scene. That trivia is a Clue."
 msgstr "Einmal pro Fall kannst du ein Stück Trivia-Wissen aus der echten Welt über etwas in einer Szene einbringen. Dieses Trivia-Wissen ist ein Hinweis."
 
-#: src/game_data.ts:192
+#: src/game_data.ts:201
 msgid "Once per mystery, you can narrate a flashback from the perspective of the unknown killer. Nothing in the flashback is necessarily true, but when you're done, ask the other Mavens to define a Clue based on what you narrated. The Clue cannot conclusively solve the mystery by itself."
 msgstr "Einmal pro Fall kannst du eine Rückblende aus der Perspektive des unbekannten Mörders erzählen. Nichts in der Rückblende ist notwendigerweise wahr, aber wenn du fertig bist, bitte die anderen Krimi-Kennerinnen, basierend auf dem, was du erzählt hast, einen Hinweis zu bestimmen. Der Hinweis kann den Fall nicht allein abschließend lösen."
 
-#: src/game_data.ts:164
+#: src/game_data.ts:173
 msgid "Once per mystery, you can take a 12+ on a single roll related to a wild or daring physical feat."
 msgstr "Einmal pro Fall kannst du eine 12+ bei einem einzelnen Wurf für eine wilde oder gewagte körperliche Leistung nehmen."
 
-#: src/game_data.ts:143
+#: src/game_data.ts:152
 msgid "Opposite sibling for help, gives advantage (but helps at a cost)"
 msgstr "Gegensätzliches Geschwister für Hilfe, gibt Vorteil (aber hilft zu einem Preis)"
 
-#: src/game_data.ts:94
+#: src/game_data.ts:103
 msgid "Painting"
 msgstr "Malen"
 
-#: src/game_data.ts:108
+#: src/game_data.ts:117
 msgid "Pass for younger with advantage on rolls"
 msgstr "Als jünger durchgehen mit Vorteil bei Würfen"
 
-#: src/components/MenuDialog/MeView.tsx:150
+#: src/components/MenuDialog/MeView.tsx:157
 msgid "Please sign in to view your profile."
 msgstr "Log dich ein um dein Profil anzusehen."
 
-#: src/game_data.ts:95
+#: src/game_data.ts:104
 msgid "Pottery"
 msgstr "Töpfern"
 
-#: src/lib/character_store.ts:11
+#: src/lib/character_store.ts:16
 msgid "Presence"
 msgstr "Ausstrahlung"
 
@@ -624,49 +629,49 @@ msgstr "Ausstrahlung"
 msgid "Profile"
 msgstr "Profil"
 
-#: src/components/MenuDialog/CreditsView.tsx:44
+#: src/components/MenuDialog/CreditsView.tsx:46
 msgid "Queen SVG by <0>Darius Dan on svgrepo</0>."
 msgstr "Queen SVG von <0>Darius Dan auf svgrepo</0>."
 
-#: src/game_data.ts:96
+#: src/game_data.ts:105
 msgid "Quilting"
 msgstr "Sticken"
 
-#: src/lib/character_store.ts:10
+#: src/lib/character_store.ts:15
 msgid "Reason"
 msgstr "Verstand"
 
-#: src/game_data.ts:158
+#: src/game_data.ts:167
 msgid "Receive mysterious Clues each session"
 msgstr "Erhalte mysteriöse Hinweise jede Sitzung"
 
-#: src/components/MenuDialog/MainMenuView.tsx:75
-#: src/components/MenuDialog/ResetConfirmView.tsx:29
+#: src/components/MenuDialog/MainMenuView.tsx:95
+#: src/components/MenuDialog/ResetConfirmView.tsx:35
 msgid "Reset Character"
 msgstr "Charakter zurücksetzen"
 
-#: src/game_data.ts:42
+#: src/game_data.ts:50
 msgid "Retire your character in a way that shows how they are lost to the Void."
 msgstr "Schicke Deine Krimi-Kennerin auf eine Weise in den Ruhestand, die zeigt, dass sie an den Abgrund verloren ist."
 
-#: src/components/MenuDialog/MainMenuView.tsx:62
+#: src/components/MenuDialog/MainMenuView.tsx:73
 msgid "Save to Backend"
 msgstr "Auf dem Server speichern"
 
-#: src/components/MenuDialog/SaveFailureDialog.tsx:29
+#: src/components/MenuDialog/SaveFailureDialog.tsx:37
 msgid "Saving current character failed. If you continue loading/switching, you will lose changes to your current character."
 msgstr "Momentanen Character speichern fehlgeschlagen. Wenn du fortfährst wirst du Änderungen an deinem momentanen Charakter verlieren."
 
-#: src/components/MenuDialog/SaveFailureDialog.tsx:17
-#: src/components/MenuDialog/SaveFailureDialog.tsx:23
+#: src/components/MenuDialog/SaveFailureDialog.tsx:25
+#: src/components/MenuDialog/SaveFailureDialog.tsx:31
 msgid "Saving Failed"
 msgstr "Speichern fehlgeschlagen"
 
-#: src/game_data.ts:97
+#: src/game_data.ts:106
 msgid "Scrapbooking"
 msgstr "Scrapbooking"
 
-#: src/game_data.ts:206
+#: src/game_data.ts:215
 msgid "Secret ghost writer; both Gold Crown benefits while secret is kept"
 msgstr "Geheime Ghostwriterin; beide Gold-Crown-Vorteile, solange das Geheimnis bewahrt wird"
 
@@ -674,43 +679,43 @@ msgstr "Geheime Ghostwriterin; beide Gold-Crown-Vorteile, solange das Geheimnis 
 msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 msgstr "Wähle zu Beginn einen Spielzug. Zu Beginn darf kein Spielzug von mehr als einem Charakter gewählt werden."
 
-#: src/lib/character_store.ts:12
+#: src/lib/character_store.ts:17
 msgid "Sensitivity"
 msgstr "Gespür"
 
-#: src/components/AuthButton.tsx:38
+#: src/components/AuthButton.tsx:48
 msgid "Sign In"
 msgstr "Einloggen"
 
-#: src/game_data.ts:134
+#: src/game_data.ts:143
 msgid "Someone connected to the dark conspiracy is helping you behind the scenes. Tell the Keeper that the thresholds for each layer of the dark conspiracy are reduced by 1. Once per mystery, after at least one Void Clue has been encountered, you can have a secret meeting with this informant, who is always shrouded in darkness or otherwise disguised. You need only describe what the scene looks like—the location, the physical environment, how the mysterious person arrives on the scene, etc. The actual conversation happens off-screen. Then, you can declare that a Void Clue encountered during the mystery is now a regular Clue. The informant will only fully reveal themselves during the Void Mystery, at which point you can have normal scenes with them. No two Mavens can have this move at the same time."
 msgstr "Jemand, der mit der dunklen Verschwörung verbunden ist, hilft dir hinter den Kulissen. Sag der Spielleiter/in, dass die Schwellenwerte für jede Ebene der dunklen Verschwörung um 1 reduziert werden. Einmal pro Fall, nachdem mindestens ein Leere-Hinweis aufgetaucht ist, kannst du ein geheimes Treffen mit diesem Informanten haben, der immer in Dunkelheit gehüllt oder anderweitig verkleidet ist. Du musst nur beschreiben, wie die Szene aussieht—den Ort, die physische Umgebung, wie die mysteriöse Person auf der Szene erscheint, etc. Das eigentliche Gespräch findet außerhalb der Szene statt. Dann kannst du erklären, dass ein Leere-Hinweis, der während des Falls aufgetaucht ist, jetzt ein normaler Hinweis ist. Der Informant wird sich erst während des Leere-Falls vollständig offenbaren, zu diesem Zeitpunkt kannst du normale Szenen mit ihnen haben. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/game_data.ts:247
+#: src/game_data.ts:256
 msgid "Something about you makes you seem like you have a bit of an edge. What is it? During the night, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "Irgendetwas an dir lässt dich ein wenig gefährlich wirken. Was ist es? Nachts kannst du jeden Ort betreten, den du möchtest, und dich frei bewegen, sobald du drinnen bist, solange du nichts aktiv Feindseliges gegenüber den anwesenden Personen tust."
 
-#: src/components/MenuDialog/MainMenuView.tsx:85
+#: src/components/MenuDialog/MainMenuView.tsx:109
 msgid "Source Code"
 msgstr "Quellcode"
 
-#: src/game_data.ts:81
+#: src/game_data.ts:90
 msgid "Speed Walkin'"
 msgstr "Nordic Walking"
 
-#: src/components/character/Style.tsx:18
+#: src/components/character/Style.tsx:23
 msgid "Style"
 msgstr "Stil"
 
-#: src/components/MenuDialog/MainMenuView.tsx:94
+#: src/components/MenuDialog/MainMenuView.tsx:118
 msgid "Support Me"
 msgstr "Unterstütze mich"
 
-#: src/components/MenuDialog/CreditsView.tsx:58
+#: src/components/MenuDialog/CreditsView.tsx:60
 msgid "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 msgstr "Tentakel-Icon von <0>Teewara soontorn auf Noun Project</0>."
 
-#: src/game_data.ts:36
+#: src/game_data.ts:37
 msgid "The Chariot."
 msgstr "Der Streitwagen."
 
@@ -718,23 +723,23 @@ msgstr "Der Streitwagen."
 msgid "The first is always marked. At the beginning of a session, mark two more (three total marked)."
 msgstr "Das erste ist immer angekreuzt. Kreuze beim Sitzungsbeginn zwei weitere an (3 insgesamt angekreuzt)."
 
-#: src/game_data.ts:217
+#: src/game_data.ts:226
 msgid "The first time you encounter a Suspect, you can declare something about them based solely on their appearance. This information is absolutely true, but it is not a Clue, nor can it conclusively solve the mystery."
 msgstr "Wenn du einem Verdächtigen zum ersten Mal begegnest, kannst du etwas über ihn allein anhand seines Aussehens verkünden. Diese Information ist absolut wahr, ist aber kein Hinweis und kann den Fall nicht abschließend lösen."
 
-#: src/game_data.ts:182
+#: src/game_data.ts:191
 msgid "The first time you enter a Location, you can ask the Keeper, \"What is about to happen?\" They will answer truthfully, though not necessarily completely. If your Reason is 2 or higher, you can also ask, \"Why is it about to happen?\" The Keeper will answer truthfully, though not necessarily completely."
 msgstr "Wenn du zum ersten Mal einen Ort betrittst, kannst du die Spielleiter/in fragen: \"Was wird gleich passieren?\" Sie wird wahrheitsgemäß antworten, wenn auch nicht unbedingt vollständig. Wenn dein Verstand 2 oder höher ist, kannst du auch fragen: \"Warum wird es passieren?\" Die Spielleiter/in wird wahrheitsgemäß antworten, wenn auch nicht unbedingt vollständig."
 
-#: src/game_data.ts:38
+#: src/game_data.ts:41
 msgid "The Pallid Mask."
 msgstr "Die fahle Maske."
 
-#: src/game_data.ts:41
+#: src/game_data.ts:45
 msgid "The Pomegranate Kernel."
 msgstr "Der Granatapfelkern."
 
-#: src/game_data.ts:42
+#: src/game_data.ts:49
 msgid "The Void."
 msgstr "Der Abgrund."
 
@@ -742,23 +747,23 @@ msgstr "Der Abgrund."
 msgid "This action will permanently delete all your character data."
 msgstr "Diese Handlung löscht unwiederbringlich deine Charakterdaten!"
 
-#: src/game_data.ts:242
+#: src/game_data.ts:251
 msgid "This move has no function until you solve a mystery and put a Suspect behind bars as a result. Thereafter, you can name an imprisoned Suspect your Consultant. Once per mystery, you can go to the prison the Consultant is being held in and ask them about that mystery. This triggers the Meddling Move as it would when questioning any other character, but the Consultant's answers and behavior are affected by your most recent mark on the Crown of the Void: No marks — the Consultant is mocking or insulting. A Shadow in the Garden — the Consultant claims to see malevolent spirits all around you. The Chariot — the Consultant reveals a Void Clue, even on a miss (but no extra effect on a 12+). The Pallid Mask — the Consultant also reveals the name of a character who will be killed if you don't do something to help them. The Pomegranate Kernel — the Consultant will also profess their love for you; reciprocate to clear Obsessed with the Void and lose this move, or reject to take Condition: Marked by [Consultant] and lose this move. No two Mavens can have this move at the same time. This move and the Robert Langdon move cannot be in the same game."
 msgstr "Dieser Spielzug hat keine Funktion, bis du einen Fall löst und dadurch einen Verdächtigen hinter Gitter bringst. Danach kannst du einen inhaftierten Verdächtigen zu deinem Berater ernennen. Einmal pro Fall kannst du das Gefängnis besuchen, in dem der Berater festgehalten wird, und ihn zu diesem Fall befragen. Dies löst den Einmischungs-Spielzug aus, wie bei der Befragung eines anderen Charakters, aber die Antworten und das Verhalten des Beraters werden von deiner letzten Markierung auf der Krone des Abgrunds beeinflusst: Keine Markierungen — der Berater ist spöttisch oder beleidigend. Ein Schatten im Garten — der Berater behauptet, böswillige Geister überall um dich herum zu sehen. Der Streitwagen — der Berater enthüllt einen Leere-Hinweis, selbst bei einem Fehlschlag (aber keinen Zusatzeffekt bei 12+). Die fahle Maske — der Berater enthüllt außerdem den Namen eines Charakters, der getötet wird, wenn du nichts unternimmst, um ihm zu helfen. Der Granatapfelkern — der Berater wird dir außerdem seine Liebe gestehen; erwidere sie, um Besessen vom Abgrund zu entfernen und diesen Spielzug zu verlieren, oder lehne ab, um den Zustand: Gezeichnet von [Berater] zu erhalten und diesen Spielzug zu verlieren. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben. Dieser Spielzug und der Robert-Langdon-Spielzug können nicht im selben Spiel sein."
 
-#: src/components/character/DeleteConfirmDialog.tsx:39
+#: src/components/character/DeleteConfirmDialog.tsx:55
 msgid "This will also delete the character from the backend."
 msgstr "Das wird den Charakter auch vom Server löschen."
 
-#: src/game_data.ts:138
+#: src/game_data.ts:147
 msgid "Trusty vehicle for advantage on rolls"
 msgstr "Zuverlässiges Fahrzeug für Vorteil bei Würfen"
 
-#: src/game_data.ts:236
+#: src/game_data.ts:245
 msgid "Two extra Cozy Activities; trigger Cozy Move with non-Mavens; stumble on Clue or clear Condition during Cozy Moves"
 msgstr "Zwei zusätzliche Gemütliche Aktivitäten; Gemütlichen Spielzug mit Nicht-Kennerinnen auslösen; Hinweis finden oder Zustand entfernen bei Gemütlichen Spielzügen"
 
-#: src/game_data.ts:266
+#: src/game_data.ts:275
 msgid "Uncover a hidden secret from object Clues"
 msgstr "Ein verborgenes Geheimnis aus Gegenstands-Hinweisen aufdecken"
 
@@ -766,15 +771,15 @@ msgstr "Ein verborgenes Geheimnis aus Gegenstands-Hinweisen aufdecken"
 msgid "Unmark all the items in your Cozy Little Place."
 msgstr "Entferne die Markierungen aller Gegenstände in Deinem Gemütlichen Zuhause."
 
-#: src/game_data.ts:82
+#: src/game_data.ts:91
 msgid "Up in Pumps"
 msgstr "Strickjacke und Stulpen"
 
-#: src/lib/character_store.ts:8
+#: src/lib/character_store.ts:13
 msgid "Vitality"
 msgstr "Vitalität"
 
-#: src/game_data.ts:124
+#: src/game_data.ts:133
 msgid "When you improvise in a situation using whatever is at-hand, ask the other players and Keeper to name three objects you find in the environment. So long as you can give a plausible explanation for how these three objects together are helpful in the current situation, you get an automatic 12+ on a single associated die roll. This move can be used once per mystery."
 msgstr "Wenn du in einer Situation improvisierst und dabei verwendest, was zur Hand ist, bitte die anderen Spieler/innen und die Spielleiter/in, drei Gegenstände zu benennen, die du in der Umgebung findest. Solange du eine plausible Erklärung dafür geben kannst, wie diese drei Gegenstände zusammen in der aktuellen Situation hilfreich sind, bekommst du automatisch eine 12+ bei einem einzigen zugehörigen Würfelwurf. Dieser Spielzug kann einmal pro Fall verwendet werden."
 
@@ -786,7 +791,7 @@ msgstr "Wenn Du diese Krone aufsetzt, kreuze ein beliebiges Kästchen an."
 msgid "When you put on this Crown, mark the first empty box."
 msgstr "Wenn Du diese Krone aufsetzt, kreuze das erste freie Kästchen an."
 
-#: src/game_data.ts:267
+#: src/game_data.ts:276
 msgid "Whenever you find a Clue that is an object, you can physically manipulate the object to uncover a further secret about it—a hidden detail, a secret compartment, a scrawled message, etc. This extra detail is added to the Clue; it cannot cause the Clue to conclusively solve the mystery by itself."
 msgstr "Immer wenn du einen Hinweis findest, der ein Gegenstand ist, kannst du den Gegenstand physisch untersuchen, um ein weiteres Geheimnis darüber aufzudecken—ein verborgenes Detail, ein geheimes Fach, eine hingekritzelte Nachricht usw. Dieses zusätzliche Detail wird dem Hinweis hinzugefügt; es kann nicht dazu führen, dass der Hinweis den Fall allein abschließend löst."
 
@@ -794,66 +799,66 @@ msgstr "Immer wenn du einen Hinweis findest, der ein Gegenstand ist, kannst du d
 msgid "XP Track"
 msgstr "EP-Leiste"
 
-#: src/game_data.ts:202
+#: src/game_data.ts:211
 msgid "You are a highly skilled herbalist and have an additional Cozy Activity: Herbalism. If there is an herbal tincture or decoction that would be helpful in a situation, you can take the time to make it. If you do, add it to your Cozy Little Place."
 msgstr "Du bist eine hochqualifizierte Kräuterkundige und hast eine zusätzliche Gemütliche Aktivität: Kräuterkunde. Wenn es eine Kräutertinktur oder einen Absud gibt, der in einer Situation hilfreich wäre, kannst du dir die Zeit nehmen, ihn herzustellen. Wenn du es tust, füge ihn zu deinem Gemütlichen Zuhause hinzu."
 
-#: src/game_data.ts:129
+#: src/game_data.ts:138
 msgid "You are a secret personal friend of Robin Masterson, the mysterious author of The Gold Crown Mysteries. You have access to Robin's resources whenever you are outside Brindlewood Bay: her homes, her vehicles, and even her checking account. Additionally, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose."
 msgstr "Du bist ein geheimer persönlicher Freund von Robin Masterson, der mysteriösen Autorin der Gold Crown Mysteries. Du hast Zugang zu Robins Ressourcen, wann immer du außerhalb von Brindlewood Bay bist: ihre Häuser, ihre Fahrzeuge und sogar ihr Girokonto. Zusätzlich bekommen die Krimi-Kennerinnen immer beide Vorteile des Gold Crown Mysteries Spielzugs, anstatt wählen zu müssen."
 
-#: src/game_data.ts:109
+#: src/game_data.ts:118
 msgid "You can easily pass for someone much younger. If you're in a situation or environment where being younger is a benefit, your rolls are made with advantage."
 msgstr "Du kannst leicht als jemand viel Jüngeres durchgehen. Wenn du in einer Situation oder Umgebung bist, wo jünger zu sein ein Vorteil ist, werden deine Würfe mit Vorteil gemacht."
 
-#: src/game_data.ts:41
+#: src/game_data.ts:46
 msgid "You gain the condition 'Obsessed with the Void'. It can never be removed."
 msgstr "Du erhältst den Zustand „Besessen vom Abgrund\". Dieser Zustand kann nicht entfernt werden."
 
-#: src/game_data.ts:252
+#: src/game_data.ts:261
 msgid "You have a canine companion with whom you share a strong bond. This incredible pup can understand what you say with near-perfect comprehension. Name them and add them to your Cozy Little Place. They gain the power of speech once Layer 5 of the Dark Conspiracy is unlocked, but only you can understand them. No two Mavens can have this move at the same time."
 msgstr "Du hast einen Hundebegleiter, mit dem du eine starke Bindung teilst. Dieser unglaubliche Welpe kann verstehen, was du sagst, mit nahezu perfektem Verständnis. Gib ihm einen Namen und füge ihn zu deinem Gemütlichen Zuhause hinzu. Er erhält die Gabe der Sprache, sobald Ebene 5 der Dunklen Verschwörung freigeschaltet wird, aber nur du kannst ihn verstehen. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/game_data.ts:169
+#: src/game_data.ts:178
 msgid "You have a feline friend with whom you share a strong bond. This extraordinary kitty can do tricks and follow simple commands. Name your precocious puss and add them to your Cozy Little Place. When you use the cat to get an advantage on a roll, leave it unmarked."
 msgstr "Du hast einen Katzenfreund, mit dem du eine starke Bindung teilst. Diese außergewöhnliche Katze kann Tricks machen und einfachen Befehlen folgen. Gib deiner Katze einen Namen und füge sie zu deinem Gemütlichen Zuhause hinzu. Wenn du die Katze verwendest, um einen Vorteil bei einem Wurf zu bekommen, lasse sie unmarkiert."
 
-#: src/game_data.ts:149
+#: src/game_data.ts:158
 msgid "You have a medical background; describe it. Then add a Medical Bag to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
 msgstr "Du hast einen medizinischen Hintergrund; beschreibe ihn. Dann füge eine Medizintasche zu deinem Gemütlichen Zuhause hinzu. Wenn du sie verwendest, um einen Vorteil bei einem Würfelwurf zu bekommen, lasse sie unmarkiert."
 
-#: src/game_data.ts:144
+#: src/game_data.ts:153
 msgid "You have a sibling who is your polar opposite in terms of fashion sense and personality. Describe them to the Keeper and name them. You can always request a scene with your sibling. You can also call on them for help, in which case you take advantage on any die rolls associated with actions they assist you with. However, that help always comes at a cost."
 msgstr "Du hast ein Geschwister, das dein absoluter Gegensatz in Bezug auf Modegefühl und Persönlichkeit ist. Beschreibe sie der Spielleiter/in und gib ihnen einen Namen. Du kannst immer eine Szene mit deinem Geschwister anfordern. Du kannst sie auch um Hilfe bitten, in diesem Fall bekommst du einen Vorteil bei allen Würfelwürfen, die mit Aktionen verbunden sind, bei denen sie dir helfen. Diese Hilfe kommt jedoch immer zu einem Preis."
 
-#: src/game_data.ts:139
+#: src/game_data.ts:148
 msgid "You have a trusty mode of transportation—an oversized sedan, a motorbike, or an old truck—that has gotten you out of more than one sticky situation. Give it a name and add it to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
 msgstr "Du hast ein zuverlässiges Transportmittel—eine übergroße Limousine, ein Motorrad oder einen alten LKW—das dich aus mehr als einer schwierigen Situation befreit hat. Gib ihm einen Namen und füge es zu deinem Gemütlichen Zuhause hinzu. Wenn du es verwendest, um einen Vorteil bei einem Würfelwurf zu bekommen, lasse es unmarkiert."
 
-#: src/game_data.ts:114
+#: src/game_data.ts:123
 msgid "You have an additional End of Session question that is always marked: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 msgstr "Du hast eine zusätzliche Ende-der-Sitzung-Frage, die immer markiert ist: \"Hast du einem Übeltäter außergerichtliche Bestrafung zugefügt?\""
 
-#: src/game_data.ts:237
+#: src/game_data.ts:246
 msgid "You have two additional Cozy Activities; pick them from the list on your character sheet or write your own. Additionally, once per mystery, so long as you are engaged in one of your Cozy Activities, you can trigger the Cozy Move with a resident of Brindlewood Bay who is not a Maven. Finally, during the Cozy Move with another Maven, whichever Maven is doing their Cozy Activity can stumble on a Clue as normal OR clear another appropriate Condition."
 msgstr "Du hast zwei zusätzliche Gemütliche Aktivitäten; wähle sie aus der Liste auf deinem Charakterbogen oder schreibe deine eigenen. Zusätzlich kannst du einmal pro Fall, solange du einer deiner Gemütlichen Aktivitäten nachgehst, den Gemütlichen Spielzug mit einer Bewohnerin von Brindlewood Bay auslösen, die keine Krimi-Kennerin ist. Schließlich kann während des Gemütlichen Spielzugs mit einer anderen Krimi-Kennerin diejenige, die ihrer Gemütlichen Aktivität nachgeht, wie gewohnt auf einen Hinweis stoßen ODER einen anderen passenden Zustand entfernen."
 
-#: src/game_data.ts:207
+#: src/game_data.ts:216
 msgid "You know that Robin Masterson hasn't written an Amanda Delacourt book in years and that her name is used as a pseudonym by dozens of secret ghost writers because you are one of those secret ghost writers. So long as you keep the secret, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose. If you ever reveal the secret to anyone, you get a second use of the Gold Crown Mysteries Move during the mystery in which you reveal it, but take the Condition: Marked by the Robin Masterson Network, and you no longer have access to this move. No two Mavens can have this move at the same time."
 msgstr "Du weißt, dass Robin Masterson seit Jahren kein Amanda-Delacourt-Buch mehr geschrieben hat und dass ihr Name von Dutzenden geheimer Ghostwriter als Pseudonym verwendet wird, weil du eine dieser geheimen Ghostwriterinnen bist. Solange du das Geheimnis bewahrst, bekommen die Krimi-Kennerinnen immer beide Vorteile des Gold-Crown-Mysteries-Spielzugs, anstatt wählen zu müssen. Wenn du das Geheimnis jemals jemandem offenbarst, erhältst du eine zweite Verwendung des Gold-Crown-Mysteries-Spielzugs während des Falls, in dem du es offenbarst, nimmst aber den Zustand: Gezeichnet vom Robin-Masterson-Netzwerk, und du hast keinen Zugang mehr zu diesem Spielzug. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/game_data.ts:119
+#: src/game_data.ts:128
 msgid "You used to live a globetrotting, jet set life, and you still have a touch of glamor about you that will never fade. Add 1 to your Presence (max 3)."
 msgstr "Du hast früher ein weltenbummelndes Jetset-Leben geführt und hast immer noch einen Hauch von Glamour an dir, der nie verblassen wird. Füge 1 zu deiner Ausstrahlung hinzu (max 3)."
 
-#: src/game_data.ts:174
+#: src/game_data.ts:183
 msgid "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 msgstr "Du bist sehr talentiert darin, dich als jemand auszugeben, der du nicht bist. Wenn es ein Ausweisdokument oder eine Verkleidung gibt, die dir bei deinem Schwindel helfen würde, hast du es. Sage, was es ist, und füge es zu deinem Gemütlichen Zuhause hinzu."
 
-#: src/game_data.ts:262
+#: src/game_data.ts:271
 msgid "Your Cozy Little Place is anything but. Add the following to it: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, House Boy (name him). No two Mavens can have this move at the same time."
 msgstr "Dein Gemütliches Zuhause ist alles andere als das. Füge Folgendes hinzu: Gourmet-Vorratskammer, Orchidarium, Vollbar, Privataufzug, Hausdiener (gib ihm einen Namen). Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/game_data.ts:36
+#: src/game_data.ts:38
 msgid "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
 msgstr "Dein Verstand wird um 1 verringert. Dein Gespür wird um 1 erhöht."
