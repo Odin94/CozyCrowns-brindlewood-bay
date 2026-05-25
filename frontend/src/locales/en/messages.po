@@ -96,19 +96,23 @@ msgstr "Enter character name"
 #~ msgid "Enter cozy activity"
 #~ msgstr "Enter cozy activity"
 
-#: src/game_data.ts:127
+#: src/game_data.ts:147
 msgid "+1 Presence from jet set lifestyle"
 msgstr "+1 Presence from jet set lifestyle"
 
-#: src/game_data.ts:205
+#: src/game_data.ts:225
 msgid "+1 Reason (max 3)"
 msgstr "+1 Reason (max 3)"
 
-#: src/game_data.ts:265
+#: src/game_data.ts:122
+msgid "+1 Sensitivity and receive a strange dream Void Clue each session"
+msgstr "+1 Sensitivity and receive a strange dream Void Clue each session"
+
+#: src/game_data.ts:285
 msgid "+1 Vitality (max 3)"
 msgstr "+1 Vitality (max 3)"
 
-#: src/game_data.ts:172
+#: src/game_data.ts:192
 msgid "12+ on wild physical feats once per mystery"
 msgstr "12+ on wild physical feats once per mystery"
 
@@ -158,9 +162,13 @@ msgstr "Abilities"
 msgid "Accept"
 msgstr "Accept"
 
-#: src/game_data.ts:137
+#: src/game_data.ts:157
 msgid "Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits"
 msgstr "Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits"
+
+#: src/game_data.ts:123
+msgid "Add 1 to your Sensitivity (max 3). At the beginning of each session, the Keeper will give you a Void Clue in the form of a strange, unsettling dream you experience. No two Mavens can have this move at the same time."
+msgstr "Add 1 to your Sensitivity (max 3). At the beginning of each session, the Keeper will give you a Void Clue in the form of a strange, unsettling dream you experience. No two Mavens can have this move at the same time."
 
 #: src/components/character/Advancements.tsx:19
 msgid "Advancements"
@@ -190,7 +198,7 @@ msgstr "Are you sure you want to delete \"{characterName}\"? This will clear all
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 
-#: src/game_data.ts:190
+#: src/game_data.ts:210
 msgid "Ask the Keeper what's about to happen when entering a Location"
 msgstr "Ask the Keeper what's about to happen when entering a Location"
 
@@ -198,15 +206,15 @@ msgstr "Ask the Keeper what's about to happen when entering a Location"
 msgid "Assets"
 msgstr "Assets"
 
-#: src/game_data.ts:168
+#: src/game_data.ts:188
 msgid "At the beginning of each session, a stranger presses something into your hand or leaves something in a place where you find it. The Keeper will tell you what it is. It functions as a Clue, but isn't attached to any particular mystery—you can use it in the present mystery or save it for the future."
 msgstr "At the beginning of each session, a stranger presses something into your hand or leaves something in a place where you find it. The Keeper will tell you what it is. It functions as a Clue, but isn't attached to any particular mystery—you can use it in the present mystery or save it for the future."
 
-#: src/game_data.ts:163
+#: src/game_data.ts:183
 msgid "At the beginning of each session, the Keeper will narrate an answering machine message you received. The message is always from the same unknown person, and they will ask you to do some particular task, seemingly unrelated to the mystery. If you complete the task in the same session it was assigned, mark XP. The messages and tasks will get increasingly strange and disturbing the more marks you have on The Crown of the Void. No two Mavens can ever have this move at the same time."
 msgstr "At the beginning of each session, the Keeper will narrate an answering machine message you received. The message is always from the same unknown person, and they will ask you to do some particular task, seemingly unrelated to the mystery. If you complete the task in the same session it was assigned, mark XP. The messages and tasks will get increasingly strange and disturbing the more marks you have on The Crown of the Void. No two Mavens can ever have this move at the same time."
 
-#: src/game_data.ts:220
+#: src/game_data.ts:240
 msgid "Avoid grave harm; wake up rattled in the perfect place once per mystery"
 msgstr "Avoid grave harm; wake up rattled in the perfect place once per mystery"
 
@@ -246,7 +254,7 @@ msgstr "by Odin"
 msgid "Cancel"
 msgstr "Cancel"
 
-#: src/game_data.ts:260
+#: src/game_data.ts:280
 msgid "Canine companion that gains the power of speech when Layer 5 is unlocked"
 msgstr "Canine companion that gains the power of speech when Layer 5 is unlocked"
 
@@ -291,7 +299,7 @@ msgstr "Confirm Reset"
 msgid "Continue"
 msgstr "Continue"
 
-#: src/game_data.ts:230
+#: src/game_data.ts:250
 msgid "Convert a Clue to a Void Clue once per mystery; reduces Dark Conspiracy thresholds"
 msgstr "Convert a Clue to a Void Clue once per mystery; reduces Dark Conspiracy thresholds"
 
@@ -320,11 +328,11 @@ msgstr "Crown of the Queen"
 msgid "Crown of the Void"
 msgstr "Crown of the Void"
 
-#: src/game_data.ts:142
+#: src/game_data.ts:162
 msgid "Dark conspiracy informant helps with Void Clues"
 msgstr "Dark conspiracy informant helps with Void Clues"
 
-#: src/game_data.ts:225
+#: src/game_data.ts:245
 msgid "Declare an absolute truth about a Suspect from their appearance"
 msgstr "Declare an absolute truth about a Suspect from their appearance"
 
@@ -386,7 +394,7 @@ msgstr "Download PDF"
 msgid "Download save file"
 msgstr "Download save file"
 
-#: src/game_data.ts:241
+#: src/game_data.ts:261
 msgid "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 
@@ -398,7 +406,7 @@ msgstr "Email"
 msgid "End of Session"
 msgstr "End of Session"
 
-#: src/game_data.ts:122
+#: src/game_data.ts:142
 msgid "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 msgstr "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 
@@ -406,17 +414,21 @@ msgstr "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoe
 msgid "English"
 msgstr "English"
 
-#: src/game_data.ts:255
+#: src/game_data.ts:275
 msgid "Enter any place freely at night"
 msgstr "Enter any place freely at night"
 
-#: src/game_data.ts:240
+#: src/game_data.ts:260
 msgid "Enter any place freely during the day"
 msgstr "Enter any place freely during the day"
 
-#: src/game_data.ts:177
+#: src/game_data.ts:197
 msgid "Extraordinary cat companion for advantage that never gets marked"
 msgstr "Extraordinary cat companion for advantage that never gets marked"
+
+#: src/game_data.ts:117
+msgid "Find an additional Clue when Meddling among the rich and famous once per mystery"
+msgstr "Find an additional Clue when Meddling among the rich and famous once per mystery"
 
 #: src/game_data.ts:101
 msgid "Gardening"
@@ -430,7 +442,7 @@ msgstr "Goin' Fishin'"
 msgid "Have some cookies from grandma's jar!"
 msgstr "Have some cookies from grandma's jar!"
 
-#: src/game_data.ts:210
+#: src/game_data.ts:230
 msgid "Herbalism Cozy Activity; brew helpful tinctures to add to your Cozy Little Place"
 msgstr "Herbalism Cozy Activity; brew helpful tinctures to add to your Cozy Little Place"
 
@@ -450,7 +462,7 @@ msgstr "Hippy Dippy"
 msgid "I use cookies to get better insights on usage patterns, which helps me improve Cozycrowns for everyone.<0/>More info: <1>privacy policy</1>."
 msgstr "I use cookies to get better insights on usage patterns, which helps me improve Cozycrowns for everyone.<0/>More info: <1>privacy policy</1>."
 
-#: src/game_data.ts:132
+#: src/game_data.ts:152
 msgid "Improvise with objects for automatic 12+"
 msgstr "Improvise with objects for automatic 12+"
 
@@ -459,11 +471,11 @@ msgstr "Improvise with objects for automatic 12+"
 msgid "Increase an ability modifier by 1 (max +3)."
 msgstr "Increase an ability modifier by 1 (max +3)."
 
-#: src/game_data.ts:206
+#: src/game_data.ts:226
 msgid "Increase your Reason by 1 (max 3)."
 msgstr "Increase your Reason by 1 (max 3)."
 
-#: src/game_data.ts:266
+#: src/game_data.ts:286
 msgid "Increase your Vitality by 1 (max 3)."
 msgstr "Increase your Vitality by 1 (max 3)."
 
@@ -475,7 +487,7 @@ msgstr "Increase your Vitality by 1 (max 3)."
 msgid "Information about the game, its creators and sources of assets."
 msgstr "Information about the game, its creators and sources of assets."
 
-#: src/game_data.ts:195
+#: src/game_data.ts:215
 msgid "Introduce trivia as a Clue once per mystery"
 msgstr "Introduce trivia as a Clue once per mystery"
 
@@ -492,7 +504,7 @@ msgstr "Jackie O"
 msgid "Knitting"
 msgstr "Knitting"
 
-#: src/game_data.ts:270
+#: src/game_data.ts:290
 msgid "Lavish Cozy Little Place: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, and House Boy"
 msgstr "Lavish Cozy Little Place: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, and House Boy"
 
@@ -524,7 +536,7 @@ msgstr "Manage your profile settings."
 msgid "Martha's Vineyard"
 msgstr "Martha's Vineyard"
 
-#: src/game_data.ts:182
+#: src/game_data.ts:202
 msgid "Master of disguise with any needed ID"
 msgstr "Master of disguise with any needed ID"
 
@@ -536,7 +548,7 @@ msgstr "Maven Moves"
 msgid "Me"
 msgstr "Me"
 
-#: src/game_data.ts:157
+#: src/game_data.ts:177
 msgid "Medical background and Medical Bag that never gets marked"
 msgstr "Medical background and Medical Bag that never gets marked"
 
@@ -545,7 +557,7 @@ msgstr "Medical background and Medical Bag that never gets marked"
 msgid "Menu"
 msgstr "Menu"
 
-#: src/game_data.ts:162
+#: src/game_data.ts:182
 msgid "Mysterious answering machine messages give tasks for XP"
 msgstr "Mysterious answering machine messages give tasks for XP"
 
@@ -553,15 +565,15 @@ msgstr "Mysterious answering machine messages give tasks for XP"
 msgid "Name"
 msgstr "Name"
 
-#: src/game_data.ts:250
+#: src/game_data.ts:270
 msgid "Name an imprisoned Suspect as Consultant; interview them once per mystery (behavior varies with Void marks)"
 msgstr "Name an imprisoned Suspect as Consultant; interview them once per mystery (behavior varies with Void marks)"
 
-#: src/game_data.ts:235
+#: src/game_data.ts:255
 msgid "Narrate a true first-person arrival or encounter once per mystery when alone"
 msgstr "Narrate a true first-person arrival or encounter once per mystery when alone"
 
-#: src/game_data.ts:200
+#: src/game_data.ts:220
 msgid "Narrate the killer's flashback to define a Clue once per mystery"
 msgstr "Narrate the killer's flashback to define a Clue once per mystery"
 
@@ -581,31 +593,31 @@ msgstr "Office Hours"
 msgid "Once per mystery, if you and/or any number of your fellow Mavens would suffer physical harm, you can describe how that physical harm is just narrowly avoided."
 msgstr "Once per mystery, if you and/or any number of your fellow Mavens would suffer physical harm, you can describe how that physical harm is just narrowly avoided."
 
-#: src/game_data.ts:236
+#: src/game_data.ts:256
 msgid "Once per mystery, so long as no other Maven is in the scene, you can do a first person narration of your arrival in a Location or your first encounter with a Suspect. Whatever you narrate is true, but it cannot conclusively solve the mystery. No two Mavens can have this move at the same time."
 msgstr "Once per mystery, so long as no other Maven is in the scene, you can do a first person narration of your arrival in a Location or your first encounter with a Suspect. Whatever you narrate is true, but it cannot conclusively solve the mystery. No two Mavens can have this move at the same time."
 
-#: src/game_data.ts:221
+#: src/game_data.ts:241
 msgid "Once per mystery, when you would suffer grave physical harm, describe how you are knocked unconscious instead. Take the Condition: A Little Rattled. You always wake up in the perfect place to continue the investigation."
 msgstr "Once per mystery, when you would suffer grave physical harm, describe how you are knocked unconscious instead. Take the Condition: A Little Rattled. You always wake up in the perfect place to continue the investigation."
 
-#: src/game_data.ts:231
+#: src/game_data.ts:251
 msgid "Once per mystery, you can change a physical object that is a Clue into a Void Clue by describing secret markings, unusual patterns, or otherwise strange, occult details that are on it. If you have unlocked Layer Three of the Dark Conspiracy, tell the Keeper that the thresholds for each remaining layer are reduced by one Void Clue. No two Mavens can have this move at the same time. This move and the Clarice Starling move cannot be in the same game."
 msgstr "Once per mystery, you can change a physical object that is a Clue into a Void Clue by describing secret markings, unusual patterns, or otherwise strange, occult details that are on it. If you have unlocked Layer Three of the Dark Conspiracy, tell the Keeper that the thresholds for each remaining layer are reduced by one Void Clue. No two Mavens can have this move at the same time. This move and the Clarice Starling move cannot be in the same game."
 
-#: src/game_data.ts:196
+#: src/game_data.ts:216
 msgid "Once per mystery, you can introduce a piece of real-world trivia about something in a scene. That trivia is a Clue."
 msgstr "Once per mystery, you can introduce a piece of real-world trivia about something in a scene. That trivia is a Clue."
 
-#: src/game_data.ts:201
+#: src/game_data.ts:221
 msgid "Once per mystery, you can narrate a flashback from the perspective of the unknown killer. Nothing in the flashback is necessarily true, but when you're done, ask the other Mavens to define a Clue based on what you narrated. The Clue cannot conclusively solve the mystery by itself."
 msgstr "Once per mystery, you can narrate a flashback from the perspective of the unknown killer. Nothing in the flashback is necessarily true, but when you're done, ask the other Mavens to define a Clue based on what you narrated. The Clue cannot conclusively solve the mystery by itself."
 
-#: src/game_data.ts:173
+#: src/game_data.ts:193
 msgid "Once per mystery, you can take a 12+ on a single roll related to a wild or daring physical feat."
 msgstr "Once per mystery, you can take a 12+ on a single roll related to a wild or daring physical feat."
 
-#: src/game_data.ts:152
+#: src/game_data.ts:172
 msgid "Opposite sibling for help, gives advantage (but helps at a cost)"
 msgstr "Opposite sibling for help, gives advantage (but helps at a cost)"
 
@@ -613,7 +625,7 @@ msgstr "Opposite sibling for help, gives advantage (but helps at a cost)"
 msgid "Painting"
 msgstr "Painting"
 
-#: src/game_data.ts:117
+#: src/game_data.ts:137
 msgid "Pass for younger with advantage on rolls"
 msgstr "Pass for younger with advantage on rolls"
 
@@ -645,7 +657,7 @@ msgstr "Quilting"
 msgid "Reason"
 msgstr "Reason"
 
-#: src/game_data.ts:167
+#: src/game_data.ts:187
 msgid "Receive mysterious Clues each session"
 msgstr "Receive mysterious Clues each session"
 
@@ -675,7 +687,7 @@ msgstr "Saving Failed"
 msgid "Scrapbooking"
 msgstr "Scrapbooking"
 
-#: src/game_data.ts:215
+#: src/game_data.ts:235
 msgid "Secret ghost writer; both Gold Crown benefits while secret is kept"
 msgstr "Secret ghost writer; both Gold Crown benefits while secret is kept"
 
@@ -691,11 +703,15 @@ msgstr "Sensitivity"
 msgid "Sign In"
 msgstr "Sign In"
 
-#: src/game_data.ts:143
+#: src/game_data.ts:163
 msgid "Someone connected to the dark conspiracy is helping you behind the scenes. Tell the Keeper that the thresholds for each layer of the dark conspiracy are reduced by 1. Once per mystery, after at least one Void Clue has been encountered, you can have a secret meeting with this informant, who is always shrouded in darkness or otherwise disguised. You need only describe what the scene looks like—the location, the physical environment, how the mysterious person arrives on the scene, etc. The actual conversation happens off-screen. Then, you can declare that a Void Clue encountered during the mystery is now a regular Clue. The informant will only fully reveal themselves during the Void Mystery, at which point you can have normal scenes with them. No two Mavens can have this move at the same time."
 msgstr "Someone connected to the dark conspiracy is helping you behind the scenes. Tell the Keeper that the thresholds for each layer of the dark conspiracy are reduced by 1. Once per mystery, after at least one Void Clue has been encountered, you can have a secret meeting with this informant, who is always shrouded in darkness or otherwise disguised. You need only describe what the scene looks like—the location, the physical environment, how the mysterious person arrives on the scene, etc. The actual conversation happens off-screen. Then, you can declare that a Void Clue encountered during the mystery is now a regular Clue. The informant will only fully reveal themselves during the Void Mystery, at which point you can have normal scenes with them. No two Mavens can have this move at the same time."
 
-#: src/game_data.ts:256
+#: src/game_data.ts:118
+msgid "Something about you causes the elite of society to not take you too seriously. What is it? Once per mystery, when you do the Meddling Move in a place occupied by the rich and famous, you find an additional Clue, even on a miss."
+msgstr "Something about you causes the elite of society to not take you too seriously. What is it? Once per mystery, when you do the Meddling Move in a place occupied by the rich and famous, you find an additional Clue, even on a miss."
+
+#: src/game_data.ts:276
 msgid "Something about you makes you seem like you have a bit of an edge. What is it? During the night, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "Something about you makes you seem like you have a bit of an edge. What is it? During the night, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 
@@ -710,6 +726,10 @@ msgstr "Speed Walkin'"
 #: src/components/character/Style.tsx:23
 msgid "Style"
 msgstr "Style"
+
+#: src/game_data.ts:127
+msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
+msgstr "Stylish Wardrobe for advantage on rolls that never gets marked"
 
 #: src/components/MenuDialog/MainMenuView.tsx:118
 msgid "Support Me"
@@ -727,11 +747,11 @@ msgstr "The Chariot."
 msgid "The first is always marked. At the beginning of a session, mark two more (three total marked)."
 msgstr "The first is always marked. At the beginning of a session, mark two more (three total marked)."
 
-#: src/game_data.ts:226
+#: src/game_data.ts:246
 msgid "The first time you encounter a Suspect, you can declare something about them based solely on their appearance. This information is absolutely true, but it is not a Clue, nor can it conclusively solve the mystery."
 msgstr "The first time you encounter a Suspect, you can declare something about them based solely on their appearance. This information is absolutely true, but it is not a Clue, nor can it conclusively solve the mystery."
 
-#: src/game_data.ts:191
+#: src/game_data.ts:211
 msgid "The first time you enter a Location, you can ask the Keeper, \"What is about to happen?\" They will answer truthfully, though not necessarily completely. If your Reason is 2 or higher, you can also ask, \"Why is it about to happen?\" The Keeper will answer truthfully, though not necessarily completely."
 msgstr "The first time you enter a Location, you can ask the Keeper, \"What is about to happen?\" They will answer truthfully, though not necessarily completely. If your Reason is 2 or higher, you can also ask, \"Why is it about to happen?\" The Keeper will answer truthfully, though not necessarily completely."
 
@@ -751,7 +771,7 @@ msgstr "The Void."
 msgid "This action will permanently delete all your character data."
 msgstr "This action will permanently delete all your character data."
 
-#: src/game_data.ts:251
+#: src/game_data.ts:271
 msgid "This move has no function until you solve a mystery and put a Suspect behind bars as a result. Thereafter, you can name an imprisoned Suspect your Consultant. Once per mystery, you can go to the prison the Consultant is being held in and ask them about that mystery. This triggers the Meddling Move as it would when questioning any other character, but the Consultant's answers and behavior are affected by your most recent mark on the Crown of the Void: No marks — the Consultant is mocking or insulting. A Shadow in the Garden — the Consultant claims to see malevolent spirits all around you. The Chariot — the Consultant reveals a Void Clue, even on a miss (but no extra effect on a 12+). The Pallid Mask — the Consultant also reveals the name of a character who will be killed if you don't do something to help them. The Pomegranate Kernel — the Consultant will also profess their love for you; reciprocate to clear Obsessed with the Void and lose this move, or reject to take Condition: Marked by [Consultant] and lose this move. No two Mavens can have this move at the same time. This move and the Robert Langdon move cannot be in the same game."
 msgstr "This move has no function until you solve a mystery and put a Suspect behind bars as a result. Thereafter, you can name an imprisoned Suspect your Consultant. Once per mystery, you can go to the prison the Consultant is being held in and ask them about that mystery. This triggers the Meddling Move as it would when questioning any other character, but the Consultant's answers and behavior are affected by your most recent mark on the Crown of the Void: No marks — the Consultant is mocking or insulting. A Shadow in the Garden — the Consultant claims to see malevolent spirits all around you. The Chariot — the Consultant reveals a Void Clue, even on a miss (but no extra effect on a 12+). The Pallid Mask — the Consultant also reveals the name of a character who will be killed if you don't do something to help them. The Pomegranate Kernel — the Consultant will also profess their love for you; reciprocate to clear Obsessed with the Void and lose this move, or reject to take Condition: Marked by [Consultant] and lose this move. No two Mavens can have this move at the same time. This move and the Robert Langdon move cannot be in the same game."
 
@@ -759,21 +779,25 @@ msgstr "This move has no function until you solve a mystery and put a Suspect be
 msgid "This will also delete the character from the backend."
 msgstr "This will also delete the character from the backend."
 
-#: src/game_data.ts:147
+#: src/game_data.ts:167
 msgid "Trusty vehicle for advantage on rolls"
 msgstr "Trusty vehicle for advantage on rolls"
 
-#: src/game_data.ts:245
+#: src/game_data.ts:265
 msgid "Two extra Cozy Activities; trigger Cozy Move with non-Mavens; stumble on Clue or clear Condition during Cozy Moves"
 msgstr "Two extra Cozy Activities; trigger Cozy Move with non-Mavens; stumble on Clue or clear Condition during Cozy Moves"
 
-#: src/game_data.ts:275
+#: src/game_data.ts:295
 msgid "Uncover a hidden secret from object Clues"
 msgstr "Uncover a hidden secret from object Clues"
 
 #: src/game_data.ts:18
 msgid "Unmark all the items in your Cozy Little Place."
 msgstr "Unmark all the items in your Cozy Little Place."
+
+#: src/game_data.ts:132
+msgid "Unmark every Crown of the Void box once"
+msgstr "Unmark every Crown of the Void box once"
 
 #: src/game_data.ts:91
 msgid "Up in Pumps"
@@ -783,7 +807,7 @@ msgstr "Up in Pumps"
 msgid "Vitality"
 msgstr "Vitality"
 
-#: src/game_data.ts:133
+#: src/game_data.ts:153
 msgid "When you improvise in a situation using whatever is at-hand, ask the other players and Keeper to name three objects you find in the environment. So long as you can give a plausible explanation for how these three objects together are helpful in the current situation, you get an automatic 12+ on a single associated die roll. This move can be used once per mystery."
 msgstr "When you improvise in a situation using whatever is at-hand, ask the other players and Keeper to name three objects you find in the environment. So long as you can give a plausible explanation for how these three objects together are helpful in the current situation, you get an automatic 12+ on a single associated die roll. This move can be used once per mystery."
 
@@ -795,7 +819,7 @@ msgstr "When you put on this Crown, mark and narrate any you wish."
 msgid "When you put on this Crown, mark the first empty box."
 msgstr "When you put on this Crown, mark the first empty box."
 
-#: src/game_data.ts:276
+#: src/game_data.ts:296
 msgid "Whenever you find a Clue that is an object, you can physically manipulate the object to uncover a further secret about it—a hidden detail, a secret compartment, a scrawled message, etc. This extra detail is added to the Clue; it cannot cause the Clue to conclusively solve the mystery by itself."
 msgstr "Whenever you find a Clue that is an object, you can physically manipulate the object to uncover a further secret about it—a hidden detail, a secret compartment, a scrawled message, etc. This extra detail is added to the Clue; it cannot cause the Clue to conclusively solve the mystery by itself."
 
@@ -803,15 +827,15 @@ msgstr "Whenever you find a Clue that is an object, you can physically manipulat
 msgid "XP Track"
 msgstr "XP Track"
 
-#: src/game_data.ts:211
+#: src/game_data.ts:231
 msgid "You are a highly skilled herbalist and have an additional Cozy Activity: Herbalism. If there is an herbal tincture or decoction that would be helpful in a situation, you can take the time to make it. If you do, add it to your Cozy Little Place."
 msgstr "You are a highly skilled herbalist and have an additional Cozy Activity: Herbalism. If there is an herbal tincture or decoction that would be helpful in a situation, you can take the time to make it. If you do, add it to your Cozy Little Place."
 
-#: src/game_data.ts:138
+#: src/game_data.ts:158
 msgid "You are a secret personal friend of Robin Masterson, the mysterious author of The Gold Crown Mysteries. You have access to Robin's resources whenever you are outside Brindlewood Bay: her homes, her vehicles, and even her checking account. Additionally, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose."
 msgstr "You are a secret personal friend of Robin Masterson, the mysterious author of The Gold Crown Mysteries. You have access to Robin's resources whenever you are outside Brindlewood Bay: her homes, her vehicles, and even her checking account. Additionally, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose."
 
-#: src/game_data.ts:118
+#: src/game_data.ts:138
 msgid "You can easily pass for someone much younger. If you're in a situation or environment where being younger is a benefit, your rolls are made with advantage."
 msgstr "You can easily pass for someone much younger. If you're in a situation or environment where being younger is a benefit, your rolls are made with advantage."
 
@@ -819,47 +843,55 @@ msgstr "You can easily pass for someone much younger. If you're in a situation o
 msgid "You gain the condition 'Obsessed with the Void'. It can never be removed."
 msgstr "You gain the condition 'Obsessed with the Void'. It can never be removed."
 
-#: src/game_data.ts:261
+#: src/game_data.ts:281
 msgid "You have a canine companion with whom you share a strong bond. This incredible pup can understand what you say with near-perfect comprehension. Name them and add them to your Cozy Little Place. They gain the power of speech once Layer 5 of the Dark Conspiracy is unlocked, but only you can understand them. No two Mavens can have this move at the same time."
 msgstr "You have a canine companion with whom you share a strong bond. This incredible pup can understand what you say with near-perfect comprehension. Name them and add them to your Cozy Little Place. They gain the power of speech once Layer 5 of the Dark Conspiracy is unlocked, but only you can understand them. No two Mavens can have this move at the same time."
 
-#: src/game_data.ts:178
+#: src/game_data.ts:198
 msgid "You have a feline friend with whom you share a strong bond. This extraordinary kitty can do tricks and follow simple commands. Name your precocious puss and add them to your Cozy Little Place. When you use the cat to get an advantage on a roll, leave it unmarked."
 msgstr "You have a feline friend with whom you share a strong bond. This extraordinary kitty can do tricks and follow simple commands. Name your precocious puss and add them to your Cozy Little Place. When you use the cat to get an advantage on a roll, leave it unmarked."
 
-#: src/game_data.ts:158
+#: src/game_data.ts:178
 msgid "You have a medical background; describe it. Then add a Medical Bag to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
 msgstr "You have a medical background; describe it. Then add a Medical Bag to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
 
-#: src/game_data.ts:153
+#: src/game_data.ts:173
 msgid "You have a sibling who is your polar opposite in terms of fashion sense and personality. Describe them to the Keeper and name them. You can always request a scene with your sibling. You can also call on them for help, in which case you take advantage on any die rolls associated with actions they assist you with. However, that help always comes at a cost."
 msgstr "You have a sibling who is your polar opposite in terms of fashion sense and personality. Describe them to the Keeper and name them. You can always request a scene with your sibling. You can also call on them for help, in which case you take advantage on any die rolls associated with actions they assist you with. However, that help always comes at a cost."
 
-#: src/game_data.ts:148
+#: src/game_data.ts:133
+msgid "You have a strong religious background. Describe it. When you use this move, describe how your faith is helping you resist the Void. Then, unmark every box on The Crown of the Void. You are still Obsessed with the Void if you unmark the Pomegranate Kernel. You may only use this move once."
+msgstr "You have a strong religious background. Describe it. When you use this move, describe how your faith is helping you resist the Void. Then, unmark every box on The Crown of the Void. You are still Obsessed with the Void if you unmark the Pomegranate Kernel. You may only use this move once."
+
+#: src/game_data.ts:168
 msgid "You have a trusty mode of transportation—an oversized sedan, a motorbike, or an old truck—that has gotten you out of more than one sticky situation. Give it a name and add it to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
 msgstr "You have a trusty mode of transportation—an oversized sedan, a motorbike, or an old truck—that has gotten you out of more than one sticky situation. Give it a name and add it to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
 
-#: src/game_data.ts:123
+#: src/game_data.ts:128
+msgid "You have a very stylish wardrobe--people say \"Wow!\" whenever they see you around town. Describe your Style in a little more detail and then add Stylish Wardrobe to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
+msgstr "You have a very stylish wardrobe--people say \"Wow!\" whenever they see you around town. Describe your Style in a little more detail and then add Stylish Wardrobe to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked."
+
+#: src/game_data.ts:143
 msgid "You have an additional End of Session question that is always marked: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 msgstr "You have an additional End of Session question that is always marked: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 
-#: src/game_data.ts:246
+#: src/game_data.ts:266
 msgid "You have two additional Cozy Activities; pick them from the list on your character sheet or write your own. Additionally, once per mystery, so long as you are engaged in one of your Cozy Activities, you can trigger the Cozy Move with a resident of Brindlewood Bay who is not a Maven. Finally, during the Cozy Move with another Maven, whichever Maven is doing their Cozy Activity can stumble on a Clue as normal OR clear another appropriate Condition."
 msgstr "You have two additional Cozy Activities; pick them from the list on your character sheet or write your own. Additionally, once per mystery, so long as you are engaged in one of your Cozy Activities, you can trigger the Cozy Move with a resident of Brindlewood Bay who is not a Maven. Finally, during the Cozy Move with another Maven, whichever Maven is doing their Cozy Activity can stumble on a Clue as normal OR clear another appropriate Condition."
 
-#: src/game_data.ts:216
+#: src/game_data.ts:236
 msgid "You know that Robin Masterson hasn't written an Amanda Delacourt book in years and that her name is used as a pseudonym by dozens of secret ghost writers because you are one of those secret ghost writers. So long as you keep the secret, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose. If you ever reveal the secret to anyone, you get a second use of the Gold Crown Mysteries Move during the mystery in which you reveal it, but take the Condition: Marked by the Robin Masterson Network, and you no longer have access to this move. No two Mavens can have this move at the same time."
 msgstr "You know that Robin Masterson hasn't written an Amanda Delacourt book in years and that her name is used as a pseudonym by dozens of secret ghost writers because you are one of those secret ghost writers. So long as you keep the secret, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose. If you ever reveal the secret to anyone, you get a second use of the Gold Crown Mysteries Move during the mystery in which you reveal it, but take the Condition: Marked by the Robin Masterson Network, and you no longer have access to this move. No two Mavens can have this move at the same time."
 
-#: src/game_data.ts:128
+#: src/game_data.ts:148
 msgid "You used to live a globetrotting, jet set life, and you still have a touch of glamor about you that will never fade. Add 1 to your Presence (max 3)."
 msgstr "You used to live a globetrotting, jet set life, and you still have a touch of glamor about you that will never fade. Add 1 to your Presence (max 3)."
 
-#: src/game_data.ts:183
+#: src/game_data.ts:203
 msgid "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 msgstr "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 
-#: src/game_data.ts:271
+#: src/game_data.ts:291
 msgid "Your Cozy Little Place is anything but. Add the following to it: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, House Boy (name him). No two Mavens can have this move at the same time."
 msgstr "Your Cozy Little Place is anything but. Add the following to it: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, House Boy (name him). No two Mavens can have this move at the same time."
 

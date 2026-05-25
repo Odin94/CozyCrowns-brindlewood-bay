@@ -113,6 +113,26 @@ export const getClassicMavenMoves = () => [
     description: t`Once per mystery, if you and/or any number of your fellow Mavens would suffer physical harm, you can describe how that physical harm is just narrowly avoided.`,
   },
   {
+    title: "Frank Columbo",
+    summary: t`Find an additional Clue when Meddling among the rich and famous once per mystery`,
+    description: t`Something about you causes the elite of society to not take you too seriously. What is it? Once per mystery, when you do the Meddling Move in a place occupied by the rich and famous, you find an additional Clue, even on a miss.`,
+  },
+  {
+    title: "Dale Cooper",
+    summary: t`+1 Sensitivity and receive a strange dream Void Clue each session`,
+    description: t`Add 1 to your Sensitivity (max 3). At the beginning of each session, the Keeper will give you a Void Clue in the form of a strange, unsettling dream you experience. No two Mavens can have this move at the same time.`,
+  },
+  {
+    title: "Sonny Crockett",
+    summary: t`Stylish Wardrobe for advantage on rolls that never gets marked`,
+    description: t`You have a very stylish wardrobe--people say "Wow!" whenever they see you around town. Describe your Style in a little more detail and then add Stylish Wardrobe to your Cozy Little Place. When you use it to get an advantage on a die roll, leave it unmarked.`,
+  },
+  {
+    title: "Frank Dowling",
+    summary: t`Unmark every Crown of the Void box once`,
+    description: t`You have a strong religious background. Describe it. When you use this move, describe how your faith is helping you resist the Void. Then, unmark every box on The Crown of the Void. You are still Obsessed with the Void if you unmark the Pomegranate Kernel. You may only use this move once.`,
+  },
+  {
     title: "Tom Hanson",
     summary: t`Pass for younger with advantage on rolls`,
     description: t`You can easily pass for someone much younger. If you're in a situation or environment where being younger is a benefit, your rolls are made with advantage.`,
