@@ -343,19 +343,11 @@ button.underline-offset-4:hover {
 
 @keyframes dice-tumble {
   0% {
-    transform: rotateX(var(--spin-x)) rotateY(var(--spin-y)) rotateZ(var(--spin-z))
-      translate3d(-0.25rem, -0.9rem, 0.4rem);
-  }
-  58% {
-    transform: rotateX(var(--mid-x)) rotateY(var(--mid-y)) rotateZ(var(--mid-z))
-      translate3d(0.25rem, 0.2rem, 0.2rem);
-  }
-  82% {
-    transform: rotateX(var(--settle-x)) rotateY(var(--settle-y)) rotateZ(var(--settle-z))
-      translate3d(-0.1rem, -0.08rem, 0);
+    transform: var(--final-transform) rotateX(var(--spin-x)) rotateY(var(--spin-y))
+      rotateZ(var(--spin-z)) translate3d(-0.25rem, -0.9rem, 0.4rem);
   }
   100% {
-    transform: var(--final-transform);
+    transform: var(--final-transform) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate3d(0, 0, 0);
   }
 }
 

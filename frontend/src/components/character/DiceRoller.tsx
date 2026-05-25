@@ -104,12 +104,6 @@ type DiceStyle = CSSProperties & {
   "--spin-x": string;
   "--spin-y": string;
   "--spin-z": string;
-  "--mid-x": string;
-  "--mid-y": string;
-  "--mid-z": string;
-  "--settle-x": string;
-  "--settle-y": string;
-  "--settle-z": string;
 };
 
 const DieFace = ({ value, className }: { value: number; className: string }) => (
@@ -137,15 +131,9 @@ const Die = ({
   const style = useMemo<DiceStyle>(
     () => ({
       "--final-transform": dieFaceTransforms[value],
-      "--spin-x": `${720 + ((rollId + index) % 4) * 90}deg`,
-      "--spin-y": `${900 + ((rollId * 2 + index) % 5) * 90}deg`,
-      "--spin-z": `${360 + ((rollId + index * 3) % 3) * 120}deg`,
-      "--mid-x": `${300 + ((rollId + index) % 4) * 45}deg`,
-      "--mid-y": `${420 + ((rollId * 2 + index) % 5) * 45}deg`,
-      "--mid-z": `${210 + ((rollId + index * 3) % 3) * 45}deg`,
-      "--settle-x": `${90 + ((rollId + index) % 4) * 20}deg`,
-      "--settle-y": `${120 + ((rollId * 2 + index) % 5) * 20}deg`,
-      "--settle-z": `${45 + ((rollId + index * 3) % 3) * 20}deg`,
+      "--spin-x": `${720 + ((rollId + index) % 3) * 360}deg`,
+      "--spin-y": `${1080 + ((rollId * 2 + index) % 3) * 360}deg`,
+      "--spin-z": `${360 + ((rollId + index * 3) % 3) * 360}deg`,
     }),
     [index, rollId, value],
   );
