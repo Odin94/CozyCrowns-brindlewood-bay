@@ -7,6 +7,11 @@ import { Trans } from "@lingui/react/macro";
 
 const Advancements = () => {
   const { advancementChecks, setAdvancementChecks } = useCharacterStore();
+  const advancementOptions = getAdvancementOptions().map((option, index) => ({
+    id: `advancement-${index}`,
+    option,
+  }));
+
   const handleCheckChange = (index: number, checked: boolean) => {
     const newChecks = [...advancementChecks];
     newChecks[index] = checked;
@@ -19,20 +24,17 @@ const Advancements = () => {
         <Trans>Advancements</Trans>
       </Headline>
       <div className="space-y-3">
-        {getAdvancementOptions().map((option, index) => (
-          <div key={option} className="flex items-start space-x-3">
+        {advancementOptions.map(({ id, option }, index) => (
+          <div key={id} className="flex items-start space-x-3">
             <Checkbox
-              id={`advancement-${index}`}
+              id={id}
               checked={advancementChecks[index]}
               onCheckedChange={(checked) => handleCheckChange(index, checked as boolean)}
               className="mt-0.5"
               data-state={advancementChecks[index] ? "checked" : "unchecked"}
               aria-label={`Mark advancement: ${option}`}
             />
-            <Label
-              htmlFor={`advancement-${index}`}
-              className="text-xs text-gray-300 leading-relaxed cursor-pointer"
-            >
+            <Label htmlFor={id} className="text-xs text-gray-300 leading-relaxed cursor-pointer">
               {option}
             </Label>
           </div>

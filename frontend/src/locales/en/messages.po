@@ -112,9 +112,29 @@ msgstr "+1 Sensitivity and receive a strange dream Void Clue each session"
 msgid "+1 Vitality (max 3)"
 msgstr "+1 Vitality (max 3)"
 
+#: src/components/character/DiceRoller.tsx:30
+#~ msgid "0-6"
+#~ msgstr "0-6"
+
+#: src/components/character/DiceRoller.tsx:46
+#~ msgid "10-11"
+#~ msgstr "10-11"
+
+#: src/components/character/DiceRoller.tsx:53
+#~ msgid "12+"
+#~ msgstr "12+"
+
 #: src/game_data.ts:192
 msgid "12+ on wild physical feats once per mystery"
 msgstr "12+ on wild physical feats once per mystery"
+
+#: src/components/character/DiceRoller.tsx:185
+#~ msgid "2d6 plus ability"
+#~ msgstr "2d6 plus ability"
+
+#: src/components/character/DiceRoller.tsx:38
+#~ msgid "7-9"
+#~ msgstr "7-9"
 
 #: src/components/character/CozyLittlePlace.tsx:25
 msgid "A Cozy Little Place"
@@ -152,7 +172,7 @@ msgstr "A scene in the present day showing how you satisfy your physical desires
 msgid "A Shadow in the Garden."
 msgstr "A Shadow in the Garden."
 
-#: src/components/character/Abilities.tsx:18
+#: src/components/character/Abilities.tsx:89
 msgid "Abilities"
 msgstr "Abilities"
 
@@ -170,9 +190,17 @@ msgstr "Access to Robin's resources outside Brindlewood Bay and get both Gold Cr
 msgid "Add 1 to your Sensitivity (max 3). At the beginning of each session, the Keeper will give you a Void Clue in the form of a strange, unsettling dream you experience. No two Mavens can have this move at the same time."
 msgstr "Add 1 to your Sensitivity (max 3). At the beginning of each session, the Keeper will give you a Void Clue in the form of a strange, unsettling dream you experience. No two Mavens can have this move at the same time."
 
-#: src/components/character/Advancements.tsx:19
+#: src/components/character/Advancements.tsx:24
 msgid "Advancements"
 msgstr "Advancements"
+
+#: src/components/character/DiceRoller.tsx:61
+msgid "advantage"
+msgstr "advantage"
+
+#: src/components/character/Abilities.tsx:170
+msgid "Advantage"
+msgstr "Advantage"
 
 #: src/game_data.ts:81
 msgid "Alexis Carrington Colby"
@@ -275,6 +303,10 @@ msgstr "Choose Maven Moves"
 msgid "Classic"
 msgstr "Classic"
 
+#: src/components/character/DiceRoller.tsx:258
+msgid "Click an ability score to roll 2d6."
+msgstr "Click an ability score to roll 2d6."
+
 #: src/components/ui/dialog.tsx:67
 msgid "Close"
 msgstr "Close"
@@ -354,6 +386,14 @@ msgstr "Delete Character"
 msgid "Deutsch"
 msgstr "Deutsch"
 
+#: src/components/character/DiceRoller.tsx:205
+#~ msgid "Dice"
+#~ msgstr "Dice"
+
+#: src/components/character/DiceRoller.tsx:212
+msgid "Dice Roller"
+msgstr "Dice Roller"
+
 #: src/game_data.ts:4
 msgid "Did the Murder Mavens solve a mystery?"
 msgstr "Did the Murder Mavens solve a mystery?"
@@ -381,6 +421,14 @@ msgstr "Did you share your wisdom with a young person?"
 #: src/game_data.ts:10
 msgid "Did you show someone that you've \"still got it?\""
 msgstr "Did you show someone that you've \"still got it?\""
+
+#: src/components/character/DiceRoller.tsx:61
+msgid "disadvantage"
+msgstr "disadvantage"
+
+#: src/components/character/Abilities.tsx:154
+msgid "Disadvantage"
+msgstr "Disadvantage"
 
 #: src/game_data.ts:84
 msgid "Dorothy Zbornak"
@@ -425,6 +473,10 @@ msgstr "Enter any place freely during the day"
 #: src/game_data.ts:197
 msgid "Extraordinary cat companion for advantage that never gets marked"
 msgstr "Extraordinary cat companion for advantage that never gets marked"
+
+#: src/components/character/DiceRoller.tsx:31
+msgid "Failure"
+msgstr "Failure"
 
 #: src/game_data.ts:117
 msgid "Find an additional Clue when Meddling among the rich and famous once per mystery"
@@ -629,6 +681,10 @@ msgstr "Painting"
 msgid "Pass for younger with advantage on rolls"
 msgstr "Pass for younger with advantage on rolls"
 
+#: src/components/character/DiceRoller.tsx:45
+msgid "Plain success"
+msgstr "Plain success"
+
 #: src/components/MenuDialog/MeView.tsx:157
 msgid "Please sign in to view your profile."
 msgstr "Please sign in to view your profile."
@@ -669,6 +725,14 @@ msgstr "Reset Character"
 #: src/game_data.ts:50
 msgid "Retire your character in a way that shows how they are lost to the Void."
 msgstr "Retire your character in a way that shows how they are lost to the Void."
+
+#: src/components/character/Abilities.tsx:162
+msgid "Roll"
+msgstr "Roll"
+
+#: src/components/character/DiceRoller.tsx:252
+msgid "Rolling..."
+msgstr "Rolling..."
 
 #: src/components/MenuDialog/MainMenuView.tsx:73
 msgid "Save to Backend"
@@ -730,6 +794,14 @@ msgstr "Style"
 #: src/game_data.ts:127
 msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
 msgstr "Stylish Wardrobe for advantage on rolls that never gets marked"
+
+#: src/components/character/DiceRoller.tsx:51
+msgid "Success with a bonus"
+msgstr "Success with a bonus"
+
+#: src/components/character/DiceRoller.tsx:38
+msgid "Success with cost"
+msgstr "Success with cost"
 
 #: src/components/MenuDialog/MainMenuView.tsx:118
 msgid "Support Me"

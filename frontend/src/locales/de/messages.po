@@ -112,9 +112,29 @@ msgstr "+1 Feingefühl und jede Sitzung einen seltsamen Traum-Leere-Hinweis erha
 msgid "+1 Vitality (max 3)"
 msgstr "+1 Vitalität (max 3)"
 
+#: src/components/character/DiceRoller.tsx:30
+#~ msgid "0-6"
+#~ msgstr "0-6"
+
+#: src/components/character/DiceRoller.tsx:46
+#~ msgid "10-11"
+#~ msgstr "10-11"
+
+#: src/components/character/DiceRoller.tsx:53
+#~ msgid "12+"
+#~ msgstr "12+"
+
 #: src/game_data.ts:192
 msgid "12+ on wild physical feats once per mystery"
 msgstr "12+ bei wilden körperlichen Leistungen einmal pro Fall"
+
+#: src/components/character/DiceRoller.tsx:185
+#~ msgid "2d6 plus ability"
+#~ msgstr "2W6 plus Attribut"
+
+#: src/components/character/DiceRoller.tsx:38
+#~ msgid "7-9"
+#~ msgstr "7-9"
 
 #: src/components/character/CozyLittlePlace.tsx:25
 msgid "A Cozy Little Place"
@@ -152,7 +172,7 @@ msgstr "Erzähle eine Szene in der Gegenwart, in der Du zeigst, wie Du Dein kör
 msgid "A Shadow in the Garden."
 msgstr "Ein Schatten im Garten."
 
-#: src/components/character/Abilities.tsx:18
+#: src/components/character/Abilities.tsx:89
 msgid "Abilities"
 msgstr "Attribute"
 
@@ -170,9 +190,17 @@ msgstr "Zugang zu Robins Ressourcen außerhalb von Brindlewood Bay und beide Gol
 msgid "Add 1 to your Sensitivity (max 3). At the beginning of each session, the Keeper will give you a Void Clue in the form of a strange, unsettling dream you experience. No two Mavens can have this move at the same time."
 msgstr "Erhöhe dein Feingefühl um 1 (max 3). Zu Beginn jeder Sitzung gibt dir die Spielleiter/in einen Leere-Hinweis in Form eines seltsamen, beunruhigenden Traums, den du erlebst. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/components/character/Advancements.tsx:19
+#: src/components/character/Advancements.tsx:24
 msgid "Advancements"
 msgstr "Aufstieg"
+
+#: src/components/character/DiceRoller.tsx:61
+msgid "advantage"
+msgstr "Vorteil"
+
+#: src/components/character/Abilities.tsx:170
+msgid "Advantage"
+msgstr "Vorteil"
 
 #: src/game_data.ts:81
 msgid "Alexis Carrington Colby"
@@ -275,6 +303,10 @@ msgstr "Wähle deine Spielzüge"
 msgid "Classic"
 msgstr "Klassisch"
 
+#: src/components/character/DiceRoller.tsx:258
+msgid "Click an ability score to roll 2d6."
+msgstr "Klicke auf einen Attributwert, um 2W6 zu würfeln."
+
 #: src/components/ui/dialog.tsx:67
 msgid "Close"
 msgstr "Schliessen"
@@ -354,6 +386,14 @@ msgstr "Charakter löschen"
 msgid "Deutsch"
 msgstr "Deutsch"
 
+#: src/components/character/DiceRoller.tsx:205
+#~ msgid "Dice"
+#~ msgstr "Würfel"
+
+#: src/components/character/DiceRoller.tsx:212
+msgid "Dice Roller"
+msgstr "Würfelroller"
+
 #: src/game_data.ts:4
 msgid "Did the Murder Mavens solve a mystery?"
 msgstr "Haben die Krimi-Kennerinnen einen Fall gelöst?"
@@ -381,6 +421,14 @@ msgstr "Hast Du Deine Erfahrungen mit einer jungen Person geteilt?"
 #: src/game_data.ts:10
 msgid "Did you show someone that you've \"still got it?\""
 msgstr "Hast Du jemandem gezeigt, dass Du es immer noch draufhast?"
+
+#: src/components/character/DiceRoller.tsx:61
+msgid "disadvantage"
+msgstr "Nachteil"
+
+#: src/components/character/Abilities.tsx:154
+msgid "Disadvantage"
+msgstr "Nachteil"
 
 #: src/game_data.ts:84
 msgid "Dorothy Zbornak"
@@ -425,6 +473,10 @@ msgstr "Tagsüber jeden Ort frei betreten"
 #: src/game_data.ts:197
 msgid "Extraordinary cat companion for advantage that never gets marked"
 msgstr "Außergewöhnliche Katze für Vorteil, der nie markiert wird"
+
+#: src/components/character/DiceRoller.tsx:31
+msgid "Failure"
+msgstr "Fehlschlag"
 
 #: src/game_data.ts:117
 msgid "Find an additional Clue when Meddling among the rich and famous once per mystery"
@@ -625,6 +677,10 @@ msgstr "Malen"
 msgid "Pass for younger with advantage on rolls"
 msgstr "Als jünger durchgehen mit Vorteil bei Würfen"
 
+#: src/components/character/DiceRoller.tsx:45
+msgid "Plain success"
+msgstr "Einfacher Erfolg"
+
 #: src/components/MenuDialog/MeView.tsx:157
 msgid "Please sign in to view your profile."
 msgstr "Log dich ein um dein Profil anzusehen."
@@ -665,6 +721,14 @@ msgstr "Charakter zurücksetzen"
 #: src/game_data.ts:50
 msgid "Retire your character in a way that shows how they are lost to the Void."
 msgstr "Schicke Deine Krimi-Kennerin auf eine Weise in den Ruhestand, die zeigt, dass sie an den Abgrund verloren ist."
+
+#: src/components/character/Abilities.tsx:162
+msgid "Roll"
+msgstr "Wurf"
+
+#: src/components/character/DiceRoller.tsx:252
+msgid "Rolling..."
+msgstr "Würfelt..."
 
 #: src/components/MenuDialog/MainMenuView.tsx:73
 msgid "Save to Backend"
@@ -726,6 +790,14 @@ msgstr "Stil"
 #: src/game_data.ts:127
 msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
 msgstr "Stilvolle Garderobe für Vorteil bei Würfen, die nie markiert wird"
+
+#: src/components/character/DiceRoller.tsx:51
+msgid "Success with a bonus"
+msgstr "Erfolg mit Bonus"
+
+#: src/components/character/DiceRoller.tsx:38
+msgid "Success with cost"
+msgstr "Erfolg mit Kosten"
 
 #: src/components/MenuDialog/MainMenuView.tsx:118
 msgid "Support Me"
