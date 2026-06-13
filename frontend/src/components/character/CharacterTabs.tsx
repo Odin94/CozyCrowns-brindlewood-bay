@@ -7,7 +7,7 @@ interface CharacterTabsProps {
   onDeleteCharacter: (index: number) => void;
   onSwitchCharacter?: (index: number) => Promise<boolean>;
   activeView?: "character" | "darkConspiracy";
-  onSwitchToCharacter?: () => void;
+  onSwitchToCharacter?: (index: number) => void;
   onSwitchToDarkConspiracy?: () => void;
 }
 
@@ -25,7 +25,7 @@ const CharacterTabs = ({
 
   const handleCharacterSwitch = async (index: number) => {
     if (index === currentCharacterIndex) {
-      onSwitchToCharacter?.();
+      onSwitchToCharacter?.(index);
       return;
     }
 
@@ -35,7 +35,7 @@ const CharacterTabs = ({
     }
 
     setCurrentCharacter(index);
-    onSwitchToCharacter?.();
+    onSwitchToCharacter?.(index);
   };
 
   const handleRemoveCharacter = (index: number, e: React.MouseEvent) => {
@@ -46,8 +46,9 @@ const CharacterTabs = ({
   };
 
   const handleAddCharacter = () => {
+    const nextIndex = characters.length;
     addCharacter();
-    onSwitchToCharacter?.();
+    onSwitchToCharacter?.(nextIndex);
   };
 
   const renderCharacterTab = (character: CharacterData, index: number) => {
@@ -102,7 +103,7 @@ const CharacterTabs = ({
               ? "bg-dark-secondary text-tertiary shadow-xl"
               : "bg-dark-secondary/40 text-gray-300 hover:bg-dark-secondary/60"
           }`}
-          onClick={onSwitchToDarkConspiracy}
+          onClick={() => onSwitchToDarkConspiracy?.()}
           title="Dark conspiracy"
         >
           <Eye size={16} />

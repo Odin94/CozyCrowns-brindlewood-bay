@@ -14,6 +14,7 @@ import { useBackendCharactersSync } from "@/hooks/useBackendCharactersSync";
 import { useBackendDarkConspiraciesSync } from "@/hooks/useBackendDarkConspiraciesSync";
 import { SaveFailureDialog } from "@/components/MenuDialog/SaveFailureDialog";
 import { useCharacterStore } from "@/lib/character_store";
+import { getSheetRoutePath, parseSheetRoute, type SheetRoute } from "@/lib/sheet_route";
 import { useAuth } from "@/hooks/useAuth";
 import DarkConspiracySheet from "@/pages/DarkConspiracySheet";
 import EndOfSession from "@/components/character/EndOfSession";
@@ -27,7 +28,9 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
+
+type NavigationMode = "push" | "replace";
 
 const CharacterSheet = () => {
   // useLingui() is Required to ensure component rerenders when locale changes
@@ -37,7 +40,6 @@ const CharacterSheet = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [saveFailureOpen, setSaveFailureOpen] = useState(false);
   const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
-  const [activeView, setActiveView] = useState<"character" | "darkConspiracy">("character");
   const isLargeScreen = useIsLargeScreen();
   const {
     deleteConfirmOpen,
@@ -48,8 +50,66 @@ const CharacterSheet = () => {
     setDeleteConfirmOpen,
   } = useDeleteConfirmation();
   const { saveCurrentCharacter } = useCharacterSave();
-  const { setCurrentCharacter } = useCharacterStore();
+  const { characters, currentCharacterIndex, setCurrentCharacter } = useCharacterStore();
   const { isAuthenticated } = useAuth();
+  const [route, setRoute] = useState<SheetRoute>(() =>
+    parseSheetRoute(window.location.pathname, currentCharacterIndex),
+  );
+
+  const navigateToRoute = useCallback((nextRoute: SheetRoute, mode: NavigationMode = "push") => {
+    const path = getSheetRoutePath(nextRoute);
+    if (window.location.pathname !== path) {
+      const historyMethod = mode === "replace" ? "replaceState" : "pushState";
+      window.history[historyMethod]({}, "", path);
+    }
+    setRoute(nextRoute);
+  }, []);
+
+  const navigateToCharacter = useCallback(
+    (index: number, mode?: NavigationMode) => {
+      navigateToRoute({ view: "character", characterIndex: index }, mode);
+    },
+    [navigateToRoute],
+  );
+
+  const navigateToDarkConspiracy = useCallback(
+    (mode?: NavigationMode) => {
+      navigateToRoute({ view: "darkConspiracy" }, mode);
+    },
+    [navigateToRoute],
+  );
+
+  useEffect(() => {
+    const handlePopState = () => {
+      setRoute(parseSheetRoute(window.location.pathname, currentCharacterIndex));
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, [currentCharacterIndex]);
+
+  useEffect(() => {
+    if (route.view !== "character") return;
+
+    const maxIndex = Math.max(0, characters.length - 1);
+    const routeIndex = Math.min(route.characterIndex, maxIndex);
+
+    if (route.characterIndex !== routeIndex) {
+      navigateToCharacter(routeIndex, "replace");
+      return;
+    }
+
+    if (currentCharacterIndex !== routeIndex) {
+      setCurrentCharacter(routeIndex);
+    }
+  }, [characters.length, currentCharacterIndex, navigateToCharacter, route, setCurrentCharacter]);
+
+  useEffect(() => {
+    const path = getSheetRoutePath(route);
+    if (window.location.pathname !== path) {
+      window.history.replaceState({}, "", path);
+    }
+  }, [route]);
 
   const handleSwitchCharacter = async (index: number): Promise<boolean> => {
     const saveSuccess = await saveCurrentCharacter();
@@ -64,6 +124,7 @@ const CharacterSheet = () => {
   const handleSaveFailureContinue = () => {
     if (pendingSwitchIndex !== null) {
       setCurrentCharacter(pendingSwitchIndex);
+      navigateToCharacter(pendingSwitchIndex);
       setPendingSwitchIndex(null);
     }
     setSaveFailureOpen(false);
@@ -89,7 +150,7 @@ const CharacterSheet = () => {
           </div>
         </div>
 
-        {activeView === "character" ? (
+        {route.view === "character" ? (
           <div className="conspiracy-view-enter grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto relative">
             {/* Column 1 */}
             <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
@@ -170,9 +231,9 @@ const CharacterSheet = () => {
       <CharacterTabs
         onDeleteCharacter={handleDeleteCharacter}
         onSwitchCharacter={handleSwitchCharacter}
-        activeView={activeView}
-        onSwitchToCharacter={() => setActiveView("character")}
-        onSwitchToDarkConspiracy={() => setActiveView("darkConspiracy")}
+        activeView={route.view}
+        onSwitchToCharacter={navigateToCharacter}
+        onSwitchToDarkConspiracy={navigateToDarkConspiracy}
       />
     </div>
   );
