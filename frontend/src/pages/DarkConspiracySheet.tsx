@@ -299,7 +299,7 @@ const DarkConspiracySheet = () => {
           <p>BRINDLEWOOD BAY</p>
           <h2>The Dark Conspiracy</h2>
         </header>
-        <div className="grid flex-1 grid-cols-[1.1fr_1.1fr_0.9fr] gap-5">
+        <div className="grid flex-1 grid-cols-2 gap-5">
           <section>
             <h3 className="dark-conspiracy-section-title">
               Layer Three: The Existence of the Midwives of the Fragrant Void
@@ -376,8 +376,18 @@ const DarkConspiracySheet = () => {
               onChange={(finalChildRevision) => update({ finalChildRevision })}
               minRows={4}
             />
+          </section>
+        </div>
+      </article>
 
-            <h3 className="dark-conspiracy-section-title mt-5">Layer Five: The Void Mystery</h3>
+      <article className="dark-conspiracy-page">
+        <header className="dark-conspiracy-header">
+          <p>BRINDLEWOOD BAY</p>
+          <h2>The Dark Conspiracy</h2>
+        </header>
+        <div className="grid flex-1 grid-cols-[0.85fr_1.15fr] gap-5">
+          <section>
+            <h3 className="dark-conspiracy-section-title">Layer Five: The Void Mystery</h3>
             <p className="dark-conspiracy-copy">
               This layer is unlocked after FIFTEEN Void Clues. Create the Void Mystery and present
               it once the current mystery is resolved.
