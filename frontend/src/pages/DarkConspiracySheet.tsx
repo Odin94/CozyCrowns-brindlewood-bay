@@ -110,7 +110,7 @@ const MysteryTracker = ({
             <input
               value={mystery.name}
               onChange={(event) => updateMystery(index, { name: event.target.value })}
-              className="ml-1 w-[calc(100%-5.4rem)] border-0 border-b border-dark-secondary/45 bg-transparent text-[0.65rem] no-ring"
+              className="ml-1 w-[calc(100%-5.4rem)] border-0 border-b border-dark-secondary/45 bg-transparent text-[0.65rem] no-ring focus:outline-none focus-visible:outline-none"
             />
           </label>
           <label className="block text-[0.62rem] font-semibold leading-none text-dark-secondary">
