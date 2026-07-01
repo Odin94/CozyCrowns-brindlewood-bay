@@ -19,11 +19,11 @@ const initializeApp = async () => {
   const { default: App } = await import("./App.tsx");
 
   const posthogKey = env.VITE_PUBLIC_POSTHOG_KEY;
-  const posthogHost = env.VITE_PUBLIC_POSTHOG_HOST;
 
   if (posthogKey) {
     posthog.init(posthogKey, {
-      api_host: posthogHost,
+      api_host: "https://info.odin-matthias.com",
+      ui_host: "https://eu.posthog.com",
       defaults: "2026-01-30",
       capture_exceptions: true,
       cookieless_mode: "on_reject",
