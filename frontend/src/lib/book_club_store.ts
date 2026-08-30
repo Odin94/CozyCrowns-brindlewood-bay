@@ -5,14 +5,18 @@ type ActiveBookClub = { id: string; name: string; characterIds: string[] } | nul
 
 type BookClubState = {
   activeBookClub: ActiveBookClub;
+  shareRolls: boolean;
   setActiveBookClub: (bookClub: ActiveBookClub) => void;
+  setShareRolls: (shareRolls: boolean) => void;
 };
 
 export const useBookClubStore = create<BookClubState>()(
   persist(
     (set) => ({
       activeBookClub: null,
+      shareRolls: false,
       setActiveBookClub: (activeBookClub) => set({ activeBookClub }),
+      setShareRolls: (shareRolls) => set({ shareRolls }),
     }),
     { name: "cozycrowns-book-club-storage" },
   ),

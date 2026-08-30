@@ -4,6 +4,7 @@ import { nanoid } from "nanoid";
 import { z } from "zod";
 import { db, schema } from "../db/index.js";
 import { authenticateUser } from "../middleware/auth.js";
+import { characterDataSchema } from "../schema/character.js";
 
 const idInput = z.object({ id: z.string().min(1) });
 const memberParams = z.object({ id: z.string().min(1), userId: z.string().min(1) });
@@ -17,7 +18,7 @@ const clueParams = z.object({
 const nameInput = z.object({ name: z.string().trim().min(2).max(80) });
 const inviteInput = z.object({ nickname: z.string().trim().min(3).max(30) });
 const characterInput = z.object({ characterId: z.string().min(1) });
-const gameMasterInput = z.object({ isGameMaster: z.boolean() });
+const gameMasterInput = z.object({ isGameMaster: z.literal(true) });
 const rollInput = z.object({
   label: z.string().trim().min(1).max(160),
   dice: z.string().trim().min(1).max(80),
@@ -55,6 +56,23 @@ async function gameMaster(bookClubId: string, userId: string) {
       ),
     )
     .get();
+}
+
+function characterOverview(rawData: string) {
+  try {
+    const parsed = characterDataSchema.safeParse(JSON.parse(rawData));
+    if (parsed.success) {
+      return {
+        conditions: parsed.data.conditions,
+        mavenMoves: parsed.data.mavenMoves,
+        voidChecks: parsed.data.voidChecks,
+        cozyItems: parsed.data.cozyItems,
+      };
+    }
+  } catch {
+    // A legacy/corrupt sheet should never make an entire Book Club unavailable.
+  }
+  return { conditions: "", mavenMoves: "", voidChecks: [], cozyItems: [] };
 }
 
 async function overview(bookClubId: string) {
@@ -119,7 +137,7 @@ async function overview(bookClubId: string) {
         .map((character) => ({
           id: character.id,
           name: character.name,
-          data: JSON.parse(character.data),
+          data: characterOverview(character.data),
           version: character.version,
           updatedAt: character.updatedAt,
         })),
@@ -229,13 +247,11 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       if (await membership(params.data.id, recipient.id))
         return reply.code(409).send({ error: "That player is already in the book club" });
       try {
-        await db
-          .insert(schema.bookClubInvitations)
-          .values({
-            bookClubId: params.data.id,
-            userId: recipient.id,
-            invitedByUserId: request.userId!,
-          });
+        await db.insert(schema.bookClubInvitations).values({
+          bookClubId: params.data.id,
+          userId: recipient.id,
+          invitedByUserId: request.userId!,
+        });
       } catch {
         return reply.code(409).send({ error: "That player already has an invitation" });
       }
@@ -319,14 +335,15 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .get();
       if (!club)
         return reply.code(403).send({ error: "Only the book club owner can assign the GM" });
+      const target = await membership(params.data.id, params.data.userId);
+      if (!target) return reply.code(404).send({ error: "Book Club member not found" });
       db.transaction((tx) => {
-        if (parsed.data.isGameMaster)
-          tx.update(schema.bookClubMembers)
-            .set({ isGameMaster: false })
-            .where(eq(schema.bookClubMembers.bookClubId, params.data.id))
-            .run();
         tx.update(schema.bookClubMembers)
-          .set({ isGameMaster: parsed.data.isGameMaster })
+          .set({ isGameMaster: false })
+          .where(eq(schema.bookClubMembers.bookClubId, params.data.id))
+          .run();
+        tx.update(schema.bookClubMembers)
+          .set({ isGameMaster: true })
           .where(
             and(
               eq(schema.bookClubMembers.bookClubId, params.data.id),
@@ -525,14 +542,12 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         )
         .get();
       if (!mystery) return reply.code(404).send({ error: "Mystery not found" });
-      await db
-        .insert(schema.bookClubClues)
-        .values({
-          id: nanoid(),
-          mysteryId: mystery.id,
-          text: parsed.data.text,
-          isVoid: parsed.data.isVoid,
-        });
+      await db.insert(schema.bookClubClues).values({
+        id: nanoid(),
+        mysteryId: mystery.id,
+        text: parsed.data.text,
+        isVoid: parsed.data.isVoid,
+      });
       return overview(params.data.id);
     },
   );

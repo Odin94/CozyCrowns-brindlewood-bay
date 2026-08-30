@@ -29,7 +29,12 @@ type UpdateUserInput = {
 export type BookClubCharacter = {
   id: string;
   name: string;
-  data: any;
+  data: {
+    conditions: string;
+    mavenMoves: string;
+    voidChecks: boolean[];
+    cozyItems: Array<{ checked: boolean; text: string }>;
+  };
   version: number;
   updatedAt: string;
 };

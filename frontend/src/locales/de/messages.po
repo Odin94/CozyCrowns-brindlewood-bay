@@ -96,7 +96,7 @@ msgstr "Charakter erfolgreich zurückgesetzt!"
 #~ msgid "Enter cozy activity"
 #~ msgstr "Wähle eine gemütliche Aktivität"
 
-#: src/pages/BookClubOverview.tsx:575
+#: src/pages/BookClubOverview.tsx:580
 msgid "(owner)"
 msgstr ""
 
@@ -141,7 +141,7 @@ msgstr "12+ bei wilden körperlichen Leistungen einmal pro Fall"
 #~ msgstr "7-9"
 
 #: src/components/character/CozyLittlePlace.tsx:25
-#: src/pages/BookClubOverview.tsx:726
+#: src/pages/BookClubOverview.tsx:731
 msgid "A Cozy Little Place"
 msgstr "Mein Gemütliches Zuhause"
 
@@ -161,7 +161,7 @@ msgstr "Erzähle eine Rückblende, in der Du zeigst, wie Du Dich als Mutter schl
 msgid "A flashback showing how you were an imperfect sister or daughter."
 msgstr "Erzähle eine Rückblende, in der Du zeigst, wie Du Dich als Schwester oder Tochter schlecht verhalten hast."
 
-#: src/pages/BookClubOverview.tsx:295
+#: src/pages/BookClubOverview.tsx:300
 msgid "A player"
 msgstr ""
 
@@ -181,14 +181,14 @@ msgstr "Erzähle eine Szene in der Gegenwart, in der Du zeigst, wie Du Dein kör
 msgid "A Shadow in the Garden."
 msgstr "Ein Schatten im Garten."
 
-#: src/components/character/Abilities.tsx:171
+#: src/components/character/Abilities.tsx:173
 msgid "Abilities"
 msgstr "Attribute"
 
 #: src/components/cookie-consent.tsx:164
 #: src/components/cookie-consent.tsx:200
 #: src/components/cookie-consent.tsx:202
-#: src/pages/BookClubOverview.tsx:300
+#: src/pages/BookClubOverview.tsx:305
 msgid "Accept"
 msgstr "Akzeptieren"
 
@@ -196,20 +196,20 @@ msgstr "Akzeptieren"
 msgid "Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits"
 msgstr "Zugang zu Robins Ressourcen außerhalb von Brindlewood Bay und beide Gold Crown Vorteile"
 
-#: src/pages/BookClubOverview.tsx:441
-#: src/pages/BookClubOverview.tsx:461
+#: src/pages/BookClubOverview.tsx:446
+#: src/pages/BookClubOverview.tsx:466
 msgid "Activate"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:711
+#: src/pages/BookClubOverview.tsx:716
 msgid "Active conditions"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:420
+#: src/pages/BookClubOverview.tsx:425
 msgid "Active mystery"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:403
+#: src/pages/BookClubOverview.tsx:408
 msgid "Add"
 msgstr ""
 
@@ -217,19 +217,19 @@ msgstr ""
 msgid "Add 1 to your Sensitivity (max 3). At the beginning of each session, the Keeper will give you a Void Clue in the form of a strange, unsettling dream you experience. No two Mavens can have this move at the same time."
 msgstr "Erhöhe dein Feingefühl um 1 (max 3). Zu Beginn jeder Sitzung gibt dir die Spielleiter/in einen Leere-Hinweis in Form eines seltsamen, beunruhigenden Traums, den du erlebst. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/pages/BookClubOverview.tsx:476
+#: src/pages/BookClubOverview.tsx:481
 msgid "Add a clue..."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:524
+#: src/pages/BookClubOverview.tsx:529
 msgid "Add a Maven to start sharing rolls."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:486
+#: src/pages/BookClubOverview.tsx:491
 msgid "Add a Void Clue..."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:672
+#: src/pages/BookClubOverview.tsx:677
 msgid "Add clue"
 msgstr ""
 
@@ -237,7 +237,7 @@ msgstr ""
 msgid "Advancements"
 msgstr "Aufstieg"
 
-#: src/components/character/DiceRoller.tsx:49
+#: src/components/character/DiceRoller.tsx:51
 msgid "advantage"
 msgstr "Vorteil"
 
@@ -245,7 +245,7 @@ msgstr "Vorteil"
 msgid "Advantage"
 msgstr "Vorteil"
 
-#: src/pages/BookClubOverview.tsx:707
+#: src/pages/BookClubOverview.tsx:712
 msgid "ago"
 msgstr ""
 
@@ -289,15 +289,15 @@ msgstr "Zu Beginn jeder Sitzung drückt ein Fremder dir etwas in die Hand oder l
 msgid "At the beginning of each session, the Keeper will narrate an answering machine message you received. The message is always from the same unknown person, and they will ask you to do some particular task, seemingly unrelated to the mystery. If you complete the task in the same session it was assigned, mark XP. The messages and tasks will get increasingly strange and disturbing the more marks you have on The Crown of the Void. No two Mavens can ever have this move at the same time."
 msgstr "Zu Beginn jeder Sitzung wird die Spielleiter/in eine Anrufbeantworter-Nachricht erzählen, die du erhalten hast. Die Nachricht ist immer von derselben unbekannten Person, und sie werden dich bitten, eine bestimmte Aufgabe zu erledigen, die scheinbar nichts mit dem Fall zu tun hat. Wenn du die Aufgabe in derselben Sitzung erledigst, in der sie zugewiesen wurde, markiere EP. Die Nachrichten und Aufgaben werden immer seltsamer und verstörender, je mehr Markierungen du auf der Krone des Abgrunds hast. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/pages/BookClubOverview.tsx:588
+#: src/pages/BookClubOverview.tsx:593
 msgid "At the table"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:713
+#: src/pages/BookClubOverview.tsx:718
 msgid "Available Maven Moves"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:732
+#: src/pages/BookClubOverview.tsx:737
 msgid "Available:"
 msgstr ""
 
@@ -327,16 +327,16 @@ msgstr "Vogelbeobachtung"
 msgid "Blouse Barn"
 msgstr "College-Professorin"
 
-#: src/pages/BookClubOverview.tsx:93
+#: src/pages/BookClubOverview.tsx:98
 msgid "Book Club created"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:286
+#: src/pages/BookClubOverview.tsx:291
 msgid "Book Club invitations"
 msgstr ""
 
 #: src/components/MenuDialog/MainMenuView.tsx:84
-#: src/pages/BookClubOverview.tsx:228
+#: src/pages/BookClubOverview.tsx:233
 msgid "Book Clubs"
 msgstr ""
 
@@ -344,7 +344,7 @@ msgstr ""
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay wird veröffentlicht von <0>The Gauntlet</0>."
 
-#: src/pages/BookClubOverview.tsx:373
+#: src/pages/BookClubOverview.tsx:378
 msgid "Bring your Mavens"
 msgstr ""
 
@@ -362,7 +362,7 @@ msgstr "Abbrechen"
 msgid "Canine companion that gains the power of speech when Layer 5 is unlocked"
 msgstr "Hundebegleiter, der die Gabe der Sprache erhält, wenn Ebene 5 freigeschaltet wird"
 
-#: src/pages/BookClubOverview.tsx:225
+#: src/pages/BookClubOverview.tsx:230
 msgid "Character sheets"
 msgstr ""
 
@@ -374,7 +374,7 @@ msgstr "Wohltätigkeitsveranstaltungen"
 msgid "Charm, confidence, intimidation, and holding the room."
 msgstr "Charme, Selbstvertrauen, Einschüchterung und den Raum für sich einnehmen."
 
-#: src/pages/BookClubOverview.tsx:269
+#: src/pages/BookClubOverview.tsx:274
 msgid "Choose a Book Club"
 msgstr ""
 
@@ -387,7 +387,7 @@ msgstr "Wähle einen zusätzlichen Kennerinnen-Spielzug aus."
 msgid "Choose Maven Moves"
 msgstr "Wähle deine Spielzüge"
 
-#: src/pages/BookClubOverview.tsx:553
+#: src/pages/BookClubOverview.tsx:558
 msgid "Choose the GM"
 msgstr ""
 
@@ -395,7 +395,7 @@ msgstr ""
 msgid "Classic"
 msgstr "Klassisch"
 
-#: src/components/character/DiceRoller.tsx:244
+#: src/components/character/DiceRoller.tsx:249
 msgid "Click an ability score to roll 2d6."
 msgstr "Klicke auf einen Attributwert, um 2W6 zu würfeln."
 
@@ -403,7 +403,7 @@ msgstr "Klicke auf einen Attributwert, um 2W6 zu würfeln."
 msgid "Close"
 msgstr "Schliessen"
 
-#: src/pages/BookClubOverview.tsx:469
+#: src/pages/BookClubOverview.tsx:474
 msgid "Clues"
 msgstr ""
 
@@ -435,48 +435,48 @@ msgstr "Einmal pro Fall einen Hinweis in einen Leere-Hinweis umwandeln; reduzier
 msgid "Cooking"
 msgstr "Kochen"
 
-#: src/pages/BookClubOverview.tsx:160
-#: src/pages/BookClubOverview.tsx:169
+#: src/pages/BookClubOverview.tsx:165
+#: src/pages/BookClubOverview.tsx:174
 msgid "Could not activate the mystery"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:184
+#: src/pages/BookClubOverview.tsx:189
 msgid "Could not add clue"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:130
+#: src/pages/BookClubOverview.tsx:135
 msgid "Could not bring that Maven to the club"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:95
+#: src/pages/BookClubOverview.tsx:100
 msgid "Could not create Book Club"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:49
+#: src/pages/BookClubOverview.tsx:50
 msgid "Could not load Book Clubs"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:141
+#: src/pages/BookClubOverview.tsx:146
 msgid "Could not remove that Maven"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:106
+#: src/pages/BookClubOverview.tsx:111
 msgid "Could not send invitation"
 msgstr ""
 
-#: src/components/character/Abilities.tsx:163
+#: src/components/character/Abilities.tsx:165
 msgid "Could not share this roll with your Book Club"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:193
+#: src/pages/BookClubOverview.tsx:198
 msgid "Could not update clue"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:120
+#: src/pages/BookClubOverview.tsx:125
 msgid "Could not update invitation"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:150
+#: src/pages/BookClubOverview.tsx:155
 msgid "Could not update the GM"
 msgstr ""
 
@@ -484,7 +484,7 @@ msgstr ""
 msgid "Cozy Activity"
 msgstr "Gemütliche Aktivität"
 
-#: src/pages/BookClubOverview.tsx:345
+#: src/pages/BookClubOverview.tsx:350
 msgid "CozyCrowns Book Club"
 msgstr ""
 
@@ -492,15 +492,15 @@ msgstr ""
 msgid "CozyCrowns is an independent production by Odin and is not affiliated with The Gauntlet."
 msgstr "CozyCrowns ist eine unabhängige Produktion von Odin und ist nicht mit The Gauntlet verbunden."
 
-#: src/pages/BookClubOverview.tsx:335
+#: src/pages/BookClubOverview.tsx:340
 msgid "Create"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:323
+#: src/pages/BookClubOverview.tsx:328
 msgid "Create a Book Club to bring Mavens together, share rolls, and keep a mystery’s clues in one cozy place."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:252
+#: src/pages/BookClubOverview.tsx:257
 msgid "Create Book Club"
 msgstr ""
 
@@ -514,7 +514,7 @@ msgid "Crown of the Queen"
 msgstr "Die Krone der Königin"
 
 #: src/components/character/CrownOfTheVoid.tsx:23
-#: src/pages/BookClubOverview.tsx:717
+#: src/pages/BookClubOverview.tsx:722
 msgid "Crown of the Void"
 msgstr "Die Krone des Abgrunds"
 
@@ -529,7 +529,7 @@ msgstr "Eine absolute Wahrheit über einen Verdächtigen anhand seines Aussehens
 #: src/components/cookie-consent.tsx:157
 #: src/components/cookie-consent.tsx:190
 #: src/components/cookie-consent.tsx:192
-#: src/pages/BookClubOverview.tsx:307
+#: src/pages/BookClubOverview.tsx:312
 msgid "Decline"
 msgstr "Ablehnen"
 
@@ -549,7 +549,7 @@ msgstr "Deutsch"
 #~ msgid "Dice"
 #~ msgstr "Würfel"
 
-#: src/components/character/DiceRoller.tsx:186
+#: src/components/character/DiceRoller.tsx:191
 msgid "Dice Roller"
 msgstr "Würfelroller"
 
@@ -581,7 +581,7 @@ msgstr "Hast Du Deine Erfahrungen mit einer jungen Person geteilt?"
 msgid "Did you show someone that you've \"still got it?\""
 msgstr "Hast Du jemandem gezeigt, dass Du es immer noch draufhast?"
 
-#: src/components/character/DiceRoller.tsx:49
+#: src/components/character/DiceRoller.tsx:51
 msgid "disadvantage"
 msgstr "Nachteil"
 
@@ -633,7 +633,7 @@ msgstr "Tagsüber jeden Ort frei betreten"
 msgid "Extraordinary cat companion for advantage that never gets marked"
 msgstr "Außergewöhnliche Katze für Vorteil, der nie markiert wird"
 
-#: src/components/character/DiceRoller.tsx:19
+#: src/components/character/DiceRoller.tsx:21
 msgid "Failure"
 msgstr "Fehlschlag"
 
@@ -645,11 +645,11 @@ msgstr "Einmal pro Fall beim Herumschnüffeln unter Reichen und Berühmten einen
 msgid "Gardening"
 msgstr "Gärtnern"
 
-#: src/pages/BookClubOverview.tsx:320
+#: src/pages/BookClubOverview.tsx:325
 msgid "Gather your Book Club"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:361
+#: src/pages/BookClubOverview.tsx:366
 msgid "GM"
 msgstr ""
 
@@ -719,27 +719,27 @@ msgstr "Einmal pro Fall Trivia-Wissen als Hinweis einbringen"
 msgid "Invalid character data format: {errorMessages}"
 msgstr "Ungültiges Charakterdatenformat: {errorMessages}"
 
-#: src/pages/BookClubOverview.tsx:118
+#: src/pages/BookClubOverview.tsx:123
 msgid "Invitation declined"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:104
+#: src/pages/BookClubOverview.tsx:109
 msgid "Invitation sent"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:546
+#: src/pages/BookClubOverview.tsx:551
 msgid "Invite"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:534
+#: src/pages/BookClubOverview.tsx:539
 msgid "Invite a player"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:537
+#: src/pages/BookClubOverview.tsx:542
 msgid "Invite by their unique profile nickname."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:296
+#: src/pages/BookClubOverview.tsx:301
 msgid "invited you to"
 msgstr ""
 
@@ -747,7 +747,7 @@ msgstr ""
 msgid "Jackie O"
 msgstr "Jackie O"
 
-#: src/pages/BookClubOverview.tsx:118
+#: src/pages/BookClubOverview.tsx:123
 msgid "Joined Book Club"
 msgstr ""
 
@@ -783,7 +783,7 @@ msgstr "Verwalte deinen Charakter und Einstellungen."
 msgid "Manage your profile settings."
 msgstr "Verwalte deine Profileinstellungen."
 
-#: src/pages/BookClubOverview.tsx:744
+#: src/pages/BookClubOverview.tsx:749
 msgid "Marked:"
 msgstr ""
 
@@ -816,7 +816,7 @@ msgstr "Menü"
 msgid "Mysterious answering machine messages give tasks for XP"
 msgstr "Mysteriöse Anrufbeantworter-Nachrichten geben Aufgaben für EP"
 
-#: src/pages/BookClubOverview.tsx:435
+#: src/pages/BookClubOverview.tsx:440
 msgid "Mystery title"
 msgstr ""
 
@@ -836,42 +836,42 @@ msgstr "Einmal pro Fall eine wahre Ich-Erzählung einer Ankunft oder Begegnung, 
 msgid "Narrate the killer's flashback to define a Clue once per mystery"
 msgstr "Einmal pro Fall eine Rückblende des Mörders erzählen, um einen Hinweis zu bestimmen"
 
-#: src/pages/BookClubOverview.tsx:245
-#: src/pages/BookClubOverview.tsx:332
+#: src/pages/BookClubOverview.tsx:250
+#: src/pages/BookClubOverview.tsx:337
 msgid "New Book Club name"
 msgstr ""
 
 #: src/components/MenuDialog/MeView.tsx:94
-#: src/pages/BookClubOverview.tsx:543
+#: src/pages/BookClubOverview.tsx:548
 msgid "Nickname"
 msgstr "Nickname"
 
-#: src/pages/BookClubOverview.tsx:738
+#: src/pages/BookClubOverview.tsx:743
 msgid "No available items"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:657
+#: src/pages/BookClubOverview.tsx:662
 msgid "No clues yet."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:601
+#: src/pages/BookClubOverview.tsx:606
 msgid "No Mavens have been brought to this Book Club yet."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:426
+#: src/pages/BookClubOverview.tsx:431
 msgid "No mystery is active."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:516
+#: src/pages/BookClubOverview.tsx:521
 msgid "No rolls yet"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:721
+#: src/pages/BookClubOverview.tsx:726
 msgid "None active"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:711
-#: src/pages/BookClubOverview.tsx:714
+#: src/pages/BookClubOverview.tsx:716
+#: src/pages/BookClubOverview.tsx:719
 msgid "None recorded"
 msgstr ""
 
@@ -911,11 +911,11 @@ msgstr "Einmal pro Fall kannst du eine Rückblende aus der Perspektive des unbek
 msgid "Once per mystery, you can take a 12+ on a single roll related to a wild or daring physical feat."
 msgstr "Einmal pro Fall kannst du eine 12+ bei einem einzelnen Wurf für eine wilde oder gewagte körperliche Leistung nehmen."
 
-#: src/pages/BookClubOverview.tsx:376
+#: src/pages/BookClubOverview.tsx:381
 msgid "Only Mavens at this Book Club can share their rolls with the table."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:752
+#: src/pages/BookClubOverview.tsx:757
 msgid "Open my sheet"
 msgstr ""
 
@@ -935,13 +935,13 @@ msgstr "Als jünger durchgehen mit Vorteil bei Würfen"
 msgid "Physical grit, stamina, athletic feats, and raw strength."
 msgstr "Körperliche Härte, Ausdauer, sportliche Leistungen und rohe Kraft."
 
-#: src/components/character/DiceRoller.tsx:33
+#: src/components/character/DiceRoller.tsx:35
 msgid "Plain success"
 msgstr "Einfacher Erfolg"
 
-#: src/pages/BookClubOverview.tsx:360
-#: src/pages/BookClubOverview.tsx:572
-#: src/pages/BookClubOverview.tsx:703
+#: src/pages/BookClubOverview.tsx:365
+#: src/pages/BookClubOverview.tsx:577
+#: src/pages/BookClubOverview.tsx:708
 msgid "Player"
 msgstr ""
 
@@ -957,7 +957,7 @@ msgstr "Töpfern"
 msgid "Presence"
 msgstr "Ausstrahlung"
 
-#: src/pages/BookClubOverview.tsx:450
+#: src/pages/BookClubOverview.tsx:455
 msgid "Previous mysteries:"
 msgstr ""
 
@@ -981,15 +981,15 @@ msgstr "Verstand"
 msgid "Receive mysterious Clues each session"
 msgstr "Erhalte mysteriöse Hinweise jede Sitzung"
 
-#: src/pages/BookClubOverview.tsx:495
+#: src/pages/BookClubOverview.tsx:500
 msgid "Recent table rolls"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:279
+#: src/pages/BookClubOverview.tsx:284
 msgid "Refresh"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:403
+#: src/pages/BookClubOverview.tsx:408
 msgid "Remove"
 msgstr ""
 
@@ -1010,11 +1010,11 @@ msgstr "Schicke Deine Krimi-Kennerin auf eine Weise in den Ruhestand, die zeigt,
 msgid "Roll"
 msgstr "Wurf"
 
-#: src/components/character/DiceRoller.tsx:227
+#: src/components/character/DiceRoller.tsx:232
 msgid "Rolling..."
 msgstr "Würfelt..."
 
-#: src/pages/BookClubOverview.tsx:407
+#: src/pages/BookClubOverview.tsx:412
 msgid "Save sheet first"
 msgstr ""
 
@@ -1047,15 +1047,19 @@ msgstr "Wähle zu Beginn einen Spielzug. Zu Beginn darf kein Spielzug von mehr a
 msgid "Sensitivity"
 msgstr "Gespür"
 
-#: src/pages/BookClubOverview.tsx:349
+#: src/components/character/DiceRoller.tsx:260
+msgid "Share rolls with"
+msgstr ""
+
+#: src/pages/BookClubOverview.tsx:354
 msgid "Shared rolls and mystery notes refresh automatically while you are here."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:707
+#: src/pages/BookClubOverview.tsx:712
 msgid "Sheet updated"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:261
+#: src/pages/BookClubOverview.tsx:266
 msgid "Sheets"
 msgstr ""
 
@@ -1095,11 +1099,11 @@ msgstr "Stil"
 msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
 msgstr "Stilvolle Garderobe für Vorteil bei Würfen, die nie markiert wird"
 
-#: src/components/character/DiceRoller.tsx:39
+#: src/components/character/DiceRoller.tsx:41
 msgid "Success with a bonus"
 msgstr "Erfolg mit Bonus"
 
-#: src/components/character/DiceRoller.tsx:26
+#: src/components/character/DiceRoller.tsx:28
 msgid "Success with cost"
 msgstr "Erfolg mit Kosten"
 
@@ -1127,7 +1131,7 @@ msgstr "Wenn du einem Verdächtigen zum ersten Mal begegnest, kannst du etwas ü
 msgid "The first time you enter a Location, you can ask the Keeper, \"What is about to happen?\" They will answer truthfully, though not necessarily completely. If your Reason is 2 or higher, you can also ask, \"Why is it about to happen?\" The Keeper will answer truthfully, though not necessarily completely."
 msgstr "Wenn du zum ersten Mal einen Ort betrittst, kannst du die Spielleiter/in fragen: \"Was wird gleich passieren?\" Sie wird wahrheitsgemäß antworten, wenn auch nicht unbedingt vollständig. Wenn dein Verstand 2 oder höher ist, kannst du auch fragen: \"Warum wird es passieren?\" Die Spielleiter/in wird wahrheitsgemäß antworten, wenn auch nicht unbedingt vollständig."
 
-#: src/pages/BookClubOverview.tsx:556
+#: src/pages/BookClubOverview.tsx:561
 msgid "The GM manages mysteries and clues. A Book Club has one GM at a time."
 msgstr ""
 
@@ -1176,7 +1180,7 @@ msgid "Unmark every Crown of the Void box once"
 msgstr "Einmalig jedes Kästchen der Krone des Abgrunds frei machen"
 
 #: src/pages/BookClubOverview.tsx:18
-#: src/pages/BookClubOverview.tsx:392
+#: src/pages/BookClubOverview.tsx:397
 msgid "Unnamed Maven"
 msgstr ""
 
@@ -1188,7 +1192,7 @@ msgstr "Strickjacke und Stulpen"
 msgid "Vitality"
 msgstr "Vitalität"
 
-#: src/pages/BookClubOverview.tsx:479
+#: src/pages/BookClubOverview.tsx:484
 msgid "Void Clues"
 msgstr ""
 
@@ -1280,11 +1284,11 @@ msgstr "Du bist sehr talentiert darin, dich als jemand auszugeben, der du nicht 
 msgid "Your Cozy Little Place is anything but. Add the following to it: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, House Boy (name him). No two Mavens can have this move at the same time."
 msgstr "Dein Gemütliches Zuhause ist alles andere als das. Füge Folgendes hinzu: Gourmet-Vorratskammer, Orchidarium, Vollbar, Privataufzug, Hausdiener (gib ihm einen Namen). Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
 
-#: src/pages/BookClubOverview.tsx:703
+#: src/pages/BookClubOverview.tsx:708
 msgid "Your Maven"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:200
+#: src/pages/BookClubOverview.tsx:205
 msgid "Your Maven is still syncing. Try again in a moment."
 msgstr ""
 

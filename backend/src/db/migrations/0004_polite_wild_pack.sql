@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX `book_club_members_one_gm_idx` ON `book_club_members` (`book_club_id`) WHERE "book_club_members"."is_game_master" = 1;

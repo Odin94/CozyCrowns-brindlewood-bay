@@ -98,6 +98,7 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
 const Abilities = () => {
   const { abilities, setAbilities, getCharacterData } = useCharacterStore();
   const activeBookClub = useBookClubStore((state) => state.activeBookClub);
+  const shareRolls = useBookClubStore((state) => state.shareRolls);
   const { isAuthenticated } = useAuth();
   const [roll, setRoll] = useState<DiceRollRequest | null>(null);
   const [rollMenu, setRollMenu] = useState<RollMenuState | null>(null);
@@ -148,6 +149,7 @@ const Abilities = () => {
     if (
       isAuthenticated &&
       activeBookClub &&
+      shareRolls &&
       character.id &&
       activeBookClub.characterIds.includes(character.id)
     ) {
