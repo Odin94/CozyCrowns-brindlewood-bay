@@ -244,6 +244,70 @@ export const bookClubClues = sqliteTable(
   (table) => ({ mysteryIdx: index("book_club_clues_mystery_idx").on(table.mysteryId) }),
 );
 
+export const bookClubTheoryNodes = sqliteTable(
+  "book_club_theory_nodes",
+  {
+    id: text("id").primaryKey(),
+    mysteryId: text("mystery_id")
+      .notNull()
+      .references(() => bookClubMysteries.id, { onDelete: "cascade" }),
+    // A linked clue is managed by the regular clue list and cannot be removed from the board.
+    sourceClueId: text("source_clue_id").references(() => bookClubClues.id, {
+      onDelete: "cascade",
+    }),
+    kind: text("kind", { enum: ["clue", "voidClue", "suspect", "other"] }).notNull(),
+    title: text("title").notNull(),
+    description: text("description").notNull().default(""),
+    tags: text("tags").notNull().default("[]"),
+    x: integer("x").notNull().default(160),
+    y: integer("y").notNull().default(160),
+    version: integer("version").notNull().default(1),
+    editingByUserId: text("editing_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    editLockExpiresAt: integer("edit_lock_expires_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    mysteryIdx: index("book_club_theory_nodes_mystery_idx").on(table.mysteryId),
+    sourceClueIdx: uniqueIndex("book_club_theory_nodes_source_clue_idx").on(table.sourceClueId),
+  }),
+);
+
+export const bookClubTheoryEdges = sqliteTable(
+  "book_club_theory_edges",
+  {
+    id: text("id").primaryKey(),
+    mysteryId: text("mystery_id")
+      .notNull()
+      .references(() => bookClubMysteries.id, { onDelete: "cascade" }),
+    sourceNodeId: text("source_node_id")
+      .notNull()
+      .references(() => bookClubTheoryNodes.id, { onDelete: "cascade" }),
+    targetNodeId: text("target_node_id")
+      .notNull()
+      .references(() => bookClubTheoryNodes.id, { onDelete: "cascade" }),
+    label: text("label").notNull().default(""),
+    version: integer("version").notNull().default(1),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    mysteryIdx: index("book_club_theory_edges_mystery_idx").on(table.mysteryId),
+    sourceIdx: index("book_club_theory_edges_source_idx").on(table.sourceNodeId),
+    targetIdx: index("book_club_theory_edges_target_idx").on(table.targetNodeId),
+  }),
+);
+
 export const usersRelations = relations(users, ({ many }) => ({
   characters: many(characters),
   darkConspiracies: many(darkConspiracies),

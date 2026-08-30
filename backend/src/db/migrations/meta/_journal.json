@@ -43,6 +43,13 @@
       "when": 1788094467008,
       "tag": "0005_condemned_starfox",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1788115221536,
+      "tag": "0006_deep_wolfsbane",
+      "breakpoints": true
     }
   ]
 }

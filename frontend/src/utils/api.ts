@@ -83,6 +83,40 @@ export type BookClubInvitation = {
   createdAt: string;
 };
 
+export type TheoryNodeKind = "clue" | "voidClue" | "suspect" | "other";
+
+export type TheoryNode = {
+  id: string;
+  mysteryId: string;
+  sourceClueId: string | null;
+  kind: TheoryNodeKind;
+  title: string;
+  description: string;
+  tags: string[];
+  baseTag: string;
+  x: number;
+  y: number;
+  version: number;
+  editingByUserId: string | null;
+  editingByNickname: string | null;
+  editLockExpiresAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TheoryEdge = {
+  id: string;
+  mysteryId: string;
+  sourceNodeId: string;
+  targetNodeId: string;
+  label: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type TheoryBoard = { nodes: TheoryNode[]; edges: TheoryEdge[] };
+
 export const tokenStorage = {
   get: (): string | null => {
     if (typeof window === "undefined") return null;
@@ -484,6 +518,120 @@ export const api = {
       },
     );
     return handleResponse(response);
+  },
+
+  getBookClubTheory: async (bookClubId: string, mysteryId: string): Promise<TheoryBoard> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize`,
+      { headers: getAuthHeaders({ includeContentType: false }) },
+    );
+    return handleResponse(response);
+  },
+
+  createBookClubTheoryNode: async (
+    bookClubId: string,
+    mysteryId: string,
+    data: {
+      kind: TheoryNodeKind;
+      title: string;
+      description?: string;
+      tags?: string[];
+      x?: number;
+      y?: number;
+    },
+  ): Promise<TheoryNode> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes`,
+      { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(data) },
+    );
+    return handleResponse(response);
+  },
+
+  lockBookClubTheoryNode: async (bookClubId: string, mysteryId: string, nodeId: string) => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}/lock`,
+      { method: "PUT", headers: getAuthHeaders({ includeContentType: false }) },
+    );
+    return handleResponse<TheoryNode>(response);
+  },
+
+  releaseBookClubTheoryNode: async (bookClubId: string, mysteryId: string, nodeId: string) => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}/lock`,
+      { method: "DELETE", headers: getAuthHeaders({ includeContentType: false }) },
+    );
+    return handleResponse<{ success: boolean }>(response);
+  },
+
+  updateBookClubTheoryNode: async (
+    bookClubId: string,
+    mysteryId: string,
+    nodeId: string,
+    data: {
+      version: number;
+      title?: string;
+      description?: string;
+      tags?: string[];
+      x?: number;
+      y?: number;
+    },
+  ): Promise<TheoryNode> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}`,
+      { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify(data) },
+    );
+    return handleResponse(response);
+  },
+
+  deleteBookClubTheoryNode: async (
+    bookClubId: string,
+    mysteryId: string,
+    nodeId: string,
+    version: number,
+  ) => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}`,
+      { method: "DELETE", headers: getAuthHeaders(), body: JSON.stringify({ version }) },
+    );
+    return handleResponse<{ success: boolean }>(response);
+  },
+
+  createBookClubTheoryEdge: async (
+    bookClubId: string,
+    mysteryId: string,
+    data: { sourceNodeId: string; targetNodeId: string; label?: string },
+  ): Promise<TheoryEdge> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/edges`,
+      { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(data) },
+    );
+    return handleResponse(response);
+  },
+
+  updateBookClubTheoryEdge: async (
+    bookClubId: string,
+    mysteryId: string,
+    edgeId: string,
+    data: { version: number; label: string },
+  ): Promise<TheoryEdge> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/edges/${edgeId}`,
+      { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify(data) },
+    );
+    return handleResponse(response);
+  },
+
+  deleteBookClubTheoryEdge: async (
+    bookClubId: string,
+    mysteryId: string,
+    edgeId: string,
+    version: number,
+  ) => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/edges/${edgeId}`,
+      { method: "DELETE", headers: getAuthHeaders(), body: JSON.stringify({ version }) },
+    );
+    return handleResponse<{ success: boolean }>(response);
   },
 };
 

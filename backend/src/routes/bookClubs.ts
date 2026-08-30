@@ -17,6 +17,9 @@ const clueParams = z.object({
   mysteryId: z.string().min(1),
   clueId: z.string().min(1),
 });
+const theoryParams = z.object({ id: z.string().min(1), mysteryId: z.string().min(1) });
+const theoryNodeParams = theoryParams.extend({ nodeId: z.string().min(1) });
+const theoryEdgeParams = theoryParams.extend({ edgeId: z.string().min(1) });
 const nameInput = z.object({ name: z.string().trim().min(2).max(80) });
 const mysteryInput = z.object({
   name: z.string().trim().min(2).max(80),
@@ -36,6 +39,38 @@ const clueUpdateInput = z.object({
   checked: z.boolean().optional(),
   text: z.string().trim().min(1).max(500).optional(),
 });
+const theoryKind = z.enum(["clue", "voidClue", "suspect", "other"]);
+const theoryTags = z.array(z.string().trim().min(1).max(40)).max(12);
+const theoryNodeInput = z.object({
+  kind: theoryKind,
+  title: z.string().trim().min(1).max(400),
+  description: z.string().trim().max(3_000).default(""),
+  tags: theoryTags.default([]),
+  x: z.number().int().min(-10_000).max(10_000).default(220),
+  y: z.number().int().min(-10_000).max(10_000).default(180),
+});
+const theoryNodeUpdateInput = z.object({
+  version: z.number().int().positive(),
+  title: z.string().trim().min(1).max(400).optional(),
+  description: z.string().trim().max(3_000).optional(),
+  tags: theoryTags.optional(),
+  x: z.number().int().min(-10_000).max(10_000).optional(),
+  y: z.number().int().min(-10_000).max(10_000).optional(),
+});
+const theoryEdgeInput = z
+  .object({
+    sourceNodeId: z.string().min(1),
+    targetNodeId: z.string().min(1),
+    label: z.string().trim().max(120).default(""),
+  })
+  .refine((data) => data.sourceNodeId !== data.targetNodeId, {
+    message: "A connection needs two different notes",
+  });
+const theoryEdgeUpdateInput = z.object({
+  version: z.number().int().positive(),
+  label: z.string().trim().max(120),
+});
+const theoryVersionInput = z.object({ version: z.number().int().positive() });
 const websocketAuthInput = z.object({ type: z.literal("authenticate"), token: z.string().min(1) });
 const unauthenticatedSocketsByIp = new Map<string, number>();
 const maxUnauthenticatedSocketsPerIp = 5;
@@ -241,6 +276,95 @@ async function invitationsFor(userId: string) {
       },
     ];
   });
+}
+
+const baseTagForKind = (kind: z.infer<typeof theoryKind>) =>
+  kind === "voidClue" ? "void clue" : kind;
+
+function normalizedTags(tags: string[]) {
+  return [...new Map(tags.map((tag) => [tag.trim().toLocaleLowerCase(), tag.trim()])).values()];
+}
+
+function parsedTags(tags: string) {
+  try {
+    const value: unknown = JSON.parse(tags);
+    return Array.isArray(value) && value.every((tag) => typeof tag === "string")
+      ? normalizedTags(value)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
+function isLockedByAnotherUser(
+  node: typeof schema.bookClubTheoryNodes.$inferSelect,
+  userId: string,
+) {
+  return (
+    node.editingByUserId &&
+    node.editingByUserId !== userId &&
+    node.editLockExpiresAt &&
+    node.editLockExpiresAt.getTime() > Date.now()
+  );
+}
+
+async function theoryMystery(bookClubId: string, mysteryId: string) {
+  return db
+    .select({ id: schema.bookClubMysteries.id })
+    .from(schema.bookClubMysteries)
+    .where(
+      and(
+        eq(schema.bookClubMysteries.id, mysteryId),
+        eq(schema.bookClubMysteries.bookClubId, bookClubId),
+      ),
+    )
+    .get();
+}
+
+async function ensureTheoryClueNodes(mysteryId: string) {
+  const [clues, nodes] = await Promise.all([
+    db
+      .select()
+      .from(schema.bookClubClues)
+      .where(eq(schema.bookClubClues.mysteryId, mysteryId))
+      .orderBy(schema.bookClubClues.createdAt),
+    db
+      .select({ sourceClueId: schema.bookClubTheoryNodes.sourceClueId })
+      .from(schema.bookClubTheoryNodes)
+      .where(eq(schema.bookClubTheoryNodes.mysteryId, mysteryId)),
+  ]);
+  const present = new Set(nodes.flatMap((node) => (node.sourceClueId ? [node.sourceClueId] : [])));
+  const missing = clues.filter((clue) => !present.has(clue.id));
+  if (!missing.length) return;
+  db.transaction((tx) => {
+    missing.forEach((clue, index) => {
+      const position = clues.findIndex((entry) => entry.id === clue.id);
+      tx.insert(schema.bookClubTheoryNodes)
+        .values({
+          id: nanoid(),
+          mysteryId,
+          sourceClueId: clue.id,
+          kind: clue.isVoid ? "voidClue" : "clue",
+          title: clue.text,
+          x: 160 + (position % 3) * 340,
+          y: 140 + Math.floor(position / 3) * 180 + index * 8,
+        })
+        .onConflictDoNothing()
+        .run();
+    });
+  });
+}
+
+async function syncTheoryClueNode(clue: { id: string; text: string; isVoid: boolean }) {
+  await db
+    .update(schema.bookClubTheoryNodes)
+    .set({
+      title: clue.text,
+      kind: clue.isVoid ? "voidClue" : "clue",
+      version: sql`${schema.bookClubTheoryNodes.version} + 1`,
+      updatedAt: new Date(),
+    })
+    .where(eq(schema.bookClubTheoryNodes.sourceClueId, clue.id));
 }
 
 export async function bookClubRoutes(fastify: FastifyInstance) {
@@ -636,6 +760,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
             .run();
         }
       });
+      await ensureTheoryClueNodes(id);
       const result = await overview(params.data.id);
       await notifyBookClub(params.data.id);
       return result;
@@ -704,6 +829,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         text: parsed.data.text,
         isVoid: parsed.data.isVoid,
       });
+      await ensureTheoryClueNodes(mystery.id);
       const result = await overview(params.data.id);
       await notifyBookClub(params.data.id);
       return result;
@@ -725,7 +851,11 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       if (!(await gameMaster(params.data.id, request.userId!)))
         return reply.code(403).send({ error: "Only the GM can manage clues" });
       const clue = await db
-        .select({ id: schema.bookClubClues.id })
+        .select({
+          id: schema.bookClubClues.id,
+          text: schema.bookClubClues.text,
+          isVoid: schema.bookClubClues.isVoid,
+        })
         .from(schema.bookClubClues)
         .innerJoin(
           schema.bookClubMysteries,
@@ -744,9 +874,357 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .update(schema.bookClubClues)
         .set({ ...parsed.data, updatedAt: new Date() })
         .where(eq(schema.bookClubClues.id, clue.id));
+      if (parsed.data.text !== undefined) {
+        await syncTheoryClueNode({ ...clue, text: parsed.data.text });
+      }
       const result = await overview(params.data.id);
       await notifyBookClub(params.data.id);
       return result;
+    },
+  );
+
+  fastify.get(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryParams.safeParse(request.params);
+      if (!params.success) return reply.code(400).send({ error: "Invalid mystery" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      await ensureTheoryClueNodes(params.data.mysteryId);
+      const [nodes, edges] = await Promise.all([
+        db
+          .select({ node: schema.bookClubTheoryNodes, nickname: schema.users.nickname })
+          .from(schema.bookClubTheoryNodes)
+          .leftJoin(schema.users, eq(schema.bookClubTheoryNodes.editingByUserId, schema.users.id))
+          .where(eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId)),
+        db
+          .select()
+          .from(schema.bookClubTheoryEdges)
+          .where(eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId)),
+      ]);
+      return {
+        nodes: nodes.map(({ node, nickname }) => ({
+          ...node,
+          tags: parsedTags(node.tags),
+          baseTag: baseTagForKind(node.kind),
+          editingByNickname:
+            node.editLockExpiresAt && node.editLockExpiresAt.getTime() > Date.now() ? nickname : null,
+          editingByUserId:
+            node.editLockExpiresAt && node.editLockExpiresAt.getTime() > Date.now()
+              ? node.editingByUserId
+              : null,
+        })),
+        edges,
+      };
+    },
+  );
+
+  fastify.post(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/nodes",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryParams.safeParse(request.params);
+      const parsed = theoryNodeInput.safeParse(request.body);
+      if (!params.success || !parsed.success)
+        return reply.code(400).send({ error: "Enter a title and valid tags" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      const [node] = await db
+        .insert(schema.bookClubTheoryNodes)
+        .values({
+          id: nanoid(),
+          mysteryId: params.data.mysteryId,
+          ...parsed.data,
+          tags: JSON.stringify(normalizedTags(parsed.data.tags)),
+        })
+        .returning();
+      await notifyBookClub(params.data.id);
+      return { ...node, tags: parsedTags(node.tags), baseTag: baseTagForKind(node.kind) };
+    },
+  );
+
+  fastify.put(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/nodes/:nodeId/lock",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryNodeParams.safeParse(request.params);
+      if (!params.success) return reply.code(400).send({ error: "Invalid board note" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      const result = db.transaction((tx) => {
+        const node = tx
+          .select()
+          .from(schema.bookClubTheoryNodes)
+          .where(
+            and(
+              eq(schema.bookClubTheoryNodes.id, params.data.nodeId),
+              eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId),
+            ),
+          )
+          .get();
+        if (!node) return { status: "missing" as const };
+        if (isLockedByAnotherUser(node, request.userId!))
+          return { status: "locked" as const, node };
+        const expiresAt = new Date(Date.now() + 60_000);
+        tx.update(schema.bookClubTheoryNodes)
+          .set({ editingByUserId: request.userId!, editLockExpiresAt: expiresAt })
+          .where(eq(schema.bookClubTheoryNodes.id, node.id))
+          .run();
+        return { status: "ok" as const, node: { ...node, editingByUserId: request.userId!, editLockExpiresAt: expiresAt } };
+      });
+      if (result.status === "missing") return reply.code(404).send({ error: "Board note not found" });
+      if (result.status === "locked")
+        return reply.code(423).send({ error: "This note is being edited by another player" });
+      await notifyBookClub(params.data.id);
+      return { ...result.node, tags: parsedTags(result.node.tags), baseTag: baseTagForKind(result.node.kind) };
+    },
+  );
+
+  fastify.delete(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/nodes/:nodeId/lock",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryNodeParams.safeParse(request.params);
+      if (!params.success) return reply.code(400).send({ error: "Invalid board note" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      await db
+        .update(schema.bookClubTheoryNodes)
+        .set({ editingByUserId: null, editLockExpiresAt: null })
+        .where(
+          and(
+            eq(schema.bookClubTheoryNodes.id, params.data.nodeId),
+            eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId),
+            eq(schema.bookClubTheoryNodes.editingByUserId, request.userId!),
+          ),
+        );
+      await notifyBookClub(params.data.id);
+      return { success: true };
+    },
+  );
+
+  fastify.put(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/nodes/:nodeId",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryNodeParams.safeParse(request.params);
+      const parsed = theoryNodeUpdateInput.safeParse(request.body);
+      const changed = parsed.success
+        ? ["title", "description", "tags", "x", "y"].some((key) => Object.hasOwn(parsed.data, key))
+        : false;
+      if (!params.success || !parsed.success || !changed)
+        return reply.code(400).send({ error: "Invalid board note update" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      const contentChanged = ["title", "description", "tags"].some((key) =>
+        Object.hasOwn(parsed.data, key),
+      );
+      const result = db.transaction((tx) => {
+        const node = tx
+          .select()
+          .from(schema.bookClubTheoryNodes)
+          .where(
+            and(
+              eq(schema.bookClubTheoryNodes.id, params.data.nodeId),
+              eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId),
+            ),
+          )
+          .get();
+        if (!node) return { status: "missing" as const };
+        if (node.version !== parsed.data.version) return { status: "conflict" as const };
+        if (node.sourceClueId && parsed.data.title !== undefined)
+          return { status: "sourceClue" as const };
+        if (contentChanged && (!node.editingByUserId || node.editingByUserId !== request.userId! || !node.editLockExpiresAt || node.editLockExpiresAt.getTime() <= Date.now()))
+          return { status: "unlocked" as const };
+        const update = {
+          ...parsed.data,
+          tags: parsed.data.tags ? JSON.stringify(normalizedTags(parsed.data.tags)) : undefined,
+          version: node.version + 1,
+          updatedAt: new Date(),
+        };
+        const updated = tx
+          .update(schema.bookClubTheoryNodes)
+          .set(update)
+          .where(eq(schema.bookClubTheoryNodes.id, node.id))
+          .returning()
+          .get();
+        return { status: "ok" as const, node: updated };
+      });
+      if (result.status === "missing") return reply.code(404).send({ error: "Board note not found" });
+      if (result.status === "conflict")
+        return reply.code(409).send({ error: "This note changed elsewhere. The board has been refreshed." });
+      if (result.status === "sourceClue")
+        return reply.code(422).send({ error: "Edit linked clues from the mystery clue list" });
+      if (result.status === "unlocked")
+        return reply.code(423).send({ error: "Reopen this note to edit it" });
+      await notifyBookClub(params.data.id);
+      return { ...result.node, tags: parsedTags(result.node.tags), baseTag: baseTagForKind(result.node.kind) };
+    },
+  );
+
+  fastify.delete(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/nodes/:nodeId",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryNodeParams.safeParse(request.params);
+      const parsed = theoryVersionInput.safeParse(request.body);
+      if (!params.success || !parsed.success)
+        return reply.code(400).send({ error: "Invalid board note" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      const node = await db
+        .select()
+        .from(schema.bookClubTheoryNodes)
+        .where(
+          and(
+            eq(schema.bookClubTheoryNodes.id, params.data.nodeId),
+            eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId),
+          ),
+        )
+        .get();
+      if (!node) return reply.code(404).send({ error: "Board note not found" });
+      if (node.sourceClueId)
+        return reply.code(422).send({ error: "Linked clues stay on the board with their mystery" });
+      if (node.version !== parsed.data.version)
+        return reply.code(409).send({ error: "This note changed elsewhere. The board has been refreshed." });
+      if (isLockedByAnotherUser(node, request.userId!))
+        return reply.code(423).send({ error: "This note is being edited by another player" });
+      if (
+        node.editingByUserId !== request.userId! ||
+        !node.editLockExpiresAt ||
+        node.editLockExpiresAt.getTime() <= Date.now()
+      )
+        return reply.code(423).send({ error: "Reopen this note to edit it" });
+      await db.delete(schema.bookClubTheoryNodes).where(eq(schema.bookClubTheoryNodes.id, node.id));
+      await notifyBookClub(params.data.id);
+      return { success: true };
+    },
+  );
+
+  fastify.post(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/edges",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryParams.safeParse(request.params);
+      const parsed = theoryEdgeInput.safeParse(request.body);
+      if (!params.success || !parsed.success)
+        return reply.code(400).send({ error: "Invalid connection" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      const [source, target] = await Promise.all(
+        [parsed.data.sourceNodeId, parsed.data.targetNodeId].map((nodeId) =>
+          db
+            .select()
+            .from(schema.bookClubTheoryNodes)
+            .where(
+              and(
+                eq(schema.bookClubTheoryNodes.id, nodeId),
+                eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId),
+              ),
+            )
+            .get(),
+        ),
+      );
+      if (!source || !target) return reply.code(404).send({ error: "Board note not found" });
+      const firstSource =
+        source.kind === "clue" && target.kind === "suspect"
+          ? await db
+              .select({ id: schema.bookClubTheoryEdges.id })
+              .from(schema.bookClubTheoryEdges)
+              .where(
+                and(
+                  eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId),
+                  eq(schema.bookClubTheoryEdges.sourceNodeId, source.id),
+                  eq(schema.bookClubTheoryEdges.targetNodeId, target.id),
+                ),
+              )
+              .get()
+          : null;
+      const [edge] = await db
+        .insert(schema.bookClubTheoryEdges)
+        .values({
+          id: nanoid(),
+          mysteryId: params.data.mysteryId,
+          ...parsed.data,
+          label: parsed.data.label || (firstSource === undefined ? "source" : ""),
+        })
+        .returning();
+      await notifyBookClub(params.data.id);
+      return edge;
+    },
+  );
+
+  fastify.put(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/edges/:edgeId",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryEdgeParams.safeParse(request.params);
+      const parsed = theoryEdgeUpdateInput.safeParse(request.body);
+      if (!params.success || !parsed.success)
+        return reply.code(400).send({ error: "Invalid connection label" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      const [edge] = await db
+        .update(schema.bookClubTheoryEdges)
+        .set({ label: parsed.data.label, version: sql`${schema.bookClubTheoryEdges.version} + 1`, updatedAt: new Date() })
+        .where(
+          and(
+            eq(schema.bookClubTheoryEdges.id, params.data.edgeId),
+            eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId),
+            eq(schema.bookClubTheoryEdges.version, parsed.data.version),
+          ),
+        )
+        .returning();
+      if (!edge)
+        return reply.code(409).send({ error: "This connection changed elsewhere. The board has been refreshed." });
+      await notifyBookClub(params.data.id);
+      return edge;
+    },
+  );
+
+  fastify.delete(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/edges/:edgeId",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryEdgeParams.safeParse(request.params);
+      const parsed = theoryVersionInput.safeParse(request.body);
+      if (!params.success || !parsed.success)
+        return reply.code(400).send({ error: "Invalid connection" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+      const deleted = await db
+        .delete(schema.bookClubTheoryEdges)
+        .where(
+          and(
+            eq(schema.bookClubTheoryEdges.id, params.data.edgeId),
+            eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId),
+            eq(schema.bookClubTheoryEdges.version, parsed.data.version),
+          ),
+        )
+        .returning();
+      if (!deleted.length)
+        return reply.code(409).send({ error: "This connection changed elsewhere. The board has been refreshed." });
+      await notifyBookClub(params.data.id);
+      return { success: true };
     },
   );
 }
