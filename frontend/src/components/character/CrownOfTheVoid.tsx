@@ -1,19 +1,14 @@
 import { Checkbox } from "@/components/ui/checkbox";
 import Headline from "@/components/ui/headline";
 import { Label } from "@/components/ui/label";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import SubHeadline from "@/components/ui/sub-headline";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { PressTooltip, TooltipProvider } from "@/components/ui/tooltip";
 import { getCrownOfTheVoid } from "@/game_data";
 import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
-import { InfoIcon } from "lucide-react";
-import { useState } from "react";
 
 const CrownOfTheVoid = () => {
   const { voidChecks, setVoidChecks } = useCharacterStore();
-  const [openPopover, setOpenPopover] = useState<number | null>(null);
-
   const handleCheckChange = (index: number, checked: boolean) => {
     const newChecks = [...voidChecks];
     newChecks[index] = checked;
@@ -41,37 +36,14 @@ const CrownOfTheVoid = () => {
                 className="mt-0.5"
                 aria-label={`Mark Crown of the Void: ${crown.title}`}
               />
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Label
-                    htmlFor={`void-${index}`}
-                    className="text-xs leading-relaxed cursor-pointer"
-                  >
-                    <span className="text-secondary font-semibold">{crown.title}</span>
-                  </Label>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p className="max-w-xs text-dark-secondary">{crown.description}</p>
-                </TooltipContent>
-              </Tooltip>
-              {/* Mobile only popover since tooltip doesn't work on mobile */}
-              <Popover
-                open={openPopover === index}
-                onOpenChange={(open) => !open && setOpenPopover(null)}
-              >
-                <PopoverTrigger asChild>
-                  <InfoIcon
-                    className="w-3 h-3 text-primary md:hidden self-center cursor-pointer"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      setOpenPopover(openPopover === index ? null : index);
-                    }}
-                  />
-                </PopoverTrigger>
-                <PopoverContent className="w-60 mr-2 bg-primary text-dark-secondary">
-                  <p className="text-sm">{crown.description}</p>
-                </PopoverContent>
-              </Popover>
+              <PressTooltip content={crown.description} side="left">
+                <Label
+                  htmlFor={`void-${index}`}
+                  className="cursor-pointer text-xs leading-relaxed"
+                >
+                  <span className="font-semibold text-secondary">{crown.title}</span>
+                </Label>
+              </PressTooltip>
             </div>
           ))}
         </div>
