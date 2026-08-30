@@ -401,6 +401,40 @@ button.underline-offset-4:hover {
   }
 }
 
+/* A small, unhurried flutter makes the empty Book Club state feel inviting. */
+.book-club-empty-icon {
+  animation: cozy-book-flutter 4.8s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+@keyframes cozy-book-flutter {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 0 rgb(227 204 240 / 0));
+    transform: translateY(0) rotate(0deg) scale(1);
+  }
+  20% {
+    filter: drop-shadow(0 0.25rem 0.3rem rgb(227 204 240 / 0.2));
+    transform: translateY(-0.18rem) rotate(-3deg) scale(1.04);
+  }
+  35% {
+    transform: translateY(-0.05rem) rotate(2deg) scale(1.02);
+  }
+  55% {
+    filter: drop-shadow(0 0.18rem 0.2rem rgb(227 204 240 / 0.14));
+    transform: translateY(-0.1rem) rotate(-1.5deg) scale(1.025);
+  }
+  72% {
+    transform: translateY(0.04rem) rotate(1deg) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-club-empty-icon {
+    animation: none;
+  }
+}
+
 @media (max-width: 900px) {
   .dark-conspiracy-actions,
   .dark-conspiracy-page {
