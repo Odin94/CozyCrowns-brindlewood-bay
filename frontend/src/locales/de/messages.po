@@ -149,7 +149,7 @@ msgid "A carefully guarded case file."
 msgstr ""
 
 #: src/components/character/CozyLittlePlace.tsx:25
-#: src/pages/BookClubOverview.tsx:945
+#: src/pages/BookClubOverview.tsx:942
 msgid "A Cozy Little Place"
 msgstr "Mein Gemütliches Zuhause"
 
@@ -212,7 +212,7 @@ msgstr "Zugang zu Robins Ressourcen außerhalb von Brindlewood Bay und beide Gol
 msgid "Activate"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:933
+#: src/pages/BookClubOverview.tsx:930
 msgid "Active conditions"
 msgstr ""
 
@@ -271,8 +271,8 @@ msgid "Advantage"
 msgstr "Vorteil"
 
 #: src/pages/BookClubOverview.tsx:929
-msgid "ago"
-msgstr ""
+#~ msgid "ago"
+#~ msgstr ""
 
 #: src/game_data.ts:81
 msgid "Alexis Carrington Colby"
@@ -334,7 +334,7 @@ msgstr ""
 msgid "Autosaves are kept separately from your manual versions."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:934
+#: src/pages/BookClubOverview.tsx:931
 msgid "Available Maven Moves"
 msgstr ""
 
@@ -342,7 +342,7 @@ msgstr ""
 msgid "Available to copy"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:954
+#: src/pages/BookClubOverview.tsx:951
 msgid "Available:"
 msgstr ""
 
@@ -681,7 +681,7 @@ msgid "Crown of the Queen"
 msgstr "Die Krone der Königin"
 
 #: src/components/character/CrownOfTheVoid.tsx:23
-#: src/pages/BookClubOverview.tsx:936
+#: src/pages/BookClubOverview.tsx:933
 msgid "Crown of the Void"
 msgstr "Die Krone des Abgrunds"
 
@@ -1016,7 +1016,7 @@ msgstr ""
 msgid "Manual version saved."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:961
+#: src/pages/BookClubOverview.tsx:958
 msgid "Marked:"
 msgstr ""
 
@@ -1106,7 +1106,7 @@ msgstr "Nickname"
 msgid "No approved mysteries have reached the shelves yet."
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:949
+#: src/pages/BookClubOverview.tsx:946
 msgid "No available items"
 msgstr ""
 
@@ -1138,12 +1138,12 @@ msgstr ""
 msgid "No rolls yet"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:940
+#: src/pages/BookClubOverview.tsx:937
 msgid "None active"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:933
-#: src/pages/BookClubOverview.tsx:934
+#: src/pages/BookClubOverview.tsx:930
+#: src/pages/BookClubOverview.tsx:931
 msgid "None recorded"
 msgstr ""
 
@@ -1203,7 +1203,7 @@ msgstr ""
 msgid "Open another board…"
 msgstr ""
 
-#: src/pages/BookClubOverview.tsx:970
+#: src/pages/BookClubOverview.tsx:967
 msgid "Open my sheet"
 msgstr ""
 
@@ -1411,8 +1411,8 @@ msgstr ""
 #~ msgstr ""
 
 #: src/pages/BookClubOverview.tsx:929
-msgid "Sheet updated"
-msgstr ""
+#~ msgid "Sheet updated"
+#~ msgstr ""
 
 #: src/pages/BookClubOverview.tsx:355
 msgid "Sheets"
