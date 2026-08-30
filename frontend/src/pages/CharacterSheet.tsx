@@ -76,10 +76,10 @@ const CharacterSheet = () => {
 
   return (
     <div
-      className={`min-h-screen w-full from-gray-900 to-gray-800 p-4 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
+      className={`min-h-screen w-full from-gray-900 to-gray-800 p-3 sm:p-4 md:p-5 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
     >
       <div className="w-full max-w-none">
-        <div className="text-center mb-8">
+        <div className="mb-5 text-center sm:mb-8">
           <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>
           <div
             className="text-xs font-normal text-gray-300 font-sans -mt-4"
@@ -90,9 +90,9 @@ const CharacterSheet = () => {
         </div>
 
         {activeView === "character" ? (
-          <div className="conspiracy-view-enter grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto relative">
+          <div className="conspiracy-view-enter relative mx-auto grid max-w-7xl grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {/* Column 1 */}
-            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
+            <div className="relative col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <div className="absolute top-0 left-0 w-full -mt-8">
                 <Tentacles setMenuOpen={setMenuOpen} />
               </div>
@@ -105,14 +105,14 @@ const CharacterSheet = () => {
             </div>
 
             {/* Column 2 */}
-            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative z-20">
+            <div className="relative z-20 col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <EndOfSession />
               <Advancements />
               <MavenMoves />
             </div>
 
             {/* Column 3 */}
-            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
+            <div className="col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <CrownOfTheQueen />
               <CrownOfTheVoid />
               <CozyLittlePlace />

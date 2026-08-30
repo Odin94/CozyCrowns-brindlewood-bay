@@ -1,10 +1,12 @@
 import { Button } from "@/components/ui/button";
 import DiceRoller from "@/components/character/DiceRoller";
 import { Label } from "@/components/ui/label";
+import { PressTooltip } from "@/components/ui/tooltip";
 import { PlusIcon, MinusIcon } from "lucide-react";
 import { createDiceRoll, type DiceRollRequest, type RollMode } from "@/lib/dice_roll";
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import { useRef, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
 
@@ -14,6 +16,14 @@ type RollMenuState = {
   x: number;
   y: number;
 };
+
+const abilityDescriptions = [
+  t`Physical grit, stamina, athletic feats, and raw strength.`,
+  t`Steady nerves, fine control, focus, and keeping fear at bay.`,
+  t`Research, deduction, observation, and putting clues together.`,
+  t`Charm, confidence, intimidation, and holding the room.`,
+  t`Instincts for the strange, spiritual, and occult forces at work.`,
+];
 
 type RollMenuProps = {
   menu: RollMenuState;
@@ -105,8 +115,17 @@ const Abilities = () => {
         {getDefaultAbilities().map(({ name: abilityName }, index) => {
           const ability = abilities[index];
           return (
-            <div key={abilityName} className="flex items-center justify-between">
-              <Label className="text-sm text-gray-300 w-20">{abilityName}</Label>
+            <div key={abilityName} className="flex min-h-8 items-center justify-between gap-3">
+              <PressTooltip content={abilityDescriptions[index]} side="right">
+                <button
+                  type="button"
+                  onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
+                  className="no-ring min-h-8 flex-1 rounded-md px-1 text-left text-sm text-gray-300 transition-colors hover:bg-gray-700/45 hover:text-secondary focus-visible:bg-gray-700/45 focus-visible:text-secondary"
+                  aria-label={`Roll ${abilityName} ability score. Long press for a description.`}
+                >
+                  {abilityName}
+                </button>
+              </PressTooltip>
               <div className="flex items-center gap-2">
                 <Button
                   variant="outline"
@@ -118,16 +137,16 @@ const Abilities = () => {
                 >
                   <MinusIcon className="w-3 h-3" />
                 </Button>
-                <span className="w-8 text-center font-medium text-gray-200">
+                <PressTooltip content={abilityDescriptions[index]} side="top">
                   <button
                     type="button"
                     onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
-                    className="no-ring min-h-8 w-full rounded-md border border-transparent text-center transition-colors hover:border-secondary/60 hover:bg-gray-900 focus-visible:border-secondary/70"
-                    aria-label={`Roll ${abilityName} ability score`}
+                    className="no-ring min-h-8 w-8 rounded-md border border-transparent text-center font-medium text-gray-200 transition-colors hover:border-secondary/60 hover:bg-gray-900 focus-visible:border-secondary/70"
+                    aria-label={`Roll ${abilityName} ability score. Long press for a description.`}
                   >
                     {ability.value > 0 ? `+${ability.value}` : ability.value}
                   </button>
-                </span>
+                </PressTooltip>
                 <Button
                   variant="outline"
                   size="sm"

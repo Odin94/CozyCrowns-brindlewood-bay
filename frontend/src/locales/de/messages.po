@@ -14,6 +14,26 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
+#: src/components/character/Conditions.tsx:20
+msgid "Enter any conditions or notes..."
+msgstr "Trag deine Zustände ein..."
+
+#. js-lingui-explicit-id
+#: src/components/character/MavenMoves.tsx:28
+msgid "Enter your Maven moves..."
+msgstr "Trag deine Kennerinen-Spielzüge ein..."
+
+#. js-lingui-explicit-id
+#: src/components/character/Name.tsx:26
+msgid "Enter character name"
+msgstr "Trag den Namen deines Charakters ein"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MeView.tsx:102
+msgid "Enter your nickname"
+msgstr "Nicknamen eingeben"
+
+#. js-lingui-explicit-id
 #: src/components/MenuDialog/MenuDialog.tsx:63
 msgid "Profile updated successfully!"
 msgstr "Profil erfolgreich geupdated"
@@ -65,26 +85,6 @@ msgstr "Konnte Charakter nicht speichern. Bitte versuch es nochmal."
 #: src/components/MenuDialog/MenuDialog.tsx:318
 msgid "Character reset successfully!"
 msgstr "Charakter erfolgreich zurückgesetzt!"
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MeView.tsx:102
-msgid "Enter your nickname"
-msgstr "Nicknamen eingeben"
-
-#. js-lingui-explicit-id
-#: src/components/character/Conditions.tsx:20
-msgid "Enter any conditions or notes..."
-msgstr "Trag deine Zustände ein..."
-
-#. js-lingui-explicit-id
-#: src/components/character/MavenMoves.tsx:28
-msgid "Enter your Maven moves..."
-msgstr "Trag deine Kennerinen-Spielzüge ein..."
-
-#. js-lingui-explicit-id
-#: src/components/character/Name.tsx:26
-msgid "Enter character name"
-msgstr "Trag den Namen deines Charakters ein"
 
 #. js-lingui-explicit-id
 #: src/components/character/Style.tsx:20
@@ -172,7 +172,7 @@ msgstr "Erzähle eine Szene in der Gegenwart, in der Du zeigst, wie Du Dein kör
 msgid "A Shadow in the Garden."
 msgstr "Ein Schatten im Garten."
 
-#: src/components/character/Abilities.tsx:89
+#: src/components/character/Abilities.tsx:112
 msgid "Abilities"
 msgstr "Attribute"
 
@@ -194,11 +194,11 @@ msgstr "Erhöhe dein Feingefühl um 1 (max 3). Zu Beginn jeder Sitzung gibt dir 
 msgid "Advancements"
 msgstr "Aufstieg"
 
-#: src/components/character/DiceRoller.tsx:61
+#: src/components/character/DiceRoller.tsx:49
 msgid "advantage"
 msgstr "Vorteil"
 
-#: src/components/character/Abilities.tsx:170
+#: src/components/character/Abilities.tsx:70
 msgid "Advantage"
 msgstr "Vorteil"
 
@@ -290,6 +290,10 @@ msgstr "Hundebegleiter, der die Gabe der Sprache erhält, wenn Ebene 5 freigesch
 msgid "Charity Events"
 msgstr "Wohltätigkeitsveranstaltungen"
 
+#: src/components/character/Abilities.tsx:24
+msgid "Charm, confidence, intimidation, and holding the room."
+msgstr "Charme, Selbstvertrauen, Einschüchterung und den Raum für sich einnehmen."
+
 #: src/game_data.ts:16
 #: src/game_data.ts:17
 msgid "Choose an additional Maven move."
@@ -303,7 +307,7 @@ msgstr "Wähle deine Spielzüge"
 msgid "Classic"
 msgstr "Klassisch"
 
-#: src/components/character/DiceRoller.tsx:258
+#: src/components/character/DiceRoller.tsx:244
 msgid "Click an ability score to roll 2d6."
 msgstr "Klicke auf einen Attributwert, um 2W6 zu würfeln."
 
@@ -356,7 +360,7 @@ msgstr "Credits"
 msgid "Crown of the Queen"
 msgstr "Die Krone der Königin"
 
-#: src/components/character/CrownOfTheVoid.tsx:28
+#: src/components/character/CrownOfTheVoid.tsx:23
 msgid "Crown of the Void"
 msgstr "Die Krone des Abgrunds"
 
@@ -390,7 +394,7 @@ msgstr "Deutsch"
 #~ msgid "Dice"
 #~ msgstr "Würfel"
 
-#: src/components/character/DiceRoller.tsx:212
+#: src/components/character/DiceRoller.tsx:186
 msgid "Dice Roller"
 msgstr "Würfelroller"
 
@@ -422,11 +426,11 @@ msgstr "Hast Du Deine Erfahrungen mit einer jungen Person geteilt?"
 msgid "Did you show someone that you've \"still got it?\""
 msgstr "Hast Du jemandem gezeigt, dass Du es immer noch draufhast?"
 
-#: src/components/character/DiceRoller.tsx:61
+#: src/components/character/DiceRoller.tsx:49
 msgid "disadvantage"
 msgstr "Nachteil"
 
-#: src/components/character/Abilities.tsx:154
+#: src/components/character/Abilities.tsx:54
 msgid "Disadvantage"
 msgstr "Nachteil"
 
@@ -474,7 +478,7 @@ msgstr "Tagsüber jeden Ort frei betreten"
 msgid "Extraordinary cat companion for advantage that never gets marked"
 msgstr "Außergewöhnliche Katze für Vorteil, der nie markiert wird"
 
-#: src/components/character/DiceRoller.tsx:31
+#: src/components/character/DiceRoller.tsx:19
 msgid "Failure"
 msgstr "Fehlschlag"
 
@@ -538,6 +542,10 @@ msgstr "Erhöhe deine Vitalität um 1 (max 3)."
 #: src/components/MenuDialog/CreditsView.tsx:17
 msgid "Information about the game, its creators and sources of assets."
 msgstr "Informationen zum Spiel, seinen Authoren und den Quellen von Assets."
+
+#: src/components/character/Abilities.tsx:25
+msgid "Instincts for the strange, spiritual, and occult forces at work."
+msgstr "Instinkt für seltsame, spirituelle und okkulte Kräfte am Werk."
 
 #: src/game_data.ts:215
 msgid "Introduce trivia as a Clue once per mystery"
@@ -677,7 +685,11 @@ msgstr "Malen"
 msgid "Pass for younger with advantage on rolls"
 msgstr "Als jünger durchgehen mit Vorteil bei Würfen"
 
-#: src/components/character/DiceRoller.tsx:45
+#: src/components/character/Abilities.tsx:21
+msgid "Physical grit, stamina, athletic feats, and raw strength."
+msgstr "Körperliche Härte, Ausdauer, sportliche Leistungen und rohe Kraft."
+
+#: src/components/character/DiceRoller.tsx:33
 msgid "Plain success"
 msgstr "Einfacher Erfolg"
 
@@ -713,6 +725,10 @@ msgstr "Verstand"
 msgid "Receive mysterious Clues each session"
 msgstr "Erhalte mysteriöse Hinweise jede Sitzung"
 
+#: src/components/character/Abilities.tsx:23
+msgid "Research, deduction, observation, and putting clues together."
+msgstr "Recherche, Schlussfolgern, Beobachtung und Hinweise zusammensetzen."
+
 #: src/components/MenuDialog/MainMenuView.tsx:95
 #: src/components/MenuDialog/ResetConfirmView.tsx:35
 msgid "Reset Character"
@@ -722,11 +738,11 @@ msgstr "Charakter zurücksetzen"
 msgid "Retire your character in a way that shows how they are lost to the Void."
 msgstr "Schicke Deine Krimi-Kennerin auf eine Weise in den Ruhestand, die zeigt, dass sie an den Abgrund verloren ist."
 
-#: src/components/character/Abilities.tsx:162
+#: src/components/character/Abilities.tsx:62
 msgid "Roll"
 msgstr "Wurf"
 
-#: src/components/character/DiceRoller.tsx:252
+#: src/components/character/DiceRoller.tsx:227
 msgid "Rolling..."
 msgstr "Würfelt..."
 
@@ -783,6 +799,10 @@ msgstr "Quellcode"
 msgid "Speed Walkin'"
 msgstr "Nordic Walking"
 
+#: src/components/character/Abilities.tsx:22
+msgid "Steady nerves, fine control, focus, and keeping fear at bay."
+msgstr "Starke Nerven, präzise Kontrolle, Konzentration und Angst in Schach halten."
+
 #: src/components/character/Style.tsx:23
 msgid "Style"
 msgstr "Stil"
@@ -791,11 +811,11 @@ msgstr "Stil"
 msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
 msgstr "Stilvolle Garderobe für Vorteil bei Würfen, die nie markiert wird"
 
-#: src/components/character/DiceRoller.tsx:51
+#: src/components/character/DiceRoller.tsx:39
 msgid "Success with a bonus"
 msgstr "Erfolg mit Bonus"
 
-#: src/components/character/DiceRoller.tsx:38
+#: src/components/character/DiceRoller.tsx:26
 msgid "Success with cost"
 msgstr "Erfolg mit Kosten"
 
@@ -883,7 +903,7 @@ msgstr "Wenn du in einer Situation improvisierst und dabei verwendest, was zur H
 msgid "When you put on this Crown, mark and narrate any you wish."
 msgstr "Wenn Du diese Krone aufsetzt, kreuze ein beliebiges Kästchen an."
 
-#: src/components/character/CrownOfTheVoid.tsx:31
+#: src/components/character/CrownOfTheVoid.tsx:26
 msgid "When you put on this Crown, mark the first empty box."
 msgstr "Wenn Du diese Krone aufsetzt, kreuze das erste freie Kästchen an."
 
