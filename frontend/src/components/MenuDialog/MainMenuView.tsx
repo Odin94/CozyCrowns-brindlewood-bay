@@ -97,9 +97,9 @@ export const MainMenuView = ({
         {isAuthenticated ? (
           <Button
             asChild
-            className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+            className="w-full text-dark-foreground bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
           >
-            <a href="/mysteries">
+            <a href="/mysteries" className="!text-dark-foreground hover:!text-dark-foreground">
               <Feather className="w-4 h-4 mr-2" />
               <Trans>Mysteries</Trans>
             </a>
