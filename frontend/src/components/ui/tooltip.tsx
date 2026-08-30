@@ -66,6 +66,7 @@ function PressTooltip({ children, content, side = "top" }: PressTooltipProps) {
   const [open, setOpen] = React.useState(false);
   const longPressTimer = React.useRef<number | null>(null);
   const didLongPress = React.useRef(false);
+  const pressStart = React.useRef<{ x: number; y: number } | null>(null);
 
   const clearLongPress = () => {
     if (longPressTimer.current !== null) {
@@ -85,6 +86,7 @@ function PressTooltip({ children, content, side = "top" }: PressTooltipProps) {
     onPointerLeave: (event: React.PointerEvent<HTMLElement>) => {
       child.props.onPointerLeave?.(event);
       clearLongPress();
+      pressStart.current = null;
       setOpen(false);
     },
     onPointerDown: (event: React.PointerEvent<HTMLElement>) => {
@@ -92,19 +94,40 @@ function PressTooltip({ children, content, side = "top" }: PressTooltipProps) {
       if (event.pointerType !== "touch") return;
 
       didLongPress.current = false;
+      pressStart.current = { x: event.clientX, y: event.clientY };
+      event.currentTarget.setPointerCapture?.(event.pointerId);
       longPressTimer.current = window.setTimeout(() => {
         didLongPress.current = true;
         setOpen(true);
       }, 350);
     },
+    onPointerMove: (event: React.PointerEvent<HTMLElement>) => {
+      child.props.onPointerMove?.(event);
+      if (event.pointerType !== "touch" || !pressStart.current) return;
+
+      const moved = Math.hypot(
+        event.clientX - pressStart.current.x,
+        event.clientY - pressStart.current.y,
+      );
+      if (moved > 10) {
+        clearLongPress();
+        pressStart.current = null;
+        setOpen(false);
+      }
+    },
     onPointerUp: (event: React.PointerEvent<HTMLElement>) => {
       child.props.onPointerUp?.(event);
       clearLongPress();
+      pressStart.current = null;
+      if (event.currentTarget.hasPointerCapture?.(event.pointerId)) {
+        event.currentTarget.releasePointerCapture(event.pointerId);
+      }
       if (didLongPress.current) setOpen(false);
     },
     onPointerCancel: (event: React.PointerEvent<HTMLElement>) => {
       child.props.onPointerCancel?.(event);
       clearLongPress();
+      pressStart.current = null;
       setOpen(false);
     },
     onContextMenu: (event: React.MouseEvent<HTMLElement>) => {
