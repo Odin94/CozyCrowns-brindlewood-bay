@@ -40,8 +40,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const [selectedClubId, setSelectedClubId] = useState<string | null>(null);
   const [newClubName, setNewClubName] = useState("");
   const [inviteNickname, setInviteNickname] = useState("");
-  const [mysteryName, setMysteryName] = useState("");
-  const [initialClueList, setInitialClueList] = useState("");
+  const [selectedMysteryId, setSelectedMysteryId] = useState("");
   const [clueText, setClueText] = useState("");
   const [voidClueText, setVoidClueText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -205,16 +204,13 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
     }
   };
 
-  const createMystery = async () => {
+  const createMystery = async (name: string, initialClues: string) => {
     if (!club) return;
     try {
-      updateClub(
-        await api.createBookClubMystery(club.id, mysteryName, parsePastedClueList(initialClueList)),
-      );
-      setMysteryName("");
-      setInitialClueList("");
+      updateClub(await api.createBookClubMystery(club.id, name, parsePastedClueList(initialClues)));
+      toast.success(t`Mystery created`);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not activate the mystery`);
+      toast.error(error instanceof Error ? error.message : t`Could not create the mystery`);
     }
   };
 
@@ -320,6 +316,8 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                 onInviteNicknameChange={setInviteNickname}
                 onInvite={() => void invite()}
                 onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
+                isGameMaster={isGameMaster}
+                onCreateMystery={(name, initialClues) => void createMystery(name, initialClues)}
                 compact
               />
             </div>
@@ -468,6 +466,8 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                   onInviteNicknameChange={setInviteNickname}
                   onInvite={() => void invite()}
                   onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
+                  isGameMaster={isGameMaster}
+                  onCreateMystery={(name, initialClues) => void createMystery(name, initialClues)}
                 />
               </div>
 
@@ -533,50 +533,35 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                         )}
                       </p>
                     </div>
-                    {isGameMaster && (
-                      <div className="grid w-full gap-2 sm:w-auto">
-                        <div className="flex gap-2">
-                          <Input
-                            value={mysteryName}
-                            onChange={(event) => setMysteryName(event.target.value)}
-                            placeholder={t`Mystery title`}
-                          />
-                          <Button
-                            disabled={!mysteryName.trim()}
-                            onClick={() => void createMystery()}
-                          >
-                            <Plus className="size-4" /> <Trans>Activate</Trans>
-                          </Button>
-                        </div>
-                        <Textarea
-                          value={initialClueList}
-                          onChange={(event) => setInitialClueList(event.target.value)}
-                          placeholder={t`Paste a bullet list of clues to add them all when activating the mystery.`}
-                          className="min-h-24 sm:w-96"
-                        />
-                      </div>
-                    )}
                   </div>
-                  {isGameMaster &&
-                    club.mysteries.filter((mystery) => !mystery.isActive).length > 0 && (
-                      <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                        <span className="text-gray-400">
-                          <Trans>Previous mysteries:</Trans>
-                        </span>
+                  {isGameMaster && (
+                    <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <select
+                        className="h-9 min-w-48 rounded-md border border-gray-600 bg-gray-950/35 px-3 text-sm text-gray-100"
+                        value={selectedMysteryId}
+                        onChange={(event) => setSelectedMysteryId(event.target.value)}
+                      >
+                        <option value="">{t`Select a mystery`}</option>
                         {club.mysteries
                           .filter((mystery) => !mystery.isActive)
                           .map((mystery) => (
-                            <Button
-                              key={mystery.id}
-                              size="sm"
-                              variant="outline"
-                              onClick={() => void activateMystery(mystery.id)}
-                            >
-                              <Trans>Activate</Trans> {mystery.title}
-                            </Button>
+                            <option key={mystery.id} value={mystery.id}>
+                              {mystery.title}
+                            </option>
                           ))}
-                      </div>
-                    )}
+                      </select>
+                      <Button
+                        size="sm"
+                        disabled={!selectedMysteryId}
+                        onClick={() => {
+                          void activateMystery(selectedMysteryId);
+                          setSelectedMysteryId("");
+                        }}
+                      >
+                        <Trans>Activate</Trans>
+                      </Button>
+                    </div>
+                  )}
                   {club.activeMystery && (
                     <div className="mt-5 grid gap-4 md:grid-cols-2">
                       <ClueList
@@ -656,6 +641,8 @@ function ClubManagement({
   onInviteNicknameChange,
   onInvite,
   onMakeGameMaster,
+  isGameMaster,
+  onCreateMystery,
   compact = false,
 }: {
   club: BookClub;
@@ -664,6 +651,8 @@ function ClubManagement({
   onInviteNicknameChange: (nickname: string) => void;
   onInvite: () => void;
   onMakeGameMaster: (memberId: string) => void;
+  isGameMaster: boolean;
+  onCreateMystery: (name: string, initialClues: string) => void;
   compact?: boolean;
 }) {
   const sectionClass = compact
@@ -696,6 +685,7 @@ function ClubManagement({
           </Button>
         </form>
       </section>
+      {isGameMaster && <MysteryCreation onCreate={onCreateMystery} sectionClass={sectionClass} />}
       {isOwner && (
         <section className={sectionClass}>
           <h2 className="font-semibold text-secondary">
@@ -726,6 +716,53 @@ function ClubManagement({
         </section>
       )}
     </div>
+  );
+}
+
+function MysteryCreation({
+  onCreate,
+  sectionClass,
+}: {
+  onCreate: (name: string, initialClues: string) => void;
+  sectionClass: string;
+}) {
+  const [name, setName] = useState("");
+  const [initialClues, setInitialClues] = useState("");
+
+  return (
+    <section className={sectionClass}>
+      <h2 className="font-semibold text-secondary">
+        <Trans>Create a mystery</Trans>
+      </h2>
+      <p className="mt-1 text-sm text-gray-300">
+        <Trans>Create it here, then select it when you are ready to play.</Trans>
+      </p>
+      <form
+        className="mt-3 space-y-2"
+        onSubmit={(event) => {
+          event.preventDefault();
+          if (!name.trim()) return;
+          onCreate(name, initialClues);
+          setName("");
+          setInitialClues("");
+        }}
+      >
+        <Input
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          placeholder={t`Mystery title`}
+        />
+        <Textarea
+          value={initialClues}
+          onChange={(event) => setInitialClues(event.target.value)}
+          placeholder={t`Add any opening clues, one per line...`}
+          className="min-h-20"
+        />
+        <Button type="submit" disabled={!name.trim()}>
+          <Plus className="size-4" /> <Trans>Create mystery</Trans>
+        </Button>
+      </form>
+    </section>
   );
 }
 
