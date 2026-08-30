@@ -133,7 +133,7 @@ export const MainMenuView = ({
           <Trash2 className="w-4 h-4 mr-2" />
           <Trans>Reset Character</Trans>
         </Button>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
           <Button variant="link" asChild>
             <a href="https://odin-matthias.de" target="_blank" rel="noopener noreferrer">
               <Trans>Odin's Blog</Trans>
