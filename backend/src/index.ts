@@ -22,7 +22,7 @@ const httpsOptions =
 
 const fastify = Fastify({
   https: httpsOptions,
-  trustProxy: true,
+  trustProxy: env.TRUST_PROXY_HOPS || false,
   logger:
     env.NODE_ENV === "development"
       ? {
@@ -38,6 +38,14 @@ const fastify = Fastify({
       : true,
 });
 
+const frontendOrigin = new URL(env.FRONTEND_URL).origin;
+const localDevelopmentOrigins = new Set([
+  "http://localhost:3000",
+  "http://127.0.0.1:3000",
+  "https://localhost:3000",
+  "https://127.0.0.1:3000",
+]);
+
 await fastify.register(cors, {
   origin: (origin, callback) => {
     if (!origin) {
@@ -45,16 +53,9 @@ await fastify.register(cors, {
     }
 
     if (
-      origin.startsWith("http://localhost:") ||
-      origin.startsWith("http://127.0.0.1:") ||
-      origin.startsWith("https://localhost:") ||
-      origin.startsWith("https://127.0.0.1:")
+      origin === frontendOrigin ||
+      (env.NODE_ENV !== "production" && localDevelopmentOrigins.has(origin))
     ) {
-      return callback(null, true);
-    }
-
-    const frontendUrl = new URL(env.FRONTEND_URL);
-    if (origin.startsWith(frontendUrl.origin)) {
       return callback(null, true);
     }
 
@@ -70,7 +71,11 @@ await fastify.register(cookie, {
   secret: env.WORKOS_COOKIE_PASSWORD,
 });
 
-await fastify.register(websocket);
+await fastify.register(websocket, {
+  options: {
+    maxPayload: 8 * 1024,
+  },
+});
 
 await fastify.register(rateLimit, {
   max: 1000,

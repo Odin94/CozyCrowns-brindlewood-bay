@@ -33,7 +33,7 @@ export const createDarkConspiracySchema = z.object({
 export const updateDarkConspiracySchema = z.object({
   title: z.string().min(1).max(255).optional(),
   data: darkConspiracyDataSchema.optional(),
-  version: z.number().int().positive().optional(),
+  version: z.number().int().positive(),
 });
 
 export const darkConspiracyParamsSchema = z.object({

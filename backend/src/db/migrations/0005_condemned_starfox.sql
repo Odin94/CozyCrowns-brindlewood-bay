@@ -1,0 +1,1 @@
+CREATE INDEX `book_club_roll_events_book_club_created_idx` ON `book_club_roll_events` (`book_club_id`,`created_at`);

@@ -154,7 +154,22 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
   }
 
   if (!response.ok) {
-    const error = new Error(`HTTP error! status: ${response.status}`) as Error & {
+    let message = `Request failed (${response.status})`;
+    try {
+      const body: unknown = await response.json();
+      if (
+        body &&
+        typeof body === "object" &&
+        "error" in body &&
+        typeof body.error === "string" &&
+        body.error.trim()
+      ) {
+        message = body.error;
+      }
+    } catch {
+      // Some gateway failures do not include a JSON body.
+    }
+    const error = new Error(message) as Error & {
       status?: number;
     };
     error.status = response.status;
@@ -176,7 +191,9 @@ export const api = {
     if (state) {
       params.append("state", state);
     }
-    const response = await fetch(`${API_URL}/auth/callback?${params.toString()}`);
+    const response = await fetch(`${API_URL}/auth/callback?${params.toString()}`, {
+      credentials: "include",
+    });
     const data = await handleResponse<AuthCallbackResponse>(response);
     if (data.token) {
       tokenStorage.set(data.token);
@@ -243,7 +260,7 @@ export const api = {
 
   updateCharacter: async (
     id: string,
-    data: { name?: string; data?: any; version?: number },
+    data: { name?: string; data?: any; version: number },
   ): Promise<{
     id: string;
     name: string;
@@ -307,7 +324,7 @@ export const api = {
 
   updateDarkConspiracy: async (
     id: string,
-    data: { title?: string; data?: any; version?: number },
+    data: { title?: string; data?: any; version: number },
   ): Promise<{
     id: string;
     title: string;

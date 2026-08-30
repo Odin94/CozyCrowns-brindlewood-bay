@@ -45,12 +45,16 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const [voidClueText, setVoidClueText] = useState("");
   const [loading, setLoading] = useState(true);
   const isRefreshing = useRef(false);
+  const refreshQueued = useRef(false);
   const { characters: localCharacters, setCurrentCharacter } = useCharacterStore();
   const setActiveBookClub = useBookClubStore((state) => state.setActiveBookClub);
   const setShareRolls = useBookClubStore((state) => state.setShareRolls);
 
   const refresh = useCallback(async (showError = true) => {
-    if (isRefreshing.current) return;
+    if (isRefreshing.current) {
+      refreshQueued.current = true;
+      return;
+    }
     isRefreshing.current = true;
     try {
       const response = await api.getBookClubs();
@@ -58,11 +62,14 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
       setInvitations(response.invitations);
       setSelectedClubId((selected) => selected ?? response.clubs[0]?.id ?? null);
     } catch (error) {
-      if (showError)
-        toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
+      if (showError) toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
     } finally {
       setLoading(false);
       isRefreshing.current = false;
+      if (refreshQueued.current) {
+        refreshQueued.current = false;
+        void refresh(false);
+      }
     }
   }, []);
 
@@ -205,21 +212,25 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   };
 
   const createMystery = async (name: string, initialClues: string) => {
-    if (!club) return;
+    if (!club) return false;
     try {
       updateClub(await api.createBookClubMystery(club.id, name, parsePastedClueList(initialClues)));
       toast.success(t`Mystery created`);
+      return true;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not create the mystery`);
+      return false;
     }
   };
 
   const activateMystery = async (mysteryId: string) => {
-    if (!club) return;
+    if (!club) return false;
     try {
       updateClub(await api.activateBookClubMystery(club.id, mysteryId));
+      return true;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not activate the mystery`);
+      return false;
     }
   };
 
@@ -317,7 +328,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                 onInvite={() => void invite()}
                 onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
                 isGameMaster={isGameMaster}
-                onCreateMystery={(name, initialClues) => void createMystery(name, initialClues)}
+                onCreateMystery={createMystery}
                 compact
               />
             </div>
@@ -467,7 +478,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                   onInvite={() => void invite()}
                   onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
                   isGameMaster={isGameMaster}
-                  onCreateMystery={(name, initialClues) => void createMystery(name, initialClues)}
+                  onCreateMystery={createMystery}
                 />
               </div>
 
@@ -536,7 +547,11 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                   </div>
                   {isGameMaster && (
                     <div className="mt-3 flex flex-wrap items-center gap-2">
+                      <label className="sr-only" htmlFor="active-mystery">
+                        <Trans>Select a mystery</Trans>
+                      </label>
                       <select
+                        id="active-mystery"
                         className="h-9 min-w-48 rounded-md border border-gray-600 bg-gray-950/35 px-3 text-sm text-gray-100"
                         value={selectedMysteryId}
                         onChange={(event) => setSelectedMysteryId(event.target.value)}
@@ -554,8 +569,9 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                         size="sm"
                         disabled={!selectedMysteryId}
                         onClick={() => {
-                          void activateMystery(selectedMysteryId);
-                          setSelectedMysteryId("");
+                          void (async () => {
+                            if (await activateMystery(selectedMysteryId)) setSelectedMysteryId("");
+                          })();
                         }}
                       >
                         <Trans>Activate</Trans>
@@ -652,7 +668,7 @@ function ClubManagement({
   onInvite: () => void;
   onMakeGameMaster: (memberId: string) => void;
   isGameMaster: boolean;
-  onCreateMystery: (name: string, initialClues: string) => void;
+  onCreateMystery: (name: string, initialClues: string) => Promise<boolean>;
   compact?: boolean;
 }) {
   const sectionClass = compact
@@ -723,7 +739,7 @@ function MysteryCreation({
   onCreate,
   sectionClass,
 }: {
-  onCreate: (name: string, initialClues: string) => void;
+  onCreate: (name: string, initialClues: string) => Promise<boolean>;
   sectionClass: string;
 }) {
   const [name, setName] = useState("");
@@ -742,9 +758,12 @@ function MysteryCreation({
         onSubmit={(event) => {
           event.preventDefault();
           if (!name.trim()) return;
-          onCreate(name, initialClues);
-          setName("");
-          setInitialClues("");
+          void (async () => {
+            if (await onCreate(name, initialClues)) {
+              setName("");
+              setInitialClues("");
+            }
+          })();
         }}
       >
         <Input

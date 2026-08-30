@@ -6,6 +6,8 @@ import {
   type DarkConspiracyData,
 } from "@/lib/dark_conspiracy_store";
 import { api } from "@/utils/api";
+import { t } from "@lingui/core/macro";
+import { toast } from "sonner";
 import { useAuth } from "./useAuth";
 
 const toBackendPayload = (data: DarkConspiracyData) => ({
@@ -28,7 +30,7 @@ const toBackendPayload = (data: DarkConspiracyData) => ({
     finalChildRevision: data.finalChildRevision,
     mysteries: data.mysteries,
   },
-  version: data.version,
+  version: data.version ?? 1,
 });
 
 export const useBackendDarkConspiraciesSync = () => {
@@ -43,6 +45,7 @@ export const useBackendDarkConspiraciesSync = () => {
   );
   const [isReadyToSave, setIsReadyToSave] = useState(false);
   const syncedUserIdRef = useRef<string | null>(null);
+  const conflictRef = useRef(false);
   const saveSignature = useMemo(() => JSON.stringify(current), [current]);
 
   useEffect(() => {
@@ -83,7 +86,13 @@ export const useBackendDarkConspiraciesSync = () => {
   }, [isAuthenticated, syncDarkConspiraciesFromBackend, userId]);
 
   useEffect(() => {
-    if (!isAuthenticated || !userId || !isReadyToSave || !hasDarkConspiracyContent(current)) {
+    if (
+      !isAuthenticated ||
+      !userId ||
+      !isReadyToSave ||
+      conflictRef.current ||
+      !hasDarkConspiracyContent(current)
+    ) {
       return;
     }
 
@@ -96,6 +105,15 @@ export const useBackendDarkConspiraciesSync = () => {
         updateCurrentDarkConspiracyIdAndVersion(result.id, result.version);
       } catch (error) {
         console.error("Failed to save dark conspiracy:", error);
+        if ((error as Error & { status?: number }).status === 409) {
+          conflictRef.current = true;
+          toast.error(t`This conspiracy changed elsewhere. Your edits are still here.`, {
+            action: {
+              label: t`Reload`,
+              onClick: () => window.location.reload(),
+            },
+          });
+        }
       }
     }, 900);
 
