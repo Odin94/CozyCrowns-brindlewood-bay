@@ -249,20 +249,22 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
               </button>
             ))}
           </div>
-          <div className="mt-6 space-y-2 border-t border-gray-700 pt-4">
+          <form
+            className="mt-6 space-y-2 border-t border-gray-700 pt-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              if (newClubName.trim()) void createClub();
+            }}
+          >
             <Input
               value={newClubName}
               onChange={(event) => setNewClubName(event.target.value)}
               placeholder={t`New Book Club name`}
             />
-            <Button
-              className="w-full"
-              disabled={!newClubName.trim()}
-              onClick={() => void createClub()}
-            >
+            <Button className="w-full" type="submit" disabled={!newClubName.trim()}>
               <Plus /> <Trans>Create Book Club</Trans>
             </Button>
-          </div>
+          </form>
         </aside>
 
         <main className="min-w-0 flex-1">
