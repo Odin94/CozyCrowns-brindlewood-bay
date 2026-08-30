@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useBookClubStore } from "@/lib/book_club_store";
 import { useCharacterStore } from "@/lib/character_store";
 import { parsePastedClueList } from "@/lib/clue_list";
+import TheorizeBoard from "@/pages/TheorizeBoard";
 import { getCrownOfTheVoid } from "@/game_data";
 import {
   api,
@@ -41,6 +42,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const [newClubName, setNewClubName] = useState("");
   const [inviteNickname, setInviteNickname] = useState("");
   const [selectedMysteryId, setSelectedMysteryId] = useState("");
+  const [theorizeMystery, setTheorizeMystery] = useState<{ id: string; title: string } | null>(null);
   const [clueText, setClueText] = useState("");
   const [voidClueText, setVoidClueText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -276,6 +278,16 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
         nickname: member.nickname,
       })),
     ) ?? [];
+
+  if (club && theorizeMystery) {
+    return (
+      <TheorizeBoard
+        bookClubId={club.id}
+        mystery={theorizeMystery}
+        onClose={() => setTheorizeMystery(null)}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 p-3 text-gray-100 sm:p-6">
@@ -544,6 +556,44 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                         )}
                       </p>
                     </div>
+                    {club.activeMystery && (
+                      <Button
+                        size="sm"
+                        onClick={() =>
+                          setTheorizeMystery({
+                            id: club.activeMystery!.id,
+                            title: club.activeMystery!.title,
+                          })
+                        }
+                      >
+                        <Trans>Theorize</Trans>
+                      </Button>
+                    )}
+                    {club.mysteries.length > 1 && (
+                      <select
+                        aria-label={t`Open a different theory board`}
+                        className="h-8 rounded-md border border-gray-600 bg-gray-950/35 px-2 text-xs text-gray-100"
+                        defaultValue=""
+                        onChange={(event) => {
+                          const selected = club.mysteries.find(
+                            (mystery) => mystery.id === event.target.value,
+                          );
+                          if (selected) {
+                            setTheorizeMystery({ id: selected.id, title: selected.title });
+                            event.currentTarget.value = "";
+                          }
+                        }}
+                      >
+                        <option value="">{t`Open another board…`}</option>
+                        {club.mysteries
+                          .filter((mystery) => mystery.id !== club.activeMystery?.id)
+                          .map((mystery) => (
+                            <option key={mystery.id} value={mystery.id}>
+                              {mystery.title}
+                            </option>
+                          ))}
+                      </select>
+                    )}
                   </div>
                   {isGameMaster && (
                     <div className="mt-3 flex flex-wrap items-center gap-2">
