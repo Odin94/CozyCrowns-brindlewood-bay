@@ -14,7 +14,7 @@
 - Frontend translations: `cd frontend && pnpm extract && pnpm compile`
 - Backend dev server: `cd backend && pnpm dev`
 - Backend checks: `cd backend && pnpm build`
-- Database workflow: `cd backend && pnpm db:generate` after schema changes, then `cd backend && pnpm db:migrate`
+- Database workflow: `cd backend && pnpm db:generate` after schema changes, then `cd backend && pnpm db:migrate`. Before committing a migration, run `pnpm db:validate` and apply it to a disposable copy of a production-like SQLite database; inspect the SQL for compatibility with existing rows and schema. Never edit a migration that may already have been applied in production.
 - Linting/formatting is handled by [oxlint](https://oxc.rs/docs/guide/usage/linter) (config at `frontend/.oxlintrc.json`). Use `pnpm run fmt` at the repo root to format both apps.
 - Full smoke verification for most changes: frontend lint + frontend build + backend build
 
