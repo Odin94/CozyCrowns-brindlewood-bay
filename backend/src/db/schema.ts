@@ -102,7 +102,7 @@ export const mysteryVersions = sqliteTable(
     title: text("title").notNull(),
     data: text("data").notNull(),
     sourceVersion: integer("source_version").notNull(),
-    kind: text("kind", { enum: ["auto", "manual"] }).notNull(),
+    kind: text("kind", { enum: ["auto", "manual", "publication"] }).notNull(),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .default(sql`(unixepoch())`),
