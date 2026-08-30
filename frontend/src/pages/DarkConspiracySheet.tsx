@@ -181,8 +181,8 @@ const DarkConspiracySheet = () => {
   };
 
   return (
-    <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-4">
-      <div className="flex justify-end gap-2">
+    <div className="dark-conspiracy-sheet">
+      <div className="dark-conspiracy-actions">
         <Button
           onClick={() => exportDarkConspiracy(current)}
           className="h-8 bg-dark-secondary text-primary hover:bg-dark-secondary/90 dark-ring"

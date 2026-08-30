@@ -182,9 +182,29 @@ button.underline-offset-4:hover {
   background-color: hsl(var(--card));
 }
 
+.dark-conspiracy-sheet {
+  display: flex;
+  width: 100%;
+  max-width: 1500px;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-inline: auto;
+}
+
+.dark-conspiracy-actions,
+.dark-conspiracy-page {
+  width: min(100%, calc((100vh - 7.5rem) * 1.294));
+}
+
+.dark-conspiracy-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
+
 .dark-conspiracy-page {
   display: flex;
-  width: min(100%, calc((100vh - 7.5rem) * 1.294));
   min-height: 34rem;
   aspect-ratio: 11 / 8.5;
   flex-direction: column;
@@ -382,8 +402,12 @@ button.underline-offset-4:hover {
 }
 
 @media (max-width: 900px) {
+  .dark-conspiracy-actions,
   .dark-conspiracy-page {
     width: 100%;
+  }
+
+  .dark-conspiracy-page {
     min-height: 46rem;
     aspect-ratio: auto;
     overflow: visible;
