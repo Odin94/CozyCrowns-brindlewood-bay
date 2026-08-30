@@ -5,7 +5,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { api, type Mystery, type MysteryData, type MysteryVersion } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ArchiveRestore, BookOpen, Feather, Library, Plus, Save, Send, Trash2 } from "lucide-react";
+import { ArchiveRestore, BookOpen, Feather, Library, Plus, Save, Send, Trash2, X } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -100,6 +100,13 @@ const Section = ({
   </section>
 );
 
+const RemoveCard = ({ onClick }: { onClick: () => void }) => (
+  <Button size="sm" variant="ghost" className="ml-auto flex h-7" onClick={onClick}>
+    <X className="size-3" />
+    <Trans>Remove</Trans>
+  </Button>
+);
+
 const MysteriesPage = () => {
   const { isAuthenticated, loading } = useAuth();
   const [mysteries, setMysteries] = useState<Mystery[]>([]);
@@ -107,6 +114,8 @@ const MysteriesPage = () => {
   const [versions, setVersions] = useState<MysteryVersion[]>([]);
   const [loaded, setLoaded] = useState(false);
   const lastSaved = useRef<string>("");
+  const selectedRef = useRef<Mystery | null>(null);
+  const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
 
   const choose = useCallback((mystery: Mystery) => {
     lastSaved.current = snapshot(mystery);
@@ -160,6 +169,7 @@ const MysteriesPage = () => {
   }, [isAuthenticated, load]);
   useEffect(() => {
     if (selected) localStorage.setItem(draftKey, JSON.stringify(selected));
+    selectedRef.current = selected;
   }, [selected]);
   useEffect(() => {
     if (selected?.id) void refreshVersions(selected.id);
@@ -178,27 +188,40 @@ const MysteriesPage = () => {
   };
 
   const save = useCallback(
-    async (kind: "auto" | "manual") => {
-      if (!selected) return;
-      try {
-        const saved = await api.updateMystery(selected.id, {
-          title: selected.title || t`Untitled Mystery`,
-          data: selected.data,
-          version: selected.version,
-          saveKind: kind,
-        });
-        lastSaved.current = snapshot(saved);
-        setSelected(saved);
-        setMysteries((current) =>
-          current.map((mystery) => (mystery.id === saved.id ? saved : mystery)),
-        );
-        void refreshVersions(saved.id);
-        if (kind === "manual") toast.success(t`Manual version saved.`);
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : t`Could not save mystery`);
-      }
+    (kind: "auto" | "manual"): Promise<boolean> => {
+      const task = async (): Promise<boolean> => {
+        const submitted = selectedRef.current;
+        if (!submitted) return false;
+        const submittedSignature = snapshot(submitted);
+        if (kind === "auto" && submittedSignature === lastSaved.current) return true;
+        try {
+          const saved = await api.updateMystery(submitted.id, {
+            title: submitted.title || t`Untitled Mystery`,
+            data: submitted.data,
+            version: submitted.version,
+            saveKind: kind,
+          });
+          lastSaved.current = snapshot(saved);
+          setMysteries((current) =>
+            current.map((mystery) => (mystery.id === saved.id ? saved : mystery)),
+          );
+          setSelected((current) => {
+            if (!current || current.id !== saved.id || snapshot(current) !== submittedSignature)
+              return current;
+            return saved;
+          });
+          void refreshVersions(saved.id);
+          if (kind === "manual") toast.success(t`Manual version saved.`);
+          return true;
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : t`Could not save mystery`);
+          return false;
+        }
+      };
+      saveQueue.current = saveQueue.current.catch(() => false).then(task);
+      return saveQueue.current;
     },
-    [refreshVersions, selected],
+    [refreshVersions],
   );
 
   const saveSignature = useMemo(() => (selected ? snapshot(selected) : ""), [selected]);
@@ -235,9 +258,11 @@ const MysteriesPage = () => {
 
   const publish = async () => {
     if (!selected) return;
-    await save("manual");
+    if (!(await save("manual"))) return;
+    const savedMystery = selectedRef.current;
+    if (!savedMystery) return;
     try {
-      await api.publishMystery(selected.id);
+      await api.publishMystery(savedMystery.id);
       toast.success(t`Submitted for superadmin approval.`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not submit mystery`);
@@ -343,6 +368,13 @@ const MysteriesPage = () => {
             >
               {selected.data.locations.map((location, index) => (
                 <div key={location.id ?? `${location.title}-${index}`} className="mystery-card">
+                  <RemoveCard
+                    onClick={() =>
+                      updateSelected({
+                        locations: selected.data.locations.filter((_, i) => i !== index),
+                      })
+                    }
+                  />
                   <Field
                     label={<Trans>Title</Trans>}
                     value={location.title}
@@ -396,6 +428,13 @@ const MysteriesPage = () => {
             >
               {selected.data.suspects.map((suspect, index) => (
                 <div key={suspect.id ?? `${suspect.name}-${index}`} className="mystery-card">
+                  <RemoveCard
+                    onClick={() =>
+                      updateSelected({
+                        suspects: selected.data.suspects.filter((_, i) => i !== index),
+                      })
+                    }
+                  />
                   <Field
                     label={<Trans>Name</Trans>}
                     value={suspect.name}
@@ -465,6 +504,11 @@ const MysteriesPage = () => {
               >
                 {selected.data[key].map((clue, index) => (
                   <div key={clue.id ?? `${clue.title}-${index}`} className="mystery-card">
+                    <RemoveCard
+                      onClick={() =>
+                        updateSelected({ [key]: selected.data[key].filter((_, i) => i !== index) })
+                      }
+                    />
                     <Field
                       label={<Trans>Title</Trans>}
                       value={clue.title}
@@ -507,6 +551,11 @@ const MysteriesPage = () => {
             >
               {selected.data.moments.map((moment, index) => (
                 <div key={moment.id ?? `${moment.description}-${index}`} className="mystery-card">
+                  <RemoveCard
+                    onClick={() =>
+                      updateSelected({ moments: selected.data.moments.filter((_, i) => i !== index) })
+                    }
+                  />
                   <Field
                     label={<Trans>Description</Trans>}
                     value={moment.description}

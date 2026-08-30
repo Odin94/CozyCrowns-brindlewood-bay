@@ -30,7 +30,7 @@ const keepVersionHistory = (mysteryId: string, kind: "auto" | "manual") => {
     .select({ id: mysteryVersions.id })
     .from(mysteryVersions)
     .where(and(eq(mysteryVersions.mysteryId, mysteryId), eq(mysteryVersions.kind, kind)))
-    .orderBy(desc(mysteryVersions.createdAt), desc(mysteryVersions.id))
+    .orderBy(desc(mysteryVersions.sourceVersion))
     .all();
   const discarded = saved.slice(10).map((version) => version.id);
   if (discarded.length)
@@ -168,7 +168,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
         .select()
         .from(mysteryVersions)
         .where(eq(mysteryVersions.mysteryId, mystery.id))
-        .orderBy(desc(mysteryVersions.createdAt), desc(mysteryVersions.id))
+        .orderBy(desc(mysteryVersions.sourceVersion))
         .all();
       return {
         versions: versions.map((version) => ({
@@ -228,6 +228,44 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
         .from(publishedMysteries)
         .where(eq(publishedMysteries.mysteryId, mystery.id))
         .get();
+      if (existing?.status === "approved") {
+        const pending = db
+          .select()
+          .from(mysteryVersions)
+          .where(
+            and(
+              eq(mysteryVersions.mysteryId, mystery.id),
+              eq(mysteryVersions.kind, "publication"),
+            ),
+          )
+          .get();
+        const submission = pending
+          ? db
+              .update(mysteryVersions)
+              .set({
+                title: mystery.title,
+                data: mystery.data,
+                sourceVersion: mystery.version,
+                createdAt: now,
+              })
+              .where(eq(mysteryVersions.id, pending.id))
+              .returning()
+              .get()
+          : db
+              .insert(mysteryVersions)
+              .values({
+                id: nanoid(),
+                mysteryId: mystery.id,
+                title: mystery.title,
+                data: mystery.data,
+                sourceVersion: mystery.version,
+                kind: "publication",
+                createdAt: now,
+              })
+              .returning()
+              .get();
+        return { id: submission.id, status: "pending", submittedAt: submission.createdAt };
+      }
       const values = {
         ownerId: mystery.userId,
         title: mystery.title,
@@ -330,14 +368,30 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
         .where(eq(publishedMysteries.status, "pending"))
         .orderBy(desc(publishedMysteries.submittedAt))
         .all();
+      const resubmissions = db
+        .select({ version: mysteryVersions, mystery: mysteries })
+        .from(mysteryVersions)
+        .innerJoin(mysteries, eq(mysteryVersions.mysteryId, mysteries.id))
+        .where(and(eq(mysteryVersions.kind, "publication"), isNull(mysteries.deletedAt)))
+        .orderBy(desc(mysteryVersions.sourceVersion))
+        .all();
       return {
-        mysteries: rows.map((row) => ({
-          id: row.id,
-          title: row.title,
-          data: JSON.parse(row.data),
-          ownerId: row.ownerId,
-          submittedAt: row.submittedAt,
-        })),
+        mysteries: [
+          ...rows.map((row) => ({
+            id: row.id,
+            title: row.title,
+            data: JSON.parse(row.data),
+            ownerId: row.ownerId,
+            submittedAt: row.submittedAt,
+          })),
+          ...resubmissions.map(({ version, mystery }) => ({
+            id: version.id,
+            title: version.title,
+            data: JSON.parse(version.data),
+            ownerId: mystery.userId,
+            submittedAt: version.createdAt,
+          })),
+        ],
       };
     },
   );
@@ -351,6 +405,39 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
     async (request, reply) => {
       if (!isSuperadmin(request.userId!))
         return reply.code(403).send({ error: "Superadmin access required" });
+      const submission = db
+        .select()
+        .from(mysteryVersions)
+        .where(
+          and(
+            eq(mysteryVersions.id, request.params.id),
+            eq(mysteryVersions.kind, "publication"),
+          ),
+        )
+        .get();
+      if (submission) {
+        const approved = db.transaction(() => {
+          const published = db
+            .update(publishedMysteries)
+            .set({
+              title: submission.title,
+              data: submission.data,
+              sourceVersion: submission.sourceVersion,
+              status: "approved",
+              submittedAt: submission.createdAt,
+              approvedAt: new Date(),
+              approvedByUserId: request.userId!,
+            })
+            .where(eq(publishedMysteries.mysteryId, submission.mysteryId))
+            .returning()
+            .get();
+          if (!published) return null;
+          db.delete(mysteryVersions).where(eq(mysteryVersions.id, submission.id)).run();
+          return published;
+        });
+        if (!approved) return reply.code(404).send({ error: "Published mystery not found" });
+        return { id: approved.id, status: approved.status };
+      }
       const published = db
         .update(publishedMysteries)
         .set({ status: "approved", approvedAt: new Date(), approvedByUserId: request.userId! })
