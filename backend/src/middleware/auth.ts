@@ -23,12 +23,49 @@ export type AuthenticatedRequest = FastifyRequest & {
   };
 };
 
+type AuthenticatedSession = {
+  user: NonNullable<AuthenticatedRequest["user"]>;
+  refreshedToken?: string;
+};
+
+export const authenticateSealedSession = async (
+  token: string,
+): Promise<AuthenticatedSession | null> => {
+  const cookiePassword = env.WORKOS_COOKIE_PASSWORD;
+  if (!cookiePassword) return null;
+
+  try {
+    const session = workos.userManagement.loadSealedSession({
+      sessionData: token,
+      cookiePassword,
+    });
+    const authResult = await session.authenticate();
+
+    if (authResult.authenticated && "user" in authResult) {
+      return { user: authResult.user };
+    }
+
+    const refreshResult = await session.refresh();
+    if (
+      refreshResult.authenticated &&
+      "sealedSession" in refreshResult &&
+      "user" in refreshResult &&
+      refreshResult.sealedSession
+    ) {
+      return { user: refreshResult.user, refreshedToken: refreshResult.sealedSession };
+    }
+  } catch {
+    // Invalid sessions are handled by the caller.
+  }
+
+  return null;
+};
+
 export const authenticateUser = async (
   request: FastifyRequest,
   reply: FastifyReply,
 ): Promise<void> => {
-  const cookiePassword = env.WORKOS_COOKIE_PASSWORD;
-  if (!cookiePassword) {
+  if (!env.WORKOS_COOKIE_PASSWORD) {
     reply.code(500).send({
       error: "Internal server error",
       message: "WORKOS_COOKIE_PASSWORD is not configured",
@@ -47,52 +84,16 @@ export const authenticateUser = async (
     return;
   }
 
-  try {
-    const session = workos.userManagement.loadSealedSession({
-      sessionData: token,
-      cookiePassword,
-    });
-
-    const authResult = await session.authenticate();
-
-    if (!authResult.authenticated || !("user" in authResult)) {
-      try {
-        const refreshResult = await session.refresh();
-        if (
-          refreshResult.authenticated &&
-          "sealedSession" in refreshResult &&
-          "user" in refreshResult &&
-          refreshResult.sealedSession
-        ) {
-          reply.header("X-New-Token", refreshResult.sealedSession);
-          request.user = refreshResult.user;
-          request.userId = refreshResult.user.id;
-          return;
-        }
-      } catch {
-        // Refresh failed, continue to unauthorized
-      }
-
-      reply.code(401).send({
-        error: "Unauthorized",
-        message: "Session is invalid",
-      });
-      return;
-    }
-
-    if ("user" in authResult) {
-      request.user = authResult.user;
-      request.userId = authResult.user.id;
-    } else {
-      reply.code(401).send({
-        error: "Unauthorized",
-        message: "Session is invalid",
-      });
-    }
-  } catch {
+  const session = await authenticateSealedSession(token);
+  if (!session) {
     reply.code(401).send({
       error: "Unauthorized",
-      message: "Failed to authenticate session",
+      message: "Session is invalid",
     });
+    return;
   }
+
+  if (session.refreshedToken) reply.header("X-New-Token", session.refreshedToken);
+  request.user = session.user;
+  request.userId = session.user.id;
 };

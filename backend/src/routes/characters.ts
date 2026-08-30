@@ -6,6 +6,7 @@ import { nanoid } from "nanoid";
 import { trackEvent } from "../utils/tracker.js";
 import { logger } from "../utils/logger.js";
 import { authenticateUser } from "../middleware/auth.js";
+import { notifyCharacterBookClubs } from "../realtime/bookClubNotifications.js";
 import { zodToFastifySchema } from "../utils/zodToFastifySchema.js";
 import {
   createCharacterSchema,
@@ -261,6 +262,8 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
         .where(eq(characters.id, id))
         .returning();
 
+      if (hasDataChanges || hasNameChange) await notifyCharacterBookClubs(character.id);
+
       return {
         id: character.id,
         name: character.name,
@@ -303,6 +306,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
       }
 
       await db.update(characters).set({ deletedAt: new Date() }).where(eq(characters.id, id));
+      await notifyCharacterBookClubs(id);
 
       return { success: true };
     },

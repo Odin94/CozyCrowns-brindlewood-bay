@@ -112,6 +112,41 @@ const getAuthHeaders = ({
   return headers;
 };
 
+const getBookClubWebSocketUrl = () => {
+  const url = new URL(API_URL);
+  url.protocol = url.protocol === "https:" ? "wss:" : "ws:";
+  url.pathname = `${url.pathname.replace(/\/$/, "")}/book-clubs/live`;
+  return url.toString();
+};
+
+export const connectBookClubUpdates = (onUpdate: () => void): WebSocket | null => {
+  const token = tokenStorage.get();
+  if (!token) return null;
+
+  const socket = new WebSocket(getBookClubWebSocketUrl());
+  const heartbeat = window.setInterval(() => {
+    if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: "heartbeat" }));
+  }, 60_000);
+
+  socket.addEventListener("open", () => {
+    socket.send(JSON.stringify({ type: "authenticate", token }));
+  });
+  socket.addEventListener("message", (event) => {
+    try {
+      const message = JSON.parse(String(event.data));
+      if (message.type === "ready" && typeof message.token === "string") {
+        tokenStorage.set(message.token);
+      }
+      if (message.type === "book-clubs-updated") onUpdate();
+    } catch {
+      // Ignore malformed messages and wait for the next server update.
+    }
+  });
+  socket.addEventListener("close", () => window.clearInterval(heartbeat), { once: true });
+
+  return socket;
+};
+
 const handleResponse = async <T>(response: Response): Promise<T> => {
   const newToken = response.headers.get("X-New-Token");
   if (newToken) {

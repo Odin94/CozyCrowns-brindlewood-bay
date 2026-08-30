@@ -2,6 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
+import websocket from "@fastify/websocket";
 import { readFileSync } from "fs";
 import { characterRoutes } from "./routes/characters.js";
 import { darkConspiracyRoutes } from "./routes/darkConspiracies.js";
@@ -68,6 +69,8 @@ await fastify.register(cors, {
 await fastify.register(cookie, {
   secret: env.WORKOS_COOKIE_PASSWORD,
 });
+
+await fastify.register(websocket);
 
 await fastify.register(rateLimit, {
   max: 1000,

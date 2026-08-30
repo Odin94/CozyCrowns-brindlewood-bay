@@ -3,7 +3,9 @@ import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { db, schema } from "../db/index.js";
-import { authenticateUser } from "../middleware/auth.js";
+import { authenticateSealedSession, authenticateUser } from "../middleware/auth.js";
+import { notifyBookClub } from "../realtime/bookClubNotifications.js";
+import { notifyBookClubUsers, registerBookClubSocket } from "../realtime/bookClubUpdates.js";
 import { characterDataSchema } from "../schema/character.js";
 
 const idInput = z.object({ id: z.string().min(1) });
@@ -34,6 +36,7 @@ const clueUpdateInput = z.object({
   checked: z.boolean().optional(),
   text: z.string().trim().min(1).max(500).optional(),
 });
+const websocketAuthInput = z.object({ type: z.literal("authenticate"), token: z.string().min(1) });
 
 async function membership(bookClubId: string, userId: string) {
   return db
@@ -198,6 +201,38 @@ async function invitationsFor(userId: string) {
 }
 
 export async function bookClubRoutes(fastify: FastifyInstance) {
+  fastify.get("/book-clubs/live", { websocket: true }, (socket) => {
+    let unregister: (() => void) | undefined;
+
+    socket.on("close", () => unregister?.());
+    socket.on("message", async (payload: { toString: () => string }) => {
+      if (unregister) return;
+
+      let message: unknown;
+      try {
+        message = JSON.parse(payload.toString());
+      } catch {
+        socket.close(1008, "Invalid authentication message");
+        return;
+      }
+
+      const parsed = websocketAuthInput.safeParse(message);
+      if (!parsed.success) {
+        socket.close(1008, "Invalid authentication message");
+        return;
+      }
+
+      const session = await authenticateSealedSession(parsed.data.token);
+      if (!session) {
+        socket.close(1008, "Unauthorized");
+        return;
+      }
+
+      unregister = registerBookClubSocket(session.user.id, socket);
+      socket.send(JSON.stringify({ type: "ready", token: session.refreshedToken }));
+    });
+  });
+
   fastify.get("/book-clubs", { preHandler: authenticateUser }, async (request) => {
     const memberships = await db
       .select({ bookClubId: schema.bookClubMembers.bookClubId })
@@ -229,7 +264,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .values({ bookClubId: id, userId: request.userId!, isGameMaster: true })
         .run();
     });
-    return overview(id);
+    const result = await overview(id);
+    await notifyBookClub(id);
+    return result;
   });
 
   fastify.post(
@@ -259,6 +296,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       } catch {
         return reply.code(409).send({ error: "That player already has an invitation" });
       }
+      notifyBookClubUsers([recipient.id]);
       return { success: true };
     },
   );
@@ -294,7 +332,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           )
           .run();
       });
-      return overview(params.data.id);
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
     },
   );
 
@@ -313,6 +353,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           ),
         )
         .returning();
+      if (deleted.length) notifyBookClubUsers([request.userId!]);
       return deleted.length
         ? { success: true }
         : reply.code(404).send({ error: "Invitation not found" });
@@ -356,7 +397,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           )
           .run();
       });
-      return overview(params.data.id);
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
     },
   );
 
@@ -386,7 +429,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .insert(schema.bookClubCharacterAssignments)
         .values({ bookClubId: params.data.id, characterId: character.id })
         .onConflictDoNothing();
-      return overview(params.data.id);
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
     },
   );
 
@@ -418,6 +463,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
             eq(schema.bookClubCharacterAssignments.characterId, character.id),
           ),
         );
+      await notifyBookClub(params.data.id);
       return { success: true };
     },
   );
@@ -450,21 +496,21 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .get();
       if (!character)
         return reply.code(404).send({ error: "Your character is not at this book club" });
-      return (
-        await db
-          .insert(schema.bookClubRollEvents)
-          .values({
-            id: nanoid(),
-            bookClubId: params.data.id,
-            userId: request.userId!,
-            characterId: character.id,
-            characterName: character.name || "Unnamed Maven",
-            label: parsed.data.label,
-            dice: parsed.data.dice,
-            result: parsed.data.result,
-          })
-          .returning()
-      )[0];
+      const [roll] = await db
+        .insert(schema.bookClubRollEvents)
+        .values({
+          id: nanoid(),
+          bookClubId: params.data.id,
+          userId: request.userId!,
+          characterId: character.id,
+          characterName: character.name || "Unnamed Maven",
+          label: parsed.data.label,
+          dice: parsed.data.dice,
+          result: parsed.data.result,
+        })
+        .returning();
+      await notifyBookClub(params.data.id);
+      return roll;
     },
   );
 
@@ -500,7 +546,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
             .run();
         }
       });
-      return overview(params.data.id);
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
     },
   );
 
@@ -533,7 +581,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .where(eq(schema.bookClubMysteries.id, params.data.mysteryId))
           .run();
       });
-      return overview(params.data.id);
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
     },
   );
 
@@ -564,7 +614,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         text: parsed.data.text,
         isVoid: parsed.data.isVoid,
       });
-      return overview(params.data.id);
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
     },
   );
 
@@ -602,7 +654,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .update(schema.bookClubClues)
         .set({ ...parsed.data, updatedAt: new Date() })
         .where(eq(schema.bookClubClues.id, clue.id));
-      return overview(params.data.id);
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
     },
   );
 }
