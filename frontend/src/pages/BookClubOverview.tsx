@@ -7,11 +7,17 @@ import { useBookClubStore } from "@/lib/book_club_store";
 import { useCharacterStore } from "@/lib/character_store";
 import { parsePastedClueList } from "@/lib/clue_list";
 import { getCrownOfTheVoid } from "@/game_data";
-import { api, type BookClub, type BookClubCharacter, type BookClubInvitation } from "@/utils/api";
+import {
+  api,
+  connectBookClubUpdates,
+  type BookClub,
+  type BookClubCharacter,
+  type BookClubInvitation,
+} from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { BookOpen, ChevronLeft, Circle, Dices, Plus, RefreshCw, Users } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { BookOpen, ChevronLeft, Circle, Dices, Plus, Users } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 type CharacterWithOwner = BookClubCharacter & { ownerId: string; nickname: string | null };
@@ -39,31 +45,71 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const [clueText, setClueText] = useState("");
   const [voidClueText, setVoidClueText] = useState("");
   const [loading, setLoading] = useState(true);
+  const isRefreshing = useRef(false);
   const { characters: localCharacters, setCurrentCharacter } = useCharacterStore();
   const setActiveBookClub = useBookClubStore((state) => state.setActiveBookClub);
   const setShareRolls = useBookClubStore((state) => state.setShareRolls);
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (showError = true) => {
+    if (isRefreshing.current) return;
+    isRefreshing.current = true;
     try {
       const response = await api.getBookClubs();
       setClubs(response.clubs);
       setInvitations(response.invitations);
       setSelectedClubId((selected) => selected ?? response.clubs[0]?.id ?? null);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
+      if (showError)
+        toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
     } finally {
       setLoading(false);
+      isRefreshing.current = false;
     }
   }, []);
 
   useEffect(() => {
     void refresh();
-    const interval = window.setInterval(() => void refresh(), 15_000);
-    const onFocus = () => void refresh();
-    window.addEventListener("focus", onFocus);
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") void refresh(false);
+    }, 120_000);
+    const onVisible = () => {
+      if (document.visibilityState === "visible") void refresh(false);
+    };
+    document.addEventListener("visibilitychange", onVisible);
     return () => {
       window.clearInterval(interval);
-      window.removeEventListener("focus", onFocus);
+      document.removeEventListener("visibilitychange", onVisible);
+    };
+  }, [refresh]);
+
+  useEffect(() => {
+    let socket: WebSocket | null = null;
+    let reconnectTimer: number | undefined;
+    let reconnectAttempts = 0;
+    let disposed = false;
+
+    const connect = () => {
+      socket = connectBookClubUpdates(() => {
+        reconnectAttempts = 0;
+        void refresh(false);
+      });
+      socket?.addEventListener(
+        "close",
+        () => {
+          if (disposed) return;
+          const delay = Math.min(5_000 * 2 ** reconnectAttempts, 60_000);
+          reconnectAttempts += 1;
+          reconnectTimer = window.setTimeout(connect, delay);
+        },
+        { once: true },
+      );
+    };
+
+    connect();
+    return () => {
+      disposed = true;
+      if (reconnectTimer) window.clearTimeout(reconnectTimer);
+      socket?.close();
     };
   }, [refresh]);
 
@@ -265,6 +311,19 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
               <Plus /> <Trans>Create Book Club</Trans>
             </Button>
           </form>
+          {club && (
+            <div className="mt-6 border-t border-gray-700 pt-4">
+              <ClubManagement
+                club={club}
+                isOwner={isOwner}
+                inviteNickname={inviteNickname}
+                onInviteNicknameChange={setInviteNickname}
+                onInvite={() => void invite()}
+                onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
+                compact
+              />
+            </div>
+          )}
         </aside>
 
         <main className="min-w-0 flex-1">
@@ -288,9 +347,6 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                 ))}
               </select>
             </div>
-            <Button variant="outline" size="sm" onClick={() => void refresh()}>
-              <RefreshCw className="size-4" /> <Trans>Refresh</Trans>
-            </Button>
           </div>
 
           {invitations.length > 0 && (
@@ -383,233 +439,6 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                 </div>
               </header>
 
-              <section className="mt-5 grid gap-5 xl:grid-cols-[1fr_20rem]">
-                <div className="space-y-5">
-                  <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <h2 className="font-semibold text-secondary">
-                          <Trans>Bring your Mavens</Trans>
-                        </h2>
-                        <p className="mt-1 text-sm text-gray-300">
-                          <Trans>
-                            Only Mavens at this Book Club can share their rolls with the table.
-                          </Trans>
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {localCharacters.map((character) => {
-                        const assigned = Boolean(
-                          character.id && assignedCharacterIds.has(character.id),
-                        );
-                        return (
-                          <div
-                            key={character.id ?? character.name}
-                            className="flex items-center gap-2 rounded-md border border-gray-600 px-3 py-2 text-sm"
-                          >
-                            <span>{character.name || t`Unnamed Maven`}</span>
-                            {character.id ? (
-                              <Button
-                                size="sm"
-                                variant={assigned ? "outline" : "default"}
-                                onClick={() =>
-                                  void (assigned
-                                    ? removeCharacter(character.id!)
-                                    : assignCharacter(character.id!))
-                                }
-                              >
-                                {assigned ? <Trans>Remove</Trans> : <Trans>Add</Trans>}
-                              </Button>
-                            ) : (
-                              <span className="text-xs text-gray-400">
-                                <Trans>Save sheet first</Trans>
-                              </span>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </section>
-
-                  <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <h2 className="font-semibold text-secondary">
-                          <Trans>Active mystery</Trans>
-                        </h2>
-                        <p className="mt-1 text-sm text-gray-300">
-                          {club.activeMystery ? (
-                            club.activeMystery.title
-                          ) : (
-                            <Trans>No mystery is active.</Trans>
-                          )}
-                        </p>
-                      </div>
-                      {isGameMaster && (
-                        <div className="grid w-full gap-2 sm:w-auto">
-                          <div className="flex gap-2">
-                            <Input
-                              value={mysteryName}
-                              onChange={(event) => setMysteryName(event.target.value)}
-                              placeholder={t`Mystery title`}
-                            />
-                            <Button
-                              disabled={!mysteryName.trim()}
-                              onClick={() => void createMystery()}
-                            >
-                              <Plus className="size-4" /> <Trans>Activate</Trans>
-                            </Button>
-                          </div>
-                          <Textarea
-                            value={initialClueList}
-                            onChange={(event) => setInitialClueList(event.target.value)}
-                            placeholder={t`Paste a bullet list of clues to add them all when activating the mystery.`}
-                            className="min-h-24 sm:w-96"
-                          />
-                        </div>
-                      )}
-                    </div>
-                    {isGameMaster &&
-                      club.mysteries.filter((mystery) => !mystery.isActive).length > 0 && (
-                        <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
-                          <span className="text-gray-400">
-                            <Trans>Previous mysteries:</Trans>
-                          </span>
-                          {club.mysteries
-                            .filter((mystery) => !mystery.isActive)
-                            .map((mystery) => (
-                              <Button
-                                key={mystery.id}
-                                size="sm"
-                                variant="outline"
-                                onClick={() => void activateMystery(mystery.id)}
-                              >
-                                <Trans>Activate</Trans> {mystery.title}
-                              </Button>
-                            ))}
-                        </div>
-                      )}
-                    {club.activeMystery && (
-                      <div className="mt-5 grid gap-4 md:grid-cols-2">
-                        <ClueList
-                          title={t`Clues`}
-                          clues={club.activeMystery.clues.filter((clue) => !clue.isVoid)}
-                          text={clueText}
-                          onTextChange={setClueText}
-                          onAdd={() => void addClue(false)}
-                          onCheck={setClueChecked}
-                          isGameMaster={isGameMaster}
-                          placeholder={t`Add a clue...`}
-                        />
-                        <ClueList
-                          title={t`Void Clues`}
-                          clues={club.activeMystery.clues.filter((clue) => clue.isVoid)}
-                          text={voidClueText}
-                          onTextChange={setVoidClueText}
-                          onAdd={() => void addClue(true)}
-                          onCheck={setClueChecked}
-                          isGameMaster={isGameMaster}
-                          placeholder={t`Add a Void Clue...`}
-                          voidClues
-                        />
-                      </div>
-                    )}
-                  </section>
-
-                  <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
-                    <h2 className="flex items-center gap-2 font-semibold text-secondary">
-                      <Dices className="size-4" /> <Trans>Recent table rolls</Trans>
-                    </h2>
-                    <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                      {characters.map((character) => (
-                        <div key={character.id} className="rounded-lg bg-gray-900/65 p-3">
-                          <h3 className="font-medium">{characterName(character)}</h3>
-                          <div className="mt-2 space-y-2 text-sm">
-                            {club.rolls
-                              .filter((roll) => roll.characterId === character.id)
-                              .slice(0, 4)
-                              .map((roll) => (
-                                <p key={roll.id}>
-                                  <span className="text-gray-400">
-                                    {relativeTime(roll.createdAt)} · {roll.dice} · {roll.label}
-                                  </span>
-                                  <br />
-                                  <strong className="text-tertiary">{roll.result}</strong>
-                                </p>
-                              ))}
-                            {!club.rolls.some((roll) => roll.characterId === character.id) && (
-                              <p className="text-gray-400">
-                                <Trans>No rolls yet</Trans>
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      ))}
-                      {characters.length === 0 && (
-                        <p className="text-sm text-gray-400">
-                          <Trans>Add a Maven to start sharing rolls.</Trans>
-                        </p>
-                      )}
-                    </div>
-                  </section>
-                </div>
-
-                <aside className="space-y-5">
-                  <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
-                    <h2 className="font-semibold text-secondary">
-                      <Trans>Invite a player</Trans>
-                    </h2>
-                    <p className="mt-1 text-sm text-gray-300">
-                      <Trans>Invite by their unique profile nickname.</Trans>
-                    </p>
-                    <div className="mt-3 flex gap-2">
-                      <Input
-                        value={inviteNickname}
-                        onChange={(event) => setInviteNickname(event.target.value)}
-                        placeholder={t`Nickname`}
-                      />
-                      <Button disabled={!inviteNickname.trim()} onClick={() => void invite()}>
-                        <Trans>Invite</Trans>
-                      </Button>
-                    </div>
-                  </section>
-                  {isOwner && (
-                    <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
-                      <h2 className="font-semibold text-secondary">
-                        <Trans>Choose the GM</Trans>
-                      </h2>
-                      <p className="mt-1 text-sm text-gray-300">
-                        <Trans>
-                          The GM manages mysteries and clues. A Book Club has one GM at a time.
-                        </Trans>
-                      </p>
-                      <div className="mt-3 space-y-2">
-                        {club.members.map((member) => (
-                          <label
-                            key={member.id}
-                            className="flex cursor-pointer items-center gap-2 rounded-md border border-gray-600 p-2 text-sm"
-                          >
-                            <Checkbox
-                              checked={member.isGameMaster}
-                              onCheckedChange={(checked) =>
-                                checked === true && void makeGameMaster(member.id)
-                              }
-                            />
-                            {member.nickname ?? t`Player`}
-                            {member.id === club.ownerId && (
-                              <span className="text-xs text-gray-400">
-                                <Trans>(owner)</Trans>
-                              </span>
-                            )}
-                          </label>
-                        ))}
-                      </div>
-                    </section>
-                  )}
-                </aside>
-              </section>
-
               <section className="mt-5">
                 <h2 className="mb-3 text-xl font-bold text-tertiary">
                   <Trans>At the table</Trans>
@@ -630,6 +459,188 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                   )}
                 </div>
               </section>
+
+              <div className="mt-5 lg:hidden">
+                <ClubManagement
+                  club={club}
+                  isOwner={isOwner}
+                  inviteNickname={inviteNickname}
+                  onInviteNicknameChange={setInviteNickname}
+                  onInvite={() => void invite()}
+                  onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
+                />
+              </div>
+
+              <section className="mt-5 space-y-5">
+                <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h2 className="font-semibold text-secondary">
+                        <Trans>Bring your Mavens</Trans>
+                      </h2>
+                      <p className="mt-1 text-sm text-gray-300">
+                        <Trans>
+                          Only Mavens at this Book Club can share their rolls with the table.
+                        </Trans>
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-3 flex flex-wrap gap-2">
+                    {localCharacters.map((character) => {
+                      const assigned = Boolean(
+                        character.id && assignedCharacterIds.has(character.id),
+                      );
+                      return (
+                        <div
+                          key={character.id ?? character.name}
+                          className="flex items-center gap-2 rounded-md border border-gray-600 px-3 py-2 text-sm"
+                        >
+                          <span>{character.name || t`Unnamed Maven`}</span>
+                          {character.id ? (
+                            <Button
+                              size="sm"
+                              variant={assigned ? "outline" : "default"}
+                              onClick={() =>
+                                void (assigned
+                                  ? removeCharacter(character.id!)
+                                  : assignCharacter(character.id!))
+                              }
+                            >
+                              {assigned ? <Trans>Remove</Trans> : <Trans>Add</Trans>}
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-gray-400">
+                              <Trans>Save sheet first</Trans>
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
+                  <div className="flex flex-wrap items-center justify-between gap-3">
+                    <div>
+                      <h2 className="font-semibold text-secondary">
+                        <Trans>Active mystery</Trans>
+                      </h2>
+                      <p className="mt-1 text-sm text-gray-300">
+                        {club.activeMystery ? (
+                          club.activeMystery.title
+                        ) : (
+                          <Trans>No mystery is active.</Trans>
+                        )}
+                      </p>
+                    </div>
+                    {isGameMaster && (
+                      <div className="grid w-full gap-2 sm:w-auto">
+                        <div className="flex gap-2">
+                          <Input
+                            value={mysteryName}
+                            onChange={(event) => setMysteryName(event.target.value)}
+                            placeholder={t`Mystery title`}
+                          />
+                          <Button
+                            disabled={!mysteryName.trim()}
+                            onClick={() => void createMystery()}
+                          >
+                            <Plus className="size-4" /> <Trans>Activate</Trans>
+                          </Button>
+                        </div>
+                        <Textarea
+                          value={initialClueList}
+                          onChange={(event) => setInitialClueList(event.target.value)}
+                          placeholder={t`Paste a bullet list of clues to add them all when activating the mystery.`}
+                          className="min-h-24 sm:w-96"
+                        />
+                      </div>
+                    )}
+                  </div>
+                  {isGameMaster &&
+                    club.mysteries.filter((mystery) => !mystery.isActive).length > 0 && (
+                      <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+                        <span className="text-gray-400">
+                          <Trans>Previous mysteries:</Trans>
+                        </span>
+                        {club.mysteries
+                          .filter((mystery) => !mystery.isActive)
+                          .map((mystery) => (
+                            <Button
+                              key={mystery.id}
+                              size="sm"
+                              variant="outline"
+                              onClick={() => void activateMystery(mystery.id)}
+                            >
+                              <Trans>Activate</Trans> {mystery.title}
+                            </Button>
+                          ))}
+                      </div>
+                    )}
+                  {club.activeMystery && (
+                    <div className="mt-5 grid gap-4 md:grid-cols-2">
+                      <ClueList
+                        title={t`Clues`}
+                        clues={club.activeMystery.clues.filter((clue) => !clue.isVoid)}
+                        text={clueText}
+                        onTextChange={setClueText}
+                        onAdd={() => void addClue(false)}
+                        onCheck={setClueChecked}
+                        isGameMaster={isGameMaster}
+                        placeholder={t`Add a clue...`}
+                      />
+                      <ClueList
+                        title={t`Void Clues`}
+                        clues={club.activeMystery.clues.filter((clue) => clue.isVoid)}
+                        text={voidClueText}
+                        onTextChange={setVoidClueText}
+                        onAdd={() => void addClue(true)}
+                        onCheck={setClueChecked}
+                        isGameMaster={isGameMaster}
+                        placeholder={t`Add a Void Clue...`}
+                        voidClues
+                      />
+                    </div>
+                  )}
+                </section>
+
+                <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
+                  <h2 className="flex items-center gap-2 font-semibold text-secondary">
+                    <Dices className="size-4" /> <Trans>Recent table rolls</Trans>
+                  </h2>
+                  <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                    {characters.map((character) => (
+                      <div key={character.id} className="rounded-lg bg-gray-900/65 p-3">
+                        <h3 className="font-medium">{characterName(character)}</h3>
+                        <div className="mt-2 space-y-2 text-sm">
+                          {club.rolls
+                            .filter((roll) => roll.characterId === character.id)
+                            .slice(0, 4)
+                            .map((roll) => (
+                              <p key={roll.id}>
+                                <span className="text-gray-400">
+                                  {relativeTime(roll.createdAt)} · {roll.dice} · {roll.label}
+                                </span>
+                                <br />
+                                <strong className="text-tertiary">{roll.result}</strong>
+                              </p>
+                            ))}
+                          {!club.rolls.some((roll) => roll.characterId === character.id) && (
+                            <p className="text-gray-400">
+                              <Trans>No rolls yet</Trans>
+                            </p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                    {characters.length === 0 && (
+                      <p className="text-sm text-gray-400">
+                        <Trans>Add a Maven to start sharing rolls.</Trans>
+                      </p>
+                    )}
+                  </div>
+                </section>
+              </section>
             </>
           )}
         </main>
@@ -637,6 +648,86 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
     </div>
   );
 };
+
+function ClubManagement({
+  club,
+  isOwner,
+  inviteNickname,
+  onInviteNicknameChange,
+  onInvite,
+  onMakeGameMaster,
+  compact = false,
+}: {
+  club: BookClub;
+  isOwner: boolean;
+  inviteNickname: string;
+  onInviteNicknameChange: (nickname: string) => void;
+  onInvite: () => void;
+  onMakeGameMaster: (memberId: string) => void;
+  compact?: boolean;
+}) {
+  const sectionClass = compact
+    ? "rounded-lg border border-gray-700 bg-gray-900/45 p-3"
+    : "rounded-xl bg-gray-800 p-5 shadow-lg";
+
+  return (
+    <div className={compact ? "space-y-3" : "space-y-5"}>
+      <section className={sectionClass}>
+        <h2 className="font-semibold text-secondary">
+          <Trans>Invite a player</Trans>
+        </h2>
+        <p className="mt-1 text-sm text-gray-300">
+          <Trans>Invite by their unique profile nickname.</Trans>
+        </p>
+        <form
+          className="mt-3 flex gap-2"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (inviteNickname.trim()) onInvite();
+          }}
+        >
+          <Input
+            value={inviteNickname}
+            onChange={(event) => onInviteNicknameChange(event.target.value)}
+            placeholder={t`Nickname`}
+          />
+          <Button type="submit" disabled={!inviteNickname.trim()}>
+            <Trans>Invite</Trans>
+          </Button>
+        </form>
+      </section>
+      {isOwner && (
+        <section className={sectionClass}>
+          <h2 className="font-semibold text-secondary">
+            <Trans>Choose the GM</Trans>
+          </h2>
+          <p className="mt-1 text-sm text-gray-300">
+            <Trans>The GM manages mysteries and clues. A Book Club has one GM at a time.</Trans>
+          </p>
+          <div className="mt-3 space-y-2">
+            {club.members.map((member) => (
+              <label
+                key={member.id}
+                className="flex cursor-pointer items-center gap-2 rounded-md border border-gray-600 p-2 text-sm"
+              >
+                <Checkbox
+                  checked={member.isGameMaster}
+                  onCheckedChange={(checked) => checked === true && onMakeGameMaster(member.id)}
+                />
+                {member.nickname ?? t`Player`}
+                {member.id === club.ownerId && (
+                  <span className="text-xs text-gray-400">
+                    <Trans>(owner)</Trans>
+                  </span>
+                )}
+              </label>
+            ))}
+          </div>
+        </section>
+      )}
+    </div>
+  );
+}
 
 function ClueList({
   title,
