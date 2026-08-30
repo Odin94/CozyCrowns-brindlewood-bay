@@ -9,6 +9,7 @@
     "lint": "oxlint --fix",
     "fmt": "oxfmt",
     "db:generate": "drizzle-kit generate",
+    "db:validate": "tsx src/db/migrate.ts --validate-only",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:studio": "drizzle-kit studio"
   },
