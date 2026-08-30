@@ -56,13 +56,13 @@ const KeeperTextarea = ({
     aria-label={label}
     value={value}
     onChange={(event) => onChange(event.target.value)}
-    className="min-h-0 resize-none rounded-none border-0 border-b border-dark-secondary/45 bg-transparent px-0 py-1 text-[0.7rem] leading-tight text-foreground no-ring focus-visible:ring-0"
+    className="keeper-input min-h-0 resize-none text-[0.7rem] leading-tight text-foreground no-ring focus-visible:ring-0"
     style={{ height: `${minRows * 1.6}rem` }}
   />
 );
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
-  <p className="mt-3 text-[0.7rem] font-semibold leading-tight text-dark-secondary">{children}</p>
+  <p className="keeper-field-label">{children}</p>
 );
 
 const CheckedParagraph = ({
@@ -110,7 +110,7 @@ const MysteryTracker = ({
             <input
               value={mystery.name}
               onChange={(event) => updateMystery(index, { name: event.target.value })}
-              className="ml-1 w-[calc(100%-5.4rem)] border-0 border-b border-dark-secondary/45 bg-transparent text-[0.65rem] no-ring focus:outline-none focus-visible:outline-none"
+              className="keeper-inline-input ml-1 w-[calc(100%-5.4rem)] text-[0.65rem] no-ring focus:outline-none focus-visible:outline-none"
             />
           </label>
           <label className="block text-[0.62rem] font-semibold leading-none text-dark-secondary">
@@ -118,7 +118,7 @@ const MysteryTracker = ({
             <Textarea
               value={mystery.resolution}
               onChange={(event) => updateMystery(index, { resolution: event.target.value })}
-              className="mt-1 h-10 min-h-0 resize-none rounded-none border-0 border-b border-dark-secondary/35 bg-transparent p-0 text-[0.65rem] leading-tight no-ring"
+              className="keeper-input mt-1 h-10 min-h-0 resize-none text-[0.65rem] leading-tight no-ring"
             />
           </label>
         </div>
