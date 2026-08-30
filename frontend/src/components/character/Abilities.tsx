@@ -61,7 +61,6 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
         }}
       >
         <button
-          ref={normalRollRef}
           type="button"
           className="no-ring min-w-20 px-3 py-2 text-xs font-semibold text-gray-200 transition-colors hover:bg-gray-800 hover:text-secondary"
           onClick={() => onRoll(menu.index, menu.abilityName, "disadvantage")}
@@ -70,6 +69,7 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
           <Trans>Disadvantage</Trans>
         </button>
         <button
+          ref={normalRollRef}
           type="button"
           className="no-ring min-w-16 border-x border-secondary/30 px-3 py-2 text-xs font-semibold text-secondary transition-colors hover:bg-gray-800"
           onClick={() => onRoll(menu.index, menu.abilityName, "normal")}
