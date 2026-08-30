@@ -523,15 +523,11 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       if (!params.success || !parsed.success)
         return reply.code(400).send({ error: "A mystery needs a title" });
       if (!(await gameMaster(params.data.id, request.userId!)))
-        return reply.code(403).send({ error: "Only the GM can activate a mystery" });
+        return reply.code(403).send({ error: "Only the GM can create a mystery" });
       const id = nanoid();
       db.transaction((tx) => {
-        tx.update(schema.bookClubMysteries)
-          .set({ isActive: false, updatedAt: new Date() })
-          .where(eq(schema.bookClubMysteries.bookClubId, params.data.id))
-          .run();
         tx.insert(schema.bookClubMysteries)
-          .values({ id, bookClubId: params.data.id, title: parsed.data.name, isActive: true })
+          .values({ id, bookClubId: params.data.id, title: parsed.data.name, isActive: false })
           .run();
         if (parsed.data.clues.length) {
           tx.insert(schema.bookClubClues)
