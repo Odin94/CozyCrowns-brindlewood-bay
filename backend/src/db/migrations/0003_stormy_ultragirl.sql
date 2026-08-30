@@ -78,4 +78,4 @@ CREATE TABLE `book_clubs` (
 	FOREIGN KEY (`owner_id`) REFERENCES `users`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
-CREATE INDEX `book_clubs_owner_idx` ON `book_clubs` (`owner_id`);--> statement-breakpoint
+CREATE INDEX `book_clubs_owner_idx` ON `book_clubs` (`owner_id`);
