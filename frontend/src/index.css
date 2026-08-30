@@ -107,10 +107,10 @@ body {
 
 .mystery-desk {
   background:
-    radial-gradient(circle at 72% 8%, #ffce73 0, #9b5c24 5%, transparent 18%),
-    radial-gradient(circle at 14% 16%, #c57d32 0, #552b22 11%, transparent 30%),
-    linear-gradient(135deg, #160f19, #392125 48%, #171016);
-  color: #2e1b16;
+    radial-gradient(circle at 76% 7%, hsl(150 40% 75% / 0.38) 0, transparent 17%),
+    radial-gradient(circle at 15% 15%, hsl(280 35% 70% / 0.55) 0, transparent 29%),
+    linear-gradient(135deg, hsl(280 34% 14%), hsl(285 29% 21%) 48%, hsl(180 27% 16%));
+  color: hsl(var(--foreground));
 }
 
 .mystery-workspace {
@@ -125,11 +125,13 @@ body {
 .mystery-sidebar,
 .mystery-versions,
 .library-book {
-  border: 1px solid #8a6033;
-  background: linear-gradient(100deg, #d9bd80, #f1dfaf 48%, #cba76c);
+  border: 1px solid hsl(280 25% 47%);
+  background:
+    linear-gradient(100deg, hsl(50 33% 84%), hsl(48 38% 91%) 48%, hsl(54 28% 82%)),
+    repeating-linear-gradient(0deg, transparent 0 1.35rem, hsl(280 30% 45% / 0.07) 1.4rem 1.45rem);
   box-shadow:
-    0 0.5rem 1.5rem #05030599,
-    inset 0 0 2rem #82592a33;
+    0 0.5rem 1.5rem hsl(280 42% 8% / 0.65),
+    inset 0 0 2rem hsl(150 30% 50% / 0.13);
 }
 .mystery-parchment {
   padding: clamp(1rem, 2vw, 2.3rem);
@@ -141,7 +143,7 @@ body {
   font-size: 3.2rem;
   line-height: 0.8;
   margin: 0;
-  color: #412219;
+  color: hsl(280 30% 25%);
 }
 .mystery-sidebar,
 .mystery-versions {
@@ -152,6 +154,11 @@ body {
 .mystery-sidebar h1 {
   font-size: 2.5rem;
 }
+.mystery-quill {
+  color: hsl(150 36% 35%);
+  filter: drop-shadow(0 1px 0 hsl(48 44% 94%));
+  transform: rotate(-24deg);
+}
 .mystery-list {
   display: grid;
   gap: 0.4rem;
@@ -160,13 +167,13 @@ body {
 .mystery-list button,
 .mystery-versions button {
   text-align: left;
-  border-bottom: 1px solid #80562d88;
+  border-bottom: 1px solid hsl(280 27% 39% / 0.42);
   padding: 0.55rem;
   font-family: "Patrick Hand", cursive;
 }
 .mystery-list button.active {
-  background: #643624;
-  color: #ffe8af;
+  background: hsl(280 30% 25%);
+  color: hsl(180 30% 89%);
   transform: rotate(-1deg);
 }
 .mystery-library-link {
@@ -199,8 +206,8 @@ body {
   flex-wrap: wrap;
 }
 .mystery-ink-button {
-  background: #3e211e !important;
-  color: #ffe9ad !important;
+  background: hsl(280 30% 25%) !important;
+  color: hsl(180 30% 89%) !important;
 }
 .mystery-field {
   display: grid;
@@ -208,15 +215,15 @@ body {
   margin-bottom: 0.7rem;
   font-family: "Patrick Hand", cursive;
   font-size: 0.85rem;
-  color: #4b271b;
+  color: hsl(280 30% 25%);
 }
 .mystery-field input,
 .mystery-field textarea {
-  background: #fff0c366;
+  background: hsl(50 48% 96% / 0.56);
   border: 0;
-  border-bottom: 1px solid #714326;
+  border-bottom: 1px solid hsl(280 26% 40%);
   border-radius: 0;
-  color: #351c16;
+  color: hsl(280 30% 20%);
   box-shadow: none !important;
 }
 .mystery-field textarea {
@@ -230,13 +237,13 @@ body {
 }
 .mystery-section {
   padding-top: 1.2rem;
-  border-top: 1px solid #9e713b88;
+  border-top: 1px solid hsl(280 27% 43% / 0.42);
   margin-top: 1.2rem;
 }
 .mystery-section h2,
 .mystery-versions h2,
 .library-shelf h2 {
-  color: #4a261b;
+  color: hsl(280 30% 25%);
   margin: 0;
   font-size: 1.55rem;
 }
@@ -247,9 +254,9 @@ body {
   margin-top: 0.7rem;
 }
 .mystery-card {
-  background: #fff0be66;
+  background: hsl(180 36% 90% / 0.29);
   padding: 0.75rem;
-  border-left: 3px solid #8f592c;
+  border-left: 3px solid hsl(150 32% 49%);
 }
 .mystery-versions h2 {
   display: flex;
@@ -267,7 +274,7 @@ body {
   font-size: 0.72rem;
 }
 .mystery-versions small {
-  color: #6c3725;
+  color: hsl(280 30% 36%);
 }
 .mystery-footer {
   margin-top: 1.5rem;
@@ -282,12 +289,12 @@ body {
   margin: auto;
 }
 .library-header {
-  color: #ffe6af;
+  color: hsl(180 30% 89%);
   text-align: center;
   margin-bottom: 2rem;
 }
 .library-header a {
-  color: #ffe6af;
+  color: hsl(180 30% 89%);
   display: flex;
   gap: 0.3rem;
   align-items: center;
@@ -298,16 +305,16 @@ body {
   margin: 0.5rem;
 }
 .library-header h1 {
-  color: #ffe6af;
+  color: hsl(180 30% 89%);
 }
 .library-shelf {
-  background: #6f3c25cc;
-  border: 1px solid #c98d48;
+  background: hsl(280 30% 25% / 0.87);
+  border: 1px solid hsl(150 33% 58% / 0.78);
   padding: 1rem;
   margin-top: 1.4rem;
 }
 .library-shelf h2 {
-  color: #ffe6af;
+  color: hsl(180 30% 89%);
   margin-bottom: 0.8rem;
 }
 .library-grid {
@@ -342,7 +349,7 @@ body {
   font-size: 1rem;
 }
 .moderation {
-  background: #4f2832e6;
+  background: hsl(180 28% 20% / 0.9);
 }
 @media (max-width: 900px) {
   .mystery-workspace {
