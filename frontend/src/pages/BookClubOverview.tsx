@@ -1,9 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookClubStore } from "@/lib/book_club_store";
 import { useCharacterStore } from "@/lib/character_store";
+import { parsePastedClueList } from "@/lib/clue_list";
 import { getCrownOfTheVoid } from "@/game_data";
 import { api, type BookClub, type BookClubCharacter, type BookClubInvitation } from "@/utils/api";
 import { t } from "@lingui/core/macro";
@@ -33,6 +35,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const [newClubName, setNewClubName] = useState("");
   const [inviteNickname, setInviteNickname] = useState("");
   const [mysteryName, setMysteryName] = useState("");
+  const [initialClueList, setInitialClueList] = useState("");
   const [clueText, setClueText] = useState("");
   const [voidClueText, setVoidClueText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -159,8 +162,11 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const createMystery = async () => {
     if (!club) return;
     try {
-      updateClub(await api.createBookClubMystery(club.id, mysteryName));
+      updateClub(
+        await api.createBookClubMystery(club.id, mysteryName, parsePastedClueList(initialClueList)),
+      );
       setMysteryName("");
+      setInitialClueList("");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not activate the mystery`);
     }
@@ -433,18 +439,26 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                         </p>
                       </div>
                       {isGameMaster && (
-                        <div className="flex gap-2">
-                          <Input
-                            value={mysteryName}
-                            onChange={(event) => setMysteryName(event.target.value)}
-                            placeholder={t`Mystery title`}
+                        <div className="grid w-full gap-2 sm:w-auto">
+                          <div className="flex gap-2">
+                            <Input
+                              value={mysteryName}
+                              onChange={(event) => setMysteryName(event.target.value)}
+                              placeholder={t`Mystery title`}
+                            />
+                            <Button
+                              disabled={!mysteryName.trim()}
+                              onClick={() => void createMystery()}
+                            >
+                              <Plus className="size-4" /> <Trans>Activate</Trans>
+                            </Button>
+                          </div>
+                          <Textarea
+                            value={initialClueList}
+                            onChange={(event) => setInitialClueList(event.target.value)}
+                            placeholder={t`Paste a bullet list of clues to add them all when activating the mystery.`}
+                            className="min-h-24 sm:w-96"
                           />
-                          <Button
-                            disabled={!mysteryName.trim()}
-                            onClick={() => void createMystery()}
-                          >
-                            <Plus className="size-4" /> <Trans>Activate</Trans>
-                          </Button>
                         </div>
                       )}
                     </div>

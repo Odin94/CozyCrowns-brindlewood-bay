@@ -376,11 +376,15 @@ export const api = {
     return handleResponse(response);
   },
 
-  createBookClubMystery: async (bookClubId: string, name: string): Promise<BookClub> => {
+  createBookClubMystery: async (
+    bookClubId: string,
+    name: string,
+    clues: string[],
+  ): Promise<BookClub> => {
     const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/mysteries`, {
       method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ name }),
+      body: JSON.stringify({ name, clues }),
     });
     return handleResponse(response);
   },
