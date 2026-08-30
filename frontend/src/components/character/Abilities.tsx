@@ -5,10 +5,14 @@ import { PressTooltip } from "@/components/ui/tooltip";
 import { PlusIcon, MinusIcon } from "lucide-react";
 import { createDiceRoll, type DiceRollRequest, type RollMode } from "@/lib/dice_roll";
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
+import { useBookClubStore } from "@/lib/book_club_store";
+import { api } from "@/utils/api";
+import { useAuth } from "@/hooks/useAuth";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
 import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
+import { toast } from "sonner";
 
 const ROLL_MENU_WIDTH = 224;
 const ROLL_MENU_HEIGHT = 40;
@@ -92,7 +96,9 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
 };
 
 const Abilities = () => {
-  const { abilities, setAbilities } = useCharacterStore();
+  const { abilities, setAbilities, getCharacterData } = useCharacterStore();
+  const activeBookClub = useBookClubStore((state) => state.activeBookClub);
+  const { isAuthenticated } = useAuth();
   const [roll, setRoll] = useState<DiceRollRequest | null>(null);
   const [rollMenu, setRollMenu] = useState<RollMenuState | null>(null);
   const rollId = useRef(0);
@@ -136,7 +142,26 @@ const Abilities = () => {
   const handleAbilityRoll = (index: number, abilityName: string, mode: RollMode) => {
     const modifier = abilities[index]?.value ?? 0;
     rollId.current += 1;
-    setRoll(createDiceRoll({ abilityName, id: rollId.current, modifier, mode }));
+    const nextRoll = createDiceRoll({ abilityName, id: rollId.current, modifier, mode });
+    setRoll(nextRoll);
+    const character = getCharacterData();
+    if (
+      isAuthenticated &&
+      activeBookClub &&
+      character.id &&
+      activeBookClub.characterIds.includes(character.id)
+    ) {
+      const dice = `${nextRoll.dice.length}d6${modifier === 0 ? "" : modifier > 0 ? `+${modifier}` : modifier}`;
+      const result = `${nextRoll.dice.join(" + ")}${modifier === 0 ? "" : modifier > 0 ? ` + ${modifier}` : ` - ${Math.abs(modifier)}`} = ${nextRoll.total}`;
+      void api
+        .shareBookClubRoll(activeBookClub.id, {
+          characterId: character.id,
+          label: mode === "normal" ? abilityName : `${abilityName} (${mode})`,
+          dice,
+          result,
+        })
+        .catch(() => toast.error(t`Could not share this roll with your Book Club`));
+    }
     setRollMenu(null);
   };
 

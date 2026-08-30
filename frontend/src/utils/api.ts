@@ -26,6 +26,58 @@ type UpdateUserInput = {
   nickname?: string | null;
 };
 
+export type BookClubCharacter = {
+  id: string;
+  name: string;
+  data: any;
+  version: number;
+  updatedAt: string;
+};
+
+export type BookClub = {
+  id: string;
+  name: string;
+  ownerId: string;
+  createdAt: string;
+  members: Array<{
+    id: string;
+    nickname: string | null;
+    joinedAt: string;
+    isGameMaster: boolean;
+    characters: BookClubCharacter[];
+  }>;
+  rolls: Array<{
+    id: string;
+    userId: string;
+    characterId: string | null;
+    characterName: string;
+    label: string;
+    dice: string;
+    result: string;
+    createdAt: string;
+  }>;
+  mysteries: Array<{ id: string; title: string; isActive: boolean; createdAt: string }>;
+  activeMystery: {
+    id: string;
+    title: string;
+    isActive: boolean;
+    createdAt: string;
+    clues: Array<{
+      id: string;
+      text: string;
+      isVoid: boolean;
+      checked: boolean;
+      createdAt: string;
+    }>;
+  } | null;
+};
+
+export type BookClubInvitation = {
+  club: Pick<BookClub, "id" | "name" | "ownerId" | "createdAt">;
+  invitedByNickname: string | null;
+  createdAt: string;
+};
+
 export const tokenStorage = {
   get: (): string | null => {
     if (typeof window === "undefined") return null;
@@ -229,6 +281,147 @@ export const api = {
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
     });
+    return handleResponse(response);
+  },
+
+  getBookClubs: async (): Promise<{ clubs: BookClub[]; invitations: BookClubInvitation[] }> => {
+    const response = await fetch(`${API_URL}/book-clubs`, {
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  createBookClub: async (name: string): Promise<BookClub> => {
+    const response = await fetch(`${API_URL}/book-clubs`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ name }),
+    });
+    return handleResponse(response);
+  },
+
+  inviteToBookClub: async (bookClubId: string, nickname: string): Promise<{ success: boolean }> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/invitations`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ nickname }),
+    });
+    return handleResponse(response);
+  },
+
+  respondToBookClubInvitation: async (
+    bookClubId: string,
+    accept: boolean,
+  ): Promise<BookClub | { success: boolean }> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/invitations${accept ? "/accept" : ""}`,
+      {
+        method: accept ? "POST" : "DELETE",
+        headers: getAuthHeaders({ includeContentType: false }),
+      },
+    );
+    return handleResponse(response);
+  },
+
+  setBookClubGameMaster: async (
+    bookClubId: string,
+    userId: string,
+    isGameMaster: boolean,
+  ): Promise<BookClub> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/members/${userId}/game-master`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ isGameMaster }),
+      },
+    );
+    return handleResponse(response);
+  },
+
+  assignBookClubCharacter: async (bookClubId: string, characterId: string): Promise<BookClub> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/characters`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ characterId }),
+    });
+    return handleResponse(response);
+  },
+
+  removeBookClubCharacter: async (
+    bookClubId: string,
+    characterId: string,
+  ): Promise<{ success: boolean }> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/characters/${characterId}`, {
+      method: "DELETE",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  shareBookClubRoll: async (
+    bookClubId: string,
+    data: { label: string; dice: string; result: string; characterId: string },
+  ) => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/rolls`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  createBookClubMystery: async (bookClubId: string, name: string): Promise<BookClub> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/mysteries`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ name }),
+    });
+    return handleResponse(response);
+  },
+
+  activateBookClubMystery: async (bookClubId: string, mysteryId: string): Promise<BookClub> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/activate`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders({ includeContentType: false }),
+      },
+    );
+    return handleResponse(response);
+  },
+
+  addBookClubClue: async (
+    bookClubId: string,
+    mysteryId: string,
+    text: string,
+    isVoid: boolean,
+  ): Promise<BookClub> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/clues`,
+      {
+        method: "POST",
+        headers: getAuthHeaders(),
+        body: JSON.stringify({ text, isVoid }),
+      },
+    );
+    return handleResponse(response);
+  },
+
+  updateBookClubClue: async (
+    bookClubId: string,
+    mysteryId: string,
+    clueId: string,
+    data: { checked?: boolean; text?: string },
+  ): Promise<BookClub> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/clues/${clueId}`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders(),
+        body: JSON.stringify(data),
+      },
+    );
     return handleResponse(response);
   },
 };
