@@ -38,6 +38,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const [loading, setLoading] = useState(true);
   const { characters: localCharacters, setCurrentCharacter } = useCharacterStore();
   const setActiveBookClub = useBookClubStore((state) => state.setActiveBookClub);
+  const setShareRolls = useBookClubStore((state) => state.setShareRolls);
 
   const refresh = useCallback(async () => {
     try {
@@ -79,6 +80,10 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
         : null,
     );
   }, [assignedCharacterIds, club, ownMember, setActiveBookClub]);
+
+  useEffect(() => {
+    setShareRolls(false);
+  }, [club?.id, setShareRolls]);
 
   const updateClub = (updated: BookClub) => {
     setClubs((current) => current.map((entry) => (entry.id === updated.id ? updated : entry)));

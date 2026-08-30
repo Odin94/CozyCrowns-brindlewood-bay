@@ -1,4 +1,11 @@
-import { sqliteTable, text, integer, index, primaryKey } from "drizzle-orm/sqlite-core";
+import {
+  sqliteTable,
+  text,
+  integer,
+  index,
+  primaryKey,
+  uniqueIndex,
+} from "drizzle-orm/sqlite-core";
 import { relations } from "drizzle-orm";
 import { sql } from "drizzle-orm";
 
@@ -124,6 +131,9 @@ export const bookClubMembers = sqliteTable(
   (table) => ({
     pk: primaryKey({ columns: [table.bookClubId, table.userId] }),
     userIdx: index("book_club_members_user_idx").on(table.userId),
+    oneGameMaster: uniqueIndex("book_club_members_one_gm_idx")
+      .on(table.bookClubId)
+      .where(sql`${table.isGameMaster} = 1`),
   }),
 );
 

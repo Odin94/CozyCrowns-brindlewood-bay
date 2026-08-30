@@ -1,4 +1,6 @@
 import type { DiceRollRequest } from "@/lib/dice_roll";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useBookClubStore } from "@/lib/book_club_store";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { Dices } from "lucide-react";
@@ -156,6 +158,9 @@ const Die = ({
 const DiceRoller = ({ roll }: DiceRollerProps) => {
   const [isRolling, setIsRolling] = useState(false);
   const [showRemovedDie, setShowRemovedDie] = useState(false);
+  const activeBookClub = useBookClubStore((state) => state.activeBookClub);
+  const shareRolls = useBookClubStore((state) => state.shareRolls);
+  const setShareRolls = useBookClubStore((state) => state.setShareRolls);
 
   useEffect(() => {
     if (!roll) {
@@ -243,6 +248,18 @@ const DiceRoller = ({ roll }: DiceRollerProps) => {
         <div className="flex min-h-28 items-center justify-center rounded-md border border-dashed border-gray-700 bg-gray-950/40 px-4 py-5 text-center text-sm text-gray-300">
           <Trans>Click an ability score to roll 2d6.</Trans>
         </div>
+      )}
+      {activeBookClub && (
+        <label className="mt-3 flex cursor-pointer items-start gap-2 rounded-md border border-secondary/25 bg-gray-950/35 p-2 text-xs text-gray-300">
+          <Checkbox
+            checked={shareRolls}
+            onCheckedChange={(checked) => setShareRolls(checked === true)}
+            className="mt-0.5"
+          />
+          <span>
+            <Trans>Share rolls with</Trans> <strong>{activeBookClub.name}</strong>
+          </span>
+        </label>
       )}
     </section>
   );
