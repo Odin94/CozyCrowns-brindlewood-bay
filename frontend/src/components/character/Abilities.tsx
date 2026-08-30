@@ -48,8 +48,9 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
 
   return createPortal(
     <>
-      <button
+      <Button
         type="button"
+        variant="bare"
         className="fixed inset-0 z-40 cursor-default"
         aria-label="Close dice roll menu"
         onClick={onClose}
@@ -64,31 +65,34 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
           if (event.key === "Escape") onClose();
         }}
       >
-        <button
+        <Button
           type="button"
+          variant="bare"
           className="no-ring min-w-20 px-3 py-2 text-xs font-semibold text-gray-200 transition-colors hover:bg-gray-800 hover:text-secondary"
           onClick={() => onRoll(menu.index, menu.abilityName, "disadvantage")}
           role="menuitem"
         >
           <Trans>Disadvantage</Trans>
-        </button>
-        <button
+        </Button>
+        <Button
           ref={normalRollRef}
           type="button"
+          variant="bare"
           className="no-ring min-w-16 border-x border-secondary/30 px-3 py-2 text-xs font-semibold text-secondary transition-colors hover:bg-gray-800"
           onClick={() => onRoll(menu.index, menu.abilityName, "normal")}
           role="menuitem"
         >
           <Trans>Roll</Trans>
-        </button>
-        <button
+        </Button>
+        <Button
           type="button"
+          variant="bare"
           className="no-ring min-w-20 px-3 py-2 text-xs font-semibold text-gray-200 transition-colors hover:bg-gray-800 hover:text-secondary"
           onClick={() => onRoll(menu.index, menu.abilityName, "advantage")}
           role="menuitem"
         >
           <Trans>Advantage</Trans>
-        </button>
+        </Button>
       </div>
     </>,
     document.body,
@@ -183,8 +187,9 @@ const Abilities = () => {
                 side="bottom"
                 align="start"
               >
-                <button
+                <Button
                   type="button"
+                  variant="bare"
                   onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
                   className="no-ring min-h-8 flex-1 rounded-md px-1 text-left text-sm text-gray-300 transition-colors hover:bg-gray-700/45 hover:text-secondary focus-visible:bg-gray-700/45 focus-visible:text-secondary"
                   aria-label={`Roll ${abilityName} ability score. Long press for a description.`}
@@ -193,7 +198,7 @@ const Abilities = () => {
                   aria-expanded={rollMenu?.index === index}
                 >
                   {abilityName}
-                </button>
+                </Button>
               </PressTooltip>
               <div className="flex items-center gap-2">
                 <Button
@@ -206,8 +211,9 @@ const Abilities = () => {
                 >
                   <MinusIcon className="w-3 h-3" />
                 </Button>
-                <button
+                <Button
                   type="button"
+                  variant="bare"
                   onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
                   className="no-ring min-h-8 w-8 rounded-md border border-transparent text-center font-medium text-gray-200 transition-colors hover:border-secondary/60 hover:bg-gray-900 focus-visible:border-secondary/70"
                   aria-label={`Roll ${abilityName} ability score`}
@@ -216,7 +222,7 @@ const Abilities = () => {
                   aria-expanded={rollMenu?.index === index}
                 >
                   {ability.value > 0 ? `+${ability.value}` : ability.value}
-                </button>
+                </Button>
                 <Button
                   variant="outline"
                   size="sm"

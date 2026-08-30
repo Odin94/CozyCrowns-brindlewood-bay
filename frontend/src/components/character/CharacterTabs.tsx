@@ -1,4 +1,5 @@
 import { useIsLargeScreen } from "@/hooks/useIsLargeScreen";
+import { Button } from "@/components/ui/button";
 import { type CharacterData, useCharacterStore } from "@/lib/character_store";
 import { ChevronDown, Eye, Plus, X } from "lucide-react";
 import { useState } from "react";
@@ -73,14 +74,15 @@ const CharacterTabs = ({
       >
         <span className={`text-sm font-medium whitespace-nowrap`}>{truncatedName}</span>
         {characters.length > 1 && (
-          <button
+          <Button
+            variant="bare"
             onClick={(e) => handleRemoveCharacter(index, e)}
             className={`${
               isLargeScreen ? "opacity-0" : "opacity-100"
             } group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-500 hover:text-white rounded p-1 ml-2`}
           >
             <X size={12} />
-          </button>
+          </Button>
         )}
       </div>
     );
@@ -127,7 +129,8 @@ const CharacterTabs = ({
         <div className="flex flex-col mt-5">
           {/* Caret button - always visible at bottom */}
           <div className="flex justify-center py-4">
-            <button
+            <Button
+              variant="bare"
               onClick={() => setIsMobileTabsVisible(!isMobileTabsVisible)}
               className="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-all duration-200 bg-gray-700/20 text-gray-300 hover:bg-gray-600/50 hover:scale-110 shadow-lg"
             >
@@ -135,7 +138,7 @@ const CharacterTabs = ({
                 size={16}
                 className={`transition-transform duration-200 ${isMobileTabsVisible ? "rotate-180" : ""}`}
               />
-            </button>
+            </Button>
           </div>
 
           {/* Bottom bar - slides up/down */}

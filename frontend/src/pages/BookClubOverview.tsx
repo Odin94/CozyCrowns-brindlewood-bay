@@ -305,13 +305,14 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
           </h2>
           <div className="mt-3 space-y-1">
             {clubs.map((entry) => (
-              <button
+              <Button
                 key={entry.id}
+                variant="bare"
                 onClick={() => setSelectedClubId(entry.id)}
                 className={`w-full rounded-md px-3 py-2 text-left text-sm ${entry.id === club?.id ? "bg-dark-secondary text-tertiary" : "hover:bg-gray-700"}`}
               >
                 {entry.name}
-              </button>
+              </Button>
             ))}
           </div>
           <form

@@ -43,7 +43,7 @@ const SignInRequired = () => {
         <p>
           <Trans>Sign in to write, preserve, and share your mysteries.</Trans>
         </p>
-        <Button onClick={signIn} className="mt-4 mystery-ink-button">
+        <Button onClick={signIn} variant="dark" className="mt-4">
           <Trans>Sign in to continue</Trans>
         </Button>
       </section>
@@ -281,7 +281,7 @@ const MysteriesPage = () => {
               <Feather className="mystery-quill size-7" aria-hidden="true" />
               <Trans>Mysteries</Trans>
             </h1>
-            <Button size="sm" onClick={createMystery} className="mystery-ink-button">
+            <Button size="sm" variant="dark" onClick={createMystery}>
               <Plus className="size-4" />
             </Button>
           </div>
@@ -291,13 +291,14 @@ const MysteriesPage = () => {
           </a>
           <div className="mystery-list">
             {mysteries.map((mystery) => (
-              <button
+              <Button
                 key={mystery.id}
+                variant="bare"
                 onClick={() => choose(mystery)}
                 className={selected?.id === mystery.id ? "active" : ""}
               >
                 {mystery.title || <Trans>Untitled Mystery</Trans>}
-              </button>
+              </Button>
             ))}
             {loaded && !mysteries.length && (
               <p>
@@ -320,7 +321,7 @@ const MysteriesPage = () => {
                 />
               </div>
               <div className="mystery-actions">
-                <Button onClick={() => void save("manual")} className="mystery-ink-button">
+                <Button variant="dark" onClick={() => void save("manual")}>
                   <Save className="size-4" />
                   <Trans>Save version</Trans>
                 </Button>
@@ -601,8 +602,9 @@ const MysteriesPage = () => {
             <Trans>Last 10 auto-saves and 10 manual saves are preserved.</Trans>
           </p>
           {versions.map((version) => (
-            <button
+            <Button
               key={version.id}
+              variant="bare"
               onClick={() =>
                 selected && setSelected({ ...selected, title: version.title, data: version.data })
               }
@@ -614,7 +616,7 @@ const MysteriesPage = () => {
               <small>
                 <Trans>Restore this version</Trans>
               </small>
-            </button>
+            </Button>
           ))}
         </aside>
       </div>

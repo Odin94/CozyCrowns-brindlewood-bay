@@ -45,7 +45,7 @@ const LibraryPage = () => {
           <p>
             <Trans>Sign in to explore approved mysteries.</Trans>
           </p>
-          <Button onClick={signIn} className="mystery-ink-button mt-4">
+          <Button onClick={signIn} variant="dark" className="mt-4">
             <Trans>Sign in</Trans>
           </Button>
         </section>
@@ -143,7 +143,7 @@ const LibraryPage = () => {
                 <article key={mystery.id} className="library-book">
                   <h3>{mystery.title}</h3>
                   <p>{mystery.data.intro || <Trans>No introduction has been written.</Trans>}</p>
-                  <Button onClick={() => void approve(mystery)} className="mystery-ink-button">
+                  <Button variant="dark" onClick={() => void approve(mystery)}>
                     <Check className="size-4" />
                     <Trans>Approve publication</Trans>
                   </Button>
