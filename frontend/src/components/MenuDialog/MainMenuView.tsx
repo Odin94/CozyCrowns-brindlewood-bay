@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AuthButton } from "@/components/AuthButton";
 import { Trans } from "@lingui/react/macro";
-import { CoffeeIcon, Download, FileDown, Globe, Save, Trash2, Upload } from "lucide-react";
+import { CoffeeIcon, Download, FileDown, Globe, Save, Trash2, Upload, Users } from "lucide-react";
 
 type MainMenuViewProps = {
   onDownloadPDF: () => void;
@@ -20,6 +20,7 @@ type MainMenuViewProps = {
   onLanguageChange: (locale: string) => void;
   onSaveToBackend?: () => void;
   isAuthenticated?: boolean;
+  onBookClubsClick?: () => void;
 };
 
 export const MainMenuView = ({
@@ -32,6 +33,7 @@ export const MainMenuView = ({
   onLanguageChange,
   onSaveToBackend,
   isAuthenticated,
+  onBookClubsClick,
 }: MainMenuViewProps) => {
   return (
     <>
@@ -71,6 +73,15 @@ export const MainMenuView = ({
           >
             <Save className="w-4 h-4 mr-2" />
             <Trans>Save to Backend</Trans>
+          </Button>
+        ) : null}
+        {isAuthenticated && onBookClubsClick ? (
+          <Button
+            onClick={onBookClubsClick}
+            className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+          >
+            <Users className="w-4 h-4 mr-2" />
+            <Trans>Book Clubs</Trans>
           </Button>
         ) : null}
         <Button

@@ -22,10 +22,11 @@ import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
 type MenuDialogProps = {
   onOpenChange?: (open: boolean) => void;
   open?: boolean;
+  onBookClubsClick?: () => void;
 };
 
 // TODOdin: Redesign the whole dialog content
-const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
+const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) => {
   const characterStore = useCharacterStore();
   const { setLocale } = useSettingsStore();
   const { i18n } = useLingui();
@@ -359,6 +360,7 @@ const MenuDialog = ({ onOpenChange, open }: MenuDialogProps) => {
           onLanguageChange={handleLanguageChange}
           onSaveToBackend={handleSaveToBackend}
           isAuthenticated={isAuthenticated}
+          onBookClubsClick={onBookClubsClick}
         />
       )}
       <Dialog open={saveFailureOpen} onOpenChange={setSaveFailureOpen}>
