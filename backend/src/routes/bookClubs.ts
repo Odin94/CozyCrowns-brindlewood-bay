@@ -16,6 +16,10 @@ const clueParams = z.object({
   clueId: z.string().min(1),
 });
 const nameInput = z.object({ name: z.string().trim().min(2).max(80) });
+const mysteryInput = z.object({
+  name: z.string().trim().min(2).max(80),
+  clues: z.array(z.string().trim().min(1).max(500)).max(100).default([]),
+});
 const inviteInput = z.object({ nickname: z.string().trim().min(3).max(30) });
 const characterInput = z.object({ characterId: z.string().min(1) });
 const gameMasterInput = z.object({ isGameMaster: z.literal(true) });
@@ -469,7 +473,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
     { preHandler: authenticateUser },
     async (request, reply) => {
       const params = idInput.safeParse(request.params);
-      const parsed = nameInput.safeParse(request.body);
+      const parsed = mysteryInput.safeParse(request.body);
       if (!params.success || !parsed.success)
         return reply.code(400).send({ error: "A mystery needs a title" });
       if (!(await gameMaster(params.data.id, request.userId!)))
@@ -483,6 +487,18 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         tx.insert(schema.bookClubMysteries)
           .values({ id, bookClubId: params.data.id, title: parsed.data.name, isActive: true })
           .run();
+        if (parsed.data.clues.length) {
+          tx.insert(schema.bookClubClues)
+            .values(
+              parsed.data.clues.map((text) => ({
+                id: nanoid(),
+                mysteryId: id,
+                text,
+                isVoid: false,
+              })),
+            )
+            .run();
+        }
       });
       return overview(params.data.id);
     },
