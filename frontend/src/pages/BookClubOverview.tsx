@@ -415,11 +415,11 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
 
           {club && (
             <>
-              <header className="rounded-xl bg-gradient-to-br from-dark-secondary to-gray-800 p-5 shadow-lg sm:p-7">
+              <header className="rounded-xl bg-gradient-to-br from-dark-secondary to-gray-800 p-4 shadow-lg sm:p-5">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
                   <Trans>CozyCrowns Book Club</Trans>
                 </p>
-                <h1 className="mt-1 text-3xl font-bold text-tertiary">{club.name}</h1>
+                <h1 className="mt-1 !text-3xl leading-none text-tertiary">{club.name}</h1>
                 <p className="mt-2 text-sm text-gray-300">
                   <Trans>
                     Shared rolls and mystery notes refresh automatically while you are here.
