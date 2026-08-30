@@ -65,13 +65,28 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
   -moz-osx-font-smoothing: grayscale;
 
   @theme {
+    --color-background: hsl(280 20% 70%);
+    --color-foreground: hsl(280 30% 25%); /* Dark purple text */
+    --color-card: hsl(280 15% 75%);
+    --color-card-foreground: hsl(280 30% 25%);
+    --color-popover: hsl(280 15% 75%);
+    --color-popover-foreground: hsl(280 30% 25%);
     --color-primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
     --color-primary-foreground: hsl(280 30% 25%); /* Dark purple button text */
     --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
+    --color-secondary-foreground: hsl(280 30% 25%);
+    --color-muted: hsl(280 20% 85%);
+    --color-muted-foreground: hsl(280 25% 40%);
+    --color-accent: hsl(150 40% 75%);
+    --color-accent-foreground: hsl(280 30% 25%);
+    --color-destructive: hsl(0 70% 70%);
+    --color-destructive-foreground: hsl(280 20% 95%);
+    --color-border: hsl(280 25% 60%);
+    --color-input: hsl(280 20% 85%);
+    --color-ring: hsl(280 40% 60%);
     --color-dark-primary: hsl(180 30% 25%); /* Dark mint primary */
     --color-dark-secondary: hsl(280 30% 25%);
     --color-tertiary: hsl(278, 55%, 87%); /* #e3ccf0 - near-white purple for subtle hover */
-    --color-foreground: hsl(280 30% 25%); /* dark purple */
   }
 }
 
