@@ -71,7 +71,8 @@ export const MainMenuView = ({
       <div className="grid gap-4">
         <Button
           onClick={onDownloadPDF}
-          className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+          variant="dark"
+          className="w-full dark-ring"
         >
           <FileDown className="w-4 h-4 mr-2" />
           <Trans>Download PDF</Trans>
@@ -79,7 +80,8 @@ export const MainMenuView = ({
         {isAuthenticated && onSaveToBackend ? (
           <Button
             onClick={onSaveToBackend}
-            className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+            variant="dark"
+            className="w-full dark-ring"
           >
             <Save className="w-4 h-4 mr-2" />
             <Trans>Save to Backend</Trans>
@@ -88,7 +90,8 @@ export const MainMenuView = ({
         {isAuthenticated && onBookClubsClick ? (
           <Button
             onClick={onBookClubsClick}
-            className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+            variant="dark"
+            className="w-full dark-ring"
           >
             <Users className="w-4 h-4 mr-2" />
             <Trans>Book Clubs</Trans>
@@ -97,9 +100,10 @@ export const MainMenuView = ({
         {isAuthenticated ? (
           <Button
             asChild
-            className="w-full text-dark-foreground bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+            variant="dark"
+            className="w-full dark-ring"
           >
-            <a href="/mysteries" className="!text-dark-foreground hover:!text-dark-foreground">
+            <a href="/mysteries">
               <Feather className="w-4 h-4 mr-2" />
               <Trans>Mysteries</Trans>
             </a>
@@ -107,21 +111,24 @@ export const MainMenuView = ({
         ) : null}
         <Button
           onClick={onDownloadJSON}
-          className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+          variant="dark"
+          className="w-full dark-ring"
         >
           <Download className="w-4 h-4 mr-2" />
           <Trans>Download save file</Trans>
         </Button>
         <Button
           onClick={onLoadFromJSON}
-          className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+          variant="dark"
+          className="w-full dark-ring"
         >
           <Upload className="w-4 h-4 mr-2" />
           <Trans>Load from save file</Trans>
         </Button>
         <Button
           onClick={onResetClick}
-          className="w-full text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring"
+          variant="destructive"
+          className="w-full dark-ring"
         >
           <Trash2 className="w-4 h-4 mr-2" />
           <Trans>Reset Character</Trans>

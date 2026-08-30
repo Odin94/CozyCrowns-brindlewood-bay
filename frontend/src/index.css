@@ -96,7 +96,7 @@ a {
   text-decoration: inherit;
 }
 a:hover {
-  color: hsl(279, 28%, 44%);
+  text-decoration: underline;
 }
 
 body {
@@ -204,10 +204,6 @@ body {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
-}
-.mystery-ink-button {
-  background: hsl(280 30% 25%) !important;
-  color: hsl(180 30% 89%) !important;
 }
 .mystery-field {
   display: grid;
@@ -429,16 +425,6 @@ button:focus-visible {
 /* Theme color utility class */
 .theme-colored {
   color: hsl(var(--theme-color));
-}
-
-/* Ensure link-variant buttons use primary color and underline on hover */
-a.underline-offset-4,
-button.underline-offset-4 {
-  color: white !important;
-}
-a.underline-offset-4:hover,
-button.underline-offset-4:hover {
-  text-decoration: underline !important;
 }
 
 /* Fix selection/highlight background */

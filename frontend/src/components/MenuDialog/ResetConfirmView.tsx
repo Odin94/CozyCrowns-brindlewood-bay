@@ -36,7 +36,8 @@ export const ResetConfirmView = ({ onConfirm, onCancel }: ResetConfirmViewProps)
           </Button>
           <Button
             onClick={onCancel}
-            className="flex-1 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+            variant="dark"
+            className="flex-1 dark-ring"
           >
             <Trans>Cancel</Trans>
           </Button>

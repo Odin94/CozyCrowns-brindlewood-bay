@@ -335,14 +335,15 @@ export default function TheorizeBoard({
           <Filter className="size-4" /> <Trans>Show</Trans>
         </span>
         {(Object.keys(filters) as TheoryNodeKind[]).map((kind) => (
-          <button
+          <Button
             key={kind}
             type="button"
+            variant="bare"
             onClick={() => setFilters((current) => ({ ...current, [kind]: !current[kind] }))}
             className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${filters[kind] ? "border-teal-300/60 bg-teal-300/15 text-teal-100" : "border-slate-700 bg-slate-900 text-slate-500"}`}
           >
             {kindLabel(kind)}
-          </button>
+          </Button>
         ))}
         <div className="ml-auto flex items-center gap-2 text-xs text-slate-400">
           <span className="hidden sm:inline"><Trans>Drag a note to move it. Drag a dot to connect it.</Trans></span>
@@ -420,23 +421,24 @@ export default function TheorizeBoard({
                     }}
                     onBlur={() => void saveEdgeLabel()}
                   />
-                  <button type="button" aria-label={t`Delete connection`} onMouseDown={(event) => event.preventDefault()} onClick={() => void deleteEdge()} className="rounded bg-slate-950 px-2 text-rose-300 hover:bg-rose-950">
+                  <Button type="button" variant="bare" aria-label={t`Delete connection`} onMouseDown={(event) => event.preventDefault()} onClick={() => void deleteEdge()} className="rounded bg-slate-950 px-2 text-rose-300 hover:bg-rose-950">
                     <Trash2 className="size-3.5" />
-                  </button>
+                  </Button>
                 </div>
               );
             }
             return (
-              <button
+              <Button
                 key={edge.id}
                 type="button"
+                variant="bare"
                 className="absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded border border-slate-500 bg-[#151a24] px-2 py-0.5 text-xs text-slate-200 shadow hover:border-teal-300"
                 style={{ left: point.x, top: point.y }}
                 onDoubleClick={() => setInlineEdge({ ...edge })}
                 title={t`Double click to name this connection`}
               >
                 {edge.label || <Link2 className="size-3" />}
-              </button>
+              </Button>
             );
           })}
 
@@ -455,15 +457,17 @@ export default function TheorizeBoard({
                 void openEdit(node);
               }}
             >
-              <button
+              <Button
                 type="button"
+                variant="bare"
                 aria-label={t`Create connection from this note`}
                 className="absolute -right-2 top-1/2 z-20 size-5 -translate-y-1/2 rounded-full border-2 border-teal-200 bg-teal-500 shadow"
                 onPointerDown={(event) => startConnection(event, node.id)}
               />
               {connecting && connecting.sourceId !== node.id && (
-                <button
+                <Button
                   type="button"
+                  variant="bare"
                   aria-label={t`Connect to this note`}
                   className="absolute -left-2 top-1/2 z-20 size-5 -translate-y-1/2 rounded-full border-2 border-teal-100 bg-slate-800 shadow"
                   onPointerUp={(event) => finishConnection(event, node.id)}
@@ -547,9 +551,9 @@ function TagEditor({
       <p className="flex items-center gap-1 text-sm font-medium"><Tag className="size-4" /><Trans>Tags</Trans></p>
       {baseTag && <p className="mt-1 text-xs text-gray-400"><Trans>The</Trans> <strong>{baseTag}</strong> <Trans>tag is automatic.</Trans></p>}
       <div className="mt-2 flex flex-wrap gap-1.5">
-        {tags.map((tag) => <button key={tag} type="button" onClick={() => setTags(tags.filter((entry) => entry !== tag))} className="rounded-full border border-teal-300/50 bg-teal-300/10 px-2 py-1 text-xs text-teal-100" title={t`Remove tag`}>{tag} ×</button>)}
+        {tags.map((tag) => <Button key={tag} type="button" variant="bare" onClick={() => setTags(tags.filter((entry) => entry !== tag))} className="rounded-full border border-teal-300/50 bg-teal-300/10 px-2 py-1 text-xs text-teal-100" title={t`Remove tag`}>{tag} ×</Button>)}
       </div>
-      {existingTags.filter((tag) => !tags.includes(tag)).length > 0 && <div className="mt-2 flex flex-wrap gap-1"><span className="w-full text-xs text-gray-400"><Trans>Existing tags</Trans></span>{existingTags.filter((tag) => !tags.includes(tag)).map((tag) => <button key={tag} type="button" onClick={() => setTags([...tags, tag])} className="rounded-full border border-gray-600 px-2 py-0.5 text-xs text-gray-200 hover:border-teal-300">+ {tag}</button>)}</div>}
+      {existingTags.filter((tag) => !tags.includes(tag)).length > 0 && <div className="mt-2 flex flex-wrap gap-1"><span className="w-full text-xs text-gray-400"><Trans>Existing tags</Trans></span>{existingTags.filter((tag) => !tags.includes(tag)).map((tag) => <Button key={tag} type="button" variant="bare" onClick={() => setTags([...tags, tag])} className="rounded-full border border-gray-600 px-2 py-0.5 text-xs text-gray-200 hover:border-teal-300">+ {tag}</Button>)}</div>}
       <div className="mt-2 flex gap-2"><Input value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); add(); } }} placeholder={t`Create a tag`} maxLength={40} /><Button type="button" variant="outline" size="sm" onClick={add} disabled={!draft.trim()}><Trans>Add</Trans></Button></div>
     </section>
   );

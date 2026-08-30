@@ -185,14 +185,16 @@ const DarkConspiracySheet = () => {
       <div className="dark-conspiracy-actions">
         <Button
           onClick={() => exportDarkConspiracy(current)}
-          className="h-8 bg-dark-secondary text-primary hover:bg-dark-secondary/90 dark-ring"
+          variant="dark"
+          className="h-8 dark-ring"
         >
           <Download className="mr-2 size-4" />
           Save JSON
         </Button>
         <Button
           onClick={handleUpload}
-          className="h-8 bg-dark-secondary text-primary hover:bg-dark-secondary/90 dark-ring"
+          variant="dark"
+          className="h-8 dark-ring"
         >
           <Upload className="mr-2 size-4" />
           Load JSON

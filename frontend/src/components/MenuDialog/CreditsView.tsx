@@ -75,7 +75,8 @@ export const CreditsView = ({ onBack }: CreditsViewProps) => {
         <div className="flex gap-2 pt-2">
           <Button
             onClick={onBack}
-            className="flex-1 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+            variant="dark"
+            className="flex-1 dark-ring"
           >
             <Trans>Back</Trans>
           </Button>
