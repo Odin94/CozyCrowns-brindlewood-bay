@@ -443,8 +443,8 @@ export default function TheorizeBoard({
           {visibleNodes.map((node) => (
             <article
               key={node.id}
-              className={`absolute z-10 flex min-h-[${NODE_HEIGHT}px] w-[${NODE_WIDTH}px] cursor-grab select-none flex-col border-2 p-3 shadow-xl active:cursor-grabbing ${nodeTone[node.kind]} ${node.kind === "suspect" ? "rounded-[1.65rem]" : "rounded-xl"}`}
-              style={{ left: node.x, top: node.y }}
+              className={`absolute z-10 flex cursor-grab select-none flex-col border-2 p-3 shadow-xl active:cursor-grabbing ${nodeTone[node.kind]} ${node.kind === "suspect" ? "rounded-[1.65rem]" : "rounded-xl"}`}
+              style={{ left: node.x, top: node.y, width: NODE_WIDTH, minHeight: NODE_HEIGHT }}
               onPointerDown={(event) => {
                 if (event.button !== 0) return;
                 event.stopPropagation();

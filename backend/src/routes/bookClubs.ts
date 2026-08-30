@@ -1043,6 +1043,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .get();
         if (!node) return { status: "missing" as const };
         if (node.version !== parsed.data.version) return { status: "conflict" as const };
+        if (isLockedByAnotherUser(node, request.userId!)) return { status: "locked" as const };
         if (node.sourceClueId && parsed.data.title !== undefined)
           return { status: "sourceClue" as const };
         if (contentChanged && (!node.editingByUserId || node.editingByUserId !== request.userId! || !node.editLockExpiresAt || node.editLockExpiresAt.getTime() <= Date.now()))
@@ -1064,6 +1065,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       if (result.status === "missing") return reply.code(404).send({ error: "Board note not found" });
       if (result.status === "conflict")
         return reply.code(409).send({ error: "This note changed elsewhere. The board has been refreshed." });
+      if (result.status === "locked")
+        return reply.code(423).send({ error: "This note is being edited by another player" });
       if (result.status === "sourceClue")
         return reply.code(422).send({ error: "Edit linked clues from the mystery clue list" });
       if (result.status === "unlocked")
@@ -1141,31 +1144,37 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         ),
       );
       if (!source || !target) return reply.code(404).send({ error: "Board note not found" });
-      const firstSource =
-        source.kind === "clue" && target.kind === "suspect"
-          ? await db
-              .select({ id: schema.bookClubTheoryEdges.id })
-              .from(schema.bookClubTheoryEdges)
-              .where(
-                and(
-                  eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId),
-                  eq(schema.bookClubTheoryEdges.sourceNodeId, source.id),
-                  eq(schema.bookClubTheoryEdges.targetNodeId, target.id),
-                ),
-              )
-              .get()
-          : null;
-      const [edge] = await db
-        .insert(schema.bookClubTheoryEdges)
-        .values({
-          id: nanoid(),
-          mysteryId: params.data.mysteryId,
-          ...parsed.data,
-          label: parsed.data.label || (firstSource === undefined ? "source" : ""),
-        })
-        .returning();
-      await notifyBookClub(params.data.id);
-      return edge;
+      const connectionWhere = and(
+        eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId),
+        eq(schema.bookClubTheoryEdges.sourceNodeId, source.id),
+        eq(schema.bookClubTheoryEdges.targetNodeId, target.id),
+      );
+      const result = db.transaction((tx) => {
+        const existing = tx
+          .select()
+          .from(schema.bookClubTheoryEdges)
+          .where(connectionWhere)
+          .get();
+        if (existing) return { edge: existing, created: false };
+        const edge = tx
+          .insert(schema.bookClubTheoryEdges)
+          .values({
+            id: nanoid(),
+            mysteryId: params.data.mysteryId,
+            ...parsed.data,
+            label:
+              parsed.data.label ||
+              (source.kind === "clue" && target.kind === "suspect" ? "source" : ""),
+          })
+          .returning()
+          .get();
+        return { edge, created: true };
+      });
+      if (result.created) {
+        await notifyBookClub(params.data.id);
+        return result.edge;
+      }
+      return result.edge;
     },
   );
 
