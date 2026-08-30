@@ -336,16 +336,22 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                   clues in one cozy place.
                 </Trans>
               </p>
-              <div className="mx-auto mt-5 flex max-w-sm gap-2">
+              <form
+                className="mx-auto mt-5 flex max-w-sm gap-2"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (newClubName.trim()) void createClub();
+                }}
+              >
                 <Input
                   value={newClubName}
                   onChange={(event) => setNewClubName(event.target.value)}
                   placeholder={t`New Book Club name`}
                 />
-                <Button disabled={!newClubName.trim()} onClick={() => void createClub()}>
+                <Button type="submit" disabled={!newClubName.trim()}>
                   <Trans>Create</Trans>
                 </Button>
-              </div>
+              </form>
             </section>
           )}
 
