@@ -40,13 +40,12 @@ function TooltipContent({
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(
-          "animate-in fade-in-0 zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-fit max-w-[min(20rem,calc(100vw-2rem))] origin-(--radix-tooltip-content-transform-origin) rounded-xl border border-secondary/70 bg-[radial-gradient(circle_at_top,hsl(var(--primary))_0%,hsl(180_25%_78%)_100%)] px-4 py-3 text-xs leading-relaxed text-dark-secondary shadow-[0_0.8rem_2.4rem_hsl(280_35%_10%_/_0.35)]",
+          "relative animate-in fade-in-0 zoom-in-95 before:pointer-events-none before:absolute before:size-3 before:rotate-45 before:border-t before:border-l before:border-dark-secondary/35 before:bg-[#fffaf0] before:content-[''] data-[side=bottom]:before:-top-1.5 data-[side=bottom]:before:left-4 data-[side=left]:before:-right-1.5 data-[side=left]:before:top-4 data-[side=right]:before:-left-1.5 data-[side=right]:before:top-4 data-[side=top]:before:-bottom-1.5 data-[side=top]:before:left-4 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 w-60 max-w-[calc(100vw-2rem)] origin-(--radix-tooltip-content-transform-origin) rounded-sm border border-dark-secondary/35 bg-[#fffaf0] px-3 py-2 text-left text-xs leading-snug text-dark-secondary shadow-[3px_3px_0_hsl(280_30%_25%_/_0.22)]",
           className,
         )}
         {...props}
       >
         {children}
-        <TooltipPrimitive.Arrow className="fill-primary z-50 size-3" />
       </TooltipPrimitive.Content>
     </TooltipPrimitive.Portal>
   );
@@ -55,14 +54,22 @@ function TooltipContent({
 type PressTooltipProps = {
   children: React.ReactElement<React.HTMLAttributes<HTMLElement>>;
   content: React.ReactNode;
+  title?: React.ReactNode;
   side?: React.ComponentProps<typeof TooltipContent>["side"];
+  align?: React.ComponentProps<typeof TooltipContent>["align"];
 };
 
 /**
  * A tooltip that opens instantly on hover or focus and during a touch long-press.
  * Releasing a long-press closes it immediately and prevents the accompanying click.
  */
-function PressTooltip({ children, content, side = "top" }: PressTooltipProps) {
+function PressTooltip({
+  children,
+  content,
+  title,
+  side = "top",
+  align = "center",
+}: PressTooltipProps) {
   const [open, setOpen] = React.useState(false);
   const longPressTimer = React.useRef<number | null>(null);
   const didLongPress = React.useRef(false);
@@ -157,7 +164,14 @@ function PressTooltip({ children, content, side = "top" }: PressTooltipProps) {
   return (
     <Tooltip open={open} onOpenChange={setOpen}>
       <TooltipTrigger asChild>{trigger}</TooltipTrigger>
-      <TooltipContent side={side}>{content}</TooltipContent>
+      <TooltipContent side={side} align={align}>
+        {title && (
+          <span className="mb-1 block text-[0.65rem] font-extrabold tracking-[0.16em] text-dark-secondary uppercase">
+            {title}
+          </span>
+        )}
+        {content}
+      </TooltipContent>
     </Tooltip>
   );
 }
