@@ -5,6 +5,8 @@ import { Toaster } from "sonner";
 import CharacterSheet from "./pages/CharacterSheet";
 import { AuthCallback } from "./pages/AuthCallback";
 import { CookieConsent } from "./components/cookie-consent";
+import MysteriesPage from "./pages/MysteriesPage";
+import LibraryPage from "./pages/LibraryPage";
 
 const queryClient = new QueryClient();
 
@@ -15,7 +17,15 @@ function App() {
     <>
       <QueryClientProvider client={queryClient}>
         <I18nProvider i18n={i18n}>
-          {pathname === "/auth/callback" ? <AuthCallback /> : <CharacterSheet />}
+          {pathname === "/auth/callback" ? (
+            <AuthCallback />
+          ) : pathname === "/mysteries" ? (
+            <MysteriesPage />
+          ) : pathname === "/library" ? (
+            <LibraryPage />
+          ) : (
+            <CharacterSheet />
+          )}
           <CookieConsent variant="small" />
           <Toaster
             theme="light"

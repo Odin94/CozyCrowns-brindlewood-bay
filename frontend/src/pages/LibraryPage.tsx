@@ -1,0 +1,162 @@
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
+import { api, type PublishedMystery } from "@/utils/api";
+import { t } from "@lingui/core/macro";
+import { Trans } from "@lingui/react/macro";
+import { ArrowLeft, Check, Library, ScrollText } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { toast } from "sonner";
+
+const copyMystery = async (mystery: PublishedMystery) => {
+  await api.copyLibraryMystery(mystery.id);
+};
+
+const LibraryPage = () => {
+  const { isAuthenticated, loading, signIn, user } = useAuth();
+  const [mysteries, setMysteries] = useState<PublishedMystery[]>([]);
+  const [pending, setPending] = useState<PublishedMystery[]>([]);
+
+  const refresh = useCallback(async () => {
+    try {
+      const library = await api.getLibrary();
+      setMysteries(library.mysteries);
+      if (user?.isSuperadmin) {
+        const moderation = await api.getPendingPublishedMysteries();
+        setPending(moderation.mysteries);
+      }
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t`Could not load library`);
+    }
+  }, [user?.isSuperadmin]);
+
+  useEffect(() => {
+    if (isAuthenticated) void refresh();
+  }, [isAuthenticated, refresh]);
+
+  if (loading) return null;
+  if (!isAuthenticated)
+    return (
+      <main className="mystery-desk min-h-screen grid place-items-center p-5">
+        <section className="mystery-parchment text-center">
+          <Library className="mx-auto mb-3" />
+          <h1>
+            <Trans>The Mystery Library</Trans>
+          </h1>
+          <p>
+            <Trans>Sign in to explore approved mysteries.</Trans>
+          </p>
+          <Button onClick={signIn} className="mystery-ink-button mt-4">
+            <Trans>Sign in</Trans>
+          </Button>
+        </section>
+      </main>
+    );
+
+  const copy = async (mystery: PublishedMystery) => {
+    try {
+      await copyMystery(mystery);
+      toast.success(t`Copied to your private mystery library.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t`Could not copy mystery`);
+    }
+  };
+  const approve = async (mystery: PublishedMystery) => {
+    try {
+      await api.approvePublishedMystery(mystery.id);
+      toast.success(t`Mystery approved.`);
+      await refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t`Could not approve mystery`);
+    }
+  };
+
+  return (
+    <main className="mystery-desk min-h-screen p-4 sm:p-8">
+      <div className="library-page">
+        <header className="library-header">
+          <a href="/mysteries">
+            <ArrowLeft className="size-4" />
+            <Trans>My mysteries</Trans>
+          </a>
+          <div>
+            <Library className="mx-auto mb-2 size-9" />
+            <h1>
+              <Trans>The Mystery Library</Trans>
+            </h1>
+            <p>
+              <Trans>Approved cases, copied as snapshots into your own casebook.</Trans>
+            </p>
+          </div>
+        </header>
+        <section className="library-shelf">
+          <h2>
+            <Trans>Available to copy</Trans>
+          </h2>
+          <div className="library-grid">
+            {mysteries.map((mystery) => (
+              <article key={mystery.id} className="library-book">
+                <ScrollText className="size-7" />
+                <h3>{mystery.title}</h3>
+                <p>{mystery.data.intro || <Trans>A carefully guarded case file.</Trans>}</p>
+                <dl>
+                  <div>
+                    <dt>
+                      <Trans>Complexity</Trans>
+                    </dt>
+                    <dd>{mystery.data.complexity}</dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <Trans>Locations</Trans>
+                    </dt>
+                    <dd>{mystery.data.locations.length}</dd>
+                  </div>
+                  <div>
+                    <dt>
+                      <Trans>Suspects</Trans>
+                    </dt>
+                    <dd>{mystery.data.suspects.length}</dd>
+                  </div>
+                </dl>
+                <Button onClick={() => void copy(mystery)}>
+                  <Trans>Copy to my library</Trans>
+                </Button>
+              </article>
+            ))}
+            {!mysteries.length && (
+              <p>
+                <Trans>No approved mysteries have reached the shelves yet.</Trans>
+              </p>
+            )}
+          </div>
+        </section>
+        {user?.isSuperadmin && (
+          <section className="library-shelf moderation">
+            <h2>
+              <Trans>Awaiting your approval</Trans>
+            </h2>
+            <div className="library-grid">
+              {pending.map((mystery) => (
+                <article key={mystery.id} className="library-book">
+                  <h3>{mystery.title}</h3>
+                  <p>{mystery.data.intro || <Trans>No introduction has been written.</Trans>}</p>
+                  <Button onClick={() => void approve(mystery)} className="mystery-ink-button">
+                    <Check className="size-4" />
+                    <Trans>Approve publication</Trans>
+                  </Button>
+                </article>
+              ))}
+              {!pending.length && (
+                <p>
+                  <Trans>No mysteries await approval.</Trans>
+                </p>
+              )}
+            </div>
+          </section>
+        )}
+      </div>
+    </main>
+  );
+};
+
+export default LibraryPage;

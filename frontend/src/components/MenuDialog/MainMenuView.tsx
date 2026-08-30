@@ -8,7 +8,17 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AuthButton } from "@/components/AuthButton";
 import { Trans } from "@lingui/react/macro";
-import { CoffeeIcon, Download, FileDown, Globe, Save, Trash2, Upload, Users } from "lucide-react";
+import {
+  CoffeeIcon,
+  Download,
+  Feather,
+  FileDown,
+  Globe,
+  Save,
+  Trash2,
+  Upload,
+  Users,
+} from "lucide-react";
 
 type MainMenuViewProps = {
   onDownloadPDF: () => void;
@@ -82,6 +92,17 @@ export const MainMenuView = ({
           >
             <Users className="w-4 h-4 mr-2" />
             <Trans>Book Clubs</Trans>
+          </Button>
+        ) : null}
+        {isAuthenticated ? (
+          <Button
+            asChild
+            className="w-full text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
+          >
+            <a href="/mysteries">
+              <Feather className="w-4 h-4 mr-2" />
+              <Trans>Mysteries</Trans>
+            </a>
           </Button>
         ) : null}
         <Button
