@@ -177,7 +177,12 @@ const Abilities = () => {
           const ability = abilities[index];
           return (
             <div key={abilityName} className="flex min-h-8 items-center justify-between gap-3">
-              <PressTooltip content={abilityDescriptions[index]} side="right">
+              <PressTooltip
+                content={abilityDescriptions[index]}
+                title={abilityName}
+                side="bottom"
+                align="start"
+              >
                 <button
                   type="button"
                   onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
@@ -201,19 +206,17 @@ const Abilities = () => {
                 >
                   <MinusIcon className="w-3 h-3" />
                 </Button>
-                <PressTooltip content={abilityDescriptions[index]} side="top">
-                  <button
-                    type="button"
-                    onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
-                    className="no-ring min-h-8 w-8 rounded-md border border-transparent text-center font-medium text-gray-200 transition-colors hover:border-secondary/60 hover:bg-gray-900 focus-visible:border-secondary/70"
-                    aria-label={`Roll ${abilityName} ability score. Long press for a description.`}
-                    aria-haspopup="menu"
-                    aria-controls="ability-roll-menu"
-                    aria-expanded={rollMenu?.index === index}
-                  >
-                    {ability.value > 0 ? `+${ability.value}` : ability.value}
-                  </button>
-                </PressTooltip>
+                <button
+                  type="button"
+                  onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
+                  className="no-ring min-h-8 w-8 rounded-md border border-transparent text-center font-medium text-gray-200 transition-colors hover:border-secondary/60 hover:bg-gray-900 focus-visible:border-secondary/70"
+                  aria-label={`Roll ${abilityName} ability score`}
+                  aria-haspopup="menu"
+                  aria-controls="ability-roll-menu"
+                  aria-expanded={rollMenu?.index === index}
+                >
+                  {ability.value > 0 ? `+${ability.value}` : ability.value}
+                </button>
                 <Button
                   variant="outline"
                   size="sm"
