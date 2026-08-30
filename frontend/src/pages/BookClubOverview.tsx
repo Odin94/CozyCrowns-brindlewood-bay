@@ -814,23 +814,22 @@ function MavenCard({
   const usedItems = (data.cozyItems ?? []).filter(
     (item: { text: string; checked: boolean }) => item.text?.trim() && item.checked,
   );
+  const conditions = summaryItems(data.conditions);
+  const mavenMoves = summaryItems(data.mavenMoves);
   return (
     <article className="flex min-h-72 flex-col rounded-xl bg-gradient-to-br from-gray-800 via-gray-800 to-dark-secondary/70 p-5 shadow-lg">
       <div>
         <p className="text-xs font-bold uppercase tracking-wider text-secondary">
           {own ? <Trans>Your Maven</Trans> : (character.nickname ?? t`Player`)}
         </p>
-        <h3 className="mt-1 text-2xl font-bold text-tertiary">{characterName(character)}</h3>
+        <h3 className="mt-1 !text-2xl leading-none text-tertiary">{characterName(character)}</h3>
         <p className="mt-1 text-xs text-gray-400">
           <Trans>Sheet updated</Trans> {relativeTime(character.updatedAt)} <Trans>ago</Trans>
         </p>
       </div>
-      <div className="mt-4 space-y-3 text-sm">
-        <SummaryBlock title={t`Active conditions`} value={data.conditions || t`None recorded`} />
-        <SummaryBlock
-          title={t`Available Maven Moves`}
-          value={data.mavenMoves || t`None recorded`}
-        />
+      <div className="mt-4 space-y-4">
+        <SummaryList title={t`Active conditions`} items={conditions} empty={t`None recorded`} chips />
+        <SummaryList title={t`Available Maven Moves`} items={mavenMoves} empty={t`None recorded`} />
         <SummaryBlock
           title={t`Crown of the Void`}
           value={
@@ -839,31 +838,30 @@ function MavenCard({
               : t`None active`
           }
         />
-        <div>
+        <section>
           <p className="text-xs font-bold uppercase tracking-wider text-secondary">
             <Trans>A Cozy Little Place</Trans>
           </p>
-          <p className="mt-1 text-gray-200">
-            {availableItems.length ? (
-              <>
-                <span className="text-emerald-300">
-                  <Trans>Available:</Trans>
-                </span>{" "}
-                {availableItems.map((item: { text: string }) => item.text).join(", ")}
-              </>
-            ) : (
-              <span className="text-gray-400">
-                <Trans>No available items</Trans>
-              </span>
-            )}
-          </p>
-          {usedItems.length > 0 && (
-            <p className="mt-1 text-gray-400">
-              <Trans>Marked:</Trans>{" "}
-              {usedItems.map((item: { text: string }) => item.text).join(", ")}
+          {!availableItems.length && !usedItems.length && (
+            <p className="mt-2 text-sm text-gray-400">
+              <Trans>No available items</Trans>
             </p>
           )}
-        </div>
+          {availableItems.length > 0 && (
+            <ItemList
+              label={t`Available:`}
+              items={availableItems.map((item: { text: string }) => item.text)}
+              tone="available"
+            />
+          )}
+          {usedItems.length > 0 && (
+            <ItemList
+              label={t`Marked:`}
+              items={usedItems.map((item: { text: string }) => item.text)}
+              tone="marked"
+            />
+          )}
+        </section>
       </div>
       {own && (
         <Button className="mt-auto pt-5" variant="outline" onClick={onOpen}>
@@ -876,11 +874,89 @@ function MavenCard({
 
 function SummaryBlock({ title, value }: { title: string; value: string }) {
   return (
-    <div>
+    <section>
       <p className="text-xs font-bold uppercase tracking-wider text-secondary">{title}</p>
-      <p className="mt-1 whitespace-pre-line text-gray-200">{value}</p>
+      <p className="mt-2 rounded-md bg-gray-950/35 px-3 py-2 text-sm leading-snug text-gray-200">
+        {value}
+      </p>
+    </section>
+  );
+}
+
+function SummaryList({
+  title,
+  items,
+  empty,
+  chips = false,
+}: {
+  title: string;
+  items: string[];
+  empty: string;
+  chips?: boolean;
+}) {
+  return (
+    <section>
+      <p className="text-xs font-bold uppercase tracking-wider text-secondary">{title}</p>
+      {items.length ? (
+        <ul className={chips ? "mt-2 flex flex-wrap gap-2" : "mt-2 space-y-2"}>
+          {items.map((item) => (
+            <li
+              key={item}
+              className={
+                chips
+                  ? "rounded-full border border-secondary/35 bg-secondary/10 px-2.5 py-1 text-xs text-gray-100"
+                  : "flex gap-2 rounded-md bg-gray-950/35 px-3 py-2 text-sm leading-snug text-gray-200 before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:bg-secondary before:content-['']"
+              }
+            >
+              {item}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-sm text-gray-400">{empty}</p>
+      )}
+    </section>
+  );
+}
+
+function ItemList({
+  label,
+  items,
+  tone,
+}: {
+  label: string;
+  items: string[];
+  tone: "available" | "marked";
+}) {
+  const styles =
+    tone === "available"
+      ? "border-emerald-400/25 bg-emerald-400/8 text-emerald-100 before:bg-emerald-300"
+      : "border-gray-600 bg-gray-950/25 text-gray-300 before:bg-gray-500";
+
+  return (
+    <div className="mt-2">
+      <p className={tone === "available" ? "text-xs font-semibold text-emerald-300" : "text-xs font-semibold text-gray-400"}>
+        {label}
+      </p>
+      <ul className="mt-1.5 space-y-1.5">
+        {items.map((item) => (
+          <li
+            key={item}
+            className={`flex gap-2 rounded-md border px-2.5 py-2 text-sm leading-snug before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:content-[''] ${styles}`}
+          >
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
+}
+
+function summaryItems(value: string) {
+  return value
+    .split(/\r?\n/)
+    .map((item) => item.replace(/^\s*[-*•]\s*/, "").trim())
+    .filter(Boolean);
 }
 
 export default BookClubOverview;
