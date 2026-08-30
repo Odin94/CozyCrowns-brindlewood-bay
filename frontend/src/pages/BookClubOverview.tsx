@@ -442,18 +442,13 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                   <Trans>CozyCrowns Book Club</Trans>
                 </p>
                 <h1 className="mt-1 !text-3xl leading-none text-tertiary">{club.name}</h1>
-                <p className="mt-2 text-sm text-gray-300">
-                  <Trans>
-                    Shared rolls and mystery notes refresh automatically while you are here.
-                  </Trans>
-                </p>
-                <div className="mt-5 flex flex-wrap gap-2">
+                <div className="mt-3 flex flex-wrap gap-1.5">
                   {club.members.map((member) => (
                     <span
                       key={member.id}
-                      className="rounded-full border border-gray-600 bg-gray-950/35 px-3 py-1 text-sm"
+                      className="rounded-full border border-gray-600 bg-gray-950/35 px-2 py-0.5 text-xs leading-4"
                     >
-                      <Circle className="mr-1 inline size-2 fill-emerald-400 text-emerald-400" />
+                      <Circle className="mr-1 inline size-1.5 fill-emerald-400 text-emerald-400" />
                       {member.nickname ?? t`Player`}
                       {member.isGameMaster ? ` · ${t`GM`}` : ""}
                     </span>
@@ -971,7 +966,7 @@ function MavenCard({
         </section>
       </div>
       {own && (
-        <Button className="mt-auto pt-5" variant="outline" onClick={onOpen}>
+        <Button className="mt-6 w-full justify-center" variant="outline" onClick={onOpen}>
           <Trans>Open my sheet</Trans>
         </Button>
       )}
