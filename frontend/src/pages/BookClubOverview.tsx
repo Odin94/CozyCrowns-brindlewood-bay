@@ -460,7 +460,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
                 <h2 className="mb-3 text-xl font-bold text-tertiary">
                   <Trans>At the table</Trans>
                 </h2>
-                <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-4 md:grid-cols-2">
                   {characters.map((character) => (
                     <MavenCard
                       key={character.id}
@@ -919,15 +919,12 @@ function MavenCard({
   const conditions = summaryItems(data.conditions);
   const mavenMoves = summaryItems(data.mavenMoves);
   return (
-    <article className="flex min-h-72 flex-col rounded-xl bg-gradient-to-br from-gray-800 via-gray-800 to-dark-secondary/70 p-5 shadow-lg">
+    <article className="flex flex-col rounded-xl bg-gradient-to-br from-gray-800 via-gray-800 to-dark-secondary/70 p-5 shadow-lg">
       <div>
         <p className="text-xs font-bold uppercase tracking-wider text-secondary">
           {own ? <Trans>Your Maven</Trans> : (character.nickname ?? t`Player`)}
         </p>
         <h3 className="mt-1 !text-2xl leading-none text-tertiary">{characterName(character)}</h3>
-        <p className="mt-1 text-xs text-gray-400">
-          <Trans>Sheet updated</Trans> {relativeTime(character.updatedAt)} <Trans>ago</Trans>
-        </p>
       </div>
       <div className="mt-4 space-y-4">
         <SummaryList title={t`Active conditions`} items={conditions} empty={t`None recorded`} chips />
@@ -978,7 +975,7 @@ function SummaryBlock({ title, value }: { title: string; value: string }) {
   return (
     <section>
       <p className="text-xs font-bold uppercase tracking-wider text-secondary">{title}</p>
-      <p className="mt-2 rounded-md bg-gray-950/35 px-3 py-2 text-sm leading-snug text-gray-200">
+      <p className="mt-1 text-sm leading-snug text-gray-200">
         {value}
       </p>
     </section>
@@ -1006,8 +1003,8 @@ function SummaryList({
               key={item}
               className={
                 chips
-                  ? "rounded-full border border-secondary/35 bg-secondary/10 px-2.5 py-1 text-xs text-gray-100"
-                  : "flex gap-2 rounded-md bg-gray-950/35 px-3 py-2 text-sm leading-snug text-gray-200 before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:bg-secondary before:content-['']"
+                  ? "rounded-full border border-gray-600 px-2.5 py-1 text-xs text-gray-100"
+                  : "flex gap-2 rounded-md border border-gray-700 px-3 py-2 text-sm leading-snug text-gray-200 before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:bg-secondary before:content-['']"
               }
             >
               {item}
@@ -1032,8 +1029,8 @@ function ItemList({
 }) {
   const styles =
     tone === "available"
-      ? "border-emerald-400/25 bg-emerald-400/8 text-emerald-100 before:bg-emerald-300"
-      : "border-gray-600 bg-gray-950/25 text-gray-300 before:bg-gray-500";
+      ? "border-gray-600 text-gray-200 before:bg-emerald-300"
+      : "border-gray-600 text-gray-200 before:bg-gray-500";
 
   return (
     <div className="mt-2">

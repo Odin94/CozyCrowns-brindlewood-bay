@@ -149,7 +149,7 @@ msgid "A carefully guarded case file."
 msgstr "A carefully guarded case file."
 
 #: src/components/character/CozyLittlePlace.tsx:25
-#: src/pages/BookClubOverview.tsx:945
+#: src/pages/BookClubOverview.tsx:942
 msgid "A Cozy Little Place"
 msgstr "A Cozy Little Place"
 
@@ -212,7 +212,7 @@ msgstr "Access to Robin's resources outside Brindlewood Bay and get both Gold Cr
 msgid "Activate"
 msgstr "Activate"
 
-#: src/pages/BookClubOverview.tsx:933
+#: src/pages/BookClubOverview.tsx:930
 msgid "Active conditions"
 msgstr "Active conditions"
 
@@ -271,8 +271,8 @@ msgid "Advantage"
 msgstr "Advantage"
 
 #: src/pages/BookClubOverview.tsx:929
-msgid "ago"
-msgstr "ago"
+#~ msgid "ago"
+#~ msgstr "ago"
 
 #: src/game_data.ts:81
 msgid "Alexis Carrington Colby"
@@ -334,7 +334,7 @@ msgstr "Autosave"
 msgid "Autosaves are kept separately from your manual versions."
 msgstr "Autosaves are kept separately from your manual versions."
 
-#: src/pages/BookClubOverview.tsx:934
+#: src/pages/BookClubOverview.tsx:931
 msgid "Available Maven Moves"
 msgstr "Available Maven Moves"
 
@@ -342,7 +342,7 @@ msgstr "Available Maven Moves"
 msgid "Available to copy"
 msgstr "Available to copy"
 
-#: src/pages/BookClubOverview.tsx:954
+#: src/pages/BookClubOverview.tsx:951
 msgid "Available:"
 msgstr "Available:"
 
@@ -681,7 +681,7 @@ msgid "Crown of the Queen"
 msgstr "Crown of the Queen"
 
 #: src/components/character/CrownOfTheVoid.tsx:23
-#: src/pages/BookClubOverview.tsx:936
+#: src/pages/BookClubOverview.tsx:933
 msgid "Crown of the Void"
 msgstr "Crown of the Void"
 
@@ -1020,7 +1020,7 @@ msgstr "Manual save"
 msgid "Manual version saved."
 msgstr "Manual version saved."
 
-#: src/pages/BookClubOverview.tsx:961
+#: src/pages/BookClubOverview.tsx:958
 msgid "Marked:"
 msgstr "Marked:"
 
@@ -1110,7 +1110,7 @@ msgstr "Nickname"
 msgid "No approved mysteries have reached the shelves yet."
 msgstr "No approved mysteries have reached the shelves yet."
 
-#: src/pages/BookClubOverview.tsx:949
+#: src/pages/BookClubOverview.tsx:946
 msgid "No available items"
 msgstr "No available items"
 
@@ -1142,12 +1142,12 @@ msgstr "No mystery is active."
 msgid "No rolls yet"
 msgstr "No rolls yet"
 
-#: src/pages/BookClubOverview.tsx:940
+#: src/pages/BookClubOverview.tsx:937
 msgid "None active"
 msgstr "None active"
 
-#: src/pages/BookClubOverview.tsx:933
-#: src/pages/BookClubOverview.tsx:934
+#: src/pages/BookClubOverview.tsx:930
+#: src/pages/BookClubOverview.tsx:931
 msgid "None recorded"
 msgstr "None recorded"
 
@@ -1207,7 +1207,7 @@ msgstr "Open a different theory board"
 msgid "Open another board…"
 msgstr "Open another board…"
 
-#: src/pages/BookClubOverview.tsx:970
+#: src/pages/BookClubOverview.tsx:967
 msgid "Open my sheet"
 msgstr "Open my sheet"
 
@@ -1415,8 +1415,8 @@ msgstr "Share rolls with"
 #~ msgstr "Shared rolls and mystery notes refresh automatically while you are here."
 
 #: src/pages/BookClubOverview.tsx:929
-msgid "Sheet updated"
-msgstr "Sheet updated"
+#~ msgid "Sheet updated"
+#~ msgstr "Sheet updated"
 
 #: src/pages/BookClubOverview.tsx:355
 msgid "Sheets"
