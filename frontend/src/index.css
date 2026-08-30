@@ -105,6 +105,268 @@ body {
   min-height: 100vh;
 }
 
+.mystery-desk {
+  background:
+    radial-gradient(circle at 72% 8%, #ffce73 0, #9b5c24 5%, transparent 18%),
+    radial-gradient(circle at 14% 16%, #c57d32 0, #552b22 11%, transparent 30%),
+    linear-gradient(135deg, #160f19, #392125 48%, #171016);
+  color: #2e1b16;
+}
+
+.mystery-workspace {
+  display: grid;
+  grid-template-columns: 13rem minmax(0, 1fr) 13rem;
+  gap: 1rem;
+  max-width: 105rem;
+  margin: auto;
+  align-items: start;
+}
+.mystery-parchment,
+.mystery-sidebar,
+.mystery-versions,
+.library-book {
+  border: 1px solid #8a6033;
+  background: linear-gradient(100deg, #d9bd80, #f1dfaf 48%, #cba76c);
+  box-shadow:
+    0 0.5rem 1.5rem #05030599,
+    inset 0 0 2rem #82592a33;
+}
+.mystery-parchment {
+  padding: clamp(1rem, 2vw, 2.3rem);
+}
+.mystery-parchment h1,
+.mystery-sidebar h1,
+.library-header h1 {
+  font-family: "Fuggles", cursive;
+  font-size: 3.2rem;
+  line-height: 0.8;
+  margin: 0;
+  color: #412219;
+}
+.mystery-sidebar,
+.mystery-versions {
+  padding: 1rem;
+  position: sticky;
+  top: 1rem;
+}
+.mystery-sidebar h1 {
+  font-size: 2.5rem;
+}
+.mystery-list {
+  display: grid;
+  gap: 0.4rem;
+  margin-top: 1rem;
+}
+.mystery-list button,
+.mystery-versions button {
+  text-align: left;
+  border-bottom: 1px solid #80562d88;
+  padding: 0.55rem;
+  font-family: "Patrick Hand", cursive;
+}
+.mystery-list button.active {
+  background: #643624;
+  color: #ffe8af;
+  transform: rotate(-1deg);
+}
+.mystery-library-link {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  margin-top: 1.2rem;
+  font-size: 0.75rem;
+}
+.mystery-editor {
+  min-width: 0;
+}
+.mystery-editor-header,
+.mystery-section > header,
+.mystery-footer {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.mystery-kicker {
+  margin: 0 0 0.45rem;
+  font-family: "Patrick Hand", cursive;
+  letter-spacing: 0.06em;
+  font-size: 0.76rem;
+}
+.mystery-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.mystery-ink-button {
+  background: #3e211e !important;
+  color: #ffe9ad !important;
+}
+.mystery-field {
+  display: grid;
+  gap: 0.25rem;
+  margin-bottom: 0.7rem;
+  font-family: "Patrick Hand", cursive;
+  font-size: 0.85rem;
+  color: #4b271b;
+}
+.mystery-field input,
+.mystery-field textarea {
+  background: #fff0c366;
+  border: 0;
+  border-bottom: 1px solid #714326;
+  border-radius: 0;
+  color: #351c16;
+  box-shadow: none !important;
+}
+.mystery-field textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+}
+.mystery-meta-grid {
+  display: grid;
+  grid-template-columns: 9rem 1fr;
+  gap: 1rem;
+}
+.mystery-section {
+  padding-top: 1.2rem;
+  border-top: 1px solid #9e713b88;
+  margin-top: 1.2rem;
+}
+.mystery-section h2,
+.mystery-versions h2,
+.library-shelf h2 {
+  color: #4a261b;
+  margin: 0;
+  font-size: 1.55rem;
+}
+.mystery-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 0.7rem;
+  margin-top: 0.7rem;
+}
+.mystery-card {
+  background: #fff0be66;
+  padding: 0.75rem;
+  border-left: 3px solid #8f592c;
+}
+.mystery-versions h2 {
+  display: flex;
+  gap: 0.35rem;
+  align-items: center;
+  font-size: 1.2rem;
+}
+.mystery-versions p {
+  font-size: 0.72rem;
+  line-height: 1.2;
+}
+.mystery-versions button {
+  width: 100%;
+  display: grid;
+  font-size: 0.72rem;
+}
+.mystery-versions small {
+  color: #6c3725;
+}
+.mystery-footer {
+  margin-top: 1.5rem;
+  align-items: center;
+}
+.mystery-footer p {
+  font-size: 0.72rem;
+  margin: 0;
+}
+.library-page {
+  max-width: 75rem;
+  margin: auto;
+}
+.library-header {
+  color: #ffe6af;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+.library-header a {
+  color: #ffe6af;
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  text-align: left;
+  font-size: 0.8rem;
+}
+.library-header p {
+  margin: 0.5rem;
+}
+.library-header h1 {
+  color: #ffe6af;
+}
+.library-shelf {
+  background: #6f3c25cc;
+  border: 1px solid #c98d48;
+  padding: 1rem;
+  margin-top: 1.4rem;
+}
+.library-shelf h2 {
+  color: #ffe6af;
+  margin-bottom: 0.8rem;
+}
+.library-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  gap: 1rem;
+}
+.library-book {
+  padding: 1rem;
+  min-height: 14rem;
+  display: flex;
+  flex-direction: column;
+}
+.library-book h3 {
+  font-size: 1.6rem;
+  margin: 0.4rem 0;
+}
+.library-book p {
+  font-size: 0.78rem;
+  flex: 1;
+}
+.library-book dl {
+  display: flex;
+  gap: 0.7rem;
+  font-size: 0.65rem;
+}
+.library-book dl div {
+  display: grid;
+}
+.library-book dd {
+  margin: 0;
+  font-size: 1rem;
+}
+.moderation {
+  background: #4f2832e6;
+}
+@media (max-width: 900px) {
+  .mystery-workspace {
+    grid-template-columns: 1fr;
+  }
+  .mystery-sidebar,
+  .mystery-versions {
+    position: static;
+  }
+  .mystery-versions {
+    order: 3;
+  }
+  .mystery-meta-grid {
+    grid-template-columns: 1fr;
+  }
+  .mystery-editor-header {
+    align-items: start;
+    flex-direction: column;
+  }
+  .mystery-actions {
+    width: 100%;
+  }
+}
+
 h1,
 h2,
 h3,

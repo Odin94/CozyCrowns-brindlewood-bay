@@ -9,6 +9,7 @@ type User = {
   firstName: string | null;
   lastName: string | null;
   nickname: string | null;
+  isSuperadmin: boolean;
 };
 
 type AuthCallbackResponse = {
@@ -24,6 +25,54 @@ type LogoutResponse = {
 
 type UpdateUserInput = {
   nickname?: string | null;
+};
+
+export type MysteryEntry = {
+  id?: string;
+  title?: string;
+  name?: string;
+  description: string;
+  prompt?: string;
+  quote?: string;
+};
+export type MysteryData = {
+  schemaVersion: number;
+  title: string;
+  intro: string;
+  establishingQuestions: string[];
+  complexity: number;
+  locations: Array<{ id?: string; title: string; description: string; prompt: string }>;
+  suspects: Array<{ id?: string; name: string; title: string; description: string; quote: string }>;
+  clues: Array<{ id?: string; title: string; description: string }>;
+  voidClues: Array<{ id?: string; title: string; description: string }>;
+  moments: Array<{ id?: string; description: string }>;
+};
+
+export type Mystery = {
+  id: string;
+  title: string;
+  data: MysteryData;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+};
+
+export type MysteryVersion = {
+  id: string;
+  title: string;
+  data: MysteryData;
+  version: number;
+  kind: "auto" | "manual";
+  savedAt: string;
+};
+
+export type PublishedMystery = {
+  id: string;
+  title: string;
+  data: MysteryData;
+  sourceVersion?: number;
+  approvedAt?: string | null;
+  submittedAt?: string;
 };
 
 export type BookClubCharacter = {
@@ -371,6 +420,89 @@ export const api = {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  getMysteries: async (): Promise<{ mysteries: Mystery[] }> => {
+    const response = await fetch(`${API_URL}/mysteries`, {
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  createMystery: async (data: { title: string; data: MysteryData }): Promise<Mystery> => {
+    const response = await fetch(`${API_URL}/mysteries`, {
+      method: "POST",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  updateMystery: async (
+    id: string,
+    data: { title: string; data: MysteryData; version: number; saveKind: "auto" | "manual" },
+  ): Promise<Mystery> => {
+    const response = await fetch(`${API_URL}/mysteries/${id}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
+    });
+    return handleResponse(response);
+  },
+
+  deleteMystery: async (id: string): Promise<{ success: boolean }> => {
+    const response = await fetch(`${API_URL}/mysteries/${id}`, {
+      method: "DELETE",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  getMysteryVersions: async (id: string): Promise<{ versions: MysteryVersion[] }> => {
+    const response = await fetch(`${API_URL}/mysteries/${id}/versions`, {
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  publishMystery: async (
+    id: string,
+  ): Promise<{ id: string; status: string; submittedAt: string }> => {
+    const response = await fetch(`${API_URL}/mysteries/${id}/publish`, {
+      method: "POST",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  getLibrary: async (): Promise<{ mysteries: PublishedMystery[] }> => {
+    const response = await fetch(`${API_URL}/library`, {
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  copyLibraryMystery: async (id: string): Promise<Mystery> => {
+    const response = await fetch(`${API_URL}/library/${id}/copy`, {
+      method: "POST",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  getPendingPublishedMysteries: async (): Promise<{ mysteries: PublishedMystery[] }> => {
+    const response = await fetch(`${API_URL}/superadmin/published-mysteries`, {
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  approvePublishedMystery: async (id: string): Promise<{ id: string; status: string }> => {
+    const response = await fetch(`${API_URL}/superadmin/published-mysteries/${id}/approve`, {
+      method: "PUT",
+      headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
   },
