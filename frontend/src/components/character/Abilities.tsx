@@ -7,8 +7,12 @@ import { createDiceRoll, type DiceRollRequest, type RollMode } from "@/lib/dice_
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 import { t } from "@lingui/core/macro";
-import { useRef, useState, type MouseEvent } from "react";
+import { useEffect, useRef, useState, type MouseEvent } from "react";
 import { createPortal } from "react-dom";
+
+const ROLL_MENU_WIDTH = 224;
+const ROLL_MENU_HEIGHT = 40;
+const VIEWPORT_MARGIN = 12;
 
 type RollMenuState = {
   abilityName: string;
@@ -31,8 +35,14 @@ type RollMenuProps = {
   onRoll: (index: number, abilityName: string, mode: RollMode) => void;
 };
 
-const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) =>
-  createPortal(
+const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
+  const normalRollRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    normalRollRef.current?.focus();
+  }, []);
+
+  return createPortal(
     <>
       <button
         type="button"
@@ -41,11 +51,17 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) =>
         onClick={onClose}
       />
       <div
+        id="ability-roll-menu"
         className="fixed z-50 flex -translate-x-1/2 -translate-y-1/2 overflow-hidden rounded-md border border-secondary/50 bg-gray-900 shadow-xl shadow-gray-950/40"
         style={{ left: menu.x, top: menu.y }}
         role="menu"
+        aria-label={`${menu.abilityName} dice roll options`}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") onClose();
+        }}
       >
         <button
+          ref={normalRollRef}
           type="button"
           className="no-ring min-w-20 px-3 py-2 text-xs font-semibold text-gray-200 transition-colors hover:bg-gray-800 hover:text-secondary"
           onClick={() => onRoll(menu.index, menu.abilityName, "disadvantage")}
@@ -73,12 +89,14 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) =>
     </>,
     document.body,
   );
+};
 
 const Abilities = () => {
   const { abilities, setAbilities } = useCharacterStore();
   const [roll, setRoll] = useState<DiceRollRequest | null>(null);
   const [rollMenu, setRollMenu] = useState<RollMenuState | null>(null);
   const rollId = useRef(0);
+  const rollMenuTrigger = useRef<HTMLButtonElement | null>(null);
 
   const handleAbilityChange = (index: number, value: number) => {
     const newAbilities = [...abilities];
@@ -91,12 +109,28 @@ const Abilities = () => {
     index: number,
     abilityName: string,
   ) => {
+    const triggerBounds = event.currentTarget.getBoundingClientRect();
+    const viewportCenterX = window.innerWidth / 2;
+    const minimumX = Math.min(ROLL_MENU_WIDTH / 2 + VIEWPORT_MARGIN, viewportCenterX);
+    const maximumX = Math.max(minimumX, window.innerWidth - ROLL_MENU_WIDTH / 2 - VIEWPORT_MARGIN);
+    const minimumY = Math.min(ROLL_MENU_HEIGHT / 2 + VIEWPORT_MARGIN, window.innerHeight / 2);
+    const maximumY = Math.max(
+      minimumY,
+      window.innerHeight - ROLL_MENU_HEIGHT / 2 - VIEWPORT_MARGIN,
+    );
+
+    rollMenuTrigger.current = event.currentTarget;
     setRollMenu({
       abilityName,
       index,
-      x: event.clientX,
-      y: event.clientY,
+      x: Math.min(Math.max(triggerBounds.left + triggerBounds.width / 2, minimumX), maximumX),
+      y: Math.min(Math.max(triggerBounds.top + triggerBounds.height / 2, minimumY), maximumY),
     });
+  };
+
+  const handleRollMenuClose = () => {
+    setRollMenu(null);
+    window.requestAnimationFrame(() => rollMenuTrigger.current?.focus());
   };
 
   const handleAbilityRoll = (index: number, abilityName: string, mode: RollMode) => {
@@ -122,6 +156,9 @@ const Abilities = () => {
                   onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
                   className="no-ring min-h-8 flex-1 rounded-md px-1 text-left text-sm text-gray-300 transition-colors hover:bg-gray-700/45 hover:text-secondary focus-visible:bg-gray-700/45 focus-visible:text-secondary"
                   aria-label={`Roll ${abilityName} ability score. Long press for a description.`}
+                  aria-haspopup="menu"
+                  aria-controls="ability-roll-menu"
+                  aria-expanded={rollMenu?.index === index}
                 >
                   {abilityName}
                 </button>
@@ -143,6 +180,9 @@ const Abilities = () => {
                     onClick={(event) => handleRollMenuOpen(event, index, abilityName)}
                     className="no-ring min-h-8 w-8 rounded-md border border-transparent text-center font-medium text-gray-200 transition-colors hover:border-secondary/60 hover:bg-gray-900 focus-visible:border-secondary/70"
                     aria-label={`Roll ${abilityName} ability score. Long press for a description.`}
+                    aria-haspopup="menu"
+                    aria-controls="ability-roll-menu"
+                    aria-expanded={rollMenu?.index === index}
                   >
                     {ability.value > 0 ? `+${ability.value}` : ability.value}
                   </button>
@@ -163,7 +203,7 @@ const Abilities = () => {
         })}
       </div>
       {rollMenu && (
-        <RollMenu menu={rollMenu} onClose={() => setRollMenu(null)} onRoll={handleAbilityRoll} />
+        <RollMenu menu={rollMenu} onClose={handleRollMenuClose} onRoll={handleAbilityRoll} />
       )}
       <DiceRoller roll={roll} />
     </div>
