@@ -178,23 +178,32 @@ export const bookClubCharacterAssignments = sqliteTable(
   }),
 );
 
-export const bookClubRollEvents = sqliteTable("book_club_roll_events", {
-  id: text("id").primaryKey(),
-  bookClubId: text("book_club_id")
-    .notNull()
-    .references(() => bookClubs.id, { onDelete: "cascade" }),
-  userId: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  characterId: text("character_id").references(() => characters.id, { onDelete: "set null" }),
-  characterName: text("character_name").notNull(),
-  label: text("label").notNull(),
-  dice: text("dice").notNull(),
-  result: text("result").notNull(),
-  createdAt: integer("created_at", { mode: "timestamp" })
-    .notNull()
-    .default(sql`(unixepoch())`),
-});
+export const bookClubRollEvents = sqliteTable(
+  "book_club_roll_events",
+  {
+    id: text("id").primaryKey(),
+    bookClubId: text("book_club_id")
+      .notNull()
+      .references(() => bookClubs.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    characterId: text("character_id").references(() => characters.id, { onDelete: "set null" }),
+    characterName: text("character_name").notNull(),
+    label: text("label").notNull(),
+    dice: text("dice").notNull(),
+    result: text("result").notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    bookClubCreatedIdx: index("book_club_roll_events_book_club_created_idx").on(
+      table.bookClubId,
+      table.createdAt,
+    ),
+  }),
+);
 
 export const bookClubMysteries = sqliteTable(
   "book_club_mysteries",

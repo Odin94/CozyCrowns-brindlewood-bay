@@ -37,6 +37,12 @@ const clueUpdateInput = z.object({
   text: z.string().trim().min(1).max(500).optional(),
 });
 const websocketAuthInput = z.object({ type: z.literal("authenticate"), token: z.string().min(1) });
+const unauthenticatedSocketsByIp = new Map<string, number>();
+const maxUnauthenticatedSocketsPerIp = 5;
+const socketsByIp = new Map<string, number>();
+const maxSocketsPerIp = 10;
+const maxBookClubSockets = 500;
+let activeBookClubSockets = 0;
 
 async function membership(bookClubId: string, userId: string) {
   return db
@@ -83,81 +89,118 @@ function characterOverview(rawData: string) {
 }
 
 async function overview(bookClubId: string) {
-  const club = await db
-    .select()
-    .from(schema.bookClubs)
-    .where(eq(schema.bookClubs.id, bookClubId))
-    .get();
-  if (!club) return undefined;
-  const members = await db
-    .select()
-    .from(schema.bookClubMembers)
-    .where(eq(schema.bookClubMembers.bookClubId, bookClubId));
-  const userIds = members.map((member) => member.userId);
-  const [users, characters, assignments, rolls, mysteries] = await Promise.all([
-    userIds.length ? db.select().from(schema.users).where(inArray(schema.users.id, userIds)) : [],
-    userIds.length
-      ? db
-          .select()
-          .from(schema.characters)
-          .where(
-            and(inArray(schema.characters.userId, userIds), isNull(schema.characters.deletedAt)),
-          )
-      : [],
+  return (await overviews([bookClubId]))[0];
+}
+
+async function overviews(bookClubIds: string[]) {
+  if (!bookClubIds.length) return [];
+  const [clubs, members, characterRows, mysteries, rollRows] = await Promise.all([
+    db.select().from(schema.bookClubs).where(inArray(schema.bookClubs.id, bookClubIds)),
+    db
+      .select()
+      .from(schema.bookClubMembers)
+      .where(inArray(schema.bookClubMembers.bookClubId, bookClubIds)),
     db
       .select()
       .from(schema.bookClubCharacterAssignments)
-      .where(eq(schema.bookClubCharacterAssignments.bookClubId, bookClubId)),
-    db
-      .select()
-      .from(schema.bookClubRollEvents)
-      .where(eq(schema.bookClubRollEvents.bookClubId, bookClubId))
-      .orderBy(desc(schema.bookClubRollEvents.createdAt))
-      .limit(30),
+      .innerJoin(
+        schema.characters,
+        eq(schema.bookClubCharacterAssignments.characterId, schema.characters.id),
+      )
+      .where(
+        and(
+          inArray(schema.bookClubCharacterAssignments.bookClubId, bookClubIds),
+          isNull(schema.characters.deletedAt),
+        ),
+      )
+      .then((rows) =>
+        rows.map((row) => ({ bookClubId: row.book_club_character_assignments.bookClubId, character: row.characters })),
+      ),
     db
       .select()
       .from(schema.bookClubMysteries)
-      .where(eq(schema.bookClubMysteries.bookClubId, bookClubId))
+      .where(inArray(schema.bookClubMysteries.bookClubId, bookClubIds))
       .orderBy(desc(schema.bookClubMysteries.updatedAt)),
+    db.all<{
+      id: string;
+      bookClubId: string;
+      userId: string;
+      characterId: string | null;
+      characterName: string;
+      label: string;
+      dice: string;
+      result: string;
+      createdAt: number;
+    }>(sql`
+      SELECT id, book_club_id AS bookClubId, user_id AS userId, character_id AS characterId,
+        character_name AS characterName, label, dice, result, created_at AS createdAt
+      FROM (
+        SELECT *, ROW_NUMBER() OVER (PARTITION BY book_club_id ORDER BY created_at DESC) AS row_number
+        FROM book_club_roll_events
+        WHERE book_club_id IN (${sql.join(
+          bookClubIds.map((id) => sql`${id}`),
+          sql`, `,
+        )})
+      )
+      WHERE row_number <= 30
+      ORDER BY createdAt DESC
+    `),
   ]);
-  const activeMystery = mysteries.find((mystery) => mystery.isActive);
-  const clues = activeMystery
+  const userIds = [...new Set(members.map((member) => member.userId))];
+  const users = userIds.length
+    ? await db.select().from(schema.users).where(inArray(schema.users.id, userIds))
+    : [];
+  const activeMysteryIds = mysteries.filter((mystery) => mystery.isActive).map((mystery) => mystery.id);
+  const clues = activeMysteryIds.length
     ? await db
         .select()
         .from(schema.bookClubClues)
-        .where(eq(schema.bookClubClues.mysteryId, activeMystery.id))
+        .where(inArray(schema.bookClubClues.mysteryId, activeMysteryIds))
         .orderBy(desc(schema.bookClubClues.checked), desc(schema.bookClubClues.updatedAt))
     : [];
-  const assigned = new Set(assignments.map((assignment) => assignment.characterId));
-  return {
-    id: club.id,
-    name: club.name,
-    ownerId: club.ownerId,
-    createdAt: club.createdAt,
-    members: members.map((member) => ({
-      id: member.userId,
-      nickname: users.find((user) => user.id === member.userId)?.nickname ?? null,
-      joinedAt: member.joinedAt,
-      isGameMaster: member.isGameMaster,
-      characters: characters
-        .filter((character) => character.userId === member.userId && assigned.has(character.id))
-        .map((character) => ({
-          id: character.id,
-          name: character.name,
-          data: characterOverview(character.data),
-          version: character.version,
-          updatedAt: character.updatedAt,
-        })),
-    })),
-    rolls,
-    mysteries: mysteries.map((mystery) => ({
-      id: mystery.id,
-      title: mystery.title,
-      isActive: mystery.isActive,
-      createdAt: mystery.createdAt,
-    })),
-    activeMystery: activeMystery ? { ...activeMystery, clues } : null,
-  };
+  const usersById = new Map(users.map((user) => [user.id, user]));
+
+  return clubs.map((club) => {
+    const clubMembers = members.filter((member) => member.bookClubId === club.id);
+    const clubMysteries = mysteries.filter((mystery) => mystery.bookClubId === club.id);
+    const activeMystery = clubMysteries.find((mystery) => mystery.isActive);
+    return {
+      id: club.id,
+      name: club.name,
+      ownerId: club.ownerId,
+      createdAt: club.createdAt,
+      members: clubMembers.map((member) => ({
+        id: member.userId,
+        nickname: usersById.get(member.userId)?.nickname ?? null,
+        joinedAt: member.joinedAt,
+        isGameMaster: member.isGameMaster,
+        characters: characterRows
+          .filter((row) => row.bookClubId === club.id && row.character.userId === member.userId)
+          .map(({ character }) => ({
+            id: character.id,
+            name: character.name,
+            data: characterOverview(character.data),
+            version: character.version,
+            updatedAt: character.updatedAt,
+          })),
+      })),
+      rolls: rollRows
+        .filter((roll) => roll.bookClubId === club.id)
+        .map((roll) => ({ ...roll, createdAt: new Date(roll.createdAt * 1000) })),
+      mysteries: clubMysteries.map((mystery) => ({
+        id: mystery.id,
+        title: mystery.title,
+        isActive: mystery.isActive,
+        createdAt: mystery.createdAt,
+      })),
+      activeMystery: activeMystery
+        ? {
+            ...activeMystery,
+            clues: clues.filter((clue) => clue.mysteryId === activeMystery.id),
+          }
+        : null,
+    };
+  });
 }
 
 async function invitationsFor(userId: string) {
@@ -201,12 +244,54 @@ async function invitationsFor(userId: string) {
 }
 
 export async function bookClubRoutes(fastify: FastifyInstance) {
-  fastify.get("/book-clubs/live", { websocket: true }, (socket) => {
+  fastify.get("/book-clubs/live", { websocket: true }, (socket, request) => {
     let unregister: (() => void) | undefined;
+    let authenticating = false;
+    let closed = false;
+    let pendingReleased = false;
+    const clientIp = request.ip;
+    const socketCount = socketsByIp.get(clientIp) ?? 0;
+    if (socketCount >= maxSocketsPerIp || activeBookClubSockets >= maxBookClubSockets) {
+      socket.close(1013, "Too many connections");
+      return;
+    }
+    socketsByIp.set(clientIp, socketCount + 1);
+    activeBookClubSockets += 1;
+    const releaseSocket = () => {
+      const count = socketsByIp.get(clientIp) ?? 0;
+      if (count <= 1) socketsByIp.delete(clientIp);
+      else socketsByIp.set(clientIp, count - 1);
+      activeBookClubSockets = Math.max(0, activeBookClubSockets - 1);
+    };
+    const pendingSocketCount = unauthenticatedSocketsByIp.get(clientIp) ?? 0;
+    if (pendingSocketCount >= maxUnauthenticatedSocketsPerIp) {
+      releaseSocket();
+      socket.close(1013, "Too many pending connections");
+      return;
+    }
+    unauthenticatedSocketsByIp.set(clientIp, pendingSocketCount + 1);
+    const releasePendingSocket = () => {
+      if (pendingReleased) return;
+      pendingReleased = true;
+      const count = unauthenticatedSocketsByIp.get(clientIp) ?? 0;
+      if (count <= 1) unauthenticatedSocketsByIp.delete(clientIp);
+      else unauthenticatedSocketsByIp.set(clientIp, count - 1);
+    };
+    const authTimeout = setTimeout(() => socket.close(1008, "Authentication timed out"), 10_000);
 
-    socket.on("close", () => unregister?.());
-    socket.on("message", async (payload: { toString: () => string }) => {
-      if (unregister) return;
+    socket.on("close", () => {
+      closed = true;
+      clearTimeout(authTimeout);
+      releaseSocket();
+      releasePendingSocket();
+      unregister?.();
+    });
+    socket.on("message", async (payload: { toString: () => string }, isBinary: boolean) => {
+      if (unregister || authenticating) return;
+      if (isBinary) {
+        socket.close(1003, "Binary messages are not supported");
+        return;
+      }
 
       let message: unknown;
       try {
@@ -222,13 +307,22 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return;
       }
 
+      authenticating = true;
       const session = await authenticateSealedSession(parsed.data.token);
       if (!session) {
         socket.close(1008, "Unauthorized");
         return;
       }
+      if (closed) return;
 
-      unregister = registerBookClubSocket(session.user.id, socket);
+      const removeSocket = registerBookClubSocket(session.user.id, socket);
+      if (!removeSocket) {
+        socket.close(1013, "Too many connections");
+        return;
+      }
+      unregister = removeSocket;
+      releasePendingSocket();
+      clearTimeout(authTimeout);
       socket.send(JSON.stringify({ type: "ready", token: session.refreshedToken }));
     });
   });
@@ -239,7 +333,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       .from(schema.bookClubMembers)
       .where(eq(schema.bookClubMembers.userId, request.userId!));
     const [clubs, invitations] = await Promise.all([
-      Promise.all(memberships.map(({ bookClubId }) => overview(bookClubId))),
+      overviews(memberships.map(({ bookClubId }) => bookClubId)),
       invitationsFor(request.userId!),
     ]);
     return { clubs: clubs.filter(Boolean), invitations };

@@ -1,5 +1,7 @@
 import { useCharacterStore } from "@/lib/character_store";
 import { api } from "@/utils/api";
+import { t } from "@lingui/core/macro";
+import { toast } from "sonner";
 import { useAuth } from "./useAuth";
 
 export const useCharacterSave = () => {
@@ -36,6 +38,7 @@ export const useCharacterSave = () => {
           voidChecks: characterData.voidChecks,
           cozyItems: characterData.cozyItems,
         },
+        version: currentCharacter?.version ?? 1,
       };
 
       if (currentCharacter?.id) {
@@ -49,6 +52,14 @@ export const useCharacterSave = () => {
       return true;
     } catch (error) {
       console.error("Failed to save character:", error);
+      if ((error as Error & { status?: number }).status === 409) {
+        toast.error(t`This Maven changed elsewhere. Your edits are still here.`, {
+          action: {
+            label: t`Reload`,
+            onClick: () => window.location.reload(),
+          },
+        });
+      }
       return false;
     }
   };

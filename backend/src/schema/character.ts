@@ -34,7 +34,7 @@ export const createCharacterSchema = z.object({
 export const updateCharacterSchema = z.object({
   name: z.string().min(1).max(255).optional(),
   data: characterDataSchema.optional(),
-  version: z.number().int().positive().optional(),
+  version: z.number().int().positive(),
 });
 
 export const characterParamsSchema = z.object({

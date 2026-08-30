@@ -251,7 +251,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
       }
 
       if (hasDataChanges || hasNameChange) {
-        updates.version = (body.version ?? existing.version) + 1;
+        updates.version = existing.version + 1;
       } else {
         updates.version = existing.version;
       }
@@ -259,8 +259,27 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
       const [character] = await db
         .update(characters)
         .set(updates)
-        .where(eq(characters.id, id))
+        .where(
+          and(
+            eq(characters.id, id),
+            eq(characters.userId, userId),
+            eq(characters.version, body.version),
+          ),
+        )
         .returning();
+
+      if (!character) {
+        reply.code(409);
+        return {
+          error: "This Maven changed elsewhere. Reload it before saving again.",
+          current: {
+            id: existing.id,
+            name: existing.name,
+            data: existingData,
+            version: existing.version,
+          },
+        };
+      }
 
       if (hasDataChanges || hasNameChange) await notifyCharacterBookClubs(character.id);
 

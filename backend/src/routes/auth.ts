@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { timingSafeEqual } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db, schema } from "../db/index.js";
 import { workos, WORKOS_CLIENT_ID } from "../config/workos.js";
@@ -12,8 +13,21 @@ import { trackEvent } from "../utils/tracker.js";
 
 const callbackQuerySchema = z.object({
   code: z.string().min(1, "Authorization code is required"),
-  state: z.string().optional(),
+  state: z.string().min(1, "Authorization state is required"),
 });
+const authFlowCookie = "auth_flow";
+const authFlowSchema = z.object({
+  state: z.string().min(1),
+  codeVerifier: z.string().min(1),
+});
+
+const statesMatch = (expected: string, actual: string) => {
+  const expectedBytes = Buffer.from(expected);
+  const actualBytes = Buffer.from(actual);
+  return (
+    expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes)
+  );
+};
 
 export async function authRoutes(fastify: FastifyInstance) {
   fastify.get("/auth/login", async (request, reply) => {
@@ -40,11 +54,22 @@ export async function authRoutes(fastify: FastifyInstance) {
         }
       }
 
-      const authorizationUrl = workos.userManagement.getAuthorizationUrl({
+      const authorization = await workos.userManagement.getAuthorizationUrlWithPKCE({
         provider: "authkit",
         redirectUri,
         clientId: WORKOS_CLIENT_ID,
       });
+      reply.setCookie(
+        authFlowCookie,
+        JSON.stringify({ state: authorization.state, codeVerifier: authorization.codeVerifier }),
+        {
+          httpOnly: true,
+          sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+          secure: env.NODE_ENV === "production",
+          path: "/auth/callback",
+          maxAge: 10 * 60,
+        },
+      );
 
       await trackEvent(
         "auth_login_initiated",
@@ -56,7 +81,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         request,
       );
 
-      reply.redirect(authorizationUrl);
+      reply.redirect(authorization.url);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to initiate sign-in";
       fastify.log.error({ err: error }, "Sign-in initiation error");
@@ -86,13 +111,28 @@ export async function authRoutes(fastify: FastifyInstance) {
         return;
       }
 
-      const { code } = queryResult.data;
+      const { code, state } = queryResult.data;
+      const authFlow = authFlowSchema.safeParse(
+        (() => {
+          try {
+            return JSON.parse(request.cookies[authFlowCookie] ?? "");
+          } catch {
+            return undefined;
+          }
+        })(),
+      );
+      reply.clearCookie(authFlowCookie, { path: "/auth/callback" });
+      if (!authFlow.success || !statesMatch(authFlow.data.state, state)) {
+        reply.code(400).send({ error: "Invalid or expired sign-in request" });
+        return;
+      }
 
       const cookiePassword = env.WORKOS_COOKIE_PASSWORD;
 
       const authenticateResponse = await workos.userManagement.authenticateWithCode({
         code,
         clientId: WORKOS_CLIENT_ID,
+        codeVerifier: authFlow.data.codeVerifier,
         session: {
           sealSession: true,
           cookiePassword,

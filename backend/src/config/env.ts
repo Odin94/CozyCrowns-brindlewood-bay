@@ -18,6 +18,7 @@ const envSchema = z.object({
   PORT: z.string().regex(/^\d+$/).transform(Number).default(3001),
   HOST: z.string().default("0.0.0.0"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
   BACKEND_URL: z.url().optional(),
   FRONTEND_URL: z.url().default("http://localhost:3000"),
 
