@@ -277,7 +277,8 @@ const MysteriesPage = () => {
       <div className="mystery-workspace">
         <aside className="mystery-sidebar">
           <div className="flex items-center justify-between gap-2">
-            <h1>
+            <h1 className="flex items-center gap-2">
+              <Feather className="mystery-quill size-7" aria-hidden="true" />
               <Trans>Mysteries</Trans>
             </h1>
             <Button size="sm" onClick={createMystery} className="mystery-ink-button">

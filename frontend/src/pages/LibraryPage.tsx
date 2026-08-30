@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { api, type PublishedMystery } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ArrowLeft, Check, Library, ScrollText } from "lucide-react";
+import { ArrowLeft, Check, Feather, Library, ScrollText } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -79,7 +79,10 @@ const LibraryPage = () => {
             <Trans>My mysteries</Trans>
           </a>
           <div>
-            <Library className="mx-auto mb-2 size-9" />
+            <div className="mb-2 flex justify-center gap-3">
+              <Library className="size-9" />
+              <Feather className="mystery-quill size-8" aria-hidden="true" />
+            </div>
             <h1>
               <Trans>The Mystery Library</Trans>
             </h1>
