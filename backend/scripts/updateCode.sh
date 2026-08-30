@@ -23,6 +23,10 @@ if [ ! -d "$BACKEND_DIR" ]; then
     exit 1
 fi
 
+# Previous manual updates may have created Git objects or dependencies as root.
+# The service user must own the full application directory before it can update.
+chown -R "$APP_USER:$APP_USER" "$APP_DIR"
+
 runuser -u "$APP_USER" -- bash -lc "
     set -e
     cd '$BACKEND_DIR'
