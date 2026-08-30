@@ -326,7 +326,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
 
           {!club && !loading && (
             <section className="rounded-xl bg-gray-800 p-8 text-center shadow-lg">
-              <BookOpen className="mx-auto size-9 text-secondary" />
+              <BookOpen className="book-club-empty-icon mx-auto size-9 text-secondary" />
               <h1 className="mt-3 text-2xl font-bold">
                 <Trans>Gather your Book Club</Trans>
               </h1>
