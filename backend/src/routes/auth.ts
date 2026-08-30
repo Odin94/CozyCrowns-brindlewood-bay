@@ -24,9 +24,7 @@ const authFlowSchema = z.object({
 const statesMatch = (expected: string, actual: string) => {
   const expectedBytes = Buffer.from(expected);
   const actualBytes = Buffer.from(actual);
-  return (
-    expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes)
-  );
+  return expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes);
 };
 
 export async function authRoutes(fastify: FastifyInstance) {
@@ -217,6 +215,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           firstName: user.firstName,
           lastName: user.lastName,
           nickname: dbUser?.nickname ?? null,
+          isSuperadmin: dbUser?.isSuperadmin ?? false,
         },
       });
     } catch (error) {
@@ -366,6 +365,7 @@ export async function authRoutes(fastify: FastifyInstance) {
               firstName: refreshResult.user.firstName,
               lastName: refreshResult.user.lastName,
               nickname: dbUser?.nickname || null,
+              isSuperadmin: dbUser?.isSuperadmin ?? false,
               token: refreshResult.sealedSession,
             });
             return;
@@ -407,6 +407,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           firstName: authResult.user.firstName,
           lastName: authResult.user.lastName,
           nickname: dbUser?.nickname || null,
+          isSuperadmin: dbUser?.isSuperadmin ?? false,
         });
       } else {
         reply.code(401).send({
