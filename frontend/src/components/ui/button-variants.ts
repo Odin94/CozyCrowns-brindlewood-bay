@@ -17,7 +17,7 @@ export const buttonVariants = cva(
           "bg-secondary/35 text-secondary-foreground hover:bg-secondary/70 disabled:text-gray-400",
         bare: "bg-transparent text-inherit shadow-none hover:bg-transparent hover:shadow-none",
         link:
-          "bg-transparent text-dark-secondary underline-offset-4 hover:text-foreground hover:underline disabled:text-gray-400",
+          "border-0 bg-transparent text-dark-secondary shadow-none underline-offset-4 hover:text-foreground hover:underline hover:shadow-none disabled:text-gray-400",
       },
       size: {
         default: "h-10 px-4 py-2",
