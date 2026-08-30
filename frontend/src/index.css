@@ -66,6 +66,7 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
 
   @theme {
     --color-primary: hsl(180 30% 85%); /* #CDE4E4 - soft mint primary */
+    --color-primary-foreground: hsl(280 30% 25%); /* Dark purple button text */
     --color-secondary: hsl(280 25% 80%); /* Light purple secondary */
     --color-dark-primary: hsl(180 30% 25%); /* Dark mint primary */
     --color-dark-secondary: hsl(280 30% 25%);
