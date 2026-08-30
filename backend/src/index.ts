@@ -9,6 +9,7 @@ import { darkConspiracyRoutes } from "./routes/darkConspiracies.js";
 import { shareRoutes } from "./routes/shares.js";
 import { authRoutes } from "./routes/auth.js";
 import { bookClubRoutes } from "./routes/bookClubs.js";
+import { mysteryRoutes } from "./routes/mysteries.js";
 import { env } from "./config/env.js";
 import { generateRequestId, setRequestId } from "./middleware/requestId.js";
 
@@ -93,6 +94,7 @@ await fastify.register(characterRoutes);
 await fastify.register(darkConspiracyRoutes);
 await fastify.register(shareRoutes);
 await fastify.register(bookClubRoutes);
+await fastify.register(mysteryRoutes);
 
 fastify.get(
   "/health",

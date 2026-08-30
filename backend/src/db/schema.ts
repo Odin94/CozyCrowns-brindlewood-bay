@@ -15,6 +15,7 @@ export const users = sqliteTable("users", {
   firstName: text("first_name"),
   lastName: text("last_name"),
   nickname: text("nickname").unique(),
+  isSuperadmin: integer("is_superadmin", { mode: "boolean" }).notNull().default(false),
   createdAt: integer("created_at", { mode: "timestamp" })
     .notNull()
     .default(sql`(unixepoch())`),
@@ -67,6 +68,82 @@ export const darkConspiracies = sqliteTable(
   },
   (table) => ({
     userIdIdx: index("dark_conspiracies_user_id_idx").on(table.userId),
+  }),
+);
+
+export const mysteries = sqliteTable(
+  "mysteries",
+  {
+    id: text("id").primaryKey(),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    data: text("data").notNull(),
+    version: integer("version").notNull().default(1),
+    deletedAt: integer("deleted_at", { mode: "timestamp" }),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({ userIdIdx: index("mysteries_user_id_idx").on(table.userId) }),
+);
+
+export const mysteryVersions = sqliteTable(
+  "mystery_versions",
+  {
+    id: text("id").primaryKey(),
+    mysteryId: text("mystery_id")
+      .notNull()
+      .references(() => mysteries.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    data: text("data").notNull(),
+    sourceVersion: integer("source_version").notNull(),
+    kind: text("kind", { enum: ["auto", "manual"] }).notNull(),
+    createdAt: integer("created_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    mysteryCreatedIdx: index("mystery_versions_mystery_created_idx").on(
+      table.mysteryId,
+      table.kind,
+      table.createdAt,
+    ),
+  }),
+);
+
+export const publishedMysteries = sqliteTable(
+  "published_mysteries",
+  {
+    id: text("id").primaryKey(),
+    mysteryId: text("mystery_id")
+      .notNull()
+      .references(() => mysteries.id, { onDelete: "cascade" })
+      .unique(),
+    ownerId: text("owner_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    title: text("title").notNull(),
+    data: text("data").notNull(),
+    sourceVersion: integer("source_version").notNull(),
+    status: text("status", { enum: ["pending", "approved", "rejected"] })
+      .notNull()
+      .default("pending"),
+    submittedAt: integer("submitted_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+    approvedAt: integer("approved_at", { mode: "timestamp" }),
+    approvedByUserId: text("approved_by_user_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+  },
+  (table) => ({
+    statusIdx: index("published_mysteries_status_idx").on(table.status, table.submittedAt),
+    ownerIdx: index("published_mysteries_owner_idx").on(table.ownerId),
   }),
 );
 
