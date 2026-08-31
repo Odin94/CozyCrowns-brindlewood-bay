@@ -107,11 +107,29 @@ body {
 }
 
 .mystery-desk {
+  position: relative;
   background:
     radial-gradient(circle at 76% 7%, hsl(150 40% 75% / 0.38) 0, transparent 17%),
     radial-gradient(circle at 15% 15%, hsl(280 35% 70% / 0.55) 0, transparent 29%),
     linear-gradient(135deg, hsl(280 34% 14%), hsl(285 29% 21%) 48%, hsl(180 27% 16%));
   color: hsl(var(--foreground));
+}
+.mystery-sheet-link {
+  position: absolute;
+  top: 0.85rem;
+  left: 0.85rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: hsl(180 30% 89% / 0.8);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 150ms ease;
+}
+.mystery-sheet-link:hover,
+.mystery-sheet-link:focus-visible {
+  color: hsl(180 30% 96%);
+  text-decoration: underline;
 }
 
 .mystery-workspace {
