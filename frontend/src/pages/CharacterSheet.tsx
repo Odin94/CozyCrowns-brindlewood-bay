@@ -16,7 +16,6 @@ import { SaveFailureDialog } from "@/components/MenuDialog/SaveFailureDialog";
 import { useCharacterStore } from "@/lib/character_store";
 import { useAuth } from "@/hooks/useAuth";
 import DarkConspiracySheet from "@/pages/DarkConspiracySheet";
-import BookClubOverview from "@/pages/BookClubOverview";
 import EndOfSession from "@/components/character/EndOfSession";
 import MavenMoves from "@/components/character/MavenMoves";
 import MenuDialog from "@/components/MenuDialog/MenuDialog";
@@ -30,7 +29,7 @@ import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
 import { useState } from "react";
 
-const CharacterSheet = () => {
+const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) => {
   // useLingui() is Required to ensure component rerenders when locale changes
   useLingui();
   useBackendCharactersSync();
@@ -38,9 +37,7 @@ const CharacterSheet = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [saveFailureOpen, setSaveFailureOpen] = useState(false);
   const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
-  const [activeView, setActiveView] = useState<"character" | "darkConspiracy" | "bookClubs">(
-    "character",
-  );
+  const [activeView, setActiveView] = useState<"character" | "darkConspiracy">("character");
   const isLargeScreen = useIsLargeScreen();
   const {
     deleteConfirmOpen,
@@ -76,10 +73,6 @@ const CharacterSheet = () => {
     setPendingSwitchIndex(null);
     setSaveFailureOpen(false);
   };
-
-  if (activeView === "bookClubs") {
-    return <BookClubOverview onClose={() => setActiveView("character")} />;
-  }
 
   return (
     <div
@@ -159,7 +152,7 @@ const CharacterSheet = () => {
           open={menuOpen}
           onBookClubsClick={() => {
             setMenuOpen(false);
-            setActiveView("bookClubs");
+            onBookClubsClick();
           }}
         />
       </Dialog>

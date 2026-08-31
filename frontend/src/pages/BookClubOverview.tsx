@@ -34,11 +34,18 @@ const relativeTime = (date: string) => {
   return `${Math.floor(minutes / 60)}h`;
 };
 
-const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
+type BookClubOverviewProps = {
+  clubId: string | null;
+  onClose: () => void;
+  onClubChange: (clubId: string) => void;
+};
+
+const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewProps) => {
   const { user } = useAuth();
   const [clubs, setClubs] = useState<BookClub[]>([]);
   const [invitations, setInvitations] = useState<BookClubInvitation[]>([]);
-  const [selectedClubId, setSelectedClubId] = useState<string | null>(null);
+  const [selectedClubId, setSelectedClubId] = useState<string | null>(clubId);
+  const selectedClubIdRef = useRef<string | null>(clubId);
   const [newClubName, setNewClubName] = useState("");
   const [inviteNickname, setInviteNickname] = useState("");
   const [selectedMysteryId, setSelectedMysteryId] = useState("");
@@ -52,6 +59,22 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
   const setActiveBookClub = useBookClubStore((state) => state.setActiveBookClub);
   const setShareRolls = useBookClubStore((state) => state.setShareRolls);
 
+  useEffect(() => {
+    if (clubId) {
+      selectedClubIdRef.current = clubId;
+      setSelectedClubId(clubId);
+    }
+  }, [clubId]);
+
+  const selectClub = useCallback(
+    (nextClubId: string) => {
+      selectedClubIdRef.current = nextClubId;
+      setSelectedClubId(nextClubId);
+      onClubChange(nextClubId);
+    },
+    [onClubChange],
+  );
+
   const refresh = useCallback(async (showError = true) => {
     if (isRefreshing.current) {
       refreshQueued.current = true;
@@ -62,7 +85,13 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
       const response = await api.getBookClubs();
       setClubs(response.clubs);
       setInvitations(response.invitations);
-      setSelectedClubId((selected) => selected ?? response.clubs[0]?.id ?? null);
+      const previousClubId = selectedClubIdRef.current;
+      const initialClubId = clubId ?? previousClubId ?? response.clubs[0]?.id ?? null;
+      selectedClubIdRef.current = initialClubId;
+      setSelectedClubId(initialClubId);
+      if (!clubId && !previousClubId && response.clubs[0]) {
+        onClubChange(response.clubs[0].id);
+      }
     } catch (error) {
       if (showError) toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
     } finally {
@@ -73,7 +102,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
         void refresh(false);
       }
     }
-  }, []);
+  }, [clubId, onClubChange]);
 
   useEffect(() => {
     void refresh();
@@ -151,7 +180,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
       const created = await api.createBookClub(newClubName);
       setClubs((current) => [...current, created]);
       setNewClubName("");
-      setSelectedClubId(created.id);
+      selectClub(created.id);
       toast.success(t`Book Club created`);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not create Book Club`);
@@ -174,7 +203,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
       const result = await api.respondToBookClubInvitation(invitation.club.id, accept);
       if (accept && "members" in result) {
         setClubs((current) => [...current.filter((entry) => entry.id !== result.id), result]);
-        setSelectedClubId(result.id);
+        selectClub(result.id);
       }
       setInvitations((current) => current.filter((entry) => entry.club.id !== invitation.club.id));
       toast.success(accept ? t`Joined Book Club` : t`Invitation declined`);
@@ -308,7 +337,7 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
               <Button
                 key={entry.id}
                 variant="bare"
-                onClick={() => setSelectedClubId(entry.id)}
+                onClick={() => selectClub(entry.id)}
                 className={`w-full rounded-md px-3 py-2 text-left text-sm ${entry.id === club?.id ? "bg-dark-secondary text-tertiary" : "hover:bg-gray-700"}`}
               >
                 {entry.name}
@@ -356,7 +385,9 @@ const BookClubOverview = ({ onClose }: { onClose: () => void }) => {
               </Button>
               <select
                 value={club?.id ?? ""}
-                onChange={(event) => setSelectedClubId(event.target.value || null)}
+                onChange={(event) => {
+                  if (event.target.value) selectClub(event.target.value);
+                }}
                 className="h-9 max-w-52 rounded-md border border-gray-600 bg-gray-800 px-2 text-sm"
               >
                 <option value="">
