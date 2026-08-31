@@ -1,14 +1,7 @@
-import { Button } from "@/components/ui/button";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { ConfirmationDialogPanel } from "@/components/ui/confirmation-dialog";
+import { DialogContent } from "@/components/ui/dialog";
 import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { Trash2 } from "lucide-react";
 
 type DeleteConfirmDialogProps = {
   characterIndex: number | null;
@@ -30,50 +23,23 @@ const DeleteConfirmDialog = ({
   const characterName = characters[characterIndex]?.name || `Character ${characterIndex + 1}`;
 
   return (
-    <DialogContent
-      className="sm:max-w-[425px] bg-secondary/90 border-0 shadow-none"
-      style={{ boxShadow: "none" }}
-    >
-      <VisuallyHidden.Root asChild>
-        <DialogTitle>Delete "{characterName}"</DialogTitle>
-      </VisuallyHidden.Root>
-      <DialogHeader>
-        <DialogTitle className="text-gray-800">
-          <Trans>Delete "{characterName}"</Trans>
-        </DialogTitle>
-        <DialogDescription></DialogDescription>
-      </DialogHeader>
-      <div className="grid gap-4">
-        <p className="text-sm text-gray-800">
+    <DialogContent className="confirmation-dialog sm:max-w-md">
+      <ConfirmationDialogPanel
+        title={<Trans>Delete "{characterName}"</Trans>}
+        description={
           <Trans>
             Are you sure you want to delete "{characterName}"? This will clear all data and cannot
             be undone.
           </Trans>
-        </p>
-        {isAuthenticated ? (
-          <p className="text-sm text-red-600 font-medium">
-            <Trans>This will also delete the character from the backend.</Trans>
-          </p>
-        ) : null}
-        <div className="flex gap-2">
-          <Button
-            onClick={onConfirm}
-            variant="destructive"
-            className="flex-1 dark-ring"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            <Trans>Delete Character</Trans>
-          </Button>
-          <Button
-            onClick={onCancel}
-            variant="dark"
-            className="flex-1 dark-ring"
-            autoFocus
-          >
-            <Trans>Cancel</Trans>
-          </Button>
-        </div>
-      </div>
+        }
+        notice={
+          isAuthenticated ? <Trans>This will also delete the character from the backend.</Trans> : undefined
+        }
+        confirmLabel={<Trans>Delete Character</Trans>}
+        cancelLabel={<Trans>Cancel</Trans>}
+        onConfirm={onConfirm}
+        onCancel={onCancel}
+      />
     </DialogContent>
   );
 };

@@ -1,13 +1,6 @@
-import { Button } from "@/components/ui/button";
-import {
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { ConfirmationDialogPanel } from "@/components/ui/confirmation-dialog";
+import { DialogContent } from "@/components/ui/dialog";
 import { Trans } from "@lingui/react/macro";
-import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
-import { AlertTriangle } from "lucide-react";
 
 type SaveFailureDialogProps = {
   onContinue: () => void;
@@ -16,47 +9,21 @@ type SaveFailureDialogProps = {
 
 export const SaveFailureDialog = ({ onContinue, onCancel }: SaveFailureDialogProps) => {
   return (
-    <DialogContent
-      className="sm:max-w-[425px] bg-secondary/90 border-0 shadow-none"
-      style={{ boxShadow: "none" }}
-    >
-      <VisuallyHidden.Root asChild>
-        <DialogTitle>
-          <Trans>Saving Failed</Trans>
-        </DialogTitle>
-      </VisuallyHidden.Root>
-      <DialogHeader>
-        <DialogTitle className="text-gray-800 flex items-center gap-2">
-          <AlertTriangle className="w-5 h-5 text-red-600" />
-          <Trans>Saving Failed</Trans>
-        </DialogTitle>
-        <DialogDescription></DialogDescription>
-      </DialogHeader>
-      <div className="grid gap-4">
-        <p className="text-sm text-gray-800">
+    <DialogContent className="confirmation-dialog sm:max-w-md">
+      <ConfirmationDialogPanel
+        title={<Trans>Saving Failed</Trans>}
+        description={
           <Trans>
             Saving current character failed. If you continue loading/switching, you will lose
             changes to your current character.
           </Trans>
-        </p>
-        <div className="flex gap-2">
-          <Button
-            onClick={onContinue}
-            variant="destructive"
-            className="flex-1 dark-ring"
-          >
-            <Trans>Continue</Trans>
-          </Button>
-          <Button
-            onClick={onCancel}
-            variant="dark"
-            className="flex-1 dark-ring"
-            autoFocus
-          >
-            <Trans>Cancel</Trans>
-          </Button>
-        </div>
-      </div>
+        }
+        confirmLabel={<Trans>Continue</Trans>}
+        cancelLabel={<Trans>Cancel</Trans>}
+        onConfirm={onContinue}
+        onCancel={onCancel}
+        tone="warning"
+      />
     </DialogContent>
   );
 };
