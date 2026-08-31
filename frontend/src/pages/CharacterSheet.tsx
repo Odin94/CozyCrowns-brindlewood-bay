@@ -92,7 +92,7 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
         {activeView === "character" ? (
           <div className="conspiracy-view-enter relative mx-auto grid max-w-7xl grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {/* Column 1 */}
-            <div className="relative col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
+            <div className="relative col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 pt-14 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <div className="absolute top-0 left-0 w-full -mt-8">
                 <Tentacles setMenuOpen={setMenuOpen} />
               </div>
