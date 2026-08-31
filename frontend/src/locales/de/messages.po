@@ -100,7 +100,7 @@ msgstr "Charakter erfolgreich zurückgesetzt!"
 msgid "(owner)"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:527
+#: src/pages/MysteriesPage.tsx:546
 msgid "{label}"
 msgstr ""
 
@@ -169,7 +169,7 @@ msgstr "Erzähle eine Rückblende, in der Du zeigst, wie Du Dich als Mutter schl
 msgid "A flashback showing how you were an imperfect sister or daughter."
 msgstr "Erzähle eine Rückblende, in der Du zeigst, wie Du Dich als Schwester oder Tochter schlecht verhalten hast."
 
-#: src/pages/MysteriesPage.tsx:265
+#: src/pages/MysteriesPage.tsx:280
 msgid "A fresh parchment awaits."
 msgstr ""
 
@@ -298,11 +298,11 @@ msgstr ""
 msgid "Approved cases, copied as snapshots into your own casebook."
 msgstr ""
 
-#: src/components/character/DeleteConfirmDialog.tsx:48
+#: src/components/character/DeleteConfirmDialog.tsx:30
 msgid "Are you sure you want to delete \"{characterName}\"? This will clear all data and cannot be undone."
 msgstr "Bist du sicher, dass du \"{characterName}\" löschen willst? Das lässt sich nicht rückgängig machen."
 
-#: src/components/MenuDialog/ResetConfirmView.tsx:24
+#: src/components/MenuDialog/ResetConfirmView.tsx:14
 msgid "Are you sure you want to reset your character? This will clear all data and cannot be undone."
 msgstr "Bist du sicher, dass du deinen Charakter zurücksetzen möchtest? Dies wird alle Daten löschen und kann nicht rückgängig gemacht werden."
 
@@ -326,11 +326,11 @@ msgstr "Zu Beginn jeder Sitzung wird die Spielleiter/in eine Anrufbeantworter-Na
 msgid "At the table"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:645
+#: src/pages/MysteriesPage.tsx:670
 msgid "Autosave"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:614
+#: src/pages/MysteriesPage.tsx:639
 msgid "Autosaves are kept separately from your manual versions."
 msgstr ""
 
@@ -409,10 +409,10 @@ msgstr ""
 msgid "by Odin"
 msgstr "von Odin"
 
-#: src/components/character/DeleteConfirmDialog.tsx:73
-#: src/components/MenuDialog/ResetConfirmView.tsx:43
-#: src/components/MenuDialog/SaveFailureDialog.tsx:56
-#: src/pages/MysteriesPage.tsx:672
+#: src/components/character/DeleteConfirmDialog.tsx:39
+#: src/components/MenuDialog/ResetConfirmView.tsx:21
+#: src/components/MenuDialog/SaveFailureDialog.tsx:22
+#: src/pages/MysteriesPage.tsx:713
 #: src/pages/TheorizeBoard.tsx:506
 #: src/pages/TheorizeBoard.tsx:523
 msgid "Cancel"
@@ -438,7 +438,7 @@ msgstr "Charme, Selbstvertrauen, Einschüchterung und den Raum für sich einnehm
 msgid "Choose a Book Club"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:623
+#: src/pages/MysteriesPage.tsx:648
 msgid "Choose a mystery or create a new one."
 msgstr ""
 
@@ -480,7 +480,7 @@ msgid "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
 msgstr "Sammeln"
 
 #: src/pages/LibraryPage.tsx:107
-#: src/pages/MysteriesPage.tsx:373
+#: src/pages/MysteriesPage.tsx:388
 msgid "Complexity"
 msgstr ""
 
@@ -492,7 +492,7 @@ msgstr "Gemütsruhe"
 msgid "Conditions"
 msgstr "Zustände"
 
-#: src/components/MenuDialog/ResetConfirmView.tsx:16
+#: src/components/MenuDialog/ResetConfirmView.tsx:12
 msgid "Confirm Reset"
 msgstr "Zurücksetzen bestätigen"
 
@@ -500,7 +500,7 @@ msgstr "Zurücksetzen bestätigen"
 msgid "Connect to this note"
 msgstr ""
 
-#: src/components/MenuDialog/SaveFailureDialog.tsx:48
+#: src/components/MenuDialog/SaveFailureDialog.tsx:21
 msgid "Continue"
 msgstr "Fortfahren"
 
@@ -552,7 +552,7 @@ msgstr ""
 msgid "Could not create Book Club"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:267
+#: src/pages/MysteriesPage.tsx:282
 msgid "Could not create mystery"
 msgstr ""
 
@@ -576,7 +576,7 @@ msgstr ""
 msgid "Could not load library"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:181
+#: src/pages/MysteriesPage.tsx:188
 msgid "Could not load mysteries"
 msgstr ""
 
@@ -588,7 +588,7 @@ msgstr ""
 msgid "Could not move that note"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:285
+#: src/pages/MysteriesPage.tsx:300
 msgid "Could not remove mystery"
 msgstr ""
 
@@ -600,7 +600,7 @@ msgstr ""
 msgid "Could not rename that connection"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:242
+#: src/pages/MysteriesPage.tsx:257
 msgid "Could not save mystery"
 msgstr ""
 
@@ -616,7 +616,7 @@ msgstr ""
 msgid "Could not share this roll with your Book Club"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:298
+#: src/pages/MysteriesPage.tsx:313
 msgid "Could not submit mystery"
 msgstr ""
 
@@ -705,18 +705,18 @@ msgstr "Eine absolute Wahrheit über einen Verdächtigen anhand seines Aussehens
 msgid "Decline"
 msgstr "Ablehnen"
 
-#: src/pages/MysteriesPage.tsx:611
-#: src/pages/MysteriesPage.tsx:662
-#: src/pages/MysteriesPage.tsx:671
+#: src/pages/MysteriesPage.tsx:636
+#: src/pages/MysteriesPage.tsx:688
+#: src/pages/MysteriesPage.tsx:706
 #: src/pages/TheorizeBoard.tsx:522
 msgid "Delete"
 msgstr ""
 
-#: src/components/character/DeleteConfirmDialog.tsx:42
+#: src/components/character/DeleteConfirmDialog.tsx:28
 msgid "Delete \"{characterName}\""
 msgstr "\"{characterName}\" löschen"
 
-#: src/components/character/DeleteConfirmDialog.tsx:65
+#: src/components/character/DeleteConfirmDialog.tsx:38
 msgid "Delete Character"
 msgstr "Charakter löschen"
 
@@ -724,10 +724,10 @@ msgstr "Charakter löschen"
 msgid "Delete connection"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:422
-#: src/pages/MysteriesPage.tsx:493
-#: src/pages/MysteriesPage.tsx:556
-#: src/pages/MysteriesPage.tsx:594
+#: src/pages/MysteriesPage.tsx:439
+#: src/pages/MysteriesPage.tsx:512
+#: src/pages/MysteriesPage.tsx:579
+#: src/pages/MysteriesPage.tsx:619
 msgid "Description"
 msgstr ""
 
@@ -836,7 +836,7 @@ msgstr "Nachts jeden Ort frei betreten"
 msgid "Enter any place freely during the day"
 msgstr "Tagsüber jeden Ort frei betreten"
 
-#: src/pages/MysteriesPage.tsx:380
+#: src/pages/MysteriesPage.tsx:395
 msgid "Establishing questions (one per line)"
 msgstr ""
 
@@ -929,7 +929,7 @@ msgstr "Instinkt für seltsame, spirituelle und okkulte Kräfte am Werk."
 msgid "Introduce trivia as a Clue once per mystery"
 msgstr "Einmal pro Fall Trivia-Wissen als Hinweis einbringen"
 
-#: src/pages/MysteriesPage.tsx:365
+#: src/pages/MysteriesPage.tsx:380
 msgid "Introduction"
 msgstr ""
 
@@ -974,7 +974,7 @@ msgstr ""
 msgid "just now"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:345
+#: src/pages/MysteriesPage.tsx:360
 msgid "Keeper's private casebook"
 msgstr ""
 
@@ -982,7 +982,7 @@ msgstr ""
 msgid "Knitting"
 msgstr "Stricken"
 
-#: src/pages/MysteriesPage.tsx:634
+#: src/pages/MysteriesPage.tsx:659
 msgid "Last 10 auto-saves and 10 manual saves are preserved."
 msgstr ""
 
@@ -999,7 +999,7 @@ msgid "Loading..."
 msgstr "Lade..."
 
 #: src/pages/LibraryPage.tsx:113
-#: src/pages/MysteriesPage.tsx:389
+#: src/pages/MysteriesPage.tsx:404
 msgid "Locations"
 msgstr ""
 
@@ -1015,11 +1015,11 @@ msgstr "Verwalte deinen Charakter und Einstellungen."
 msgid "Manage your profile settings."
 msgstr "Verwalte deine Profileinstellungen."
 
-#: src/pages/MysteriesPage.tsx:645
+#: src/pages/MysteriesPage.tsx:670
 msgid "Manual save"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:239
+#: src/pages/MysteriesPage.tsx:254
 msgid "Manual version saved."
 msgstr ""
 
@@ -1056,7 +1056,7 @@ msgstr "Medizinischer Hintergrund und Medizintasche, die nie markiert wird"
 msgid "Menu"
 msgstr "Menü"
 
-#: src/pages/MysteriesPage.tsx:572
+#: src/pages/MysteriesPage.tsx:595
 msgid "Moments"
 msgstr ""
 
@@ -1065,7 +1065,7 @@ msgid "My mysteries"
 msgstr ""
 
 #: src/components/MenuDialog/MainMenuView.tsx:83
-#: src/pages/MysteriesPage.tsx:312
+#: src/pages/MysteriesPage.tsx:327
 msgid "Mysteries"
 msgstr ""
 
@@ -1082,12 +1082,12 @@ msgid "Mystery created"
 msgstr ""
 
 #: src/pages/BookClubOverview.tsx:876
-#: src/pages/MysteriesPage.tsx:348
+#: src/pages/MysteriesPage.tsx:363
 msgid "Mystery title"
 msgstr ""
 
 #: src/components/character/Name.tsx:20
-#: src/pages/MysteriesPage.tsx:471
+#: src/pages/MysteriesPage.tsx:490
 msgid "Name"
 msgstr "Name"
 
@@ -1137,7 +1137,7 @@ msgstr ""
 msgid "No mysteries await approval."
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:335
+#: src/pages/MysteriesPage.tsx:350
 msgid "No mysteries yet. Start with a fresh sheet."
 msgstr ""
 
@@ -1280,15 +1280,15 @@ msgstr "Ausstrahlung"
 msgid "Profile"
 msgstr "Profil"
 
-#: src/pages/MysteriesPage.tsx:434
+#: src/pages/MysteriesPage.tsx:451
 msgid "Prompt"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:320
+#: src/pages/MysteriesPage.tsx:335
 msgid "Public Library"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:360
+#: src/pages/MysteriesPage.tsx:375
 msgid "Publish"
 msgstr ""
 
@@ -1300,7 +1300,7 @@ msgstr "Queen SVG von <0>Darius Dan auf svgrepo</0>."
 msgid "Quilting"
 msgstr "Sticken"
 
-#: src/pages/MysteriesPage.tsx:505
+#: src/pages/MysteriesPage.tsx:524
 msgid "Quote"
 msgstr ""
 
@@ -1326,15 +1326,24 @@ msgid "Reload"
 msgstr ""
 
 #: src/pages/BookClubOverview.tsx:565
-#: src/pages/MysteriesPage.tsx:117
+#: src/pages/MysteriesPage.tsx:121
+#: src/pages/MysteriesPage.tsx:708
 msgid "Remove"
+msgstr ""
+
+#: src/pages/MysteriesPage.tsx:690
+msgid "Remove entry"
 msgstr ""
 
 #: src/pages/TheorizeBoard.tsx:554
 msgid "Remove tag"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:666
+#: src/pages/MysteriesPage.tsx:699
+msgid "Remove this entry? Any information entered here will be lost."
+msgstr ""
+
+#: src/pages/MysteriesPage.tsx:697
 msgid "Remove this mystery from your private library?"
 msgstr ""
 
@@ -1343,7 +1352,7 @@ msgid "Research, deduction, observation, and putting clues together."
 msgstr "Recherche, Schlussfolgern, Beobachtung und Hinweise zusammensetzen."
 
 #: src/components/MenuDialog/MainMenuView.tsx:97
-#: src/components/MenuDialog/ResetConfirmView.tsx:36
+#: src/components/MenuDialog/ResetConfirmView.tsx:20
 msgid "Reset Character"
 msgstr "Charakter zurücksetzen"
 
@@ -1351,13 +1360,13 @@ msgstr "Charakter zurücksetzen"
 msgid "Reset view"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:668
+#: src/pages/MysteriesPage.tsx:701
 msgid "Restore this saved version? Your current unsaved changes will be replaced."
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:649
-#: src/pages/MysteriesPage.tsx:662
-#: src/pages/MysteriesPage.tsx:671
+#: src/pages/MysteriesPage.tsx:674
+#: src/pages/MysteriesPage.tsx:692
+#: src/pages/MysteriesPage.tsx:710
 msgid "Restore this version"
 msgstr ""
 
@@ -1390,16 +1399,15 @@ msgstr ""
 #~ msgid "Save to Backend"
 #~ msgstr "Auf dem Server speichern"
 
-#: src/pages/MysteriesPage.tsx:356
+#: src/pages/MysteriesPage.tsx:371
 msgid "Save version"
 msgstr ""
 
-#: src/components/MenuDialog/SaveFailureDialog.tsx:37
+#: src/components/MenuDialog/SaveFailureDialog.tsx:16
 msgid "Saving current character failed. If you continue loading/switching, you will lose changes to your current character."
 msgstr "Momentanen Character speichern fehlgeschlagen. Wenn du fortfährst wirst du Änderungen an deinem momentanen Charakter verlieren."
 
-#: src/components/MenuDialog/SaveFailureDialog.tsx:25
-#: src/components/MenuDialog/SaveFailureDialog.tsx:31
+#: src/components/MenuDialog/SaveFailureDialog.tsx:14
 msgid "Saving Failed"
 msgstr "Speichern fehlgeschlagen"
 
@@ -1424,7 +1432,7 @@ msgstr "Wähle zu Beginn einen Spielzug. Zu Beginn darf kein Spielzug von mehr a
 msgid "Sensitivity"
 msgstr "Gespür"
 
-#: src/pages/MysteriesPage.tsx:369
+#: src/pages/MysteriesPage.tsx:384
 msgid "Set the scene, the victim, and the peculiar trouble..."
 msgstr ""
 
@@ -1456,7 +1464,7 @@ msgstr ""
 msgid "Sign In"
 msgstr "Einloggen"
 
-#: src/pages/MysteriesPage.tsx:58
+#: src/pages/MysteriesPage.tsx:62
 msgid "Sign in to continue"
 msgstr ""
 
@@ -1464,7 +1472,7 @@ msgstr ""
 msgid "Sign in to explore approved mysteries."
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:55
+#: src/pages/MysteriesPage.tsx:59
 msgid "Sign in to write, preserve, and share your mysteries."
 msgstr ""
 
@@ -1500,7 +1508,7 @@ msgstr "Stil"
 msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
 msgstr "Stilvolle Garderobe für Vorteil bei Würfen, die nie markiert wird"
 
-#: src/pages/MysteriesPage.tsx:296
+#: src/pages/MysteriesPage.tsx:311
 msgid "Submitted for superadmin approval."
 msgstr ""
 
@@ -1521,7 +1529,7 @@ msgid "Suspect"
 msgstr ""
 
 #: src/pages/LibraryPage.tsx:119
-#: src/pages/MysteriesPage.tsx:449
+#: src/pages/MysteriesPage.tsx:466
 msgid "Suspects"
 msgstr ""
 
@@ -1561,7 +1569,7 @@ msgstr "Wenn du zum ersten Mal einen Ort betrittst, kannst du die Spielleiter/in
 msgid "The GM manages mysteries and clues. A Book Club has one GM at a time."
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:52
+#: src/pages/MysteriesPage.tsx:56
 msgid "The Keeper's Desk"
 msgstr ""
 
@@ -1611,13 +1619,13 @@ msgstr ""
 msgid "This title stays in sync with the mystery clue list."
 msgstr ""
 
-#: src/components/character/DeleteConfirmDialog.tsx:55
+#: src/components/character/DeleteConfirmDialog.tsx:36
 msgid "This will also delete the character from the backend."
 msgstr "Das wird den Charakter auch vom Server löschen."
 
-#: src/pages/MysteriesPage.tsx:411
-#: src/pages/MysteriesPage.tsx:482
-#: src/pages/MysteriesPage.tsx:545
+#: src/pages/MysteriesPage.tsx:428
+#: src/pages/MysteriesPage.tsx:501
+#: src/pages/MysteriesPage.tsx:568
 #: src/pages/TheorizeBoard.tsx:502
 #: src/pages/TheorizeBoard.tsx:517
 msgid "Title"
@@ -1653,8 +1661,8 @@ msgid "Unnamed Maven"
 msgstr ""
 
 #: src/pages/MysteriesPage.tsx:27
-#: src/pages/MysteriesPage.tsx:222
-#: src/pages/MysteriesPage.tsx:330
+#: src/pages/MysteriesPage.tsx:237
+#: src/pages/MysteriesPage.tsx:345
 msgid "Untitled Mystery"
 msgstr ""
 
@@ -1662,7 +1670,7 @@ msgstr ""
 msgid "Up in Pumps"
 msgstr "Strickjacke und Stulpen"
 
-#: src/pages/MysteriesPage.tsx:631
+#: src/pages/MysteriesPage.tsx:656
 msgid "Version drawer"
 msgstr ""
 
