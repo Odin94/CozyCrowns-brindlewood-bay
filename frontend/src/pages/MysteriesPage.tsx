@@ -8,6 +8,7 @@ import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import {
   ArchiveRestore,
+  ArrowLeft,
   BookOpen,
   Feather,
   Library,
@@ -50,6 +51,10 @@ const SignInRequired = () => {
   const { signIn } = useAuth();
   return (
     <main className="mystery-desk min-h-screen grid place-items-center p-5">
+      <a href="/" className="mystery-sheet-link">
+        <ArrowLeft className="size-4" />
+        <Trans>Back to sheet</Trans>
+      </a>
       <section className="mystery-parchment max-w-lg text-center">
         <Feather className="mx-auto mb-3 size-10" />
         <h1>
@@ -318,7 +323,11 @@ const MysteriesPage = () => {
   if (!isAuthenticated) return <SignInRequired />;
 
   return (
-    <main className="mystery-desk min-h-screen p-3 sm:p-6">
+    <main className="mystery-desk min-h-screen p-3 pt-12 sm:p-6 sm:pt-14">
+      <a href="/" className="mystery-sheet-link">
+        <ArrowLeft className="size-4" />
+        <Trans>Back to sheet</Trans>
+      </a>
       <div className="mystery-workspace">
         <aside className="mystery-sidebar">
           <div className="flex items-center justify-between gap-2">
