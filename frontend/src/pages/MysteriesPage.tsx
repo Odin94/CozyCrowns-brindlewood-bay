@@ -41,6 +41,10 @@ const blankClue = () => ({ title: "", description: "" });
 const blankMoment = () => ({ description: "" });
 const contentSnapshot = (mystery: Pick<Mystery, "title" | "data">) =>
   JSON.stringify({ title: mystery.title, data: mystery.data });
+const hasEnteredInformation = (entry: object) =>
+  Object.entries(entry).some(
+    ([key, value]) => key !== "id" && typeof value === "string" && value.trim().length > 0,
+  );
 
 const SignInRequired = () => {
   const { signIn } = useAuth();
@@ -125,7 +129,10 @@ const MysteriesPage = () => {
   const [versions, setVersions] = useState<MysteryVersion[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [confirmation, setConfirmation] = useState<
-    { kind: "delete" } | { kind: "restore"; version: MysteryVersion } | null
+    | { kind: "delete" }
+    | { kind: "restore"; version: MysteryVersion }
+    | { kind: "remove-entry"; onConfirm: () => void }
+    | null
   >(null);
   const lastSavedById = useRef(new Map<string, string>());
   const latestVersionById = useRef(new Map<string, number>());
@@ -205,6 +212,14 @@ const MysteriesPage = () => {
           }
         : current,
     );
+  };
+
+  const removeEntry = (entry: object, remove: () => void) => {
+    if (!hasEnteredInformation(entry)) {
+      remove();
+      return;
+    }
+    setConfirmation({ kind: "remove-entry", onConfirm: remove });
   };
 
   const save = useCallback(
@@ -402,9 +417,11 @@ const MysteriesPage = () => {
                 <div key={location.id ?? `${location.title}-${index}`} className="mystery-card">
                   <RemoveCard
                     onClick={() =>
-                      updateSelected({
-                        locations: selected.data.locations.filter((_, i) => i !== index),
-                      })
+                      removeEntry(location, () =>
+                        updateSelected({
+                          locations: selected.data.locations.filter((_, i) => i !== index),
+                        }),
+                      )
                     }
                   />
                   <Field
@@ -462,9 +479,11 @@ const MysteriesPage = () => {
                 <div key={suspect.id ?? `${suspect.name}-${index}`} className="mystery-card">
                   <RemoveCard
                     onClick={() =>
-                      updateSelected({
-                        suspects: selected.data.suspects.filter((_, i) => i !== index),
-                      })
+                      removeEntry(suspect, () =>
+                        updateSelected({
+                          suspects: selected.data.suspects.filter((_, i) => i !== index),
+                        }),
+                      )
                     }
                   />
                   <Field
@@ -538,7 +557,11 @@ const MysteriesPage = () => {
                   <div key={clue.id ?? `${clue.title}-${index}`} className="mystery-card">
                     <RemoveCard
                       onClick={() =>
-                        updateSelected({ [key]: selected.data[key].filter((_, i) => i !== index) })
+                        removeEntry(clue, () =>
+                          updateSelected({
+                            [key]: selected.data[key].filter((_, i) => i !== index),
+                          }),
+                        )
                       }
                     />
                     <Field
@@ -585,9 +608,11 @@ const MysteriesPage = () => {
                 <div key={moment.id ?? `${moment.description}-${index}`} className="mystery-card">
                   <RemoveCard
                     onClick={() =>
-                      updateSelected({
-                        moments: selected.data.moments.filter((_, i) => i !== index),
-                      })
+                      removeEntry(moment, () =>
+                        updateSelected({
+                          moments: selected.data.moments.filter((_, i) => i !== index),
+                        }),
+                      )
                     }
                   />
                   <Field
@@ -659,20 +684,43 @@ const MysteriesPage = () => {
             if (!open) setConfirmation(null);
           }}
           title={
-            confirmation.kind === "delete" ? <Trans>Delete</Trans> : <Trans>Restore this version</Trans>
+            confirmation.kind === "delete" ? (
+              <Trans>Delete</Trans>
+            ) : confirmation.kind === "remove-entry" ? (
+              <Trans>Remove entry</Trans>
+            ) : (
+              <Trans>Restore this version</Trans>
+            )
           }
           description={
             confirmation.kind === "delete" ? (
               <Trans>Remove this mystery from your private library?</Trans>
+            ) : confirmation.kind === "remove-entry" ? (
+              <Trans>Remove this entry? Any information entered here will be lost.</Trans>
             ) : (
-              <Trans>Restore this saved version? Your current unsaved changes will be replaced.</Trans>
+              <Trans>
+                Restore this saved version? Your current unsaved changes will be replaced.
+              </Trans>
             )
           }
-          confirmLabel={confirmation.kind === "delete" ? <Trans>Delete</Trans> : <Trans>Restore this version</Trans>}
+          confirmLabel={
+            confirmation.kind === "delete" ? (
+              <Trans>Delete</Trans>
+            ) : confirmation.kind === "remove-entry" ? (
+              <Trans>Remove</Trans>
+            ) : (
+              <Trans>Restore this version</Trans>
+            )
+          }
           cancelLabel={<Trans>Cancel</Trans>}
           onConfirm={() => {
             if (confirmation.kind === "delete") {
               void deleteMystery();
+              return;
+            }
+            if (confirmation.kind === "remove-entry") {
+              confirmation.onConfirm();
+              setConfirmation(null);
               return;
             }
             if (selected) {
@@ -685,7 +733,7 @@ const MysteriesPage = () => {
             setConfirmation(null);
           }}
           onCancel={() => setConfirmation(null)}
-          tone={confirmation.kind === "delete" ? "danger" : "warning"}
+          tone={confirmation.kind === "restore" ? "warning" : "danger"}
         />
       ) : null}
     </main>
