@@ -19,7 +19,7 @@ import {
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import {
-  ArrowLeft,
+  ChevronLeft,
   Crosshair,
   Filter,
   Link2,
@@ -315,8 +315,14 @@ export default function TheorizeBoard({
     <div className="flex min-h-screen flex-col bg-[#11141c] text-gray-100">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700 bg-[#1b2230] px-4 py-3 shadow-lg">
         <div className="flex min-w-0 items-center gap-3">
-          <Button variant="outline" size="sm" onClick={onClose}>
-            <ArrowLeft className="size-4" /> <Trans>Book Club</Trans>
+          <Button
+            variant="bare"
+            size="icon"
+            className="subtle-back-button"
+            onClick={onClose}
+            aria-label={t`Book Club`}
+          >
+            <ChevronLeft className="size-5" aria-hidden="true" />
           </Button>
           <div className="min-w-0">
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-200">

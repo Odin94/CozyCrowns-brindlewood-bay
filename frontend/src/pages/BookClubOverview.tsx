@@ -325,16 +325,18 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 p-3 text-gray-100 sm:p-6">
+    <div className="relative min-h-screen bg-gray-950 p-3 pt-12 text-gray-100 sm:p-6 sm:pt-14">
+      <Button
+        variant="bare"
+        size="icon"
+        className="subtle-back-button absolute left-3 top-3 sm:left-6 sm:top-6"
+        onClick={onClose}
+        aria-label={t`Back to sheet`}
+      >
+        <ChevronLeft className="size-5" aria-hidden="true" />
+      </Button>
       <div className="mx-auto flex max-w-7xl gap-6">
         <aside className="hidden w-64 shrink-0 rounded-xl bg-gray-800 p-4 shadow-lg lg:block">
-          <Button
-            variant="ghost"
-            className="mb-6 w-full justify-start text-gray-100"
-            onClick={onClose}
-          >
-            <ChevronLeft className="size-4" /> <Trans>Character sheets</Trans>
-          </Button>
           <h2 className="flex items-center gap-2 font-semibold text-secondary">
             <Users className="size-4" /> <Trans>Book Clubs</Trans>
           </h2>
@@ -384,28 +386,23 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
         </aside>
 
         <main className="min-w-0 flex-1">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <Button variant="outline" onClick={onClose}>
-              <ChevronLeft className="size-4" /> <Trans>Back to sheet</Trans>
-            </Button>
-            <div className="flex items-center gap-2 lg:hidden">
-              <select
-                value={club?.id ?? ""}
-                onChange={(event) => {
-                  if (event.target.value) selectClub(event.target.value);
-                }}
-                className="h-9 max-w-52 rounded-md border border-gray-600 bg-gray-800 px-2 text-sm"
-              >
-                <option value="">
-                  <Trans>Choose a Book Club</Trans>
+          <div className="mb-5 flex justify-end lg:hidden">
+            <select
+              value={club?.id ?? ""}
+              onChange={(event) => {
+                if (event.target.value) selectClub(event.target.value);
+              }}
+              className="h-9 max-w-52 rounded-md border border-gray-600 bg-gray-800 px-2 text-sm"
+            >
+              <option value="">
+                <Trans>Choose a Book Club</Trans>
+              </option>
+              {clubs.map((entry) => (
+                <option key={entry.id} value={entry.id}>
+                  {entry.name}
                 </option>
-                {clubs.map((entry) => (
-                  <option key={entry.id} value={entry.id}>
-                    {entry.name}
-                  </option>
-                ))}
-              </select>
-            </div>
+              ))}
+            </select>
           </div>
 
           {invitations.length > 0 && (

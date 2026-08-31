@@ -118,18 +118,34 @@ body {
   position: absolute;
   top: 0.85rem;
   left: 0.85rem;
+  color: hsl(180 30% 89% / 0.8);
+}
+.subtle-back-button,
+.mystery-sheet-link {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
-  color: hsl(180 30% 89% / 0.8);
-  font-size: 0.8rem;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 0.5rem;
+  background: transparent;
+  box-shadow: none;
+  opacity: 0.72;
   text-decoration: none;
-  transition: color 150ms ease;
+  transition:
+    background-color 150ms ease,
+    color 150ms ease,
+    opacity 150ms ease;
 }
+.subtle-back-button:hover,
+.subtle-back-button:focus-visible,
 .mystery-sheet-link:hover,
 .mystery-sheet-link:focus-visible {
+  background: hsl(0 0% 100% / 0.1);
   color: hsl(180 30% 96%);
-  text-decoration: underline;
+  opacity: 1;
 }
 
 .mystery-workspace {

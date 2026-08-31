@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { api, type PublishedMystery } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ArrowLeft, Check, Feather, Library, ScrollText } from "lucide-react";
+import { Check, ChevronLeft, Feather, Library, ScrollText } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -71,13 +71,12 @@ const LibraryPage = () => {
   };
 
   return (
-    <main className="mystery-desk min-h-screen p-4 sm:p-8">
+    <main className="mystery-desk min-h-screen p-4 pt-12 sm:p-8 sm:pt-14">
+      <a href="/mysteries" className="mystery-sheet-link" aria-label={t`My mysteries`}>
+        <ChevronLeft className="size-5" aria-hidden="true" />
+      </a>
       <div className="library-page">
         <header className="library-header">
-          <a href="/mysteries">
-            <ArrowLeft className="size-4" />
-            <Trans>My mysteries</Trans>
-          </a>
           <div>
             <div className="mb-2 flex justify-center gap-3">
               <Library className="size-9" />
