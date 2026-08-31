@@ -28,7 +28,7 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
   --muted-foreground: 280 25% 40%;
   --accent: 150 40% 75%; /* #a8e6cf - witch hazel minty green accent */
   --accent-foreground: 280 30% 25%;
-  --destructive: 0 70% 70%; /* Soft red */
+  --destructive: 0 65% 42%; /* Deep red with accessible light-text contrast */
   --destructive-foreground: 280 20% 95%;
   --border: 280 25% 60%; /* Medium purple border */
   --input: 280 20% 85%;
@@ -86,6 +86,7 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
     --color-ring: hsl(280 40% 60%);
     --color-dark-primary: hsl(180 30% 25%); /* Dark mint primary */
     --color-dark-secondary: hsl(280 30% 25%);
+    --color-dark-foreground: hsl(280 20% 95%);
     --color-tertiary: hsl(278, 55%, 87%); /* #e3ccf0 - near-white purple for subtle hover */
   }
 }

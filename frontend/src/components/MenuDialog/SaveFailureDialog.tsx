@@ -42,7 +42,8 @@ export const SaveFailureDialog = ({ onContinue, onCancel }: SaveFailureDialogPro
         <div className="flex gap-2">
           <Button
             onClick={onContinue}
-            className="flex-1 text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring"
+            variant="destructive"
+            className="flex-1 dark-ring"
           >
             <Trans>Continue</Trans>
           </Button>

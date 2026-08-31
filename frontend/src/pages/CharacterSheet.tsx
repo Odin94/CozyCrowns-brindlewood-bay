@@ -129,7 +129,8 @@ const CharacterSheet = () => {
             <div className="hidden lg:block absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
               <Button
                 onClick={() => setMenuOpen(true)}
-                className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
+                variant="dark"
+                className="transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
               >
                 <Trans>Menu</Trans>
               </Button>
@@ -146,7 +147,7 @@ const CharacterSheet = () => {
       <div className="lg:hidden flex justify-center mt-8">
         <Button
           onClick={() => setMenuOpen(true)}
-          className="bg-dark-secondary hover:bg-dark-foreground/90"
+          variant="dark"
         >
           <Trans>Menu</Trans>
         </Button>

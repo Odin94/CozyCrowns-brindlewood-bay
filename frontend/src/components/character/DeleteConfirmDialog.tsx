@@ -58,7 +58,8 @@ const DeleteConfirmDialog = ({
         <div className="flex gap-2">
           <Button
             onClick={onConfirm}
-            className="flex-1 text-primary bg-red-600/50 hover:bg-red-700/80 dark-ring"
+            variant="destructive"
+            className="flex-1 dark-ring"
           >
             <Trash2 className="w-4 h-4 mr-2" />
             <Trans>Delete Character</Trans>
