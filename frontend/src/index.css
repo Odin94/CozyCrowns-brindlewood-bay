@@ -126,13 +126,19 @@ body {
 .mystery-sidebar,
 .mystery-versions,
 .library-book {
-  border: 1px solid hsl(280 25% 47%);
+  --paper-edge: url("./assets/torn-paper-edge.svg");
+  border: 1px solid hsl(274 32% 61% / 0.88);
   background:
-    linear-gradient(100deg, hsl(50 33% 84%), hsl(48 38% 91%) 48%, hsl(54 28% 82%)),
-    repeating-linear-gradient(0deg, transparent 0 1.35rem, hsl(280 30% 45% / 0.07) 1.4rem 1.45rem);
-  box-shadow:
-    0 0.5rem 1.5rem hsl(280 42% 8% / 0.65),
-    inset 0 0 2rem hsl(150 30% 50% / 0.13);
+    radial-gradient(circle at 12% 0%, hsl(280 55% 97% / 0.74), transparent 32%),
+    linear-gradient(115deg, hsl(271 37% 90%), hsl(274 43% 94%) 48%, hsl(267 34% 89%)),
+    repeating-linear-gradient(0deg, transparent 0 1.35rem, hsl(274 30% 42% / 0.045) 1.4rem 1.45rem);
+  filter: drop-shadow(0 0.5rem 1.15rem hsl(280 42% 8% / 0.55));
+  -webkit-mask:
+    linear-gradient(#000 0 0) 0 1rem / 100% calc(100% - 1rem) no-repeat,
+    var(--paper-edge) 0 0 / 20rem 1.1rem repeat-x;
+  mask:
+    linear-gradient(#000 0 0) 0 1rem / 100% calc(100% - 1rem) no-repeat,
+    var(--paper-edge) 0 0 / 20rem 1.1rem repeat-x;
 }
 .mystery-parchment {
   padding: clamp(1rem, 2vw, 2.3rem);
@@ -216,7 +222,7 @@ body {
 }
 .mystery-field input,
 .mystery-field textarea {
-  background: hsl(50 48% 96% / 0.56);
+  background: hsl(275 48% 98% / 0.6);
   border: 0;
   border-bottom: 1px solid hsl(280 26% 40%);
   border-radius: 0;
@@ -251,9 +257,12 @@ body {
   margin-top: 0.7rem;
 }
 .mystery-card {
-  background: hsl(180 36% 90% / 0.29);
+  background:
+    linear-gradient(115deg, hsl(274 44% 94% / 0.92), hsl(270 34% 90% / 0.88)),
+    repeating-linear-gradient(0deg, transparent 0 1.2rem, hsl(274 28% 42% / 0.04) 1.25rem 1.3rem);
   padding: 0.75rem;
-  border-left: 3px solid hsl(150 32% 49%);
+  border-left: 3px solid hsl(274 37% 59%);
+  box-shadow: inset 0 1px hsl(0 0% 100% / 0.48);
 }
 .mystery-versions h2 {
   display: flex;
