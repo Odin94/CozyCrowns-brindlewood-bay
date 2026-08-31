@@ -1,6 +1,7 @@
 import type { FastifyRequest, FastifyReply } from "fastify";
 import { workos } from "../config/workos.js";
 import { env } from "../config/env.js";
+import { getLocalSession, isLocalSessionToken } from "../utils/localAuth.js";
 
 declare module "fastify" {
   interface FastifyRequest {
@@ -30,7 +31,17 @@ type AuthenticatedSession = {
 
 export const authenticateSealedSession = async (
   token: string,
+  request?: FastifyRequest,
 ): Promise<AuthenticatedSession | null> => {
+  if (request) {
+    const localSession = getLocalSession(token, request);
+    if (localSession) return { user: localSession.user };
+  }
+
+  // Local-development tokens must never be offered to WorkOS, including when
+  // copied from a local browser and sent to a different server.
+  if (isLocalSessionToken(token)) return null;
+
   const cookiePassword = env.WORKOS_COOKIE_PASSWORD;
   if (!cookiePassword) return null;
 
@@ -84,7 +95,7 @@ export const authenticateUser = async (
     return;
   }
 
-  const session = await authenticateSealedSession(token);
+  const session = await authenticateSealedSession(token, request);
   if (!session) {
     reply.code(401).send({
       error: "Unauthorized",

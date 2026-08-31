@@ -432,7 +432,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       }
 
       authenticating = true;
-      const session = await authenticateSealedSession(parsed.data.token);
+      const session = await authenticateSealedSession(parsed.data.token, request);
       if (!session) {
         socket.close(1008, "Unauthorized");
         return;

@@ -10,6 +10,13 @@ import { zodToFastifySchema } from "../utils/zodToFastifySchema.js";
 import { authenticateUser, type AuthenticatedRequest } from "../middleware/auth.js";
 import { logger } from "../utils/logger.js";
 import { trackEvent } from "../utils/tracker.js";
+import {
+  getLocalSession,
+  isLocalSessionToken,
+  issueLocalSession,
+  localDevelopmentUser,
+  revokeLocalSession,
+} from "../utils/localAuth.js";
 
 const callbackQuerySchema = z.object({
   code: z.string().min(1, "Authorization code is required"),
@@ -28,6 +35,35 @@ const statesMatch = (expected: string, actual: string) => {
 };
 
 export async function authRoutes(fastify: FastifyInstance) {
+  fastify.post("/auth/local-login", async (request, reply) => {
+    const token = issueLocalSession(request);
+    if (!token) {
+      reply.code(404).send({ error: "Local sign-in is only available on localhost" });
+      return;
+    }
+
+    const existingUser = await db.query.users.findFirst({
+      where: eq(schema.users.id, localDevelopmentUser.id),
+    });
+    if (!existingUser) {
+      await db.insert(schema.users).values(localDevelopmentUser);
+    }
+
+    const dbUser = await db.query.users.findFirst({
+      where: eq(schema.users.id, localDevelopmentUser.id),
+    });
+
+    reply.send({
+      success: true,
+      token,
+      user: {
+        ...localDevelopmentUser,
+        nickname: dbUser?.nickname ?? null,
+        isSuperadmin: dbUser?.isSuperadmin ?? false,
+      },
+    });
+  });
+
   fastify.get("/auth/login", async (request, reply) => {
     try {
       let redirectUri: string;
@@ -253,21 +289,25 @@ export async function authRoutes(fastify: FastifyInstance) {
         let logoutUrl: string | null = null;
 
         if (token) {
-          try {
-            const session = workos.userManagement.loadSealedSession({
-              sessionData: token,
-              cookiePassword,
-            });
-
-            const authResult = await session.authenticate();
-            if (authResult.authenticated && "sessionId" in authResult) {
-              logoutUrl = workos.userManagement.getLogoutUrl({
-                sessionId: authResult.sessionId,
-                returnTo: env.FRONTEND_URL,
+          if (getLocalSession(token, request)) {
+            revokeLocalSession(token);
+          } else if (!isLocalSessionToken(token)) {
+            try {
+              const session = workos.userManagement.loadSealedSession({
+                sessionData: token,
+                cookiePassword,
               });
+
+              const authResult = await session.authenticate();
+              if (authResult.authenticated && "sessionId" in authResult) {
+                logoutUrl = workos.userManagement.getLogoutUrl({
+                  sessionId: authResult.sessionId,
+                  returnTo: env.FRONTEND_URL,
+                });
+              }
+            } catch (error) {
+              fastify.log.warn({ err: error }, "Failed to get WorkOS logout URL");
             }
-          } catch (error) {
-            fastify.log.warn({ err: error }, "Failed to get WorkOS logout URL");
           }
         }
 
@@ -323,6 +363,24 @@ export async function authRoutes(fastify: FastifyInstance) {
           error: "Unauthorized",
           message: "No token provided",
         });
+        return;
+      }
+
+      const localSession = getLocalSession(token, request);
+      if (localSession) {
+        const dbUser = await db.query.users.findFirst({
+          where: eq(schema.users.id, localSession.user.id),
+        });
+        reply.send({
+          ...localSession.user,
+          nickname: dbUser?.nickname ?? null,
+          isSuperadmin: dbUser?.isSuperadmin ?? false,
+        });
+        return;
+      }
+
+      if (isLocalSessionToken(token)) {
+        reply.code(401).send({ error: "Unauthorized", message: "Session is invalid" });
         return;
       }
 

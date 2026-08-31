@@ -262,6 +262,14 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 };
 
 export const api = {
+  loginLocally: async (): Promise<AuthCallbackResponse> => {
+    const response = await fetch(`${API_URL}/auth/local-login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+    });
+    return handleResponse<AuthCallbackResponse>(response);
+  },
+
   getCurrentUser: async (): Promise<User & { token?: string }> => {
     const response = await fetch(`${API_URL}/auth/me`, {
       headers: getAuthHeaders({ includeContentType: false }),

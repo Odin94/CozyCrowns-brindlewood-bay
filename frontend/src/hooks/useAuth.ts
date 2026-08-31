@@ -2,10 +2,16 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import posthog from "posthog-js";
 import { useEffect } from "react";
 import { api, API_URL, tokenStorage } from "../utils/api";
+import { env } from "../config/env";
 
-const signIn = () => {
+const startWorkosSignIn = () => {
   window.location.href = `${API_URL}/auth/login`;
 };
+
+const isLocalBrowser = () =>
+  window.location.hostname === "localhost" ||
+  window.location.hostname === "127.0.0.1" ||
+  window.location.hostname === "::1";
 
 export const useAuth = () => {
   const queryClient = useQueryClient();
@@ -44,6 +50,35 @@ export const useAuth = () => {
   });
 
   const user = userData || null;
+
+  const finishSignIn = (data: { token: string; user: NonNullable<typeof userData> }) => {
+    tokenStorage.set(data.token);
+    queryClient.setQueryData(["auth", "me"], data.user);
+    queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+
+    try {
+      posthog.identify(data.user.id, {
+        email: data.user.email,
+        firstName: data.user.firstName,
+        lastName: data.user.lastName,
+      });
+    } catch (error) {
+      console.warn("PostHog identify failed:", error);
+    }
+  };
+
+  const localLoginMutation = useMutation({
+    mutationFn: () => api.loginLocally(),
+    onSuccess: finishSignIn,
+  });
+
+  const signIn = () => {
+    if (env.VITE_LOCAL_AUTH_ENABLED && isLocalBrowser()) {
+      localLoginMutation.mutate();
+      return;
+    }
+    startWorkosSignIn();
+  };
 
   useEffect(() => {
     if (user) {
@@ -100,21 +135,7 @@ export const useAuth = () => {
     mutationFn: ({ code, state }: { code: string; state?: string }) =>
       api.handleAuthCallback(code, state),
     onSuccess: (data) => {
-      if (data.token) {
-        tokenStorage.set(data.token);
-      }
-      queryClient.setQueryData(["auth", "me"], data.user);
-      queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-
-      try {
-        posthog.identify(data.user.id, {
-          email: data.user.email,
-          firstName: data.user.firstName,
-          lastName: data.user.lastName,
-        });
-      } catch (error) {
-        console.warn("PostHog identify failed:", error);
-      }
+      finishSignIn(data);
 
       window.location.href = "/";
     },

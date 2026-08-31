@@ -5,6 +5,10 @@ const raw = import.meta.env;
 const envSchema = z.object({
   VITE_API_URL: z.url().default("http://localhost:3001"),
   VITE_PUBLIC_POSTHOG_KEY: z.string().optional(),
+  VITE_LOCAL_AUTH_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -14,6 +18,7 @@ const loadEnv = (): Env => {
     return envSchema.parse({
       VITE_API_URL: raw.VITE_API_URL,
       VITE_PUBLIC_POSTHOG_KEY: raw.VITE_PUBLIC_POSTHOG_KEY,
+      VITE_LOCAL_AUTH_ENABLED: raw.VITE_LOCAL_AUTH_ENABLED,
     });
   } catch (error) {
     if (error instanceof z.ZodError) {

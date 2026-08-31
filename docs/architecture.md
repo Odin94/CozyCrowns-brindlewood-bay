@@ -47,6 +47,7 @@ CozyCrowns is a Brindlewood Bay character sheet that works offline in the browse
 3. Backend auth lives in `backend/src/middleware/auth.ts` and `backend/src/routes/auth.ts`.
 4. If a session is stale but refreshable, the backend returns `X-New-Token`; `handleResponse()` in the frontend saves it automatically.
 5. Login starts with a redirect to `/auth/login`, callback handling happens in `/auth/callback`, and logout asks the backend for a WorkOS logout URL.
+6. Local testing can opt into a loopback-only session via `LOCAL_AUTH_ENABLED=true` in the backend and `VITE_LOCAL_AUTH_ENABLED=true` in the frontend. It uses `local-development-user`, has an in-memory eight-hour token, and must stay disabled outside local development.
 
 ### Backend Sync Flow
 1. `useBackendCharactersSync` runs once per authenticated user session.
