@@ -40,12 +40,17 @@ const fastify = Fastify({
 });
 
 const frontendOrigin = new URL(env.FRONTEND_URL).origin;
-const localDevelopmentOrigins = new Set([
-  "http://localhost:3000",
-  "http://127.0.0.1:3000",
-  "https://localhost:3000",
-  "https://127.0.0.1:3000",
-]);
+const isLocalDevelopmentOrigin = (origin: string) => {
+  try {
+    const url = new URL(origin);
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "::1")
+    );
+  } catch {
+    return false;
+  }
+};
 
 await fastify.register(cors, {
   origin: (origin, callback) => {
@@ -55,7 +60,7 @@ await fastify.register(cors, {
 
     if (
       origin === frontendOrigin ||
-      (env.NODE_ENV !== "production" && localDevelopmentOrigins.has(origin))
+      (env.NODE_ENV !== "production" && isLocalDevelopmentOrigin(origin))
     ) {
       return callback(null, true);
     }

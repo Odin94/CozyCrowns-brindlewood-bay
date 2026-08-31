@@ -26,6 +26,7 @@
   - backend request validation in `backend/src/schema/character.ts`
 - Backend character rows are soft-deleted through `deletedAt`; routes that fetch live characters should keep filtering deleted rows out.
 - Auth uses a WorkOS sealed session stored in frontend `localStorage` as a bearer token. Backend auth may rotate the token through `X-New-Token`, so frontend and backend auth changes usually span both sides.
+- Local auth for manual and LLM testing is opt-in: set both `backend/LOCAL_AUTH_ENABLED=true` and `frontend/VITE_LOCAL_AUTH_ENABLED=true`. It creates a `local-development-user` without contacting WorkOS and is accepted only when both browser and backend are on the loopback interface; keep it disabled outside local development.
 - User-facing text should use Lingui macros. If copy changes, regenerate catalogs before finishing.
 
 ## Workflow Triggers
