@@ -8,7 +8,7 @@ import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import {
   ArchiveRestore,
-  ArrowLeft,
+  ChevronLeft,
   BookOpen,
   Feather,
   Library,
@@ -52,8 +52,10 @@ const SignInRequired = () => {
   return (
     <main className="mystery-desk min-h-screen grid place-items-center p-5">
       <a href="/" className="mystery-sheet-link">
-        <ArrowLeft className="size-4" />
-        <Trans>Back to sheet</Trans>
+        <ChevronLeft className="size-5" aria-hidden="true" />
+        <span className="sr-only">
+          <Trans>Back to sheet</Trans>
+        </span>
       </a>
       <section className="mystery-parchment max-w-lg text-center">
         <Feather className="mx-auto mb-3 size-10" />
@@ -325,8 +327,10 @@ const MysteriesPage = () => {
   return (
     <main className="mystery-desk min-h-screen p-3 pt-12 sm:p-6 sm:pt-14">
       <a href="/" className="mystery-sheet-link">
-        <ArrowLeft className="size-4" />
-        <Trans>Back to sheet</Trans>
+        <ChevronLeft className="size-5" aria-hidden="true" />
+        <span className="sr-only">
+          <Trans>Back to sheet</Trans>
+        </span>
       </a>
       <div className="mystery-workspace">
         <aside className="mystery-sidebar">
