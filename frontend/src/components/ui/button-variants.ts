@@ -5,14 +5,15 @@ export const buttonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/70",
-        dark: "bg-dark-secondary text-dark-foreground hover:bg-dark-secondary/85 disabled:bg-dark-secondary/70",
+        default:
+          "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/70 disabled:text-primary-foreground",
+        dark:
+          "bg-dark-secondary text-dark-foreground hover:bg-dark-secondary/85 disabled:bg-dark-secondary/70 disabled:text-dark-foreground",
         destructive:
-          "bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:bg-destructive/65",
+          "bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:bg-destructive/65 disabled:text-destructive-foreground",
         outline:
           "border-border bg-card text-card-foreground hover:border-secondary hover:bg-secondary disabled:border-gray-600 disabled:text-gray-400",
-        secondary:
-          "bg-secondary text-secondary-foreground hover:bg-secondary/85 disabled:bg-secondary/70",
+        secondary: "bg-secondary text-secondary-foreground hover:bg-secondary/85 disabled:bg-secondary/70 disabled:text-secondary-foreground",
         ghost:
           "bg-secondary/35 text-secondary-foreground hover:bg-secondary/70 disabled:text-gray-400",
         bare: "bg-transparent text-inherit shadow-none hover:bg-transparent hover:shadow-none",
