@@ -91,12 +91,12 @@ TODOdin: Do floating crowns like the flowers in bg here? https://computecuter.co
   }
 }
 
-a {
+a:not([class]) {
   font-weight: 500;
   color: hsl(var(--foreground));
   text-decoration: inherit;
 }
-a:hover {
+a:not([class]):hover {
   text-decoration: underline;
 }
 

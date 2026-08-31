@@ -8,7 +8,7 @@ export const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-primary/70 disabled:text-primary-foreground",
         dark:
-          "bg-dark-secondary text-dark-foreground hover:bg-dark-secondary/85 disabled:bg-dark-secondary/70 disabled:text-dark-foreground",
+          "bg-dark-secondary text-[hsl(var(--dark-foreground))] hover:bg-dark-secondary/85 disabled:bg-dark-secondary/70 disabled:text-[hsl(var(--dark-foreground))]",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 disabled:bg-destructive/65 disabled:text-destructive-foreground",
         outline:
