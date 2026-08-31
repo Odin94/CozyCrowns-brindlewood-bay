@@ -322,8 +322,8 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
 
   return (
     <DialogContent
-      className={`${getMaxWidth()} bg-secondary/90 border-0 shadow-none`}
-      style={{ boxShadow: "none" }}
+      className={`${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : "bg-secondary/90 border-0 shadow-none"}`}
+      style={showResetConfirm ? undefined : { boxShadow: "none" }}
     >
       <VisuallyHidden.Root asChild>
         <DialogTitle>Menu</DialogTitle>

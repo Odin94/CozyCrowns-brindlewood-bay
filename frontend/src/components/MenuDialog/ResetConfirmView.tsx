@@ -1,7 +1,5 @@
-import { Button } from "@/components/ui/button";
-import { DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { ConfirmationDialogPanel } from "@/components/ui/confirmation-dialog";
 import { Trans } from "@lingui/react/macro";
-import { Trash2 } from "lucide-react";
 
 type ResetConfirmViewProps = {
   onConfirm: () => void;
@@ -10,40 +8,19 @@ type ResetConfirmViewProps = {
 
 export const ResetConfirmView = ({ onConfirm, onCancel }: ResetConfirmViewProps) => {
   return (
-    <>
-      <DialogHeader>
-        <DialogTitle className="text-gray-800">
-          <Trans>Confirm Reset</Trans>
-        </DialogTitle>
-        <DialogDescription className="text-gray-800">
-          <Trans>This action will permanently delete all your character data.</Trans>
-        </DialogDescription>
-      </DialogHeader>
-      <div className="grid gap-4">
-        <p className="text-sm text-gray-800">
-          <Trans>
-            Are you sure you want to reset your character? This will clear all data and cannot be
-            undone.
-          </Trans>
-        </p>
-        <div className="flex gap-2">
-          <Button
-            onClick={onConfirm}
-            variant="destructive"
-            className="flex-1 dark-ring"
-          >
-            <Trash2 className="w-4 h-4 mr-2" />
-            <Trans>Reset Character</Trans>
-          </Button>
-          <Button
-            onClick={onCancel}
-            variant="dark"
-            className="flex-1 dark-ring"
-          >
-            <Trans>Cancel</Trans>
-          </Button>
-        </div>
-      </div>
-    </>
+    <ConfirmationDialogPanel
+      title={<Trans>Confirm Reset</Trans>}
+      description={
+        <Trans>
+          Are you sure you want to reset your character? This will clear all data and cannot be
+          undone.
+        </Trans>
+      }
+      notice={<Trans>This action will permanently delete all your character data.</Trans>}
+      confirmLabel={<Trans>Reset Character</Trans>}
+      cancelLabel={<Trans>Cancel</Trans>}
+      onConfirm={onConfirm}
+      onCancel={onCancel}
+    />
   );
 };
