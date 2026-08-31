@@ -27,7 +27,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
-import { useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) => {
   // useLingui() is Required to ensure component rerenders when locale changes
@@ -49,7 +49,50 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
   } = useDeleteConfirmation();
   const { saveCurrentCharacter } = useCharacterSave();
   const { setCurrentCharacter } = useCharacterStore();
-  const { isAuthenticated } = useAuth();
+  const currentCharacter = useCharacterStore(
+    (state) => state.characters[state.currentCharacterIndex],
+  );
+  const currentCharacterIndex = useCharacterStore((state) => state.currentCharacterIndex);
+  const { isAuthenticated, user } = useAuth();
+  const lastAutoSaved = useRef<string | null>(null);
+  const autoSaveSignature = useMemo(
+    () =>
+      JSON.stringify({
+        characterKey: currentCharacterIndex,
+        data: currentCharacter && {
+          name: currentCharacter.name,
+          style: currentCharacter.style,
+          activity: currentCharacter.activity,
+          abilities: currentCharacter.abilities,
+          xp: currentCharacter.xp,
+          conditions: currentCharacter.conditions,
+          endOfSessionChecks: currentCharacter.endOfSessionChecks,
+          advancementChecks: currentCharacter.advancementChecks,
+          mavenMoves: currentCharacter.mavenMoves,
+          crownChecks: currentCharacter.crownChecks,
+          voidChecks: currentCharacter.voidChecks,
+          cozyItems: currentCharacter.cozyItems,
+        },
+      }),
+    [currentCharacter, currentCharacterIndex],
+  );
+
+  useEffect(() => {
+    lastAutoSaved.current = null;
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!isAuthenticated || !currentCharacter?.name.trim()) return;
+    if (lastAutoSaved.current === autoSaveSignature) return;
+
+    const timer = window.setTimeout(() => {
+      void saveCurrentCharacter().then((saved) => {
+        if (saved) lastAutoSaved.current = autoSaveSignature;
+      });
+    }, 800);
+
+    return () => window.clearTimeout(timer);
+  }, [autoSaveSignature, currentCharacter?.name, isAuthenticated, saveCurrentCharacter]);
 
   const handleSwitchCharacter = async (index: number): Promise<boolean> => {
     const saveSuccess = await saveCurrentCharacter();
@@ -92,7 +135,7 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
         {activeView === "character" ? (
           <div className="conspiracy-view-enter relative mx-auto grid max-w-7xl grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {/* Column 1 */}
-            <div className="relative col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 pt-14 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
+            <div className="relative col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <div className="absolute top-0 left-0 w-full -mt-8">
                 <Tentacles setMenuOpen={setMenuOpen} />
               </div>
@@ -138,10 +181,7 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
 
       {/* Menu Button - Mobile version */}
       <div className="lg:hidden flex justify-center mt-8">
-        <Button
-          onClick={() => setMenuOpen(true)}
-          variant="dark"
-        >
+        <Button onClick={() => setMenuOpen(true)} variant="dark">
           <Trans>Menu</Trans>
         </Button>
       </div>
