@@ -49,7 +49,9 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
   const [newClubName, setNewClubName] = useState("");
   const [inviteNickname, setInviteNickname] = useState("");
   const [selectedMysteryId, setSelectedMysteryId] = useState("");
-  const [theorizeMystery, setTheorizeMystery] = useState<{ id: string; title: string } | null>(null);
+  const [theorizeMystery, setTheorizeMystery] = useState<{ id: string; title: string } | null>(
+    null,
+  );
   const [clueText, setClueText] = useState("");
   const [voidClueText, setVoidClueText] = useState("");
   const [loading, setLoading] = useState(true);
@@ -75,34 +77,38 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
     [onClubChange],
   );
 
-  const refresh = useCallback(async (showError = true) => {
-    if (isRefreshing.current) {
-      refreshQueued.current = true;
-      return;
-    }
-    isRefreshing.current = true;
-    try {
-      const response = await api.getBookClubs();
-      setClubs(response.clubs);
-      setInvitations(response.invitations);
-      const previousClubId = selectedClubIdRef.current;
-      const initialClubId = clubId ?? previousClubId ?? response.clubs[0]?.id ?? null;
-      selectedClubIdRef.current = initialClubId;
-      setSelectedClubId(initialClubId);
-      if (!clubId && !previousClubId && response.clubs[0]) {
-        onClubChange(response.clubs[0].id);
+  const refresh = useCallback(
+    async (showError = true) => {
+      if (isRefreshing.current) {
+        refreshQueued.current = true;
+        return;
       }
-    } catch (error) {
-      if (showError) toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
-    } finally {
-      setLoading(false);
-      isRefreshing.current = false;
-      if (refreshQueued.current) {
-        refreshQueued.current = false;
-        void refresh(false);
+      isRefreshing.current = true;
+      try {
+        const response = await api.getBookClubs();
+        setClubs(response.clubs);
+        setInvitations(response.invitations);
+        const previousClubId = selectedClubIdRef.current;
+        const initialClubId = clubId ?? previousClubId ?? response.clubs[0]?.id ?? null;
+        selectedClubIdRef.current = initialClubId;
+        setSelectedClubId(initialClubId);
+        if (!clubId && !previousClubId && response.clubs[0]) {
+          onClubChange(response.clubs[0].id);
+        }
+      } catch (error) {
+        if (showError)
+          toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
+      } finally {
+        setLoading(false);
+        isRefreshing.current = false;
+        if (refreshQueued.current) {
+          refreshQueued.current = false;
+          void refresh(false);
+        }
       }
-    }
-  }, [clubId, onClubChange]);
+    },
+    [clubId, onClubChange],
+  );
 
   useEffect(() => {
     void refresh();
@@ -379,10 +385,10 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
 
         <main className="min-w-0 flex-1">
           <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+            <Button variant="outline" onClick={onClose}>
+              <ChevronLeft className="size-4" /> <Trans>Back to sheet</Trans>
+            </Button>
             <div className="flex items-center gap-2 lg:hidden">
-              <Button variant="outline" onClick={onClose}>
-                <ChevronLeft className="size-4" /> <Trans>Sheets</Trans>
-              </Button>
               <select
                 value={club?.id ?? ""}
                 onChange={(event) => {
@@ -686,36 +692,57 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                   <h2 className="flex items-center gap-2 font-semibold text-secondary">
                     <Dices className="size-4" /> <Trans>Recent table rolls</Trans>
                   </h2>
-                  <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                    {characters.map((character) => (
-                      <div key={character.id} className="rounded-lg bg-gray-900/65 p-3">
-                        <h3 className="font-medium">{characterName(character)}</h3>
-                        <div className="mt-2 space-y-2 text-sm">
-                          {club.rolls
-                            .filter((roll) => roll.characterId === character.id)
-                            .slice(0, 4)
-                            .map((roll) => (
-                              <p key={roll.id}>
-                                <span className="text-gray-400">
-                                  {relativeTime(roll.createdAt)} · {roll.dice} · {roll.label}
-                                </span>
-                                <br />
-                                <strong className="text-tertiary">{roll.result}</strong>
-                              </p>
-                            ))}
-                          {!club.rolls.some((roll) => roll.characterId === character.id) && (
-                            <p className="text-gray-400">
-                              <Trans>No rolls yet</Trans>
-                            </p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                    {characters.length === 0 && (
-                      <p className="text-sm text-gray-400">
-                        <Trans>Add a Maven to start sharing rolls.</Trans>
-                      </p>
-                    )}
+                  <div className="mt-3 overflow-x-auto rounded-lg border border-gray-700">
+                    <table className="w-full min-w-[38rem] text-left text-sm">
+                      <thead className="bg-gray-900/85 text-xs uppercase tracking-wide text-gray-400">
+                        <tr>
+                          <th className="px-3 py-2 font-medium">
+                            <Trans>Maven</Trans>
+                          </th>
+                          <th className="px-3 py-2 font-medium">
+                            <Trans>Roll</Trans>
+                          </th>
+                          <th className="px-3 py-2 font-medium">
+                            <Trans>Dice</Trans>
+                          </th>
+                          <th className="px-3 py-2 font-medium">
+                            <Trans>Result</Trans>
+                          </th>
+                          <th className="px-3 py-2 font-medium">
+                            <Trans>When</Trans>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-gray-700 bg-gray-900/45">
+                        {club.rolls.map((roll) => (
+                          <tr key={roll.id}>
+                            <td className="px-3 py-2 font-medium text-gray-100">
+                              {roll.characterName}
+                            </td>
+                            <td className="px-3 py-2 text-gray-300">{roll.label}</td>
+                            <td className="px-3 py-2 font-mono text-xs text-gray-300">
+                              {roll.dice}
+                            </td>
+                            <td className="px-3 py-2 font-medium text-tertiary">{roll.result}</td>
+                            <td
+                              className="px-3 py-2 text-gray-400"
+                              title={new Date(roll.createdAt).toLocaleString()}
+                            >
+                              {relativeTime(roll.createdAt)}
+                            </td>
+                          </tr>
+                        ))}
+                        {club.rolls.length === 0 && (
+                          <tr>
+                            <td className="px-3 py-5 text-center text-gray-400" colSpan={5}>
+                              <Trans>
+                                No rolls yet. Share a roll from a Maven’s sheet to add it here.
+                              </Trans>
+                            </td>
+                          </tr>
+                        )}
+                      </tbody>
+                    </table>
                   </div>
                 </section>
               </section>
@@ -958,7 +985,12 @@ function MavenCard({
         <h3 className="mt-1 !text-2xl leading-none text-tertiary">{characterName(character)}</h3>
       </div>
       <div className="mt-4 space-y-4">
-        <SummaryList title={t`Active conditions`} items={conditions} empty={t`None recorded`} chips />
+        <SummaryList
+          title={t`Active conditions`}
+          items={conditions}
+          empty={t`None recorded`}
+          chips
+        />
         <SummaryList title={t`Available Maven Moves`} items={mavenMoves} empty={t`None recorded`} />
         <SummaryBlock
           title={t`Crown of the Void`}
@@ -1006,9 +1038,7 @@ function SummaryBlock({ title, value }: { title: string; value: string }) {
   return (
     <section>
       <p className="text-xs font-bold uppercase tracking-wider text-secondary">{title}</p>
-      <p className="mt-1 text-sm leading-snug text-gray-200">
-        {value}
-      </p>
+      <p className="mt-1 text-sm leading-snug text-gray-200">{value}</p>
     </section>
   );
 }
@@ -1065,7 +1095,13 @@ function ItemList({
 
   return (
     <div className="mt-2">
-      <p className={tone === "available" ? "text-xs font-semibold text-emerald-300" : "text-xs font-semibold text-gray-400"}>
+      <p
+        className={
+          tone === "available"
+            ? "text-xs font-semibold text-emerald-300"
+            : "text-xs font-semibold text-gray-400"
+        }
+      >
         {label}
       </p>
       <ul className="mt-1.5 space-y-1.5">

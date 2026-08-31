@@ -1,11 +1,22 @@
 import { Button } from "@/components/ui/button";
+import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { api, type Mystery, type MysteryData, type MysteryVersion } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { ArchiveRestore, BookOpen, Feather, Library, Plus, Save, Send, Trash2, X } from "lucide-react";
+import {
+  ArchiveRestore,
+  BookOpen,
+  Feather,
+  Library,
+  Plus,
+  Save,
+  Send,
+  Trash2,
+  X,
+} from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -28,8 +39,8 @@ const blankLocation = () => ({ title: "", description: "", prompt: "" });
 const blankSuspect = () => ({ name: "", title: "", description: "", quote: "" });
 const blankClue = () => ({ title: "", description: "" });
 const blankMoment = () => ({ description: "" });
-const snapshot = (mystery: Mystery) =>
-  JSON.stringify({ title: mystery.title, data: mystery.data, version: mystery.version });
+const contentSnapshot = (mystery: Pick<Mystery, "title" | "data">) =>
+  JSON.stringify({ title: mystery.title, data: mystery.data });
 
 const SignInRequired = () => {
   const { signIn } = useAuth();
@@ -113,21 +124,28 @@ const MysteriesPage = () => {
   const [selected, setSelected] = useState<Mystery | null>(null);
   const [versions, setVersions] = useState<MysteryVersion[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const lastSaved = useRef<string>("");
+  const [confirmation, setConfirmation] = useState<
+    { kind: "delete" } | { kind: "restore"; version: MysteryVersion } | null
+  >(null);
+  const lastSavedById = useRef(new Map<string, string>());
+  const latestVersionById = useRef(new Map<string, number>());
   const selectedRef = useRef<Mystery | null>(null);
   const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
 
   const choose = useCallback((mystery: Mystery) => {
-    lastSaved.current = snapshot(mystery);
+    lastSavedById.current.set(mystery.id, contentSnapshot(mystery));
+    latestVersionById.current.set(mystery.id, mystery.version);
+    selectedRef.current = mystery;
+    setVersions([]);
     setSelected(mystery);
   }, []);
 
   const refreshVersions = useCallback(async (id: string) => {
     try {
       const result = await api.getMysteryVersions(id);
-      setVersions(result.versions);
+      if (selectedRef.current?.id === id) setVersions(result.versions);
     } catch {
-      setVersions([]);
+      if (selectedRef.current?.id === id) setVersions([]);
     }
   }, []);
 
@@ -153,7 +171,9 @@ const MysteriesPage = () => {
       if (result.mysteries[0]) {
         setSelected((current) => {
           if (current) return current;
-          lastSaved.current = snapshot(result.mysteries[0]);
+          lastSavedById.current.set(result.mysteries[0].id, contentSnapshot(result.mysteries[0]));
+          latestVersionById.current.set(result.mysteries[0].id, result.mysteries[0].version);
+          selectedRef.current = result.mysteries[0];
           return result.mysteries[0];
         });
       }
@@ -189,26 +209,31 @@ const MysteriesPage = () => {
 
   const save = useCallback(
     (kind: "auto" | "manual"): Promise<boolean> => {
+      const submitted = selectedRef.current;
+      if (!submitted) return Promise.resolve(false);
+      const submittedContent = contentSnapshot(submitted);
+      if (kind === "auto" && lastSavedById.current.get(submitted.id) === submittedContent) {
+        return Promise.resolve(true);
+      }
+
       const task = async (): Promise<boolean> => {
-        const submitted = selectedRef.current;
-        if (!submitted) return false;
-        const submittedSignature = snapshot(submitted);
-        if (kind === "auto" && submittedSignature === lastSaved.current) return true;
         try {
           const saved = await api.updateMystery(submitted.id, {
             title: submitted.title || t`Untitled Mystery`,
             data: submitted.data,
-            version: submitted.version,
+            version: latestVersionById.current.get(submitted.id) ?? submitted.version,
             saveKind: kind,
           });
-          lastSaved.current = snapshot(saved);
+          latestVersionById.current.set(saved.id, saved.version);
+          lastSavedById.current.set(saved.id, contentSnapshot(saved));
           setMysteries((current) =>
             current.map((mystery) => (mystery.id === saved.id ? saved : mystery)),
           );
           setSelected((current) => {
-            if (!current || current.id !== saved.id || snapshot(current) !== submittedSignature)
-              return current;
-            return saved;
+            if (!current || current.id !== saved.id) return current;
+            return contentSnapshot(current) === submittedContent
+              ? saved
+              : { ...current, version: saved.version };
           });
           void refreshVersions(saved.id);
           if (kind === "manual") toast.success(t`Manual version saved.`);
@@ -224,9 +249,9 @@ const MysteriesPage = () => {
     [refreshVersions],
   );
 
-  const saveSignature = useMemo(() => (selected ? snapshot(selected) : ""), [selected]);
+  const saveSignature = useMemo(() => (selected ? contentSnapshot(selected) : ""), [selected]);
   useEffect(() => {
-    if (!selected || saveSignature === lastSaved.current) return;
+    if (!selected || saveSignature === lastSavedById.current.get(selected.id)) return;
     const timer = window.setTimeout(() => void save("auto"), 900);
     return () => window.clearTimeout(timer);
   }, [save, saveSignature, selected]);
@@ -244,13 +269,18 @@ const MysteriesPage = () => {
   };
 
   const deleteMystery = async () => {
-    if (!selected || !window.confirm(t`Remove this mystery from your private library?`)) return;
+    if (!selected) return;
     try {
       await api.deleteMystery(selected.id);
       const remaining = mysteries.filter((mystery) => mystery.id !== selected.id);
+      selectedRef.current = remaining[0] ?? null;
       setMysteries(remaining);
       setSelected(remaining[0] ?? null);
+      setVersions([]);
+      lastSavedById.current.delete(selected.id);
+      latestVersionById.current.delete(selected.id);
       localStorage.removeItem(draftKey);
+      setConfirmation(null);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not remove mystery`);
     }
@@ -555,7 +585,9 @@ const MysteriesPage = () => {
                 <div key={moment.id ?? `${moment.description}-${index}`} className="mystery-card">
                   <RemoveCard
                     onClick={() =>
-                      updateSelected({ moments: selected.data.moments.filter((_, i) => i !== index) })
+                      updateSelected({
+                        moments: selected.data.moments.filter((_, i) => i !== index),
+                      })
                     }
                   />
                   <Field
@@ -574,7 +606,7 @@ const MysteriesPage = () => {
               ))}
             </Section>
             <footer className="mystery-footer">
-              <Button variant="destructive" onClick={() => void deleteMystery()}>
+              <Button variant="destructive" onClick={() => setConfirmation({ kind: "delete" })}>
                 <Trash2 className="size-4" />
                 <Trans>Delete</Trans>
               </Button>
@@ -605,9 +637,9 @@ const MysteriesPage = () => {
             <Button
               key={version.id}
               variant="bare"
-              onClick={() =>
-                selected && setSelected({ ...selected, title: version.title, data: version.data })
-              }
+              onClick={() => {
+                if (selected) setConfirmation({ kind: "restore", version });
+              }}
             >
               <strong>
                 {version.kind === "manual" ? <Trans>Manual save</Trans> : <Trans>Autosave</Trans>}
@@ -620,6 +652,42 @@ const MysteriesPage = () => {
           ))}
         </aside>
       </div>
+      {confirmation ? (
+        <ConfirmationDialog
+          open
+          onOpenChange={(open) => {
+            if (!open) setConfirmation(null);
+          }}
+          title={
+            confirmation.kind === "delete" ? <Trans>Delete</Trans> : <Trans>Restore this version</Trans>
+          }
+          description={
+            confirmation.kind === "delete" ? (
+              <Trans>Remove this mystery from your private library?</Trans>
+            ) : (
+              <Trans>Restore this saved version? Your current unsaved changes will be replaced.</Trans>
+            )
+          }
+          confirmLabel={confirmation.kind === "delete" ? <Trans>Delete</Trans> : <Trans>Restore this version</Trans>}
+          cancelLabel={<Trans>Cancel</Trans>}
+          onConfirm={() => {
+            if (confirmation.kind === "delete") {
+              void deleteMystery();
+              return;
+            }
+            if (selected) {
+              setSelected({
+                ...selected,
+                title: confirmation.version.title,
+                data: confirmation.version.data,
+              });
+            }
+            setConfirmation(null);
+          }}
+          onCancel={() => setConfirmation(null)}
+          tone={confirmation.kind === "delete" ? "danger" : "warning"}
+        />
+      ) : null}
     </main>
   );
 };

@@ -274,15 +274,6 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
     input.click();
   };
 
-  const handleSaveToBackend = async () => {
-    const success = await saveCurrentCharacter();
-    if (success) {
-      toast.success(i18n._("Character saved successfully!"));
-    } else {
-      toast.error(i18n._("Failed to save character. Please try again."));
-    }
-  };
-
   const handleSaveFailureContinue = () => {
     if (pendingLoadAction) {
       pendingLoadAction();
@@ -358,7 +349,6 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
           onCreditsClick={() => setShowCredits(true)}
           onMeClick={() => setShowMe(true)}
           onLanguageChange={handleLanguageChange}
-          onSaveToBackend={handleSaveToBackend}
           isAuthenticated={isAuthenticated}
           onBookClubsClick={onBookClubsClick}
         />

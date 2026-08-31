@@ -14,7 +14,6 @@ import {
   Feather,
   FileDown,
   Globe,
-  Save,
   Trash2,
   Upload,
   Users,
@@ -28,7 +27,6 @@ type MainMenuViewProps = {
   onCreditsClick: () => void;
   onMeClick: () => void;
   onLanguageChange: (locale: string) => void;
-  onSaveToBackend?: () => void;
   isAuthenticated?: boolean;
   onBookClubsClick?: () => void;
 };
@@ -41,7 +39,6 @@ export const MainMenuView = ({
   onCreditsClick,
   onMeClick,
   onLanguageChange,
-  onSaveToBackend,
   isAuthenticated,
   onBookClubsClick,
 }: MainMenuViewProps) => {
@@ -69,67 +66,33 @@ export const MainMenuView = ({
         </DropdownMenu>
       </div>
       <div className="grid gap-4">
-        <Button
-          onClick={onDownloadPDF}
-          variant="dark"
-          className="w-full dark-ring"
-        >
+        <Button onClick={onDownloadPDF} variant="dark" className="w-full dark-ring">
           <FileDown className="w-4 h-4 mr-2" />
           <Trans>Download PDF</Trans>
         </Button>
-        {isAuthenticated && onSaveToBackend ? (
-          <Button
-            onClick={onSaveToBackend}
-            variant="dark"
-            className="w-full dark-ring"
-          >
-            <Save className="w-4 h-4 mr-2" />
-            <Trans>Save to Backend</Trans>
-          </Button>
-        ) : null}
         {isAuthenticated && onBookClubsClick ? (
-          <Button
-            onClick={onBookClubsClick}
-            variant="dark"
-            className="w-full dark-ring"
-          >
+          <Button onClick={onBookClubsClick} variant="dark" className="w-full dark-ring">
             <Users className="w-4 h-4 mr-2" />
             <Trans>Book Clubs</Trans>
           </Button>
         ) : null}
         {isAuthenticated ? (
-          <Button
-            asChild
-            variant="dark"
-            className="w-full dark-ring"
-          >
+          <Button asChild variant="dark" className="w-full dark-ring">
             <a href="/mysteries">
               <Feather className="w-4 h-4 mr-2" />
               <Trans>Mysteries</Trans>
             </a>
           </Button>
         ) : null}
-        <Button
-          onClick={onDownloadJSON}
-          variant="dark"
-          className="w-full dark-ring"
-        >
+        <Button onClick={onDownloadJSON} variant="dark" className="w-full dark-ring">
           <Download className="w-4 h-4 mr-2" />
           <Trans>Download save file</Trans>
         </Button>
-        <Button
-          onClick={onLoadFromJSON}
-          variant="dark"
-          className="w-full dark-ring"
-        >
+        <Button onClick={onLoadFromJSON} variant="dark" className="w-full dark-ring">
           <Upload className="w-4 h-4 mr-2" />
           <Trans>Load from save file</Trans>
         </Button>
-        <Button
-          onClick={onResetClick}
-          variant="destructive"
-          className="w-full dark-ring"
-        >
+        <Button onClick={onResetClick} variant="destructive" className="w-full dark-ring">
           <Trash2 className="w-4 h-4 mr-2" />
           <Trans>Reset Character</Trans>
         </Button>
