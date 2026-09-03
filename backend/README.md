@@ -128,9 +128,10 @@ pnpm start
 
 Pushing a change to `main` that touches `backend/**` runs the `Deploy backend`
 GitHub Actions workflow. The workflow connects to `46.224.62.32` and runs
-`updateCode.sh`, which creates a SQLite backup before pulling, building,
-migrating, restarting PM2, and checking the health endpoint. Deployments are
-queued rather than cancelled so a database migration can finish safely.
+`updateCode.sh` for the exact pushed commit. The script creates a SQLite backup
+before fetching that commit, building, migrating, restarting PM2, and checking
+the local health endpoint. Deployments are queued rather than cancelled so a
+database migration can finish safely.
 
 Configure these repository settings before the first deployment:
 
@@ -142,15 +143,32 @@ Configure these repository settings before the first deployment:
 - Optional repository variable `HETZNER_SSH_USER`: SSH account to use. It
   defaults to `github-deploy`.
 
-The recommended SSH account is a dedicated `github-deploy` user whose key is
-restricted to this purpose and which can run only the update script without a
-password. Add this `sudoers` rule on the server using `visudo` (adjust the
-command path only if the checkout lives elsewhere):
+Use a dedicated `github-deploy` user whose key is restricted to this purpose
+and which can run only the update script without a password. Create the account
+and its SSH directory if they do not already exist:
 
-```sudoers
-github-deploy ALL=(root) NOPASSWD: /opt/cozycrowns/backend/scripts/updateCode.sh
+```bash
+sudo useradd --create-home --user-group --shell /bin/sh github-deploy
+sudo install -d -m 700 -o github-deploy -g github-deploy /home/github-deploy/.ssh
 ```
 
-For an existing root-only setup, set `HETZNER_SSH_USER` to `root` and authorize
-the deployment key for root instead. A dedicated account is preferable because
-the workflow needs only this one root operation.
+Then refresh the server checkout so it contains `deployCommand.sh`:
+
+```bash
+sudo -u cozycrowns git -C /opt/cozycrowns fetch --no-tags origin main
+sudo -u cozycrowns git -C /opt/cozycrowns checkout --detach origin/main
+```
+
+Then add the public half of the deployment key to
+`/home/github-deploy/.ssh/authorized_keys`, prefixed with these restrictions:
+
+```
+command="/opt/cozycrowns/backend/scripts/deployCommand.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty ssh-ed25519 AAAA... github-actions-cozycrowns
+```
+
+Finally, add this `sudoers` rule using `visudo` (adjust the command path only
+if the checkout lives elsewhere):
+
+```sudoers
+github-deploy ALL=(root) NOPASSWD: /opt/cozycrowns/backend/scripts/updateCode.sh *
+```

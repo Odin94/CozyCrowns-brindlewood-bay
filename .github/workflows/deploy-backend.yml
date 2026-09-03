@@ -45,4 +45,4 @@ jobs:
             -o StrictHostKeyChecking=yes \
             -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
             "$HETZNER_SSH_USER@$HETZNER_HOST" \
-            'sudo --non-interactive /opt/cozycrowns/backend/scripts/updateCode.sh'
+            'sudo --non-interactive /opt/cozycrowns/backend/scripts/updateCode.sh ${{ github.sha }}'

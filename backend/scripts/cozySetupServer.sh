@@ -48,7 +48,8 @@ chown -R "$APP_USER:$APP_USER" "$LOG_DIR"
 
 echo -e "${YELLOW}Setting up repository...${NC}"
 if [ -d "$APP_DIR/.git" ]; then
-    runuser -u "$APP_USER" -- git -C "$APP_DIR" pull
+    runuser -u "$APP_USER" -- git -C "$APP_DIR" fetch --no-tags origin main
+    runuser -u "$APP_USER" -- git -C "$APP_DIR" checkout --detach origin/main
 else
     runuser -u "$APP_USER" -- git clone "$REPO_URL" "$APP_DIR"
 fi
