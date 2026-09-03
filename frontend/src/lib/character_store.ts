@@ -43,6 +43,8 @@ export type CharacterState = {
   remove: (localId: string) => void;
   updateSelected: (change: Partial<CharacterData>) => void;
   selected: () => CharacterRecord;
+  record: (localId: string) => CharacterRecord | undefined;
+  updateRemoteVersion: (localId: string, id: string, version: number) => void;
   updateSelectedRemoteVersion: (id: string, version: number) => void;
   clearSelectedRemoteMetadata: () => void;
   mergeRemote: (backendCharacters: BackendCharacter[]) => void;
@@ -121,13 +123,16 @@ export const useCharacterStore = create<CharacterState>()(
         },
         updateSelected,
         selected: () => selectedRecord(get()),
-        updateSelectedRemoteVersion: (id, version) => {
-          const current = selectedRecord(get());
+        record: (localId) => get().characters.find((character) => character.localId === localId),
+        updateRemoteVersion: (localId, id, version) => {
           set((state) => ({
             characters: state.characters.map((character) =>
-              character.localId === current.localId ? { ...character, id, version } : character,
+              character.localId === localId ? { ...character, id, version } : character,
             ),
           }));
+        },
+        updateSelectedRemoteVersion: (id, version) => {
+          get().updateRemoteVersion(selectedRecord(get()).localId, id, version);
         },
         clearSelectedRemoteMetadata: () => {
           const current = selectedRecord(get());
@@ -201,16 +206,17 @@ export const useCharacterStore = create<CharacterState>()(
           currentCharacterIndex?: number;
           characters?: Array<Record<string, unknown>>;
         };
-        const characters =
+        const migratedCharacters =
           oldState.characters?.map((character) =>
             recordFrom(character, {
               localId: typeof character.localId === "string" ? character.localId : newLocalId(),
               id: typeof character.id === "string" ? character.id : undefined,
               version: typeof character.version === "number" ? character.version : undefined,
             }),
-          ) ?? [newRecord()];
+          ) ?? [];
+        const characters = migratedCharacters.length > 0 ? migratedCharacters : [newRecord()];
         const selected = characters[oldState.currentCharacterIndex ?? 0] ?? characters[0];
-        return { ...oldState, characters, selectedCharacterId: selected.localId } as CharacterState;
+        return { characters, selectedCharacterId: selected.localId } as CharacterState;
       },
       merge: (persisted, current) => {
         const state = persisted as Partial<CharacterState>;
@@ -228,7 +234,7 @@ export const useCharacterStore = create<CharacterState>()(
         )
           ? state.selectedCharacterId!
           : characters[0].localId;
-        return { ...current, ...state, characters, selectedCharacterId };
+        return { ...current, characters, selectedCharacterId };
       },
     },
   ),
