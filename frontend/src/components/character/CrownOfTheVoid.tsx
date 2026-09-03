@@ -8,7 +8,8 @@ import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 
 const CrownOfTheVoid = () => {
-  const { voidChecks, setVoidChecks } = useCharacterStore();
+  const voidChecks = useCharacterStore((state) => state.selected().voidChecks);
+  const setVoidChecks = useCharacterStore((state) => state.setVoidChecks);
   const handleCheckChange = (index: number, checked: boolean) => {
     const newChecks = [...voidChecks];
     newChecks[index] = checked;

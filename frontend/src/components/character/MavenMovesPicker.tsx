@@ -16,7 +16,8 @@ import { ScrollText } from "lucide-react";
 type MoveTab = "classic" | "alternate";
 
 const MavenMovesPicker = () => {
-  const { mavenMoves, setMavenMoves } = useCharacterStore();
+  const mavenMoves = useCharacterStore((state) => state.selected().mavenMoves);
+  const setMavenMoves = useCharacterStore((state) => state.setMavenMoves);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<MoveTab>("classic");
 

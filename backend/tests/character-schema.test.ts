@@ -10,15 +10,21 @@ test("create character validation supplies safe defaults", () => {
     name: "",
     style: "",
     activity: "",
-    abilities: [],
+    abilities: [
+      { name: "Vitality", value: 0 },
+      { name: "Composure", value: 1 },
+      { name: "Reason", value: 1 },
+      { name: "Presence", value: 0 },
+      { name: "Sensitivity", value: -1 },
+    ],
     xp: 0,
     conditions: "",
-    endOfSessionChecks: [],
-    advancementChecks: [],
+    endOfSessionChecks: [false, false, false, false, false, false, false],
+    advancementChecks: [false, false, false, false, false],
     mavenMoves: "",
-    crownChecks: [],
-    voidChecks: [],
-    cozyItems: [],
+    crownChecks: [false, false, false, false, false, false, false],
+    voidChecks: [false, false, false, false, false],
+    cozyItems: Array.from({ length: 12 }, () => ({ checked: false, text: "" })),
   });
 });
 

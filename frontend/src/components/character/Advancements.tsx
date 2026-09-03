@@ -6,7 +6,8 @@ import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 
 const Advancements = () => {
-  const { advancementChecks, setAdvancementChecks } = useCharacterStore();
+  const advancementChecks = useCharacterStore((state) => state.selected().advancementChecks);
+  const setAdvancementChecks = useCharacterStore((state) => state.setAdvancementChecks);
   const advancementOptions = getAdvancementOptions().map((option, index) => ({
     id: `advancement-${index}`,
     option,

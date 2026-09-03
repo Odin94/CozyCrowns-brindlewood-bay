@@ -4,7 +4,8 @@ import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 
 const XpTrack = () => {
-  const { xp, setXp } = useCharacterStore();
+  const xp = useCharacterStore((state) => state.selected().xp);
+  const setXp = useCharacterStore((state) => state.setXp);
   return (
     <div className="flex items-center gap-4">
       <Label className="text-lg font-semibold text-gray-200 whitespace-nowrap">

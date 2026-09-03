@@ -100,7 +100,9 @@ const RollMenu = ({ menu, onClose, onRoll }: RollMenuProps) => {
 };
 
 const Abilities = () => {
-  const { abilities, setAbilities, getCharacterData } = useCharacterStore();
+  const abilities = useCharacterStore((state) => state.selected().abilities);
+  const setAbilities = useCharacterStore((state) => state.setAbilities);
+  const getCharacterData = useCharacterStore((state) => state.getCharacterData);
   const activeBookClub = useBookClubStore((state) => state.activeBookClub);
   const shareRolls = useBookClubStore((state) => state.shareRolls);
   const { isAuthenticated } = useAuth();

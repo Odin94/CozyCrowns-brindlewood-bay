@@ -12,7 +12,8 @@ import { Trans, useLingui } from "@lingui/react/macro";
 import { ScrollText } from "lucide-react";
 
 const Name = () => {
-  const { name, setName } = useCharacterStore();
+  const name = useCharacterStore((state) => state.selected().name);
+  const setName = useCharacterStore((state) => state.setName);
   const { i18n } = useLingui();
   return (
     <div className="space-y-3">

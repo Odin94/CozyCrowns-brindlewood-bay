@@ -1,6 +1,11 @@
 import { z } from "zod";
-import { getAdvancementOptions, getCrownOfTheVoid, getEndOfSessionQuestions } from "@/game_data";
-import { getDefaultAbilities } from "@/lib/character_store";
+import {
+  createDefaultCharacter,
+  normalizeCharacter,
+  type Ability,
+  type CharacterData,
+  type CozyItem,
+} from "@/lib/character_document";
 
 export const AbilitySchema = z.object({
   name: z.string(),
@@ -13,35 +18,20 @@ export const CozyItemSchema = z.object({
 });
 
 export const CharacterDataSchema = z.object({
-  id: z.string().optional(),
-  version: z.number().optional(),
-  schemaVersion: z.number().optional().default(1),
-  name: z.string().optional().default(""),
-  style: z.string().optional().default(""),
-  activity: z.string().optional().default(""),
-  abilities: z.array(AbilitySchema).optional().default(getDefaultAbilities()),
-  xp: z.number().optional().default(0),
-  conditions: z.string().optional().default(""),
-  endOfSessionChecks: z
-    .array(z.boolean())
-    .optional()
-    .default(getEndOfSessionQuestions().map(() => false)),
-  advancementChecks: z
-    .array(z.boolean())
-    .optional()
-    .default(getAdvancementOptions().map(() => false)),
-  mavenMoves: z.string().optional().default(""),
-  crownChecks: z
-    .array(z.boolean())
-    .optional()
-    .default(getCrownOfTheVoid().map(() => false)),
-  voidChecks: z
-    .array(z.boolean())
-    .optional()
-    .default(getCrownOfTheVoid().map(() => false)),
-  cozyItems: z.array(CozyItemSchema).optional().default([]),
-});
+  schemaVersion: z.number().optional(),
+  name: z.string().optional(),
+  style: z.string().optional(),
+  activity: z.string().optional(),
+  abilities: z.array(AbilitySchema).optional(),
+  xp: z.number().optional(),
+  conditions: z.string().optional(),
+  endOfSessionChecks: z.array(z.boolean()).optional(),
+  advancementChecks: z.array(z.boolean()).optional(),
+  mavenMoves: z.string().optional(),
+  crownChecks: z.array(z.boolean()).optional(),
+  voidChecks: z.array(z.boolean()).optional(),
+  cozyItems: z.array(CozyItemSchema).optional(),
+}).transform(normalizeCharacter);
 
-export type Ability = z.infer<typeof AbilitySchema>;
-export type CozyItem = z.infer<typeof CozyItemSchema>;
-export type CharacterData = z.infer<typeof CharacterDataSchema>;
+export { createDefaultCharacter };
+export type { Ability, CharacterData, CozyItem };

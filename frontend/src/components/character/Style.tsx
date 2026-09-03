@@ -12,7 +12,8 @@ import { Trans } from "@lingui/react/macro";
 import { ScrollText } from "lucide-react";
 
 const Style = () => {
-  const { style, setStyle } = useCharacterStore();
+  const style = useCharacterStore((state) => state.selected().style);
+  const setStyle = useCharacterStore((state) => state.setStyle);
 
   // Get the styles dynamically so they update when locale changes
   const sampleStyles = getSampleStyles();

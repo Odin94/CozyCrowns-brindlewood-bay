@@ -5,7 +5,8 @@ import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 
 const CozyLittlePlace = () => {
-  const { cozyItems, setCozyItems } = useCharacterStore();
+  const cozyItems = useCharacterStore((state) => state.selected().cozyItems);
+  const setCozyItems = useCharacterStore((state) => state.setCozyItems);
   const handleCheckChange = (index: number, checked: boolean) => {
     const newItems = [...cozyItems];
     newItems[index].checked = checked;
