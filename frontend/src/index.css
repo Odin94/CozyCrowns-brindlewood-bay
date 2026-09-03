@@ -156,6 +156,15 @@ body {
   margin: auto;
   align-items: start;
 }
+.mystery-workspace > * {
+  animation: mystery-surface-enter 220ms ease-out both;
+}
+.mystery-workspace > :nth-child(2) {
+  animation-delay: 45ms;
+}
+.mystery-workspace > :nth-child(3) {
+  animation-delay: 90ms;
+}
 .mystery-parchment,
 .mystery-sidebar,
 .mystery-versions,
@@ -710,7 +719,8 @@ button:focus-visible {
 }
 
 .conspiracy-view-enter {
-  animation: conspiracy-view-enter 650ms cubic-bezier(0.2, 0.85, 0.2, 1) both;
+  animation: conspiracy-view-enter 240ms ease-out both;
+  transform-origin: center top;
 }
 
 .dice-stage {
@@ -832,19 +842,23 @@ button:focus-visible {
 
 @keyframes conspiracy-view-enter {
   0% {
-    filter: blur(9px);
     opacity: 0;
-    transform: translateY(18px) rotateX(18deg) scale(0.96);
-  }
-  55% {
-    filter: blur(1px);
-    opacity: 1;
-    transform: translateY(-3px) rotateX(0deg) scale(1.01);
+    transform: translateY(0.8rem) scale(0.9);
   }
   100% {
-    filter: blur(0);
     opacity: 1;
-    transform: translateY(0) rotateX(0deg) scale(1);
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes mystery-surface-enter {
+  from {
+    opacity: 0;
+    transform: translateY(0.7rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -877,6 +891,11 @@ button:focus-visible {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .conspiracy-view-enter,
+  .mystery-workspace > * {
+    animation: none;
+  }
+
   .book-club-empty-icon {
     animation: none;
   }
