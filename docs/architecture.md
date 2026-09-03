@@ -76,7 +76,6 @@ CozyCrowns is a Brindlewood Bay character sheet that works offline in the browse
 ## Important Architectural Constraints
 - The sheet must remain usable without signing in.
 - Character schema changes are usually cross-cutting even though the database stores JSON; update all validation/default layers together.
-- Backend sharing support exists, but the frontend does not yet expose a complete sharing client/UI path.
 - The frontend uses the `@/` alias for `frontend/src`.
 
 ## Verification Contracts

@@ -25,7 +25,6 @@ type MenuDialogProps = {
   onBookClubsClick?: () => void;
 };
 
-// TODOdin: Redesign the whole dialog content
 const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) => {
   const characterStore = useCharacterStore();
   const { setLocale } = useSettingsStore();
