@@ -1,5 +1,5 @@
-import { getAdvancementOptions, getCrownOfTheVoid, getEndOfSessionQuestions } from "@/game_data";
-import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
+import { useCharacterStore } from "@/lib/character_store";
+import { createDefaultCharacter } from "@/lib/character_document";
 import { useSettingsStore } from "@/lib/settings_store";
 import { downloadPdf } from "@/lib/pdf_generator";
 import { loadTranslations } from "@/lib/utils";
@@ -36,11 +36,6 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   const [showMe, setShowMe] = useState(false);
   const [saveFailureOpen, setSaveFailureOpen] = useState(false);
   const [pendingLoadAction, setPendingLoadAction] = useState<(() => void) | null>(null);
-
-  // Get the data dynamically so they update when locale changes
-  const endOfSessionQuestions = getEndOfSessionQuestions();
-  const advancementOptions = getAdvancementOptions();
-  const crownOfTheVoid = getCrownOfTheVoid();
 
   const handleLanguageChange = async (locale: string) => {
     await loadTranslations(locale);
@@ -80,7 +75,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `CozyCrowns_${characterStore.name || "Character"}.json`;
+    link.download = `CozyCrowns_${characterData.name || "Character"}.json`;
 
     document.body.appendChild(link);
     link.click();
@@ -137,40 +132,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
 
               const characterData = validationResult.data;
 
-              characterStore.setName(characterData.name || "");
-              characterStore.setStyle(characterData.style || "");
-              characterStore.setActivity(characterData.activity || "");
-              characterStore.setAbilities(characterData.abilities || getDefaultAbilities());
-              characterStore.setXp(characterData.xp || 0);
-              characterStore.setConditions(characterData.conditions || "");
-              characterStore.setEndOfSessionChecks(
-                characterData.endOfSessionChecks && characterData.endOfSessionChecks.length > 0
-                  ? characterData.endOfSessionChecks
-                  : endOfSessionQuestions.map(() => false),
-              );
-              characterStore.setAdvancementChecks(
-                characterData.advancementChecks && characterData.advancementChecks.length > 0
-                  ? characterData.advancementChecks
-                  : advancementOptions.map(() => false),
-              );
-              characterStore.setMavenMoves(characterData.mavenMoves || "");
-              characterStore.setCrownChecks(
-                characterData.crownChecks && characterData.crownChecks.length > 0
-                  ? characterData.crownChecks
-                  : crownOfTheVoid.map(() => false),
-              );
-              characterStore.setVoidChecks(
-                characterData.voidChecks && characterData.voidChecks.length > 0
-                  ? characterData.voidChecks
-                  : crownOfTheVoid.map(() => false),
-              );
-              characterStore.setCozyItems(
-                characterData.cozyItems && characterData.cozyItems.length > 0
-                  ? characterData.cozyItems
-                  : Array(12)
-                      .fill(null)
-                      .map(() => ({ checked: false, text: "" })),
-              );
+              characterStore.updateSelected(characterData);
 
               characterStore.clearCurrentCharacterIdAndVersion();
 
@@ -220,40 +182,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
 
           const characterData = validationResult.data;
 
-          characterStore.setName(characterData.name || "");
-          characterStore.setStyle(characterData.style || "");
-          characterStore.setActivity(characterData.activity || "");
-          characterStore.setAbilities(characterData.abilities || getDefaultAbilities());
-          characterStore.setXp(characterData.xp || 0);
-          characterStore.setConditions(characterData.conditions || "");
-          characterStore.setEndOfSessionChecks(
-            characterData.endOfSessionChecks && characterData.endOfSessionChecks.length > 0
-              ? characterData.endOfSessionChecks
-              : endOfSessionQuestions.map(() => false),
-          );
-          characterStore.setAdvancementChecks(
-            characterData.advancementChecks && characterData.advancementChecks.length > 0
-              ? characterData.advancementChecks
-              : advancementOptions.map(() => false),
-          );
-          characterStore.setMavenMoves(characterData.mavenMoves || "");
-          characterStore.setCrownChecks(
-            characterData.crownChecks && characterData.crownChecks.length > 0
-              ? characterData.crownChecks
-              : crownOfTheVoid.map(() => false),
-          );
-          characterStore.setVoidChecks(
-            characterData.voidChecks && characterData.voidChecks.length > 0
-              ? characterData.voidChecks
-              : crownOfTheVoid.map(() => false),
-          );
-          characterStore.setCozyItems(
-            characterData.cozyItems && characterData.cozyItems.length > 0
-              ? characterData.cozyItems
-              : Array(12)
-                  .fill(null)
-                  .map(() => ({ checked: false, text: "" })),
-          );
+          characterStore.updateSelected(characterData);
 
           characterStore.clearCurrentCharacterIdAndVersion();
 
@@ -287,22 +216,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   };
 
   const confirmReset = () => {
-    characterStore.setName("");
-    characterStore.setStyle("");
-    characterStore.setActivity("");
-    characterStore.setAbilities(getDefaultAbilities());
-    characterStore.setXp(0);
-    characterStore.setConditions("");
-    characterStore.setEndOfSessionChecks(endOfSessionQuestions.map(() => false));
-    characterStore.setAdvancementChecks(advancementOptions.map(() => false));
-    characterStore.setMavenMoves("");
-    characterStore.setCrownChecks(crownOfTheVoid.map(() => false));
-    characterStore.setVoidChecks(crownOfTheVoid.map(() => false));
-    characterStore.setCozyItems(
-      Array(12)
-        .fill(null)
-        .map(() => ({ checked: false, text: "" })),
-    );
+    characterStore.updateSelected(createDefaultCharacter());
 
     setShowResetConfirm(false);
     onOpenChange?.(false);

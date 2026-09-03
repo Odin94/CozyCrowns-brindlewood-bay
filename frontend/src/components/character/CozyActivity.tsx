@@ -12,7 +12,8 @@ import { Trans } from "@lingui/react/macro";
 import { ScrollText } from "lucide-react";
 
 const CozyActivity = () => {
-  const { activity, setActivity } = useCharacterStore();
+  const activity = useCharacterStore((state) => state.selected().activity);
+  const setActivity = useCharacterStore((state) => state.setActivity);
 
   // Get the activities dynamically so they update when locale changes
   const sampleActivities = getSampleActivities();

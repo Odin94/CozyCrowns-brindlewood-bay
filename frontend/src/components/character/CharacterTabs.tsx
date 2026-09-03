@@ -1,6 +1,6 @@
 import { useIsLargeScreen } from "@/hooks/useIsLargeScreen";
 import { Button } from "@/components/ui/button";
-import { type CharacterData, useCharacterStore } from "@/lib/character_store";
+import { type CharacterRecord, useCharacterStore } from "@/lib/character_store";
 import { ChevronDown, Eye, Plus, X } from "lucide-react";
 import { useState } from "react";
 
@@ -19,13 +19,14 @@ const CharacterTabs = ({
   onSwitchToCharacter,
   onSwitchToDarkConspiracy,
 }: CharacterTabsProps) => {
-  const { characters, currentCharacterIndex, setCurrentCharacter, addCharacter } =
-    useCharacterStore();
+  const { characters, selectedCharacterId, select, create } = useCharacterStore();
   const isLargeScreen = useIsLargeScreen();
   const [isMobileTabsVisible, setIsMobileTabsVisible] = useState(false);
 
   const handleCharacterSwitch = async (index: number) => {
-    if (index === currentCharacterIndex) {
+    const character = characters[index];
+    if (!character) return;
+    if (character.localId === selectedCharacterId) {
       onSwitchToCharacter?.();
       return;
     }
@@ -35,7 +36,7 @@ const CharacterTabs = ({
       if (!canSwitch) return;
     }
 
-    setCurrentCharacter(index);
+    select(character.localId);
     onSwitchToCharacter?.();
   };
 
@@ -47,11 +48,11 @@ const CharacterTabs = ({
   };
 
   const handleAddCharacter = () => {
-    addCharacter();
+    create();
     onSwitchToCharacter?.();
   };
 
-  const renderCharacterTab = (character: CharacterData, index: number) => {
+  const renderCharacterTab = (character: CharacterRecord, index: number) => {
     const displayName = character.name.split(" ")[0] || `Character ${index + 1}`;
     const truncatedName =
       displayName.length > 13 ? displayName.substring(0, 11) + "..." : displayName;
@@ -60,7 +61,7 @@ const CharacterTabs = ({
       <div
         key={index}
         className={`relative group flex items-center gap-2 pl-6 py-3 w-40 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in ${
-          activeView === "character" && currentCharacterIndex === index
+          activeView === "character" && selectedCharacterId === character.localId
             ? "bg-dark-secondary text-tertiary"
             : "bg-dark-secondary/40 hover:bg-dark-secondary/60 text-tertiary/80"
         }

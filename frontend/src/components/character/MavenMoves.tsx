@@ -6,7 +6,8 @@ import { Trans, useLingui } from "@lingui/react/macro";
 import MavenMovesPicker from "./MavenMovesPicker";
 
 const MavenMoves = () => {
-  const { mavenMoves, setMavenMoves } = useCharacterStore();
+  const mavenMoves = useCharacterStore((state) => state.selected().mavenMoves);
+  const setMavenMoves = useCharacterStore((state) => state.setMavenMoves);
   const { i18n } = useLingui();
   return (
     <div className="space-y-3 flex flex-col h-full">

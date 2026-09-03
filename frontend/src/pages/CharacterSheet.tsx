@@ -50,15 +50,14 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
   const { saveCurrentCharacter } = useCharacterSave();
   const { setCurrentCharacter } = useCharacterStore();
   const currentCharacter = useCharacterStore(
-    (state) => state.characters[state.currentCharacterIndex],
+    (state) => state.selected(),
   );
-  const currentCharacterIndex = useCharacterStore((state) => state.currentCharacterIndex);
   const { isAuthenticated, user } = useAuth();
   const lastAutoSaved = useRef<string | null>(null);
   const autoSaveSignature = useMemo(
     () =>
       JSON.stringify({
-        characterKey: currentCharacterIndex,
+          characterKey: currentCharacter.localId,
         data: currentCharacter && {
           name: currentCharacter.name,
           style: currentCharacter.style,
@@ -74,7 +73,7 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
           cozyItems: currentCharacter.cozyItems,
         },
       }),
-    [currentCharacter, currentCharacterIndex],
+    [currentCharacter],
   );
 
   useEffect(() => {

@@ -7,7 +7,8 @@ import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 
 const CrownOfTheQueen = () => {
-  const { crownChecks, setCrownChecks } = useCharacterStore();
+  const crownChecks = useCharacterStore((state) => state.selected().crownChecks);
+  const setCrownChecks = useCharacterStore((state) => state.setCrownChecks);
   const handleCheckChange = (index: number, checked: boolean) => {
     const newChecks = [...crownChecks];
     newChecks[index] = checked;
