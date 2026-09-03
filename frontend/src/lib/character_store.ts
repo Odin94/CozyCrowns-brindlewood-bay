@@ -7,6 +7,7 @@ import {
   type CharacterData,
   type CozyItem,
 } from "@/lib/character_document";
+import { t } from "@lingui/core/macro";
 
 export type { Ability, CharacterData, CozyItem } from "@/lib/character_document";
 
@@ -25,10 +26,20 @@ export type BackendCharacter = {
   data: BackendCharacterData;
 };
 
-export const getDefaultAbilities = (): Ability[] => createDefaultCharacter().abilities;
+export const getDefaultAbilities = (): Ability[] => [
+  { name: t`Vitality`, value: 0 },
+  { name: t`Composure`, value: 1 },
+  { name: t`Reason`, value: 1 },
+  { name: t`Presence`, value: 0 },
+  { name: t`Sensitivity`, value: -1 },
+];
 
 const newLocalId = () => crypto.randomUUID();
-const newRecord = (): CharacterRecord => ({ localId: newLocalId(), ...createDefaultCharacter() });
+const newRecord = (): CharacterRecord => ({
+  localId: newLocalId(),
+  ...createDefaultCharacter(),
+  abilities: getDefaultAbilities(),
+});
 const recordFrom = (input: unknown, metadata: Pick<CharacterRecord, "localId" | "id" | "version">) => ({
   ...normalizeCharacter(input),
   ...metadata,

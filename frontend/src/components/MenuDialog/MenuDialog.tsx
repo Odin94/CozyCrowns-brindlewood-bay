@@ -1,4 +1,4 @@
-import { useCharacterStore } from "@/lib/character_store";
+import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
 import { createDefaultCharacter, normalizeCharacter } from "@/lib/character_document";
 import { useSettingsStore } from "@/lib/settings_store";
 import { downloadPdf } from "@/lib/pdf_generator";
@@ -216,7 +216,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   };
 
   const confirmReset = () => {
-    characterStore.updateSelected(createDefaultCharacter());
+    characterStore.updateSelected({ ...createDefaultCharacter(), abilities: getDefaultAbilities() });
 
     setShowResetConfirm(false);
     onOpenChange?.(false);
