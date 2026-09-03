@@ -5,18 +5,20 @@ import { useCharacterStore, type BackendCharacter } from "@/lib/character_store"
 
 export const useBackendCharactersSync = () => {
   const { isAuthenticated, user } = useAuth();
-  const characterStore = useCharacterStore();
+  const mergeRemote = useCharacterStore((state) => state.mergeRemote);
+  const userId = user?.id;
   const hasSyncedRef = useRef(false);
   const syncedUserIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!isAuthenticated || !user) {
+    let cancelled = false;
+    if (!isAuthenticated || !userId) {
       hasSyncedRef.current = false;
       syncedUserIdRef.current = null;
       return;
     }
 
-    if (hasSyncedRef.current && syncedUserIdRef.current === user.id) {
+    if (hasSyncedRef.current && syncedUserIdRef.current === userId) {
       return;
     }
 
@@ -32,19 +34,24 @@ export const useBackendCharactersSync = () => {
             data: character.data,
           }));
 
+        if (cancelled) {
+          return;
+        }
+
         if (backendCharacters.length > 0) {
-          characterStore.syncCharactersFromBackend(backendCharacters);
+          mergeRemote(backendCharacters);
         }
 
         hasSyncedRef.current = true;
-        syncedUserIdRef.current = user.id;
+        syncedUserIdRef.current = userId;
       } catch (error) {
         console.error("Failed to sync characters from backend:", error);
       }
     };
 
     void syncCharacters();
-    // Can't include character store here, or else we infinite-loop
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isAuthenticated, user?.id]);
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, mergeRemote, userId]);
 };

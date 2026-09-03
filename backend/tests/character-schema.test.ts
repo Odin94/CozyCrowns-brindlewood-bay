@@ -35,3 +35,16 @@ test("character updates require a positive integer version", () => {
 
   assert.equal(updateCharacterSchema.safeParse({ version: 2 }).success, true);
 });
+
+test("character data rejects malformed collection lengths", () => {
+  const malformedData = {
+    abilities: [],
+    endOfSessionChecks: [],
+    advancementChecks: [],
+    crownChecks: [],
+    voidChecks: [],
+    cozyItems: [],
+  };
+
+  assert.equal(createCharacterSchema.safeParse({ name: "Mavis", data: malformedData }).success, false);
+});

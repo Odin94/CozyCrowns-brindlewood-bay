@@ -81,7 +81,7 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
   }, [user?.id]);
 
   useEffect(() => {
-    if (!isAuthenticated || !currentCharacter?.name.trim()) return;
+    if (!isAuthenticated || (!currentCharacter.name.trim() && !currentCharacter.id)) return;
     if (lastAutoSaved.current === autoSaveSignature) return;
 
     const timer = window.setTimeout(() => {
@@ -91,7 +91,7 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
     }, 800);
 
     return () => window.clearTimeout(timer);
-  }, [autoSaveSignature, currentCharacter?.name, isAuthenticated, saveCurrentCharacter]);
+  }, [autoSaveSignature, currentCharacter.id, currentCharacter.name, isAuthenticated, saveCurrentCharacter]);
 
   const handleSwitchCharacter = async (index: number): Promise<boolean> => {
     const saveSuccess = await saveCurrentCharacter();

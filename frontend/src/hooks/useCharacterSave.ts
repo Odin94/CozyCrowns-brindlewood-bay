@@ -20,7 +20,7 @@ export const useCharacterSave = () => {
     const currentCharacter = characterStore.selected();
     const localId = currentCharacter.localId;
 
-    if (!currentCharacter.name.trim()) {
+    if (!currentCharacter.name.trim() && !currentCharacter.id) {
       return true;
     }
 
@@ -33,7 +33,7 @@ export const useCharacterSave = () => {
     const task = async (): Promise<boolean> => {
       try {
         const latestCharacter = characterStore.record(localId);
-        if (!latestCharacter || !latestCharacter.name.trim()) return true;
+        if (!latestCharacter || (!latestCharacter.name.trim() && !latestCharacter.id)) return true;
         const version =
           latestVersionByCharacter.current.get(characterKey) ?? latestCharacter?.version ?? 1;
 
