@@ -46,3 +46,25 @@ jobs:
             -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
             "$HETZNER_SSH_USER@$HETZNER_HOST" \
             'sudo --non-interactive /opt/cozycrowns/backend/scripts/updateCode.sh ${{ github.sha }}'
+
+  notify-on-failure:
+    name: Email deployment failure
+    needs: deploy
+    if: ${{ always() && needs.deploy.result == 'failure' }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send failure notification
+        uses: dawidd6/action-send-mail@e9d44227e5ff9b5be74ac40a69c554324ded2e5b # v13
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.GMAIL_SENDER }}
+          password: ${{ secrets.GMAIL_APP_PASSWORD }}
+          subject: "CozyCrowns backend deployment failed"
+          to: kammerloher.andreas@gmail.com
+          from: ${{ secrets.GMAIL_SENDER }}
+          body: |
+            Deployment of ${{ github.sha }} to 46.224.62.32 failed.
+
+            Workflow run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}

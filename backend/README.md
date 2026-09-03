@@ -140,6 +140,10 @@ Configure these repository settings before the first deployment:
 - Secret `HETZNER_KNOWN_HOSTS`: the pinned host-key entry for `46.224.62.32`.
   Obtain and verify this through a trusted channel, then store the resulting
   `known_hosts` line here. Do not have CI fetch the key during deployment.
+- Secret `GMAIL_SENDER`: the Gmail address used to send deployment-failure
+  notifications to `kammerloher.andreas@gmail.com`.
+- Secret `GMAIL_APP_PASSWORD`: an app password for `GMAIL_SENDER`; do not use
+  the account's normal password.
 - Optional repository variable `HETZNER_SSH_USER`: SSH account to use. It
   defaults to `github-deploy`.
 
