@@ -123,3 +123,34 @@ pnpm start
 - Set up caddy, pm2, dependencies etc. with `setupServer.sh` from progeny (includes caddyfile for reverse-proxying to cozycrowns at port 3001)
 - Use scp to bring `./scripts/cozySetupServer.sh` to your server, (if you're on windows `dos2unix` it), `chmod +x` it if necessary and run it
 - Follow final instructions printed by the script
+
+### Automatic deployments
+
+Pushing a change to `main` that touches `backend/**` runs the `Deploy backend`
+GitHub Actions workflow. The workflow connects to `46.224.62.32` and runs
+`updateCode.sh`, which creates a SQLite backup before pulling, building,
+migrating, restarting PM2, and checking the health endpoint. Deployments are
+queued rather than cancelled so a database migration can finish safely.
+
+Configure these repository settings before the first deployment:
+
+- Secret `HETZNER_SSH_PRIVATE_KEY`: the complete private SSH key for the deploy
+  account (including its `BEGIN` and `END` lines).
+- Secret `HETZNER_KNOWN_HOSTS`: the pinned host-key entry for `46.224.62.32`.
+  Obtain and verify this through a trusted channel, then store the resulting
+  `known_hosts` line here. Do not have CI fetch the key during deployment.
+- Optional repository variable `HETZNER_SSH_USER`: SSH account to use. It
+  defaults to `github-deploy`.
+
+The recommended SSH account is a dedicated `github-deploy` user whose key is
+restricted to this purpose and which can run only the update script without a
+password. Add this `sudoers` rule on the server using `visudo` (adjust the
+command path only if the checkout lives elsewhere):
+
+```sudoers
+github-deploy ALL=(root) NOPASSWD: /opt/cozycrowns/backend/scripts/updateCode.sh
+```
+
+For an existing root-only setup, set `HETZNER_SSH_USER` to `root` and authorize
+the deployment key for root instead. A dedicated account is preferable because
+the workflow needs only this one root operation.
