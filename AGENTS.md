@@ -35,6 +35,5 @@
 - If you change database tables or indexes, update `backend/src/db/schema.ts`, generate a migration, and document compatibility assumptions for existing data.
 - If you add dependencies, large UI restyling, or deployment assumptions, confirm first.
 
-## Known Gaps
-- There is currently no automated test suite. Default verification is targeted builds/lint plus a short manual smoke plan.
-- Sharing endpoints exist in the backend, but the frontend does not yet have a matching API client or full sharing UI flow.
+## Verification
+- Automated coverage is intentionally small. Use targeted builds/lint plus a short manual smoke plan for UI changes.

@@ -64,14 +64,3 @@ To add a new language:
 * Brindlewood Bay is published by [The Gauntlet](https://www.gauntlet-rpg.com/brindlewood-bay.html)
 * Queen SVG by [Darius Dan on svgrepo](https://www.svgrepo.com/svg/317455/queen)
 * Tentacles icon by [Teewara soontorn on Noun Project](https://thenounproject.com/icon/tentacles-4112037/)
-<!-- 
-
-TODOdin: Add more eldritch elements to the site as void crowns get checked off
-TODOdin: Add Dark Conspiracy sheet
-TODOdin: Add section for noting down clues, void clues, general notes
-
-TODOdin: Update translations
-TODOdin: Add sessions, allow sharing (read-only) view of characters in same session (add some sort of session view?)
-    Maybe session view could be some popup that contains tabs for dice rolls & friends, and in friends you can roll down a summary of other's characters
-TODOdin: Add dice rolling & sharing dice rolls with session
- -->

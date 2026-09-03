@@ -64,7 +64,3 @@ This file is the on-demand guide for where changes usually belong. Use it when a
 - The exported PDF is based on `frontend/src/resources/brindlewoodbay-charactersheet_fillable.base64`.
 - Field names in the PDF form are stringly typed, so small naming mistakes surface only at runtime.
 - Verify by downloading a PDF and opening it, not just by building the app.
-
-## Sharing Work
-- Backend sharing API exists in `backend/src/routes/shares.ts` and the `character_shares` table.
-- There is no matching frontend API helper or full sharing UI yet, so sharing tasks usually require both new frontend work and existing backend integration.

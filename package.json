@@ -7,6 +7,7 @@
     "dev:frontend": "pnpm --dir frontend dev",
     "dev:backend": "pnpm --dir backend dev",
     "build": "pnpm --dir frontend build && pnpm --dir backend build",
+    "test": "pnpm --dir backend test",
     "lint": "pnpm --dir frontend lint && pnpm --dir backend lint",
     "fmt": "pnpm --dir frontend fmt && pnpm --dir backend fmt"
   }
