@@ -5,7 +5,14 @@ APP_USER="cozycrowns"
 APP_DIR="/opt/cozycrowns"
 BACKEND_DIR="$APP_DIR/backend"
 APP_NAME="cozycrowns-backend"
-HEALTH_URL="https://api-cozycrowns.odin-matthias.de/health"
+HEALTH_URL="http://127.0.0.1:3001/health"
+
+if [ "$#" -ne 1 ] || ! [[ "$1" =~ ^[0-9a-f]{40}$ ]]; then
+    echo "Usage: $0 <40-character lowercase Git commit SHA>"
+    exit 1
+fi
+
+DEPLOY_REVISION="$1"
 
 if [ "$EUID" -ne 0 ]; then
     echo "Please run this script as root:"
@@ -46,8 +53,15 @@ runuser -u "$APP_USER" -- bash -lc "
         exit 1
     fi
 
-    git pull
-    echo \"Pulled latest code from git\"
+    git fetch --no-tags origin '$DEPLOY_REVISION'
+    git cat-file -e '$DEPLOY_REVISION^{commit}'
+    git checkout --detach --force '$DEPLOY_REVISION'
+    if [ \"\$(git rev-parse HEAD)\" != '$DEPLOY_REVISION' ]; then
+        echo \"Checked out revision does not match requested deployment revision.\"
+        exit 1
+    fi
+
+    echo \"Checked out deployment revision $DEPLOY_REVISION\"
 
     pnpm install --frozen-lockfile
     echo \"Installed dependencies\"
