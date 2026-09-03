@@ -18,6 +18,7 @@ export const useCharacterSave = () => {
     }
 
     const currentCharacter = characterStore.selected();
+    const localId = currentCharacter.localId;
 
     if (!currentCharacter.name.trim()) {
       return true;
@@ -31,14 +32,15 @@ export const useCharacterSave = () => {
 
     const task = async (): Promise<boolean> => {
       try {
-        const latestCharacter = characterStore.selected();
+        const latestCharacter = characterStore.record(localId);
+        if (!latestCharacter || !latestCharacter.name.trim()) return true;
         const version =
           latestVersionByCharacter.current.get(characterKey) ?? latestCharacter?.version ?? 1;
 
         const result = latestCharacter?.id
           ? await api.updateCharacter(latestCharacter.id, { ...characterPayload, version })
           : await api.createCharacter({ ...characterPayload, version });
-        characterStore.updateSelectedRemoteVersion(result.id, result.version);
+        characterStore.updateRemoteVersion(localId, result.id, result.version);
         latestVersionByCharacter.current.set(characterKey, result.version);
 
         return true;

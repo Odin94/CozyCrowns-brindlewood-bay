@@ -1,5 +1,5 @@
 import { useCharacterStore } from "@/lib/character_store";
-import { createDefaultCharacter } from "@/lib/character_document";
+import { createDefaultCharacter, normalizeCharacter } from "@/lib/character_document";
 import { useSettingsStore } from "@/lib/settings_store";
 import { downloadPdf } from "@/lib/pdf_generator";
 import { loadTranslations } from "@/lib/utils";
@@ -67,7 +67,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   };
 
   const handleDownloadJSON = () => {
-    const characterData = characterStore.getCharacterData();
+    const characterData = normalizeCharacter(characterStore.getCharacterData());
 
     const jsonString = JSON.stringify(characterData, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
