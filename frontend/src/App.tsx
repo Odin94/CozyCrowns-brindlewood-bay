@@ -2,18 +2,22 @@ import { i18n } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import { useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useAuth } from "./hooks/useAuth";
 import CharacterSheet from "./pages/CharacterSheet";
-import { AuthCallback } from "./pages/AuthCallback";
 import { CookieConsent } from "./components/cookie-consent";
-import MysteriesPage from "./pages/MysteriesPage";
-import LibraryPage from "./pages/LibraryPage";
-import BookClubOverview from "./pages/BookClubOverview";
-import SignInPage from "./pages/SignInPage";
 import { clearAuthReturnTo, isSafeAuthReturnTo } from "./lib/auth_return_to";
 
 const queryClient = new QueryClient();
+const AuthCallback = lazy(() =>
+  import("./pages/AuthCallback").then(({ AuthCallback: AuthCallbackPage }) => ({
+    default: AuthCallbackPage,
+  })),
+);
+const MysteriesPage = lazy(() => import("./pages/MysteriesPage"));
+const LibraryPage = lazy(() => import("./pages/LibraryPage"));
+const BookClubOverview = lazy(() => import("./pages/BookClubOverview"));
+const SignInPage = lazy(() => import("./pages/SignInPage"));
 
 const currentLocation = () => window.location.pathname + window.location.search + window.location.hash;
 
@@ -63,58 +67,60 @@ function AppRoutes() {
 
   return (
     <>
-          {pathname === "/auth/callback" ? (
-            <AuthCallback />
-          ) : pathname === "/sign-in" ? (
-            <SignInPage
-              returnTo={isSafeAuthReturnTo(signInReturnTo) ? signInReturnTo : "/"}
-              onContinue={(to) => navigate(to, { replace: true })}
-              onGoToSheet={() => {
-                clearAuthReturnTo();
-                navigate("/", { replace: true });
-              }}
-            />
-          ) : pathname === "/mysteries" ? (
-            <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
-              <MysteriesPage />
-            </ProtectedRoute>
-          ) : pathname === "/library" ? (
-            <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
-              <LibraryPage />
-            </ProtectedRoute>
-          ) : isDarkConspiracyRoute ? (
-            <CharacterSheet
-              onBookClubsClick={() => navigate("/book-clubs")}
-              activeView="darkConspiracy"
-              onSwitchToCharacter={() => navigate("/")}
-            />
-          ) : bookClubMatch ? (
-            <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
-              <BookClubOverview
-                clubId={bookClubMatch[1] ? decodeURIComponent(bookClubMatch[1]) : null}
-                onClose={() => navigate("/")}
-                onClubChange={(clubId) => navigate(`/book-clubs/${encodeURIComponent(clubId)}`)}
-              />
-            </ProtectedRoute>
-          ) : (
-            <CharacterSheet
-              onBookClubsClick={() => navigate("/book-clubs")}
-              onSwitchToCharacter={() => navigate("/")}
-              onSwitchToDarkConspiracy={() => navigate("/dark-conspiracy")}
-            />
-          )}
-          <CookieConsent variant="small" />
-          <Toaster
-            theme="light"
-            className="toaster"
-            toastOptions={{
-              style: {
-                background: "hsl(280 15% 75%)",
-                color: "hsl(280 30% 25%)",
-                border: "1px solid hsl(280 25% 60%)",
-              },
+      <Suspense fallback={null}>
+        {pathname === "/auth/callback" ? (
+          <AuthCallback />
+        ) : pathname === "/sign-in" ? (
+          <SignInPage
+            returnTo={isSafeAuthReturnTo(signInReturnTo) ? signInReturnTo : "/"}
+            onContinue={(to) => navigate(to, { replace: true })}
+            onGoToSheet={() => {
+              clearAuthReturnTo();
+              navigate("/", { replace: true });
             }}
           />
+        ) : pathname === "/mysteries" ? (
+          <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
+            <MysteriesPage />
+          </ProtectedRoute>
+        ) : pathname === "/library" ? (
+          <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
+            <LibraryPage />
+          </ProtectedRoute>
+        ) : isDarkConspiracyRoute ? (
+          <CharacterSheet
+            onBookClubsClick={() => navigate("/book-clubs")}
+            activeView="darkConspiracy"
+            onSwitchToCharacter={() => navigate("/")}
+          />
+        ) : bookClubMatch ? (
+          <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
+            <BookClubOverview
+              clubId={bookClubMatch[1] ? decodeURIComponent(bookClubMatch[1]) : null}
+              onClose={() => navigate("/")}
+              onClubChange={(clubId) => navigate(`/book-clubs/${encodeURIComponent(clubId)}`)}
+            />
+          </ProtectedRoute>
+        ) : (
+          <CharacterSheet
+            onBookClubsClick={() => navigate("/book-clubs")}
+            onSwitchToCharacter={() => navigate("/")}
+            onSwitchToDarkConspiracy={() => navigate("/dark-conspiracy")}
+          />
+        )}
+      </Suspense>
+      <CookieConsent variant="small" />
+      <Toaster
+        theme="light"
+        className="toaster"
+        toastOptions={{
+          style: {
+            background: "hsl(280 15% 75%)",
+            color: "hsl(280 30% 25%)",
+            border: "1px solid hsl(280 25% 60%)",
+          },
+        }}
+      />
     </>
   );
 }

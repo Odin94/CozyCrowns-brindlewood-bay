@@ -1,7 +1,6 @@
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
 import { createDefaultCharacter, normalizeCharacter } from "@/lib/character_document";
 import { useSettingsStore } from "@/lib/settings_store";
-import { downloadPdf } from "@/lib/pdf_generator";
 import { loadTranslations } from "@/lib/utils";
 import { CharacterDataSchema } from "@/types/characterSchema";
 import { msg } from "@lingui/core/macro";
@@ -94,6 +93,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
         schemaVersion: characterData.schemaVersion ?? 1,
       };
 
+      const { downloadPdf } = await import("@/lib/pdf_generator");
       await downloadPdf(pdfData);
       toast.success(i18n._("PDF downloaded successfully!"));
     } catch (error) {
