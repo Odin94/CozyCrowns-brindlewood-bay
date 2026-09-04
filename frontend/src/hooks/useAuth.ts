@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import posthog from "posthog-js";
 import { useEffect } from "react";
+import { consumeAuthReturnTo } from "@/lib/auth_return_to";
 import { api, API_URL, tokenStorage } from "../utils/api";
 
 const startWorkosSignIn = () => {
@@ -134,7 +135,7 @@ export const useAuth = () => {
     onSuccess: (data) => {
       finishSignIn(data);
 
-      window.location.href = "/";
+      window.location.href = consumeAuthReturnTo();
     },
   });
 
