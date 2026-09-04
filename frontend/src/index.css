@@ -146,8 +146,10 @@ body {
   opacity: 1;
 }
 
-.book-clubs-menu-button:hover {
-  background-color: hsl(var(--dark-secondary) / 0.85);
+.book-club-back-button:hover,
+.book-club-back-button:focus-visible {
+  background-color: hsl(var(--dark-secondary) / 0.12);
+  color: hsl(var(--dark-secondary));
 }
 
 .mystery-workspace {

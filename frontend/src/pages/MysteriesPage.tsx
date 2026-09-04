@@ -16,6 +16,7 @@ import {
   Save,
   Send,
   Trash2,
+  Users,
   X,
 } from "lucide-react";
 import type React from "react";
@@ -46,6 +47,11 @@ const hasEnteredInformation = (entry: object) =>
   Object.entries(entry).some(
     ([key, value]) => key !== "id" && typeof value === "string" && value.trim().length > 0,
   );
+
+const clueLabels = (clues: MysteryData["clues"]) =>
+  clues
+    .map((clue) => [clue.title.trim(), clue.description.trim()].filter(Boolean).join(" — "))
+    .filter(Boolean);
 
 const SignInRequired = () => {
   const { signIn } = useAuth();
@@ -131,10 +137,13 @@ const RemoveCard = ({ onClick }: { onClick: () => void }) => (
 
 const MysteriesPage = () => {
   const { isAuthenticated, loading } = useAuth();
+  const bookClubId = new URLSearchParams(window.location.search).get("bookClubId");
+  const bookClubPath = bookClubId ? `/book-clubs/${encodeURIComponent(bookClubId)}` : null;
   const [mysteries, setMysteries] = useState<Mystery[]>([]);
   const [selected, setSelected] = useState<Mystery | null>(null);
   const [versions, setVersions] = useState<MysteryVersion[]>([]);
   const [loaded, setLoaded] = useState(false);
+  const [bringingToBookClub, setBringingToBookClub] = useState(false);
   const [confirmation, setConfirmation] = useState<
     | { kind: "delete" }
     | { kind: "restore"; version: MysteryVersion }
@@ -321,15 +330,39 @@ const MysteriesPage = () => {
     }
   };
 
+  const bringToBookClub = async () => {
+    const mystery = selectedRef.current;
+    if (!bookClubId || !bookClubPath || !mystery || bringingToBookClub) return;
+    setBringingToBookClub(true);
+    if (!(await save("manual"))) {
+      setBringingToBookClub(false);
+      return;
+    }
+    try {
+      await api.createBookClubMystery(
+        bookClubId,
+        mystery.title || t`Untitled Mystery`,
+        clueLabels(mystery.data.clues),
+        clueLabels(mystery.data.voidClues),
+      );
+      window.location.assign(bookClubPath);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : t`Could not bring mystery to the Book Club`,
+      );
+      setBringingToBookClub(false);
+    }
+  };
+
   if (loading) return null;
   if (!isAuthenticated) return <SignInRequired />;
 
   return (
     <main className="mystery-desk min-h-screen p-3 pt-12 sm:p-6 sm:pt-14">
-      <a href="/" className="mystery-sheet-link">
+      <a href={bookClubPath ?? "/"} className="mystery-sheet-link">
         <ChevronLeft className="size-5" aria-hidden="true" />
         <span className="sr-only">
-          <Trans>Back to sheet</Trans>
+          {bookClubPath ? <Trans>Back to Book Club</Trans> : <Trans>Back to sheet</Trans>}
         </span>
       </a>
       <div className="mystery-workspace">
@@ -387,6 +420,16 @@ const MysteriesPage = () => {
                   <Send className="size-4" />
                   <Trans>Publish</Trans>
                 </Button>
+                {bookClubPath && (
+                  <Button
+                    onClick={() => void bringToBookClub()}
+                    variant="secondary"
+                    disabled={bringingToBookClub}
+                  >
+                    <Users className="size-4" />
+                    <Trans>Bring to Book Club</Trans>
+                  </Button>
+                )}
               </div>
             </header>
             <Field

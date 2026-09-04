@@ -321,7 +321,7 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
       <Button
         variant="bare"
         size="icon"
-        className="subtle-back-button absolute left-3 top-3 text-dark-secondary sm:left-6 sm:top-6"
+        className="book-club-back-button subtle-back-button absolute left-3 top-3 text-dark-secondary sm:left-6 sm:top-6"
         onClick={onClose}
         aria-label={t`Back to sheet`}
       >
@@ -338,7 +338,7 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                 key={entry.id}
                 variant="bare"
                 onClick={() => selectClub(entry.id)}
-                className={`w-full rounded-md px-3 py-2 text-left text-sm ${entry.id === club?.id ? "bg-dark-secondary text-tertiary" : "hover:bg-gray-700"}`}
+                className={`w-full rounded-md px-3 py-2 text-left text-sm ${entry.id === club?.id ? "bg-dark-secondary text-tertiary hover:bg-dark-secondary" : "hover:bg-gray-700"}`}
               >
                 {entry.name}
               </Button>
@@ -784,7 +784,7 @@ function ClubManagement({
       {isGameMaster && (
         <section className={sectionClass}>
           <a
-            href="/mysteries"
+            href={`/mysteries?bookClubId=${encodeURIComponent(club.id)}`}
             className="group flex items-center justify-between gap-3 font-semibold text-secondary no-underline transition-colors hover:text-tertiary"
           >
             <Trans>Create a mystery</Trans>

@@ -21,9 +21,11 @@ const theoryParams = z.object({ id: z.string().min(1), mysteryId: z.string().min
 const theoryNodeParams = theoryParams.extend({ nodeId: z.string().min(1) });
 const theoryEdgeParams = theoryParams.extend({ edgeId: z.string().min(1) });
 const nameInput = z.object({ name: z.string().trim().min(2).max(80) });
+const maxClueLength = 20_500;
 const mysteryInput = z.object({
-  name: z.string().trim().min(2).max(80),
-  clues: z.array(z.string().trim().min(1).max(500)).max(100).default([]),
+  name: z.string().trim().min(1).max(255),
+  clues: z.array(z.string().trim().min(1).max(maxClueLength)).max(200).default([]),
+  voidClues: z.array(z.string().trim().min(1).max(maxClueLength)).max(200).default([]),
 });
 const inviteInput = z.object({ nickname: z.string().trim().min(3).max(30) });
 const characterInput = z.object({ characterId: z.string().min(1) });
@@ -34,10 +36,13 @@ const rollInput = z.object({
   result: z.string().trim().min(1).max(160),
   characterId: z.string().min(1),
 });
-const clueInput = z.object({ text: z.string().trim().min(1).max(500), isVoid: z.boolean() });
+const clueInput = z.object({
+  text: z.string().trim().min(1).max(maxClueLength),
+  isVoid: z.boolean(),
+});
 const clueUpdateInput = z.object({
   checked: z.boolean().optional(),
-  text: z.string().trim().min(1).max(500).optional(),
+  text: z.string().trim().min(1).max(maxClueLength).optional(),
 });
 const theoryKind = z.enum(["clue", "voidClue", "suspect", "other"]);
 const theoryTags = z.array(z.string().trim().min(1).max(40)).max(12);
@@ -747,14 +752,18 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         tx.insert(schema.bookClubMysteries)
           .values({ id, bookClubId: params.data.id, title: parsed.data.name, isActive: false })
           .run();
-        if (parsed.data.clues.length) {
+        const clues = [
+          ...parsed.data.clues.map((text) => ({ text, isVoid: false })),
+          ...parsed.data.voidClues.map((text) => ({ text, isVoid: true })),
+        ];
+        if (clues.length) {
           tx.insert(schema.bookClubClues)
             .values(
-              parsed.data.clues.map((text) => ({
+              clues.map(({ text, isVoid }) => ({
                 id: nanoid(),
                 mysteryId: id,
                 text,
-                isVoid: false,
+                isVoid,
               })),
             )
             .run();
