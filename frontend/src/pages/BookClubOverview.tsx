@@ -127,11 +127,13 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
 
   useEffect(() => {
     let socket: WebSocket | null = null;
+    let initialConnectTimer: number | undefined;
     let reconnectTimer: number | undefined;
     let reconnectAttempts = 0;
     let disposed = false;
 
     const connect = () => {
+      if (disposed) return;
       socket = connectBookClubUpdates(() => {
         reconnectAttempts = 0;
         void refresh(false);
@@ -148,9 +150,13 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
       );
     };
 
-    connect();
+    // In development, Strict Mode immediately runs an effect's cleanup before
+    // mounting it again. Deferring the first connection prevents that probe from
+    // aborting a WebSocket handshake and producing a misleading browser error.
+    initialConnectTimer = window.setTimeout(connect, 0);
     return () => {
       disposed = true;
+      if (initialConnectTimer) window.clearTimeout(initialConnectTimer);
       if (reconnectTimer) window.clearTimeout(reconnectTimer);
       socket?.close();
     };
