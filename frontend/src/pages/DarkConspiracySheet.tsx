@@ -104,7 +104,11 @@ const MysteryTracker = ({
       {mysteries.map((mystery, index) => (
         <div
           key={mysteryKeys[index] ?? mystery.name}
-          className="space-y-1 border-b border-dark-secondary/25 pb-2"
+          className={
+            index < mysteries.length - 1
+              ? "space-y-1 border-b border-dark-secondary/25 pb-2"
+              : "space-y-1"
+          }
         >
           <label className="text-[0.62rem] font-semibold leading-none text-dark-secondary">
             Mystery Name:
