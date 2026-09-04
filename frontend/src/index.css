@@ -614,7 +614,8 @@ button:focus-visible {
 
 .dark-conspiracy-actions {
   display: flex;
-  justify-content: flex-end;
+  flex-wrap: wrap;
+  justify-content: space-between;
   gap: 0.5rem;
 }
 
