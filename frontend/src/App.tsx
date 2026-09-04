@@ -15,6 +15,7 @@ const queryClient = new QueryClient();
 function App() {
   const [pathname, setPathname] = useState(() => window.location.pathname);
   const bookClubMatch = pathname.match(/^\/book-clubs(?:\/([^/]+))?\/?$/);
+  const isDarkConspiracyRoute = pathname === "/dark-conspiracy";
 
   useEffect(() => {
     const handlePopState = () => setPathname(window.location.pathname);
@@ -38,6 +39,12 @@ function App() {
             <MysteriesPage />
           ) : pathname === "/library" ? (
             <LibraryPage />
+          ) : isDarkConspiracyRoute ? (
+            <CharacterSheet
+              onBookClubsClick={() => navigate("/book-clubs")}
+              activeView="darkConspiracy"
+              onSwitchToCharacter={() => navigate("/")}
+            />
           ) : bookClubMatch ? (
             <BookClubOverview
               clubId={bookClubMatch[1] ? decodeURIComponent(bookClubMatch[1]) : null}
@@ -45,7 +52,10 @@ function App() {
               onClubChange={(clubId) => navigate(`/book-clubs/${encodeURIComponent(clubId)}`)}
             />
           ) : (
-            <CharacterSheet onBookClubsClick={() => navigate("/book-clubs")} />
+            <CharacterSheet
+              onBookClubsClick={() => navigate("/book-clubs")}
+              onSwitchToDarkConspiracy={() => navigate("/dark-conspiracy")}
+            />
           )}
           <CookieConsent variant="small" />
           <Toaster
