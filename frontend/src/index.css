@@ -620,7 +620,7 @@ button:focus-visible {
 
 .dark-conspiracy-page {
   display: flex;
-  min-height: 34rem;
+  min-height: 44rem;
   aspect-ratio: 11 / 8.5;
   flex-direction: column;
   align-self: center;
@@ -633,6 +633,11 @@ button:focus-visible {
   color: hsl(var(--foreground));
   padding: clamp(0.75rem, 1.1vw, 1.2rem);
   box-shadow: 0 1.5rem 3rem hsl(280 35% 10% / 0.28);
+}
+
+.dark-conspiracy-page > .grid {
+  min-width: 0;
+  align-items: start;
 }
 
 .dark-conspiracy-header {
@@ -679,7 +684,7 @@ button:focus-visible {
 
 .keeper-field-label {
   display: flex;
-  min-height: 2.1rem;
+  min-height: 2.4rem;
   align-items: end;
   margin: 0.9rem 0 0.35rem;
   color: hsl(var(--dark-secondary));
