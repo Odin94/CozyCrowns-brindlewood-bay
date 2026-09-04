@@ -208,7 +208,7 @@ const Abilities = () => {
                   size="sm"
                   onClick={() => handleAbilityChange(index, ability.value - 1)}
                   disabled={ability.value <= -3}
-                  className="w-7 h-7 p-0 hover:text-tertiary hover:border-tertiary"
+                  className="h-7 w-7 border-secondary/75 bg-transparent p-0 text-tertiary shadow-none hover:border-secondary hover:bg-secondary/15 hover:text-tertiary hover:shadow-none active:shadow-none"
                   aria-label={`Decrease ${abilityName} ability score`}
                 >
                   <MinusIcon className="w-3 h-3" />
@@ -230,7 +230,7 @@ const Abilities = () => {
                   size="sm"
                   onClick={() => handleAbilityChange(index, ability.value + 1)}
                   disabled={ability.value >= 3}
-                  className="w-7 h-7 p-0 hover:text-tertiary hover:border-tertiary"
+                  className="h-7 w-7 border-secondary/75 bg-transparent p-0 text-tertiary shadow-none hover:border-secondary hover:bg-secondary/15 hover:text-tertiary hover:shadow-none active:shadow-none"
                   aria-label={`Increase ${ability.name} ability score`}
                 >
                   <PlusIcon className="w-3 h-3" />
