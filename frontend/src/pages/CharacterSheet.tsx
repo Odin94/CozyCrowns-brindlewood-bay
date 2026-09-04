@@ -121,7 +121,7 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
       className={`min-h-screen w-full from-gray-900 to-gray-800 p-3 sm:p-4 md:p-5 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
     >
       <div className="w-full max-w-none">
-        <div className="mb-5 text-center sm:mb-8">
+        <div className="mb-5 pt-3 text-center sm:mb-8 md:pt-0">
           <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>
           <div
             className="text-xs font-normal text-gray-300 font-sans -mt-4"
