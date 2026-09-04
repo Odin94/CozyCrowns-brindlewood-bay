@@ -32,6 +32,8 @@ export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
   }
 
   if (isAuthenticated && user) {
+    const nickname = user.nickname?.trim();
+
     return (
       <Button
         size="sm"
@@ -40,7 +42,7 @@ export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
         onClick={onMeClick}
       >
         <ChessQueen className="w-4 h-4 mr-2" />
-        <Trans>Me</Trans>
+        {nickname || <Trans>Me</Trans>}
       </Button>
     );
   }
