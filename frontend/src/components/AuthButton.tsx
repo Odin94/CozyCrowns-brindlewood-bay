@@ -8,7 +8,15 @@ type AuthButtonProps = {
 };
 
 export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
-  const { user, loading, isAuthenticated, signIn } = useAuth();
+  const {
+    user,
+    loading,
+    isAuthenticated,
+    signIn,
+    signInLocally,
+    canSignInLocally,
+    isSigningInLocally,
+  } = useAuth();
 
   if (loading) {
     return (
@@ -38,14 +46,28 @@ export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
   }
 
   return (
-    <Button
-      size="sm"
-      onClick={signIn}
-      variant="secondary"
-      className="w-25 justify-center text-foreground"
-    >
-      <LogIn className="w-4 h-4 mr-2" />
-      <Trans>Sign In</Trans>
-    </Button>
+    <div className="flex items-center gap-2">
+      <Button
+        size="sm"
+        onClick={signIn}
+        variant="secondary"
+        className="w-25 justify-center text-foreground"
+      >
+        <LogIn className="w-4 h-4 mr-2" />
+        <Trans>Sign In</Trans>
+      </Button>
+      {canSignInLocally ? (
+        <Button
+          size="sm"
+          onClick={signInLocally}
+          disabled={isSigningInLocally}
+          variant="outline"
+          className="justify-center text-foreground"
+        >
+          <LogIn className="w-4 h-4 mr-2" />
+          <Trans>Local Sign In</Trans>
+        </Button>
+      ) : null}
+    </div>
   );
 };
