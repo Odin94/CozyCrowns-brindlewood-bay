@@ -1,11 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookClubStore } from "@/lib/book_club_store";
 import { useCharacterStore } from "@/lib/character_store";
-import { parsePastedClueList } from "@/lib/clue_list";
 import TheorizeBoard from "@/pages/TheorizeBoard";
 import { getCrownOfTheVoid } from "@/game_data";
 import {
@@ -17,7 +15,7 @@ import {
 } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
-import { BookOpen, ChevronLeft, Circle, Dices, Plus, Users } from "lucide-react";
+import { BookOpen, ChevronLeft, ChevronRight, Circle, Dices, Plus, Users } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -254,18 +252,6 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
     }
   };
 
-  const createMystery = async (name: string, initialClues: string) => {
-    if (!club) return false;
-    try {
-      updateClub(await api.createBookClubMystery(club.id, name, parsePastedClueList(initialClues)));
-      toast.success(t`Mystery created`);
-      return true;
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not create the mystery`);
-      return false;
-    }
-  };
-
   const activateMystery = async (mysteryId: string) => {
     if (!club) return false;
     try {
@@ -331,18 +317,18 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
   }
 
   return (
-    <div className="relative min-h-screen bg-gray-950 p-3 pt-12 text-gray-100 sm:p-6 sm:pt-14">
+    <div className="relative min-h-screen p-3 pt-12 text-gray-100 sm:p-6 sm:pt-14">
       <Button
         variant="bare"
         size="icon"
-        className="subtle-back-button absolute left-3 top-3 sm:left-6 sm:top-6"
+        className="subtle-back-button absolute left-3 top-3 text-dark-secondary sm:left-6 sm:top-6"
         onClick={onClose}
         aria-label={t`Back to sheet`}
       >
         <ChevronLeft className="size-5" aria-hidden="true" />
       </Button>
       <div className="mx-auto flex max-w-7xl gap-6">
-        <aside className="hidden w-64 shrink-0 rounded-xl bg-gray-800 p-4 shadow-lg lg:block">
+        <aside className="hidden w-64 shrink-0 border-l-4 border-dark-secondary bg-gray-800/95 p-4 shadow-lg lg:block">
           <h2 className="flex items-center gap-2 font-semibold text-secondary">
             <Users className="size-4" /> <Trans>Book Clubs</Trans>
           </h2>
@@ -384,7 +370,6 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                 onInvite={() => void invite()}
                 onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
                 isGameMaster={isGameMaster}
-                onCreateMystery={createMystery}
                 compact
               />
             </div>
@@ -412,7 +397,7 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
           </div>
 
           {invitations.length > 0 && (
-            <section className="mb-6 rounded-xl border border-secondary/35 bg-secondary/10 p-4">
+            <section className="mb-6 border-l-4 border-dark-secondary bg-gray-800/90 p-4 shadow-md">
               <h2 className="font-semibold text-secondary">
                 <Trans>Book Club invitations</Trans>
               </h2>
@@ -420,7 +405,7 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                 {invitations.map((invitation) => (
                   <div
                     key={invitation.club.id}
-                    className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-gray-900/60 p-3 text-sm"
+                    className="flex flex-wrap items-center justify-between gap-3 border-t border-gray-700 py-3 text-sm"
                   >
                     <span>
                       <strong>{invitation.invitedByNickname ?? t`A player`}</strong>{" "}
@@ -445,7 +430,7 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
           )}
 
           {!club && !loading && (
-            <section className="rounded-xl bg-gray-800 p-8 text-center shadow-lg">
+            <section className="border-l-4 border-dark-secondary bg-gray-800/95 p-8 text-center shadow-lg">
               <BookOpen className="book-club-empty-icon mx-auto size-9 text-secondary" />
               <h1 className="mt-3 text-2xl font-bold">
                 <Trans>Gather your Book Club</Trans>
@@ -477,7 +462,7 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
 
           {club && (
             <>
-              <header className="rounded-xl bg-gradient-to-br from-dark-secondary to-gray-800 p-4 shadow-lg sm:p-5">
+              <header className="border-l-4 border-secondary bg-gradient-to-br from-dark-secondary to-gray-800 p-4 shadow-lg sm:p-5">
                 <p className="text-xs font-bold uppercase tracking-[0.2em] text-secondary">
                   <Trans>CozyCrowns Book Club</Trans>
                 </p>
@@ -497,7 +482,7 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
               </header>
 
               <section className="mt-5">
-                <h2 className="mb-3 text-xl font-bold text-tertiary">
+                <h2 className="mb-3 text-xl font-bold text-dark-secondary">
                   <Trans>At the table</Trans>
                 </h2>
                 <div className="grid gap-4 md:grid-cols-2">
@@ -510,41 +495,16 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                     />
                   ))}
                   {characters.length === 0 && (
-                    <p className="rounded-xl bg-gray-800 p-5 text-sm text-gray-300">
+                    <p className="border-l-4 border-gray-700 bg-gray-800/95 p-5 text-sm text-gray-300">
                       <Trans>No Mavens have been brought to this Book Club yet.</Trans>
                     </p>
                   )}
                 </div>
-              </section>
-
-              <div className="mt-5 lg:hidden">
-                <ClubManagement
-                  club={club}
-                  isOwner={isOwner}
-                  inviteNickname={inviteNickname}
-                  onInviteNicknameChange={setInviteNickname}
-                  onInvite={() => void invite()}
-                  onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
-                  isGameMaster={isGameMaster}
-                  onCreateMystery={createMystery}
-                />
-              </div>
-
-              <section className="mt-5 space-y-5">
-                <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
-                  <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div>
-                      <h2 className="font-semibold text-secondary">
-                        <Trans>Bring your Mavens</Trans>
-                      </h2>
-                      <p className="mt-1 text-sm text-gray-300">
-                        <Trans>
-                          Only Mavens at this Book Club can share their rolls with the table.
-                        </Trans>
-                      </p>
-                    </div>
-                  </div>
-                  <div className="mt-3 flex flex-wrap gap-2">
+                <section className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 border-y border-dark-secondary/45 bg-gray-800/90 px-3 py-2 shadow-sm">
+                  <h2 className="shrink-0 !font-sans !text-xs font-bold uppercase tracking-[0.16em] text-secondary">
+                    <Trans>Bring your Mavens</Trans>
+                  </h2>
+                  <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-4 gap-y-1">
                     {localCharacters.map((character) => {
                       const assigned = Boolean(
                         character.id && assignedCharacterIds.has(character.id),
@@ -552,13 +512,14 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                       return (
                         <div
                           key={character.id ?? character.name}
-                          className="flex items-center gap-2 rounded-md border border-gray-600 px-3 py-2 text-sm"
+                          className="flex items-center gap-2 text-sm"
                         >
                           <span>{character.name || t`Unnamed Maven`}</span>
                           {character.id ? (
                             <Button
                               size="sm"
                               variant={assigned ? "outline" : "default"}
+                              className="h-7 px-2 text-xs"
                               onClick={() =>
                                 void (assigned
                                   ? removeCharacter(character.id!)
@@ -577,8 +538,22 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                     })}
                   </div>
                 </section>
+              </section>
 
-                <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
+              <div className="mt-5 lg:hidden">
+                <ClubManagement
+                  club={club}
+                  isOwner={isOwner}
+                  inviteNickname={inviteNickname}
+                  onInviteNicknameChange={setInviteNickname}
+                  onInvite={() => void invite()}
+                  onMakeGameMaster={(memberId) => void makeGameMaster(memberId)}
+                  isGameMaster={isGameMaster}
+                />
+              </div>
+
+              <section className="mt-5 space-y-5">
+                <section className="border-l-4 border-dark-secondary bg-gray-800/95 p-5 shadow-lg">
                   <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                       <h2 className="font-semibold text-secondary">
@@ -691,11 +666,11 @@ const BookClubOverview = ({ clubId, onClose, onClubChange }: BookClubOverviewPro
                   )}
                 </section>
 
-                <section className="rounded-xl bg-gray-800 p-5 shadow-lg">
+                <section className="border-l-4 border-dark-secondary bg-gray-800/95 p-5 shadow-lg">
                   <h2 className="flex items-center gap-2 font-semibold text-secondary">
                     <Dices className="size-4" /> <Trans>Recent table rolls</Trans>
                   </h2>
-                  <div className="mt-3 overflow-x-auto rounded-lg border border-gray-700">
+                  <div className="mt-3 overflow-x-auto border border-gray-700">
                     <table className="w-full min-w-[38rem] text-left text-sm">
                       <thead className="bg-gray-900/85 text-xs uppercase tracking-wide text-gray-400">
                         <tr>
@@ -765,7 +740,6 @@ function ClubManagement({
   onInvite,
   onMakeGameMaster,
   isGameMaster,
-  onCreateMystery,
   compact = false,
 }: {
   club: BookClub;
@@ -775,12 +749,11 @@ function ClubManagement({
   onInvite: () => void;
   onMakeGameMaster: (memberId: string) => void;
   isGameMaster: boolean;
-  onCreateMystery: (name: string, initialClues: string) => Promise<boolean>;
   compact?: boolean;
 }) {
   const sectionClass = compact
-    ? "rounded-lg border border-gray-700 bg-gray-900/45 p-3"
-    : "rounded-xl bg-gray-800 p-5 shadow-lg";
+    ? "border-t border-gray-700 bg-gray-900/25 py-3"
+    : "border-l-4 border-dark-secondary bg-gray-800/95 p-5 shadow-lg";
 
   return (
     <div className={compact ? "space-y-3" : "space-y-5"}>
@@ -808,15 +781,25 @@ function ClubManagement({
           </Button>
         </form>
       </section>
-      {isGameMaster && <MysteryCreation onCreate={onCreateMystery} sectionClass={sectionClass} />}
+      {isGameMaster && (
+        <section className={sectionClass}>
+          <a
+            href="/mysteries"
+            className="group flex items-center justify-between gap-3 font-semibold text-secondary no-underline transition-colors hover:text-tertiary"
+          >
+            <Trans>Create a mystery</Trans>
+            <ChevronRight
+              className="size-4 transition-transform group-hover:translate-x-0.5"
+              aria-hidden="true"
+            />
+          </a>
+        </section>
+      )}
       {isOwner && (
         <section className={sectionClass}>
           <h2 className="font-semibold text-secondary">
             <Trans>Choose the GM</Trans>
           </h2>
-          <p className="mt-1 text-sm text-gray-300">
-            <Trans>The GM manages mysteries and clues. A Book Club has one GM at a time.</Trans>
-          </p>
           <div className="mt-3 space-y-2">
             {club.members.map((member) => (
               <label
@@ -839,56 +822,6 @@ function ClubManagement({
         </section>
       )}
     </div>
-  );
-}
-
-function MysteryCreation({
-  onCreate,
-  sectionClass,
-}: {
-  onCreate: (name: string, initialClues: string) => Promise<boolean>;
-  sectionClass: string;
-}) {
-  const [name, setName] = useState("");
-  const [initialClues, setInitialClues] = useState("");
-
-  return (
-    <section className={sectionClass}>
-      <h2 className="font-semibold text-secondary">
-        <Trans>Create a mystery</Trans>
-      </h2>
-      <p className="mt-1 text-sm text-gray-300">
-        <Trans>Create it here, then select it when you are ready to play.</Trans>
-      </p>
-      <form
-        className="mt-3 space-y-2"
-        onSubmit={(event) => {
-          event.preventDefault();
-          if (!name.trim()) return;
-          void (async () => {
-            if (await onCreate(name, initialClues)) {
-              setName("");
-              setInitialClues("");
-            }
-          })();
-        }}
-      >
-        <Input
-          value={name}
-          onChange={(event) => setName(event.target.value)}
-          placeholder={t`Mystery title`}
-        />
-        <Textarea
-          value={initialClues}
-          onChange={(event) => setInitialClues(event.target.value)}
-          placeholder={t`Add any opening clues, one per line...`}
-          className="min-h-20"
-        />
-        <Button type="submit" disabled={!name.trim()}>
-          <Plus className="size-4" /> <Trans>Create mystery</Trans>
-        </Button>
-      </form>
-    </section>
   );
 }
 
@@ -915,7 +848,7 @@ function ClueList({
 }) {
   return (
     <div
-      className={`rounded-lg border p-4 ${voidClues ? "border-purple-500/35 bg-purple-950/15" : "border-secondary/25 bg-gray-900/45"}`}
+      className={`border-l-2 p-4 ${voidClues ? "border-purple-500/50 bg-purple-950/15" : "border-secondary/40 bg-gray-900/45"}`}
     >
       <h3 className="font-semibold">{title}</h3>
       <div className="mt-3 space-y-2">
@@ -980,7 +913,7 @@ function MavenCard({
   const conditions = summaryItems(data.conditions);
   const mavenMoves = summaryItems(data.mavenMoves);
   return (
-    <article className="flex flex-col rounded-xl bg-gradient-to-br from-gray-800 via-gray-800 to-dark-secondary/70 p-5 shadow-lg">
+    <article className="flex flex-col border-l-4 border-secondary/55 bg-gradient-to-br from-gray-800 via-gray-800 to-dark-secondary/70 p-5 shadow-lg">
       <div>
         <p className="text-xs font-bold uppercase tracking-wider text-secondary">
           {own ? <Trans>Your Maven</Trans> : (character.nickname ?? t`Player`)}
@@ -1068,7 +1001,7 @@ function SummaryList({
               className={
                 chips
                   ? "rounded-full border border-gray-600 px-2.5 py-1 text-xs text-gray-100"
-                  : "flex gap-2 rounded-md border border-gray-700 px-3 py-2 text-sm leading-snug text-gray-200 before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:bg-secondary before:content-['']"
+                  : "flex gap-2 border-l border-gray-600 px-3 py-1.5 text-sm leading-snug text-gray-200 before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:bg-secondary before:content-['']"
               }
             >
               {item}
@@ -1111,7 +1044,7 @@ function ItemList({
         {items.map((item) => (
           <li
             key={item}
-            className={`flex gap-2 rounded-md border px-2.5 py-2 text-sm leading-snug before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:content-[''] ${styles}`}
+            className={`flex gap-2 border-l px-2.5 py-1.5 text-sm leading-snug before:mt-1.5 before:size-1.5 before:shrink-0 before:rounded-full before:content-[''] ${styles}`}
           >
             {item}
           </li>

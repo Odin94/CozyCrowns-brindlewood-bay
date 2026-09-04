@@ -71,7 +71,11 @@ export const MainMenuView = ({
           <Trans>Download PDF</Trans>
         </Button>
         {isAuthenticated && onBookClubsClick ? (
-          <Button onClick={onBookClubsClick} variant="dark" className="w-full dark-ring">
+          <Button
+            onClick={onBookClubsClick}
+            variant="dark"
+            className="book-clubs-menu-button w-full dark-ring"
+          >
             <Users className="w-4 h-4 mr-2" />
             <Trans>Book Clubs</Trans>
           </Button>
@@ -117,7 +121,8 @@ export const MainMenuView = ({
         </div>
         <Button variant="secondary" asChild className="w-full justify-center">
           <a href="https://ko-fi.com/odin_dev" target="_blank" rel="noopener noreferrer">
-            <Trans>Support Me</Trans> <CoffeeIcon className="ml-2 support-coffee-icon" aria-hidden="true" />
+            <Trans>Support Me</Trans>{" "}
+            <CoffeeIcon className="ml-2 support-coffee-icon" aria-hidden="true" />
           </a>
         </Button>
       </div>
