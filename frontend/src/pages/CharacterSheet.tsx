@@ -32,7 +32,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 type CharacterSheetProps = {
   onBookClubsClick: () => void;
   activeView?: "character" | "darkConspiracy";
-  onSwitchToCharacter?: () => void;
+  onSwitchToCharacter: () => void;
   onSwitchToDarkConspiracy?: () => void;
 };
 
@@ -184,7 +184,7 @@ const CharacterSheet = ({
           </div>
         ) : (
           <div className="conspiracy-view-enter">
-            <DarkConspiracySheet />
+            <DarkConspiracySheet onBackToCharacterSheet={onSwitchToCharacter} />
           </div>
         )}
       </div>

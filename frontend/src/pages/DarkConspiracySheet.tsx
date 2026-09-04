@@ -8,8 +8,9 @@ import {
   type DarkConspiracyData,
   type MysteryRecord,
 } from "@/lib/dark_conspiracy_store";
-import { Download, Upload } from "lucide-react";
+import { ChevronLeft, Download, Upload } from "lucide-react";
 import type React from "react";
+import { Trans } from "@lingui/react/macro";
 import { toast } from "sonner";
 
 const layerTwoHistory = [
@@ -127,7 +128,7 @@ const MysteryTracker = ({
   );
 };
 
-const DarkConspiracySheet = () => {
+const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterSheet: () => void }) => {
   const current = useDarkConspiracyStore((state) => state.current);
   const update = useDarkConspiracyStore((state) => state.updateCurrentDarkConspiracy);
   const replaceCurrentDarkConspiracy = useDarkConspiracyStore(
@@ -183,22 +184,28 @@ const DarkConspiracySheet = () => {
   return (
     <div className="dark-conspiracy-sheet">
       <div className="dark-conspiracy-actions">
-        <Button
-          onClick={() => exportDarkConspiracy(current)}
-          variant="dark"
-          className="h-8 dark-ring"
-        >
-          <Download className="mr-2 size-4" />
-          Save JSON
+        <Button onClick={onBackToCharacterSheet} variant="dark" className="h-8 dark-ring">
+          <ChevronLeft className="size-4" />
+          <Trans>Back to sheet</Trans>
         </Button>
-        <Button
-          onClick={handleUpload}
-          variant="dark"
-          className="h-8 dark-ring"
-        >
-          <Upload className="mr-2 size-4" />
-          Load JSON
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => exportDarkConspiracy(current)}
+            variant="dark"
+            className="h-8 dark-ring"
+          >
+            <Download className="mr-2 size-4" />
+            Save JSON
+          </Button>
+          <Button
+            onClick={handleUpload}
+            variant="dark"
+            className="h-8 dark-ring"
+          >
+            <Upload className="mr-2 size-4" />
+            Load JSON
+          </Button>
+        </div>
       </div>
 
       <article className="dark-conspiracy-page">

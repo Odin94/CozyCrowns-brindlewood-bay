@@ -54,6 +54,7 @@ function App() {
           ) : (
             <CharacterSheet
               onBookClubsClick={() => navigate("/book-clubs")}
+              onSwitchToCharacter={() => navigate("/")}
               onSwitchToDarkConspiracy={() => navigate("/dark-conspiracy")}
             />
           )}
