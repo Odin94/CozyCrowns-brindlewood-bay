@@ -117,7 +117,7 @@ export const MainMenuView = ({
         </div>
         <Button variant="secondary" asChild className="w-full justify-center">
           <a href="https://ko-fi.com/odin_dev" target="_blank" rel="noopener noreferrer">
-            <Trans>Support Me</Trans> <CoffeeIcon className="ml-2" />
+            <Trans>Support Me</Trans> <CoffeeIcon className="ml-2 support-coffee-icon" aria-hidden="true" />
           </a>
         </Button>
       </div>

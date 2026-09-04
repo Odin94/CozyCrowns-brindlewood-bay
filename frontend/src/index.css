@@ -869,6 +869,42 @@ button:focus-visible {
   transform-origin: center bottom;
 }
 
+.support-coffee-icon path:nth-child(1),
+.support-coffee-icon path:nth-child(2),
+.support-coffee-icon path:nth-child(4) {
+  transform-box: fill-box;
+  transform-origin: center bottom;
+  animation: cozy-coffee-steam 5.6s ease-in-out infinite;
+}
+
+.support-coffee-icon path:nth-child(1) {
+  animation-delay: -1.4s;
+}
+
+.support-coffee-icon path:nth-child(2) {
+  animation-delay: -3.1s;
+}
+
+.support-coffee-icon path:nth-child(4) {
+  animation-delay: -4.2s;
+}
+
+@keyframes cozy-coffee-steam {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: translate(0, 0) rotate(0deg);
+  }
+  34% {
+    opacity: 1;
+    transform: translate(0.35px, -0.55px) rotate(7deg);
+  }
+  66% {
+    opacity: 0.94;
+    transform: translate(-0.3px, -0.2px) rotate(-5deg);
+  }
+}
+
 @keyframes cozy-book-flutter {
   0%,
   100% {
@@ -898,6 +934,10 @@ button:focus-visible {
   }
 
   .book-club-empty-icon {
+    animation: none;
+  }
+
+  .support-coffee-icon path {
     animation: none;
   }
 }
