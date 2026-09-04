@@ -208,7 +208,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
         </div>
       </div>
 
-      <article className="dark-conspiracy-page">
+      <article className="dark-conspiracy-page dark-conspiracy-page--overview">
         <header className="dark-conspiracy-header">
           <p>BRINDLEWOOD BAY</p>
           <h2>The Dark Conspiracy</h2>
@@ -297,13 +297,13 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
               label="Connected characters layer two"
               value={current.connectedCharactersLayerTwo}
               onChange={(connectedCharactersLayerTwo) => update({ connectedCharactersLayerTwo })}
-              minRows={3}
+              minRows={4}
             />
           </section>
         </div>
       </article>
 
-      <article className="dark-conspiracy-page">
+      <article className="dark-conspiracy-page dark-conspiracy-page--layers">
         <header className="dark-conspiracy-header">
           <p>BRINDLEWOOD BAY</p>
           <h2>The Dark Conspiracy</h2>
@@ -389,7 +389,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
         </div>
       </article>
 
-      <article className="dark-conspiracy-page">
+      <article className="dark-conspiracy-page dark-conspiracy-page--mysteries">
         <header className="dark-conspiracy-header">
           <p>BRINDLEWOOD BAY</p>
           <h2>The Dark Conspiracy</h2>
