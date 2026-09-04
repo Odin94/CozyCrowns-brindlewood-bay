@@ -8,7 +8,7 @@ You can run everything locally using `mprocs` (after installing dependencies in 
 * `pnpm add -g mprocs`
 * `cd frontend && pnpm install`
 * `cd backend && pnpm install`
-* `mprocs`
+* `mprocs` (automatically applies any pending local database migrations before starting the backend)
 
 ### Native dependencies
 The backend uses `better-sqlite3`, which ships a native SQLite binding. The backend package is configured with `pnpm.onlyBuiltDependencies` so a normal `pnpm install` inside `backend/` is allowed to run the install/build scripts needed by `better-sqlite3` on fresh installs, including Node 24.
