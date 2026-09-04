@@ -72,12 +72,10 @@ export const useAuth = () => {
     onSuccess: finishSignIn,
   });
 
-  const signIn = () => {
-    if (env.VITE_LOCAL_AUTH_ENABLED && isLocalBrowser()) {
-      localLoginMutation.mutate();
-      return;
-    }
-    startWorkosSignIn();
+  const signIn = startWorkosSignIn;
+
+  const signInLocally = () => {
+    localLoginMutation.mutate();
   };
 
   useEffect(() => {
@@ -158,6 +156,9 @@ export const useAuth = () => {
     loading,
     isAuthenticated: !!user,
     signIn,
+    signInLocally,
+    canSignInLocally: env.VITE_LOCAL_AUTH_ENABLED && isLocalBrowser(),
+    isSigningInLocally: localLoginMutation.isPending,
     signOut,
     refreshAuth,
     handleCallback: handleCallbackMutation.mutate,

@@ -14,17 +14,17 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. js-lingui-explicit-id
-#: src/components/character/Conditions.tsx:20
+#: src/components/character/Conditions.tsx:21
 msgid "Enter any conditions or notes..."
 msgstr "Enter any conditions or notes..."
 
 #. js-lingui-explicit-id
-#: src/components/character/MavenMoves.tsx:28
+#: src/components/character/MavenMoves.tsx:29
 msgid "Enter your Maven moves..."
 msgstr "Enter your Maven moves..."
 
 #. js-lingui-explicit-id
-#: src/components/character/Name.tsx:26
+#: src/components/character/Name.tsx:27
 msgid "Enter character name"
 msgstr "Enter character name"
 
@@ -34,45 +34,45 @@ msgid "Enter your nickname"
 msgstr "Enter your nickname"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:64
+#: src/components/MenuDialog/MenuDialog.tsx:58
 msgid "Profile updated successfully!"
 msgstr "Profile updated successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:67
+#: src/components/MenuDialog/MenuDialog.tsx:61
 msgid "Failed to update profile. Please try again."
 msgstr "Failed to update profile. Please try again."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:104
+#: src/components/MenuDialog/MenuDialog.tsx:98
 msgid "PDF downloaded successfully!"
 msgstr "PDF downloaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:107
+#: src/components/MenuDialog/MenuDialog.tsx:101
 msgid "Failed to download PDF. Please try again."
 msgstr "Failed to download PDF. Please try again."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:179
-#: src/components/MenuDialog/MenuDialog.tsx:262
+#: src/components/MenuDialog/MenuDialog.tsx:140
+#: src/components/MenuDialog/MenuDialog.tsx:190
 msgid "Character data loaded successfully!"
 msgstr "Character data loaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:182
-#: src/components/MenuDialog/MenuDialog.tsx:265
+#: src/components/MenuDialog/MenuDialog.tsx:143
+#: src/components/MenuDialog/MenuDialog.tsx:193
 msgid "Invalid JSON file format."
 msgstr "Invalid JSON file format."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:184
-#: src/components/MenuDialog/MenuDialog.tsx:267
+#: src/components/MenuDialog/MenuDialog.tsx:145
+#: src/components/MenuDialog/MenuDialog.tsx:195
 msgid "Error loading character data. Please check the file format."
 msgstr "Error loading character data. Please check the file format."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:310
+#: src/components/MenuDialog/MenuDialog.tsx:223
 msgid "Character reset successfully!"
 msgstr "Character reset successfully!"
 
@@ -148,7 +148,7 @@ msgstr "12+ on wild physical feats once per mystery"
 msgid "A carefully guarded case file."
 msgstr "A carefully guarded case file."
 
-#: src/components/character/CozyLittlePlace.tsx:25
+#: src/components/character/CozyLittlePlace.tsx:26
 #: src/pages/BookClubOverview.tsx:1002
 msgid "A Cozy Little Place"
 msgstr "A Cozy Little Place"
@@ -193,7 +193,7 @@ msgstr "A scene in the present day showing how you satisfy your physical desires
 msgid "A Shadow in the Garden."
 msgstr "A Shadow in the Garden."
 
-#: src/components/character/Abilities.tsx:177
+#: src/components/character/Abilities.tsx:179
 msgid "Abilities"
 msgstr "Abilities"
 
@@ -258,7 +258,7 @@ msgstr "Add note"
 msgid "Add to the theory board"
 msgstr "Add to the theory board"
 
-#: src/components/character/Advancements.tsx:24
+#: src/components/character/Advancements.tsx:25
 msgid "Advancements"
 msgstr "Advancements"
 
@@ -282,7 +282,7 @@ msgstr "Alexis Carrington Colby"
 msgid "All the Cardigans"
 msgstr "All the Cardigans"
 
-#: src/components/character/MavenMovesPicker.tsx:98
+#: src/components/character/MavenMovesPicker.tsx:99
 msgid "Alternate"
 msgstr "Alternate"
 
@@ -365,6 +365,7 @@ msgid "Back"
 msgstr "Back"
 
 #: src/pages/BookClubOverview.tsx:334
+#: src/pages/DarkConspiracySheet.tsx:189
 #: src/pages/MysteriesPage.tsx:57
 #: src/pages/MysteriesPage.tsx:332
 msgid "Back to sheet"
@@ -407,7 +408,7 @@ msgstr "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgid "Bring your Mavens"
 msgstr "Bring your Mavens"
 
-#: src/pages/CharacterSheet.tsx:131
+#: src/pages/CharacterSheet.tsx:141
 msgid "by Odin"
 msgstr "by Odin"
 
@@ -449,7 +450,7 @@ msgstr "Choose a mystery or create a new one."
 msgid "Choose an additional Maven move."
 msgstr "Choose an additional Maven move."
 
-#: src/components/character/MavenMovesPicker.tsx:68
+#: src/components/character/MavenMovesPicker.tsx:69
 msgid "Choose Maven Moves"
 msgstr "Choose Maven Moves"
 
@@ -457,7 +458,7 @@ msgstr "Choose Maven Moves"
 msgid "Choose the GM"
 msgstr "Choose the GM"
 
-#: src/components/character/MavenMovesPicker.tsx:86
+#: src/components/character/MavenMovesPicker.tsx:87
 msgid "Classic"
 msgstr "Classic"
 
@@ -486,11 +487,11 @@ msgstr "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
 msgid "Complexity"
 msgstr "Complexity"
 
-#: src/lib/character_store.ts:14
+#: src/lib/character_store.ts:31
 msgid "Composure"
 msgstr "Composure"
 
-#: src/components/character/Conditions.tsx:13
+#: src/components/character/Conditions.tsx:14
 msgid "Conditions"
 msgstr "Conditions"
 
@@ -614,7 +615,7 @@ msgstr "Could not save that note"
 msgid "Could not send invitation"
 msgstr "Could not send invitation"
 
-#: src/components/character/Abilities.tsx:169
+#: src/components/character/Abilities.tsx:171
 msgid "Could not share this roll with your Book Club"
 msgstr "Could not share this roll with your Book Club"
 
@@ -634,7 +635,7 @@ msgstr "Could not update invitation"
 msgid "Could not update the GM"
 msgstr "Could not update the GM"
 
-#: src/components/character/CozyActivity.tsx:23
+#: src/components/character/CozyActivity.tsx:24
 msgid "Cozy Activity"
 msgstr "Cozy Activity"
 
@@ -683,11 +684,11 @@ msgstr "Create mystery"
 msgid "Credits"
 msgstr "Credits"
 
-#: src/components/character/CrownOfTheQueen.tsx:21
+#: src/components/character/CrownOfTheQueen.tsx:22
 msgid "Crown of the Queen"
 msgstr "Crown of the Queen"
 
-#: src/components/character/CrownOfTheVoid.tsx:23
+#: src/components/character/CrownOfTheVoid.tsx:24
 #: src/pages/BookClubOverview.tsx:993
 msgid "Crown of the Void"
 msgstr "Crown of the Void"
@@ -818,7 +819,7 @@ msgstr "Edit note"
 msgid "Email"
 msgstr "Email"
 
-#: src/components/character/EndOfSession.tsx:20
+#: src/components/character/EndOfSession.tsx:21
 msgid "End of Session"
 msgstr "End of Session"
 
@@ -935,8 +936,8 @@ msgstr "Introduce trivia as a Clue once per mystery"
 msgid "Introduction"
 msgstr "Introduction"
 
-#: src/components/MenuDialog/MenuDialog.tsx:135
-#: src/components/MenuDialog/MenuDialog.tsx:218
+#: src/components/MenuDialog/MenuDialog.tsx:129
+#: src/components/MenuDialog/MenuDialog.tsx:179
 msgid "Invalid character data format: {errorMessages}"
 msgstr "Invalid character data format: {errorMessages}"
 
@@ -996,9 +997,13 @@ msgstr "Lavish Cozy Little Place: Gourmet Pantry, Orchidarium, Full Bar, Private
 msgid "Load from save file"
 msgstr "Load from save file"
 
-#: src/components/AuthButton.tsx:21
+#: src/components/AuthButton.tsx:29
 msgid "Loading..."
 msgstr "Loading..."
+
+#: src/components/AuthButton.tsx:68
+msgid "Local Sign In"
+msgstr "Local Sign In"
 
 #: src/pages/LibraryPage.tsx:112
 #: src/pages/MysteriesPage.tsx:417
@@ -1045,11 +1050,11 @@ msgstr "Master of disguise with any needed ID"
 msgid "Maven"
 msgstr "Maven"
 
-#: src/components/character/MavenMoves.tsx:15
+#: src/components/character/MavenMoves.tsx:16
 msgid "Maven Moves"
 msgstr "Maven Moves"
 
-#: src/components/AuthButton.tsx:35
+#: src/components/AuthButton.tsx:43
 msgid "Me"
 msgstr "Me"
 
@@ -1057,8 +1062,8 @@ msgstr "Me"
 msgid "Medical background and Medical Bag that never gets marked"
 msgstr "Medical background and Medical Bag that never gets marked"
 
-#: src/pages/CharacterSheet.tsx:171
-#: src/pages/CharacterSheet.tsx:185
+#: src/pages/CharacterSheet.tsx:181
+#: src/pages/CharacterSheet.tsx:195
 msgid "Menu"
 msgstr "Menu"
 
@@ -1092,7 +1097,7 @@ msgstr "Mystery created"
 msgid "Mystery title"
 msgstr "Mystery title"
 
-#: src/components/character/Name.tsx:20
+#: src/components/character/Name.tsx:21
 #: src/pages/MysteriesPage.tsx:503
 msgid "Name"
 msgstr "Name"
@@ -1274,7 +1279,7 @@ msgstr "Please sign in to view your profile."
 msgid "Pottery"
 msgstr "Pottery"
 
-#: src/lib/character_store.ts:16
+#: src/lib/character_store.ts:33
 msgid "Presence"
 msgstr "Presence"
 
@@ -1310,7 +1315,7 @@ msgstr "Quilting"
 msgid "Quote"
 msgstr "Quote"
 
-#: src/lib/character_store.ts:15
+#: src/lib/character_store.ts:32
 msgid "Reason"
 msgstr "Reason"
 
@@ -1327,7 +1332,7 @@ msgstr "Recent table rolls"
 #~ msgstr "Refresh"
 
 #: src/hooks/useBackendDarkConspiraciesSync.ts:112
-#: src/hooks/useCharacterSave.ts:64
+#: src/hooks/useCharacterSave.ts:52
 msgid "Reload"
 msgstr "Reload"
 
@@ -1430,11 +1435,11 @@ msgstr "Secret ghost writer; both Gold Crown benefits while secret is kept"
 msgid "Select a mystery"
 msgstr "Select a mystery"
 
-#: src/components/character/MavenMoves.tsx:20
+#: src/components/character/MavenMoves.tsx:21
 msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 msgstr "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 
-#: src/lib/character_store.ts:17
+#: src/lib/character_store.ts:34
 msgid "Sensitivity"
 msgstr "Sensitivity"
 
@@ -1466,7 +1471,7 @@ msgstr "Show"
 msgid "Sign in"
 msgstr "Sign in"
 
-#: src/components/AuthButton.tsx:48
+#: src/components/AuthButton.tsx:57
 msgid "Sign In"
 msgstr "Sign In"
 
@@ -1506,7 +1511,7 @@ msgstr "Speed Walkin'"
 msgid "Steady nerves, fine control, focus, and keeping fear at bay."
 msgstr "Steady nerves, fine control, focus, and keeping fear at bay."
 
-#: src/components/character/Style.tsx:23
+#: src/components/character/Style.tsx:24
 msgid "Style"
 msgstr "Style"
 
@@ -1559,7 +1564,7 @@ msgstr "The"
 msgid "The Chariot."
 msgstr "The Chariot."
 
-#: src/components/character/EndOfSession.tsx:23
+#: src/components/character/EndOfSession.tsx:24
 msgid "The first is always marked. At the beginning of a session, mark two more (three total marked)."
 msgstr "The first is always marked. At the beginning of a session, mark two more (three total marked)."
 
@@ -1609,7 +1614,7 @@ msgstr "This action will permanently delete all your character data."
 msgid "This conspiracy changed elsewhere. Your edits are still here."
 msgstr "This conspiracy changed elsewhere. Your edits are still here."
 
-#: src/hooks/useCharacterSave.ts:62
+#: src/hooks/useCharacterSave.ts:50
 msgid "This Maven changed elsewhere. Your edits are still here."
 msgstr "This Maven changed elsewhere. Your edits are still here."
 
@@ -1680,7 +1685,7 @@ msgstr "Up in Pumps"
 msgid "Version drawer"
 msgstr "Version drawer"
 
-#: src/lib/character_store.ts:13
+#: src/lib/character_store.ts:30
 msgid "Vitality"
 msgstr "Vitality"
 
@@ -1704,11 +1709,11 @@ msgstr "When"
 msgid "When you improvise in a situation using whatever is at-hand, ask the other players and Keeper to name three objects you find in the environment. So long as you can give a plausible explanation for how these three objects together are helpful in the current situation, you get an automatic 12+ on a single associated die roll. This move can be used once per mystery."
 msgstr "When you improvise in a situation using whatever is at-hand, ask the other players and Keeper to name three objects you find in the environment. So long as you can give a plausible explanation for how these three objects together are helpful in the current situation, you get an automatic 12+ on a single associated die roll. This move can be used once per mystery."
 
-#: src/components/character/CrownOfTheQueen.tsx:24
+#: src/components/character/CrownOfTheQueen.tsx:25
 msgid "When you put on this Crown, mark and narrate any you wish."
 msgstr "When you put on this Crown, mark and narrate any you wish."
 
-#: src/components/character/CrownOfTheVoid.tsx:26
+#: src/components/character/CrownOfTheVoid.tsx:27
 msgid "When you put on this Crown, mark the first empty box."
 msgstr "When you put on this Crown, mark the first empty box."
 
@@ -1716,7 +1721,7 @@ msgstr "When you put on this Crown, mark the first empty box."
 msgid "Whenever you find a Clue that is an object, you can physically manipulate the object to uncover a further secret about it—a hidden detail, a secret compartment, a scrawled message, etc. This extra detail is added to the Clue; it cannot cause the Clue to conclusively solve the mystery by itself."
 msgstr "Whenever you find a Clue that is an object, you can physically manipulate the object to uncover a further secret about it—a hidden detail, a secret compartment, a scrawled message, etc. This extra detail is added to the Clue; it cannot cause the Clue to conclusively solve the mystery by itself."
 
-#: src/components/character/XpTrack.tsx:11
+#: src/components/character/XpTrack.tsx:12
 msgid "XP Track"
 msgstr "XP Track"
 
