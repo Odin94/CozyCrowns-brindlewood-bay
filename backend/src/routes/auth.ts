@@ -17,6 +17,7 @@ import {
   localDevelopmentUser,
   revokeLocalSession,
 } from "../utils/localAuth.js";
+import { generateNickname } from "../utils/nickname.js";
 
 const callbackQuerySchema = z.object({
   code: z.string().min(1, "Authorization code is required"),
@@ -27,6 +28,23 @@ const authFlowSchema = z.object({
   state: z.string().min(1),
   codeVerifier: z.string().min(1),
 });
+const NICKNAME_INSERT_ATTEMPTS = 10;
+
+type NewUser = Pick<typeof schema.users.$inferInsert, "id" | "email" | "firstName" | "lastName">;
+
+const isNicknameConflict = (error: unknown) =>
+  error instanceof Error && error.message.includes("UNIQUE constraint failed: users.nickname");
+
+const createUserWithGeneratedNickname = async (user: NewUser) => {
+  for (let attempt = 0; attempt < NICKNAME_INSERT_ATTEMPTS; attempt += 1) {
+    try {
+      await db.insert(schema.users).values({ ...user, nickname: generateNickname() });
+      return;
+    } catch (error) {
+      if (!isNicknameConflict(error) || attempt === NICKNAME_INSERT_ATTEMPTS - 1) throw error;
+    }
+  }
+};
 
 const statesMatch = (expected: string, actual: string) => {
   const expectedBytes = Buffer.from(expected);
@@ -46,7 +64,7 @@ export async function authRoutes(fastify: FastifyInstance) {
       where: eq(schema.users.id, localDevelopmentUser.id),
     });
     if (!existingUser) {
-      await db.insert(schema.users).values(localDevelopmentUser);
+      await createUserWithGeneratedNickname(localDevelopmentUser);
     }
 
     const dbUser = await db.query.users.findFirst({
@@ -204,7 +222,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           })
           .where(eq(schema.users.id, user.id));
       } else {
-        await db.insert(schema.users).values({
+        await createUserWithGeneratedNickname({
           id: user.id,
           email: user.email,
           firstName: user.firstName || null,

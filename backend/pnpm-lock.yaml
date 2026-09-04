@@ -56,6 +56,9 @@ importers:
       posthog-node:
         specifier: ^5.34.6
         version: 5.34.6
+      unique-names-generator:
+        specifier: ^4.7.1
+        version: 4.7.1
       zod:
         specifier: ^4.4.3
         version: 4.4.3
@@ -1708,6 +1711,10 @@ packages:
     resolution: {integrity: sha512-ZgpWDC5gmNiuY9CnLVXEH8rl50xhRCuLNA97fAUnKi8RRuV4E6KG31pDTsLVUKnohJE0I3XDrTeEydAXRw47xg==}
     engines: {node: '>=18.17'}
 
+  unique-names-generator@4.7.1:
+    resolution: {integrity: sha512-lMx9dX+KRmG8sq6gulYYpKWZc9RlGsgBR6aoO8Qsm3qvkSJ+3rAymr+TnV8EDMrIrwuFJ4kruzMWM/OpYzPoow==}
+    engines: {node: '>=8'}
+
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
@@ -3106,6 +3113,8 @@ snapshots:
   undici-types@7.24.6: {}
 
   undici@6.25.0: {}
+
+  unique-names-generator@4.7.1: {}
 
   util-deprecate@1.0.2: {}
 
