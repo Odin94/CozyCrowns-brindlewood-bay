@@ -605,11 +605,12 @@ export const api = {
     bookClubId: string,
     name: string,
     clues: string[],
+    voidClues: string[] = [],
   ): Promise<BookClub> => {
     const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/mysteries`, {
       method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ name, clues }),
+      body: JSON.stringify({ name, clues, voidClues }),
     });
     return handleResponse(response);
   },

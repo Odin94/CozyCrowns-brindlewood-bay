@@ -71,11 +71,7 @@ export const MainMenuView = ({
           <Trans>Download PDF</Trans>
         </Button>
         {isAuthenticated && onBookClubsClick ? (
-          <Button
-            onClick={onBookClubsClick}
-            variant="dark"
-            className="book-clubs-menu-button w-full dark-ring"
-          >
+          <Button onClick={onBookClubsClick} variant="dark" className="w-full dark-ring">
             <Users className="w-4 h-4 mr-2" />
             <Trans>Book Clubs</Trans>
           </Button>
