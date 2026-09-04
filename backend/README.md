@@ -131,7 +131,10 @@ GitHub Actions workflow. The workflow connects to `46.224.62.32` and runs
 `updateCode.sh` for the exact pushed commit. The script creates a SQLite backup
 before fetching that commit, building, migrating, restarting PM2, and checking
 the local health endpoint. Deployments are queued rather than cancelled so a
-database migration can finish safely.
+database migration can finish safely. Every one of those operations must
+succeed: its non-zero exit status is returned over SSH and marks the GitHub
+Actions run as failed, so standard GitHub Actions notifications can alert
+subscribed users.
 
 Configure these repository settings before the first deployment:
 
@@ -140,10 +143,6 @@ Configure these repository settings before the first deployment:
 - Secret `HETZNER_KNOWN_HOSTS`: the pinned host-key entry for `46.224.62.32`.
   Obtain and verify this through a trusted channel, then store the resulting
   `known_hosts` line here. Do not have CI fetch the key during deployment.
-- Secret `GMAIL_SENDER`: the Gmail address used to send deployment-failure
-  notifications to `kammerloher.andreas@gmail.com`.
-- Secret `GMAIL_APP_PASSWORD`: an app password for `GMAIL_SENDER`; do not use
-  the account's normal password.
 - Optional repository variable `HETZNER_SSH_USER`: SSH account to use. It
   defaults to `github-deploy`.
 
