@@ -77,7 +77,7 @@ const MavenMovesPicker = () => {
             <Button
               onClick={() => setActiveTab("classic")}
               variant="bare"
-              className={`no-ring flex-1 py-1.5 text-sm font-medium transition-colors
+              className={`no-ring flex-1 rounded-none py-1.5 text-sm font-medium transition-colors
                                 ${
                                   activeTab === "classic"
                                     ? "bg-green-100/30 text-primary"
@@ -89,7 +89,7 @@ const MavenMovesPicker = () => {
             <Button
               onClick={() => setActiveTab("alternate")}
               variant="bare"
-              className={`no-ring flex-1 py-1.5 text-sm font-medium transition-colors border-l border-green-200
+              className={`no-ring flex-1 rounded-none py-1.5 text-sm font-medium transition-colors border-l border-green-200
                                 ${
                                   activeTab === "alternate"
                                     ? "bg-green-100/30 text-primary"
