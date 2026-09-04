@@ -29,7 +29,19 @@ import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
 import { useEffect, useMemo, useRef, useState } from "react";
 
-const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) => {
+type CharacterSheetProps = {
+  onBookClubsClick: () => void;
+  activeView?: "character" | "darkConspiracy";
+  onSwitchToCharacter?: () => void;
+  onSwitchToDarkConspiracy?: () => void;
+};
+
+const CharacterSheet = ({
+  onBookClubsClick,
+  activeView = "character",
+  onSwitchToCharacter,
+  onSwitchToDarkConspiracy,
+}: CharacterSheetProps) => {
   // useLingui() is Required to ensure component rerenders when locale changes
   useLingui();
   useBackendCharactersSync();
@@ -37,7 +49,6 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
   const [menuOpen, setMenuOpen] = useState(false);
   const [saveFailureOpen, setSaveFailureOpen] = useState(false);
   const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
-  const [activeView, setActiveView] = useState<"character" | "darkConspiracy">("character");
   const isLargeScreen = useIsLargeScreen();
   const {
     deleteConfirmOpen,
@@ -218,8 +229,8 @@ const CharacterSheet = ({ onBookClubsClick }: { onBookClubsClick: () => void }) 
         onDeleteCharacter={handleDeleteCharacter}
         onSwitchCharacter={handleSwitchCharacter}
         activeView={activeView}
-        onSwitchToCharacter={() => setActiveView("character")}
-        onSwitchToDarkConspiracy={() => setActiveView("darkConspiracy")}
+        onSwitchToCharacter={onSwitchToCharacter}
+        onSwitchToDarkConspiracy={onSwitchToDarkConspiracy}
       />
     </div>
   );
