@@ -265,7 +265,6 @@ export const api = {
   loginLocally: async (): Promise<AuthCallbackResponse> => {
     const response = await fetch(`${API_URL}/auth/local-login`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
     });
     return handleResponse<AuthCallbackResponse>(response);
   },
