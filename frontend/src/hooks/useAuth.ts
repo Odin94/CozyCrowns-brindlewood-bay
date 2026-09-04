@@ -2,7 +2,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import posthog from "posthog-js";
 import { useEffect } from "react";
 import { api, API_URL, tokenStorage } from "../utils/api";
-import { env } from "../config/env";
 
 const startWorkosSignIn = () => {
   window.location.href = `${API_URL}/auth/login`;
@@ -157,7 +156,7 @@ export const useAuth = () => {
     isAuthenticated: !!user,
     signIn,
     signInLocally,
-    canSignInLocally: env.VITE_LOCAL_AUTH_ENABLED && isLocalBrowser(),
+    canSignInLocally: isLocalBrowser(),
     isSigningInLocally: localLoginMutation.isPending,
     signOut,
     refreshAuth,
