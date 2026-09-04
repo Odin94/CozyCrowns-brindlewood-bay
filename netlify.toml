@@ -3,6 +3,11 @@ base = "frontend"
 command = "cd frontend;pnpm i && pnpm run build"
 publish = "frontend/dist"
 
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
+
 [[redirects]]
 from = "/*"
 to = "/index.html"
