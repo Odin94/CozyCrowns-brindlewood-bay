@@ -365,7 +365,7 @@ msgid "Back"
 msgstr "Zurück"
 
 #: src/pages/BookClubOverview.tsx:334
-#: src/pages/DarkConspiracySheet.tsx:189
+#: src/pages/DarkConspiracySheet.tsx:193
 #: src/pages/MysteriesPage.tsx:57
 #: src/pages/MysteriesPage.tsx:332
 msgid "Back to sheet"
@@ -871,6 +871,10 @@ msgstr ""
 msgid "GM"
 msgstr ""
 
+#: src/pages/SignInPage.tsx:54
+msgid "Go to my sheet"
+msgstr ""
+
 #: src/game_data.ts:85
 msgid "Goin' Fishin'"
 msgstr "Steppjacke und Timberlands"
@@ -1002,6 +1006,7 @@ msgid "Loading..."
 msgstr "Lade..."
 
 #: src/components/AuthButton.tsx:68
+#: src/pages/SignInPage.tsx:58
 msgid "Local Sign In"
 msgstr ""
 
@@ -1464,6 +1469,7 @@ msgid "Show"
 msgstr ""
 
 #: src/pages/LibraryPage.tsx:49
+#: src/pages/SignInPage.tsx:51
 msgid "Sign in"
 msgstr ""
 
@@ -1472,6 +1478,7 @@ msgid "Sign In"
 msgstr "Einloggen"
 
 #: src/pages/MysteriesPage.tsx:69
+#: src/pages/SignInPage.tsx:43
 msgid "Sign in to continue"
 msgstr ""
 
@@ -1776,6 +1783,10 @@ msgstr "Du hast zwei zusätzliche Gemütliche Aktivitäten; wähle sie aus der L
 #: src/game_data.ts:236
 msgid "You know that Robin Masterson hasn't written an Amanda Delacourt book in years and that her name is used as a pseudonym by dozens of secret ghost writers because you are one of those secret ghost writers. So long as you keep the secret, the Mavens always get both benefits of the Gold Crown Mysteries Move instead of having to choose. If you ever reveal the secret to anyone, you get a second use of the Gold Crown Mysteries Move during the mystery in which you reveal it, but take the Condition: Marked by the Robin Masterson Network, and you no longer have access to this move. No two Mavens can have this move at the same time."
 msgstr "Du weißt, dass Robin Masterson seit Jahren kein Amanda-Delacourt-Buch mehr geschrieben hat und dass ihr Name von Dutzenden geheimer Ghostwriter als Pseudonym verwendet wird, weil du eine dieser geheimen Ghostwriterinnen bist. Solange du das Geheimnis bewahrst, bekommen die Krimi-Kennerinnen immer beide Vorteile des Gold-Crown-Mysteries-Spielzugs, anstatt wählen zu müssen. Wenn du das Geheimnis jemals jemandem offenbarst, erhältst du eine zweite Verwendung des Gold-Crown-Mysteries-Spielzugs während des Falls, in dem du es offenbarst, nimmst aber den Zustand: Gezeichnet vom Robin-Masterson-Netzwerk, und du hast keinen Zugang mehr zu diesem Spielzug. Keine zwei Krimi-Kennerinnen können diesen Spielzug zur gleichen Zeit haben."
+
+#: src/pages/SignInPage.tsx:46
+msgid "You need an account to open this page."
+msgstr ""
 
 #: src/game_data.ts:148
 msgid "You used to live a globetrotting, jet set life, and you still have a touch of glamor about you that will never fade. Add 1 to your Presence (max 3)."
