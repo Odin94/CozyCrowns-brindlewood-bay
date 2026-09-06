@@ -536,9 +536,13 @@
     color 170ms ease-out;
 }
 .book-club-drawer-rail button svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
   width: 20px;
   height: 20px;
   flex: 0 0 auto;
+  transform: translateY(-50%);
 }
 .book-club-drawer-rail button span {
   position: absolute;
@@ -550,8 +554,6 @@
 }
 .book-club-drawer-rail button:hover {
   width: 118px;
-  justify-content: flex-start;
-  padding-left: 13px;
 }
 .book-club-drawer-rail button:hover span {
   opacity: 1;
@@ -1172,8 +1174,10 @@
     font-size: 8px;
   }
   .book-club-drawer-rail button svg {
+    position: static;
     width: 18px;
     height: 18px;
+    transform: none;
   }
   .book-club-drawer {
     z-index: 5;
