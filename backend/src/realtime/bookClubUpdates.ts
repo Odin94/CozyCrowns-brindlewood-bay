@@ -19,7 +19,14 @@ export const registerBookClubSocket = (userId: string, socket: BookClubSocket) =
 };
 
 export const notifyBookClubUsers = (userIds: Iterable<string>) => {
-  const message = JSON.stringify({ type: "book-clubs-updated" });
+  notifyBookClubUsersWithMessage(userIds, { type: "book-clubs-updated" });
+};
+
+export const notifyBookClubUsersWithMessage = (
+  userIds: Iterable<string>,
+  payload: Record<string, unknown>,
+) => {
+  const message = JSON.stringify(payload);
   for (const userId of new Set(userIds)) {
     const sockets = socketsByUser.get(userId);
     if (!sockets) continue;
