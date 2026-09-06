@@ -101,6 +101,15 @@ const relativeTime = (date: string) => {
   return `${Math.floor(minutes / 60)}h`;
 };
 
+const reconcilePendingNote = (server: string, sent: string, current: string) => {
+  if (current === sent) return server;
+  if (server === sent || current.includes(server)) return current;
+  if (server.includes(current)) return server;
+  if (server.endsWith(sent)) return `${server.slice(0, -sent.length)}${current}`;
+  if (server.startsWith(sent)) return `${current}${server.slice(sent.length)}`;
+  return `${server}\n\n${current}`;
+};
+
 type BookClubOverviewProps = {
   clubId: string | null;
   panel: DrawerPage | null;
@@ -250,6 +259,17 @@ const BookClubOverview = ({
       socketRef.current = null;
     };
   }, [refresh, user?.id]);
+
+  useEffect(() => {
+    if (!noteCursors.length) return;
+    const nextExpiry = Math.min(...noteCursors.map((cursor) => cursor.seenAt + 8_000));
+    const timer = window.setTimeout(
+      () =>
+        setNoteCursors((current) => current.filter((cursor) => Date.now() - cursor.seenAt < 8_000)),
+      Math.max(0, nextExpiry - Date.now()) + 20,
+    );
+    return () => window.clearTimeout(timer);
+  }, [noteCursors]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -584,6 +604,7 @@ const BookClubOverview = ({
           )}
           {panel === "notes" && (
             <NotesPanel
+              key={club.id}
               club={club}
               socket={socketRef.current}
               cursors={noteCursors.filter(
@@ -1087,48 +1108,131 @@ function NotesPanel({
   });
   const [privateNotes, setPrivateNotes] = useState({ content: "", version: 0 });
   const [saved, setSaved] = useState(true);
+  const [loadingNotes, setLoadingNotes] = useState(true);
   const versions = useRef({ shared: club.sharedNotesVersion, private: 0 });
+  const latest = useRef({ shared: club.sharedNotes, private: "" });
+  const dirty = useRef({ shared: false, private: false });
+  const saving = useRef({ shared: false, private: false });
   const timers = useRef<{ shared?: number; private?: number }>({});
+  const mounted = useRef(true);
+  const persistRef = useRef<(kind: "shared" | "private") => Promise<void>>(async () => {});
+
+  const updateSavedState = () => {
+    if (!mounted.current) return;
+    setSaved(
+      !dirty.current.shared &&
+        !dirty.current.private &&
+        !saving.current.shared &&
+        !saving.current.private,
+    );
+  };
+
+  const persist = useCallback(
+    async (kind: "shared" | "private") => {
+      if (saving.current[kind] || !dirty.current[kind]) return;
+      if (timers.current[kind]) window.clearTimeout(timers.current[kind]);
+      timers.current[kind] = undefined;
+      saving.current[kind] = true;
+      const content = latest.current[kind];
+      let continueWithNewerEdit = false;
+      try {
+        const result = await api.updateBookClubNotes(club.id, {
+          kind,
+          content,
+          baseVersion: versions.current[kind],
+        });
+        versions.current[kind] = result.version;
+        if (latest.current[kind] === content) {
+          dirty.current[kind] = false;
+          latest.current[kind] = result.content;
+          if (mounted.current) {
+            if (kind === "shared") setShared(result);
+            else setPrivateNotes(result);
+          }
+        } else {
+          const reconciled = reconcilePendingNote(result.content, content, latest.current[kind]);
+          latest.current[kind] = reconciled;
+          continueWithNewerEdit = true;
+          if (mounted.current) {
+            if (kind === "shared") setShared({ content: reconciled, version: result.version });
+            else setPrivateNotes({ content: reconciled, version: result.version });
+          }
+        }
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : t`Could not save notes`);
+      } finally {
+        saving.current[kind] = false;
+        updateSavedState();
+        if (continueWithNewerEdit) void persistRef.current(kind);
+      }
+    },
+    [club.id],
+  );
+  persistRef.current = persist;
+
   useEffect(() => {
     let cancelled = false;
+    setLoadingNotes(true);
     void api
       .getBookClubNotes(club.id)
       .then((notes) => {
         if (cancelled) return;
-        setShared(notes.shared);
-        setPrivateNotes(notes.private);
-        versions.current = { shared: notes.shared.version, private: notes.private.version };
+        if (notes.shared.version >= versions.current.shared && !dirty.current.shared) {
+          setShared(notes.shared);
+          latest.current.shared = notes.shared.content;
+          versions.current.shared = notes.shared.version;
+        }
+        if (notes.private.version >= versions.current.private && !dirty.current.private) {
+          setPrivateNotes(notes.private);
+          latest.current.private = notes.private.content;
+          versions.current.private = notes.private.version;
+        }
       })
       .catch((error) =>
         toast.error(error instanceof Error ? error.message : t`Could not load notes`),
-      );
+      )
+      .finally(() => {
+        if (!cancelled) setLoadingNotes(false);
+      });
     return () => {
       cancelled = true;
     };
   }, [club.id]);
-  useEffect(
-    () => () => {
-      if (timers.current.shared) window.clearTimeout(timers.current.shared);
-      if (timers.current.private) window.clearTimeout(timers.current.private);
-    },
-    [],
-  );
+
+  useEffect(() => {
+    if (
+      club.sharedNotesVersion <= versions.current.shared ||
+      dirty.current.shared ||
+      saving.current.shared
+    )
+      return;
+    versions.current.shared = club.sharedNotesVersion;
+    latest.current.shared = club.sharedNotes;
+    setShared({ content: club.sharedNotes, version: club.sharedNotesVersion });
+  }, [club.sharedNotes, club.sharedNotesVersion]);
+
+  useEffect(() => {
+    mounted.current = true;
+    const timerState = timers.current;
+    const dirtyState = dirty.current;
+    const savingState = saving.current;
+    const persistPending = persistRef;
+    return () => {
+      mounted.current = false;
+      if (timerState.shared) window.clearTimeout(timerState.shared);
+      if (timerState.private) window.clearTimeout(timerState.private);
+      if (dirtyState.shared && !savingState.shared) void persistPending.current("shared");
+      if (dirtyState.private && !savingState.private) void persistPending.current("private");
+    };
+  }, []);
+
   const queueSave = (kind: "shared" | "private", content: string) => {
+    latest.current[kind] = content;
+    dirty.current[kind] = true;
     setSaved(false);
     if (timers.current[kind]) window.clearTimeout(timers.current[kind]);
     timers.current[kind] = window.setTimeout(() => {
-      void api
-        .updateBookClubNotes(club.id, { kind, content, baseVersion: versions.current[kind] })
-        .then((result) => {
-          versions.current[kind] = result.version;
-          if (kind === "shared")
-            setShared((current) => (current.content === content ? result : current));
-          else setPrivateNotes((current) => (current.content === content ? result : current));
-          setSaved(true);
-        })
-        .catch((error) =>
-          toast.error(error instanceof Error ? error.message : t`Could not save notes`),
-        );
+      void persistRef.current(kind);
     }, 650);
   };
   const sendCursor = (element: HTMLTextAreaElement) => {
@@ -1165,6 +1269,7 @@ function NotesPanel({
         </span>
         <textarea
           value={shared.content}
+          disabled={loadingNotes}
           onChange={(event) => {
             setShared((current) => ({ ...current, content: event.target.value }));
             queueSave("shared", event.target.value);
@@ -1202,6 +1307,7 @@ function NotesPanel({
         </span>
         <textarea
           value={privateNotes.content}
+          disabled={loadingNotes}
           onChange={(event) => {
             setPrivateNotes((current) => ({ ...current, content: event.target.value }));
             queueSave("private", event.target.value);
