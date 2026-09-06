@@ -373,12 +373,11 @@
   list-style: none;
 }
 .book-club-maven-card section li {
-  overflow: hidden;
   color: rgb(53 33 63 / 0.86);
   font-size: 11px;
   line-height: 1.28;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 .book-club-maven-card > button {
   position: relative;
@@ -1096,13 +1095,6 @@
   }
   .book-club-invite-station > button {
     justify-content: center;
-    font-size: 0;
-  }
-  .book-club-invite-station > button span {
-    display: none;
-  }
-  .book-club-invite-station > button::after {
-    content: "Copy link";
     font-size: 12px;
   }
   .book-club-stage {
