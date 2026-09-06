@@ -19,7 +19,9 @@ const LibraryPage = lazy(() => import("./pages/LibraryPage"));
 const BookClubOverview = lazy(() => import("./pages/BookClubOverview"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 
-const currentLocation = () => window.location.pathname + window.location.search + window.location.hash;
+const currentLocation = () =>
+  window.location.pathname + window.location.search + window.location.hash;
+const bookClubPanels = ["mystery", "rolls", "characters", "settings", "notes", "clues"] as const;
 
 const ProtectedRoute = ({
   children,
@@ -43,7 +45,10 @@ const ProtectedRoute = ({
 function AppRoutes() {
   const [location, setLocation] = useState(currentLocation);
   const pathname = new URL(location, window.location.origin).pathname;
+  const searchParams = new URLSearchParams(new URL(location, window.location.origin).search);
   const bookClubMatch = pathname.match(/^\/book-clubs(?:\/([^/]+))?\/?$/);
+  const requestedBookClubPanel = searchParams.get("panel");
+  const bookClubPanel = bookClubPanels.find((panel) => panel === requestedBookClubPanel) ?? null;
   const isDarkConspiracyRoute = pathname === "/dark-conspiracy";
 
   useEffect(() => {
@@ -58,9 +63,12 @@ function AppRoutes() {
     setLocation(currentLocation());
   }, []);
 
-  const requireSignIn = useCallback((returnTo: string) => {
-    navigate(`/sign-in?returnTo=${encodeURIComponent(returnTo)}`, { replace: true });
-  }, [navigate]);
+  const requireSignIn = useCallback(
+    (returnTo: string) => {
+      navigate(`/sign-in?returnTo=${encodeURIComponent(returnTo)}`, { replace: true });
+    },
+    [navigate],
+  );
   const signInReturnTo = new URLSearchParams(new URL(location, window.location.origin).search).get(
     "returnTo",
   );
@@ -97,8 +105,15 @@ function AppRoutes() {
           <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
             <BookClubOverview
               clubId={bookClubMatch[1] ? decodeURIComponent(bookClubMatch[1]) : null}
+              panel={bookClubPanel}
               onClose={() => navigate("/")}
               onClubChange={(clubId) => navigate(`/book-clubs/${encodeURIComponent(clubId)}`)}
+              onPanelChange={(panel) => {
+                const path = bookClubMatch[1]
+                  ? `/book-clubs/${encodeURIComponent(decodeURIComponent(bookClubMatch[1]))}`
+                  : "/book-clubs";
+                navigate(panel ? `${path}?panel=${panel}` : path);
+              }}
             />
           </ProtectedRoute>
         ) : (

@@ -92,6 +92,8 @@ export type BookClub = {
   id: string;
   name: string;
   ownerId: string;
+  sharedNotes: string;
+  sharedNotesVersion: number;
   createdAt: string;
   members: Array<{
     id: string;
@@ -110,7 +112,13 @@ export type BookClub = {
     result: string;
     createdAt: string;
   }>;
-  mysteries: Array<{ id: string; title: string; isActive: boolean; createdAt: string }>;
+  mysteries: Array<{
+    id: string;
+    title: string;
+    isActive: boolean;
+    createdAt: string;
+    voidClues: Array<{ id: string; text: string; checked: boolean }>;
+  }>;
   activeMystery: {
     id: string;
     title: string;
@@ -130,6 +138,15 @@ export type BookClubInvitation = {
   club: Pick<BookClub, "id" | "name" | "ownerId" | "createdAt">;
   invitedByNickname: string | null;
   createdAt: string;
+};
+
+export type BookClubNoteCursor = {
+  type: "book-club-note-cursor";
+  bookClubId: string;
+  userId: string;
+  nickname: string | null;
+  start: number;
+  end: number;
 };
 
 export type TheoryNodeKind = "clue" | "voidClue" | "suspect" | "other";
@@ -202,7 +219,10 @@ const getBookClubWebSocketUrl = () => {
   return url.toString();
 };
 
-export const connectBookClubUpdates = (onUpdate: () => void): WebSocket | null => {
+export const connectBookClubUpdates = (
+  onUpdate: () => void,
+  onMessage?: (message: BookClubNoteCursor) => void,
+): WebSocket | null => {
   const token = tokenStorage.get();
   if (!token) return null;
 
@@ -221,6 +241,7 @@ export const connectBookClubUpdates = (onUpdate: () => void): WebSocket | null =
         tokenStorage.set(message.token);
       }
       if (message.type === "book-clubs-updated") onUpdate();
+      if (message.type === "book-club-note-cursor") onMessage?.(message);
     } catch {
       // Ignore malformed messages and wait for the next server update.
     }
@@ -467,6 +488,14 @@ export const api = {
     return handleResponse(response);
   },
 
+  restoreMystery: async (id: string): Promise<Mystery> => {
+    const response = await fetch(`${API_URL}/mysteries/${id}/restore`, {
+      method: "POST",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
   getMysteryVersions: async (id: string): Promise<{ versions: MysteryVersion[] }> => {
     const response = await fetch(`${API_URL}/mysteries/${id}/versions`, {
       headers: getAuthHeaders({ includeContentType: false }),
@@ -526,6 +555,47 @@ export const api = {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ name }),
+    });
+    return handleResponse(response);
+  },
+
+  renameBookClub: async (bookClubId: string, name: string): Promise<BookClub> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ name }),
+    });
+    return handleResponse(response);
+  },
+
+  deleteBookClub: async (bookClubId: string): Promise<{ success: boolean }> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}`, {
+      method: "DELETE",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  getBookClubNotes: async (
+    bookClubId: string,
+  ): Promise<{
+    shared: { content: string; version: number };
+    private: { content: string; version: number };
+  }> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/notes`, {
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  updateBookClubNotes: async (
+    bookClubId: string,
+    data: { kind: "shared" | "private"; content: string; baseVersion: number },
+  ): Promise<{ content: string; version: number }> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/notes`, {
+      method: "PUT",
+      headers: getAuthHeaders(),
+      body: JSON.stringify(data),
     });
     return handleResponse(response);
   },
@@ -591,7 +661,7 @@ export const api = {
 
   shareBookClubRoll: async (
     bookClubId: string,
-    data: { label: string; dice: string; result: string; characterId: string },
+    data: { label: string; dice: string; result: string; characterId?: string | null },
   ) => {
     const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/rolls`, {
       method: "POST",
