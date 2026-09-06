@@ -12,7 +12,6 @@ import { getCrownOfTheVoid } from "@/game_data";
 import { useAuth } from "@/hooks/useAuth";
 import { useBookClubStore } from "@/lib/book_club_store";
 import { useCharacterStore } from "@/lib/character_store";
-import TheorizeBoard from "@/pages/TheorizeBoard";
 import {
   api,
   connectBookClubUpdates,
@@ -116,6 +115,7 @@ type BookClubOverviewProps = {
   onClose: () => void;
   onClubChange: (clubId: string | null) => void;
   onPanelChange: (panel: DrawerPage | null) => void;
+  onTheorize: (bookClubId: string, mysteryId: string) => void;
 };
 
 const BookClubOverview = ({
@@ -124,6 +124,7 @@ const BookClubOverview = ({
   onClose,
   onClubChange,
   onPanelChange,
+  onTheorize,
 }: BookClubOverviewProps) => {
   const { user } = useAuth();
   const [clubs, setClubs] = useState<BookClub[]>([]);
@@ -132,9 +133,6 @@ const BookClubOverview = ({
   const selectedClubIdRef = useRef<string | null>(clubId);
   const [newClubName, setNewClubName] = useState("");
   const [inviteNickname, setInviteNickname] = useState("");
-  const [theorizeMystery, setTheorizeMystery] = useState<{ id: string; title: string } | null>(
-    null,
-  );
   const [loading, setLoading] = useState(true);
   const [quickNavOpen, setQuickNavOpen] = useState(false);
   const [quickNavQuery, setQuickNavQuery] = useState("");
@@ -441,15 +439,6 @@ const BookClubOverview = ({
   const activeScenery = sceneryOptions.find(({ id }) => id === scenery)!;
   const activeOrnament = ornamentOptions.find(({ id }) => id === ornament)!;
 
-  if (club && theorizeMystery)
-    return (
-      <TheorizeBoard
-        bookClubId={club.id}
-        mystery={theorizeMystery}
-        onClose={() => setTheorizeMystery(null)}
-      />
-    );
-
   return (
     <div className={`book-club-shell book-club-shell--${scenery} ${panel ? "has-drawer" : ""}`}>
       <SceneryArtwork scenery={scenery} />
@@ -612,7 +601,9 @@ const BookClubOverview = ({
               )}
             />
           )}
-          {panel === "clues" && <CluesPanel club={club} onTheorize={setTheorizeMystery} />}
+          {panel === "clues" && (
+            <CluesPanel club={club} onTheorize={(mysteryId) => onTheorize(club.id, mysteryId)} />
+          )}
         </ClubDrawer>
       )}
       <QuickNavigator
@@ -1324,7 +1315,7 @@ function CluesPanel({
   onTheorize,
 }: {
   club: BookClub;
-  onTheorize: (mystery: { id: string; title: string }) => void;
+  onTheorize: (mysteryId: string) => void;
 }) {
   const active = club.activeMystery;
   const otherVoidClues = club.mysteries
@@ -1339,10 +1330,7 @@ function CluesPanel({
               <Trans>Current mystery</Trans>
             </span>
             <h3>{active.title}</h3>
-            <Button
-              variant="dark"
-              onClick={() => onTheorize({ id: active.id, title: active.title })}
-            >
+            <Button variant="dark" onClick={() => onTheorize(active.id)}>
               <Sparkles aria-hidden="true" /> <Trans>Open clue canvas</Trans>
             </Button>
           </section>

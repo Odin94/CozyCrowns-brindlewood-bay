@@ -76,13 +76,14 @@ const pathFor = (source: TheoryNode, target: TheoryNode) => {
 
 export default function TheorizeBoard({
   bookClubId,
-  mystery,
+  mysteryId,
   onClose,
 }: {
   bookClubId: string;
-  mystery: { id: string; title: string };
+  mysteryId: string;
   onClose: () => void;
 }) {
+  const [mysteryTitle, setMysteryTitle] = useState("");
   const [nodes, setNodes] = useState<TheoryNode[]>([]);
   const [edges, setEdges] = useState<TheoryEdge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -99,9 +100,11 @@ export default function TheorizeBoard({
     | { type: "pan"; clientX: number; clientY: number; x: number; y: number }
     | null
   >(null);
-  const [connecting, setConnecting] = useState<{ sourceId: string; clientX: number; clientY: number } | null>(
-    null,
-  );
+  const [connecting, setConnecting] = useState<{
+    sourceId: string;
+    clientX: number;
+    clientY: number;
+  } | null>(null);
   const [creating, setCreating] = useState(false);
   const [newKind, setNewKind] = useState<TheoryNodeKind>("other");
   const [newTitle, setNewTitle] = useState("");
@@ -110,18 +113,22 @@ export default function TheorizeBoard({
   const [editing, setEditing] = useState<EditNode | null>(null);
   const [inlineEdge, setInlineEdge] = useState<TheoryEdge | null>(null);
 
-  const refresh = useCallback(async (quiet = false) => {
-    try {
-      const board = await api.getBookClubTheory(bookClubId, mystery.id);
-      setNodes(board.nodes);
-      setEdges(board.edges);
-    } catch (error) {
-      if (!quiet)
-        toast.error(error instanceof Error ? error.message : t`Could not load the theory board`);
-    } finally {
-      setLoading(false);
-    }
-  }, [bookClubId, mystery.id]);
+  const refresh = useCallback(
+    async (quiet = false) => {
+      try {
+        const board = await api.getBookClubTheory(bookClubId, mysteryId);
+        setMysteryTitle(board.mystery.title);
+        setNodes(board.nodes);
+        setEdges(board.edges);
+      } catch (error) {
+        if (!quiet)
+          toast.error(error instanceof Error ? error.message : t`Could not load the theory board`);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [bookClubId, mysteryId],
+  );
 
   useEffect(() => {
     void refresh();
@@ -133,12 +140,17 @@ export default function TheorizeBoard({
     if (!drag) return;
     const onMove = (event: PointerEvent) => {
       if (drag.type === "pan") {
-        setPan({ x: drag.x + event.clientX - drag.clientX, y: drag.y + event.clientY - drag.clientY });
+        setPan({
+          x: drag.x + event.clientX - drag.clientX,
+          y: drag.y + event.clientY - drag.clientY,
+        });
         return;
       }
       const x = Math.round(drag.x + (event.clientX - drag.clientX) / zoom);
       const y = Math.round(drag.y + (event.clientY - drag.clientY) / zoom);
-      setNodes((current) => current.map((node) => (node.id === drag.node.id ? { ...node, x, y } : node)));
+      setNodes((current) =>
+        current.map((node) => (node.id === drag.node.id ? { ...node, x, y } : node)),
+      );
     };
     const onUp = (event: PointerEvent) => {
       if (drag.type === "node") {
@@ -146,11 +158,16 @@ export default function TheorizeBoard({
         const y = Math.round(drag.y + (event.clientY - drag.clientY) / zoom);
         void (async () => {
           try {
-            const updated = await api.updateBookClubTheoryNode(bookClubId, mystery.id, drag.node.id, {
-              version: drag.node.version,
-              x,
-              y,
-            });
+            const updated = await api.updateBookClubTheoryNode(
+              bookClubId,
+              mysteryId,
+              drag.node.id,
+              {
+                version: drag.node.version,
+                x,
+                y,
+              },
+            );
             setNodes((current) => current.map((node) => (node.id === updated.id ? updated : node)));
           } catch (error) {
             toast.error(error instanceof Error ? error.message : t`Could not move that note`);
@@ -166,25 +183,22 @@ export default function TheorizeBoard({
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
     };
-  }, [bookClubId, drag, mystery.id, refresh, zoom]);
+  }, [bookClubId, drag, mysteryId, refresh, zoom]);
 
   const editingNodeId = editing?.id;
 
   useEffect(() => {
     if (!editingNodeId) return;
     const heartbeat = window.setInterval(() => {
-      void api.lockBookClubTheoryNode(bookClubId, mystery.id, editingNodeId).catch(() => undefined);
+      void api.lockBookClubTheoryNode(bookClubId, mysteryId, editingNodeId).catch(() => undefined);
     }, 25_000);
     return () => {
       window.clearInterval(heartbeat);
-      void api.releaseBookClubTheoryNode(bookClubId, mystery.id, editingNodeId);
+      void api.releaseBookClubTheoryNode(bookClubId, mysteryId, editingNodeId);
     };
-  }, [bookClubId, editingNodeId, mystery.id]);
+  }, [bookClubId, editingNodeId, mysteryId]);
 
-  const visibleNodes = useMemo(
-    () => nodes.filter((node) => filters[node.kind]),
-    [filters, nodes],
-  );
+  const visibleNodes = useMemo(() => nodes.filter((node) => filters[node.kind]), [filters, nodes]);
   const visibleIds = useMemo(() => new Set(visibleNodes.map((node) => node.id)), [visibleNodes]);
   const nodeMap = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
   const existingTags = useMemo(() => [...new Set(nodes.flatMap((node) => node.tags))], [nodes]);
@@ -204,7 +218,7 @@ export default function TheorizeBoard({
     setConnecting(null);
     void (async () => {
       try {
-        const edge = await api.createBookClubTheoryEdge(bookClubId, mystery.id, {
+        const edge = await api.createBookClubTheoryEdge(bookClubId, mysteryId, {
           sourceNodeId: sourceId,
           targetNodeId: targetId,
         });
@@ -217,7 +231,7 @@ export default function TheorizeBoard({
 
   const openEdit = async (node: TheoryNode) => {
     try {
-      const locked = await api.lockBookClubTheoryNode(bookClubId, mystery.id, node.id);
+      const locked = await api.lockBookClubTheoryNode(bookClubId, mysteryId, node.id);
       setEditing({
         ...locked,
         draftTitle: locked.title,
@@ -235,7 +249,7 @@ export default function TheorizeBoard({
   const saveEdit = async () => {
     if (!editing || (!editing.sourceClueId && !editing.draftTitle.trim())) return;
     try {
-      const updated = await api.updateBookClubTheoryNode(bookClubId, mystery.id, editing.id, {
+      const updated = await api.updateBookClubTheoryNode(bookClubId, mysteryId, editing.id, {
         version: editing.version,
         ...(editing.sourceClueId ? {} : { title: editing.draftTitle.trim() }),
         description: editing.draftDescription.trim(),
@@ -252,9 +266,13 @@ export default function TheorizeBoard({
   const deleteNode = async () => {
     if (!editing || editing.sourceClueId) return;
     try {
-      await api.deleteBookClubTheoryNode(bookClubId, mystery.id, editing.id, editing.version);
+      await api.deleteBookClubTheoryNode(bookClubId, mysteryId, editing.id, editing.version);
       setNodes((current) => current.filter((node) => node.id !== editing.id));
-      setEdges((current) => current.filter((edge) => edge.sourceNodeId !== editing.id && edge.targetNodeId !== editing.id));
+      setEdges((current) =>
+        current.filter(
+          (edge) => edge.sourceNodeId !== editing.id && edge.targetNodeId !== editing.id,
+        ),
+      );
       closeEdit();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not delete that note`);
@@ -264,7 +282,7 @@ export default function TheorizeBoard({
   const createNode = async () => {
     if (!newTitle.trim()) return;
     try {
-      const node = await api.createBookClubTheoryNode(bookClubId, mystery.id, {
+      const node = await api.createBookClubTheoryNode(bookClubId, mysteryId, {
         kind: newKind,
         title: newTitle.trim(),
         description: newDescription.trim(),
@@ -286,7 +304,7 @@ export default function TheorizeBoard({
   const saveEdgeLabel = async () => {
     if (!inlineEdge) return;
     try {
-      const updated = await api.updateBookClubTheoryEdge(bookClubId, mystery.id, inlineEdge.id, {
+      const updated = await api.updateBookClubTheoryEdge(bookClubId, mysteryId, inlineEdge.id, {
         version: inlineEdge.version,
         label: inlineEdge.label,
       });
@@ -301,7 +319,7 @@ export default function TheorizeBoard({
   const deleteEdge = async () => {
     if (!inlineEdge) return;
     try {
-      await api.deleteBookClubTheoryEdge(bookClubId, mystery.id, inlineEdge.id, inlineEdge.version);
+      await api.deleteBookClubTheoryEdge(bookClubId, mysteryId, inlineEdge.id, inlineEdge.version);
       setEdges((current) => current.filter((edge) => edge.id !== inlineEdge.id));
       setInlineEdge(null);
     } catch (error) {
@@ -328,7 +346,7 @@ export default function TheorizeBoard({
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-200">
               <Trans>Theorize</Trans>
             </p>
-            <h1 className="truncate !text-2xl leading-none text-white">{mystery.title}</h1>
+            <h1 className="truncate !text-2xl leading-none text-white">{mysteryTitle}</h1>
           </div>
         </div>
         <Button onClick={() => setCreating(true)}>
@@ -352,9 +370,21 @@ export default function TheorizeBoard({
           </Button>
         ))}
         <div className="ml-auto flex items-center gap-2 text-xs text-slate-400">
-          <span className="hidden sm:inline"><Trans>Drag a note to move it. Drag a dot to connect it.</Trans></span>
-          <Button variant="ghost" size="sm" onClick={() => { setZoom(0.82); setPan({ x: -45, y: -50 }); }}>
-            <Maximize className="size-4" /> <span className="sr-only"><Trans>Reset view</Trans></span>
+          <span className="hidden sm:inline">
+            <Trans>Drag a note to move it. Drag a dot to connect it.</Trans>
+          </span>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => {
+              setZoom(0.82);
+              setPan({ x: -45, y: -50 });
+            }}
+          >
+            <Maximize className="size-4" />{" "}
+            <span className="sr-only">
+              <Trans>Reset view</Trans>
+            </span>
           </Button>
         </div>
       </div>
@@ -369,10 +399,17 @@ export default function TheorizeBoard({
         }}
         onPointerDown={(event) => {
           if (event.target === event.currentTarget)
-            setDrag({ type: "pan", clientX: event.clientX, clientY: event.clientY, x: pan.x, y: pan.y });
+            setDrag({
+              type: "pan",
+              clientX: event.clientX,
+              clientY: event.clientY,
+              x: pan.x,
+              y: pan.y,
+            });
         }}
         onPointerMove={(event) => {
-          if (connecting) setConnecting({ ...connecting, clientX: event.clientX, clientY: event.clientY });
+          if (connecting)
+            setConnecting({ ...connecting, clientX: event.clientX, clientY: event.clientY });
         }}
         onPointerUp={() => setConnecting(null)}
         onWheel={(event) => {
@@ -380,22 +417,51 @@ export default function TheorizeBoard({
           setZoom((current) => Math.max(0.45, Math.min(1.35, current - event.deltaY * 0.001)));
         }}
       >
-        {loading && <p className="absolute left-1/2 top-1/2 -translate-x-1/2 text-sm text-slate-400"><Trans>Opening the case files…</Trans></p>}
+        {loading && (
+          <p className="absolute left-1/2 top-1/2 -translate-x-1/2 text-sm text-slate-400">
+            <Trans>Opening the case files…</Trans>
+          </p>
+        )}
         <div
           className="absolute left-0 top-0 origin-top-left"
-          style={{ width: BOARD_WIDTH, height: BOARD_HEIGHT, transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})` }}
+          style={{
+            width: BOARD_WIDTH,
+            height: BOARD_HEIGHT,
+            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+          }}
         >
-          <svg className="pointer-events-none absolute inset-0 overflow-visible" width={BOARD_WIDTH} height={BOARD_HEIGHT}>
+          <svg
+            className="pointer-events-none absolute inset-0 overflow-visible"
+            width={BOARD_WIDTH}
+            height={BOARD_HEIGHT}
+          >
             <defs>
-              <marker id="theory-arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+              <marker
+                id="theory-arrow"
+                markerWidth="8"
+                markerHeight="8"
+                refX="6"
+                refY="3"
+                orient="auto"
+              >
                 <path d="M0,0 L0,6 L7,3 z" fill="#94a3b8" />
               </marker>
             </defs>
             {edges.map((edge) => {
               const source = nodeMap.get(edge.sourceNodeId);
               const target = nodeMap.get(edge.targetNodeId);
-              if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id)) return null;
-              return <path key={edge.id} d={pathFor(source, target)} fill="none" stroke="#94a3b8" strokeWidth="2.4" markerEnd="url(#theory-arrow)" />;
+              if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
+                return null;
+              return (
+                <path
+                  key={edge.id}
+                  d={pathFor(source, target)}
+                  fill="none"
+                  stroke="#94a3b8"
+                  strokeWidth="2.4"
+                  markerEnd="url(#theory-arrow)"
+                />
+              );
             })}
             {connectorPreview && (
               <path
@@ -411,23 +477,37 @@ export default function TheorizeBoard({
           {edges.map((edge) => {
             const source = nodeMap.get(edge.sourceNodeId);
             const target = nodeMap.get(edge.targetNodeId);
-            if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id)) return null;
+            if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
+              return null;
             const point = midpoint(source, target);
             if (inlineEdge?.id === edge.id) {
               return (
-                <div key={edge.id} className="absolute z-30 flex gap-1" style={{ left: point.x - 86, top: point.y - 16 }}>
+                <div
+                  key={edge.id}
+                  className="absolute z-30 flex gap-1"
+                  style={{ left: point.x - 86, top: point.y - 16 }}
+                >
                   <Input
                     autoFocus
                     className="h-8 w-40 border-teal-300 bg-slate-950 px-2 text-xs text-white"
                     value={inlineEdge.label}
-                    onChange={(event) => setInlineEdge({ ...inlineEdge, label: event.target.value })}
+                    onChange={(event) =>
+                      setInlineEdge({ ...inlineEdge, label: event.target.value })
+                    }
                     onKeyDown={(event) => {
                       if (event.key === "Enter") void saveEdgeLabel();
                       if (event.key === "Escape") setInlineEdge(null);
                     }}
                     onBlur={() => void saveEdgeLabel()}
                   />
-                  <Button type="button" variant="bare" aria-label={t`Delete connection`} onMouseDown={(event) => event.preventDefault()} onClick={() => void deleteEdge()} className="rounded bg-slate-950 px-2 text-rose-300 hover:bg-rose-950">
+                  <Button
+                    type="button"
+                    variant="bare"
+                    aria-label={t`Delete connection`}
+                    onMouseDown={(event) => event.preventDefault()}
+                    onClick={() => void deleteEdge()}
+                    className="rounded bg-slate-950 px-2 text-rose-300 hover:bg-rose-950"
+                  >
                     <Trash2 className="size-3.5" />
                   </Button>
                 </div>
@@ -456,7 +536,14 @@ export default function TheorizeBoard({
               onPointerDown={(event) => {
                 if (event.button !== 0) return;
                 event.stopPropagation();
-                setDrag({ type: "node", node, clientX: event.clientX, clientY: event.clientY, x: node.x, y: node.y });
+                setDrag({
+                  type: "node",
+                  node,
+                  clientX: event.clientX,
+                  clientY: event.clientY,
+                  x: node.x,
+                  y: node.y,
+                });
               }}
               onDoubleClick={(event) => {
                 event.stopPropagation();
@@ -480,14 +567,33 @@ export default function TheorizeBoard({
                 />
               )}
               <div className="flex items-start gap-2 pr-2">
-                {node.kind === "suspect" ? <UserRound className="mt-0.5 size-4 shrink-0 text-amber-200" /> : <Crosshair className="mt-0.5 size-4 shrink-0 text-teal-200" />}
-                <h2 className="line-clamp-4 text-sm font-semibold leading-snug text-white">{node.title}</h2>
+                {node.kind === "suspect" ? (
+                  <UserRound className="mt-0.5 size-4 shrink-0 text-amber-200" />
+                ) : (
+                  <Crosshair className="mt-0.5 size-4 shrink-0 text-teal-200" />
+                )}
+                <h2 className="line-clamp-4 text-sm font-semibold leading-snug text-white">
+                  {node.title}
+                </h2>
               </div>
               <div className="mt-auto flex flex-wrap gap-1 pt-2">
-                <span className="rounded-full bg-black/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">{node.baseTag}</span>
-                {node.tags.map((tag) => <span key={tag} className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] text-slate-100">{tag}</span>)}
+                <span className="rounded-full bg-black/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+                  {node.baseTag}
+                </span>
+                {node.tags.map((tag) => (
+                  <span
+                    key={tag}
+                    className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] text-slate-100"
+                  >
+                    {tag}
+                  </span>
+                ))}
               </div>
-              {node.editingByNickname && <span className="mt-1 flex items-center gap-1 text-[10px] text-amber-100"><Lock className="size-3" /> {node.editingByNickname}</span>}
+              {node.editingByNickname && (
+                <span className="mt-1 flex items-center gap-1 text-[10px] text-amber-100">
+                  <Lock className="size-3" /> {node.editingByNickname}
+                </span>
+              )}
             </article>
           ))}
         </div>
@@ -496,37 +602,124 @@ export default function TheorizeBoard({
       <Dialog open={creating} onOpenChange={setCreating}>
         <DialogContent showCloseButton>
           <DialogHeader>
-            <DialogTitle><Trans>Add to the theory board</Trans></DialogTitle>
-            <DialogDescription><Trans>Notes are shared with everyone in this Book Club.</Trans></DialogDescription>
+            <DialogTitle>
+              <Trans>Add to the theory board</Trans>
+            </DialogTitle>
+            <DialogDescription>
+              <Trans>Notes are shared with everyone in this Book Club.</Trans>
+            </DialogDescription>
           </DialogHeader>
           <div className="space-y-3">
-            <label className="block text-sm font-medium"><Trans>Type</Trans>
-              <select value={newKind} onChange={(event) => setNewKind(event.target.value as TheoryNodeKind)} className="mt-1 h-10 w-full rounded-md border border-gray-600 bg-gray-900 px-3 text-sm text-white">
-                {(Object.keys(filters) as TheoryNodeKind[]).map((kind) => <option key={kind} value={kind}>{kindLabel(kind)}</option>)}
+            <label className="block text-sm font-medium">
+              <Trans>Type</Trans>
+              <select
+                value={newKind}
+                onChange={(event) => setNewKind(event.target.value as TheoryNodeKind)}
+                className="mt-1 h-10 w-full rounded-md border border-gray-600 bg-gray-900 px-3 text-sm text-white"
+              >
+                {(Object.keys(filters) as TheoryNodeKind[]).map((kind) => (
+                  <option key={kind} value={kind}>
+                    {kindLabel(kind)}
+                  </option>
+                ))}
               </select>
             </label>
-            <label className="block text-sm font-medium"><Trans>Title</Trans><Input autoFocus value={newTitle} onChange={(event) => setNewTitle(event.target.value)} maxLength={400} placeholder={t`What do you know?`} className="mt-1" /></label>
-            <label className="block text-sm font-medium"><Trans>Description (optional)</Trans><Textarea value={newDescription} onChange={(event) => setNewDescription(event.target.value)} maxLength={3_000} className="mt-1 min-h-24" /></label>
+            <label className="block text-sm font-medium">
+              <Trans>Title</Trans>
+              <Input
+                autoFocus
+                value={newTitle}
+                onChange={(event) => setNewTitle(event.target.value)}
+                maxLength={400}
+                placeholder={t`What do you know?`}
+                className="mt-1"
+              />
+            </label>
+            <label className="block text-sm font-medium">
+              <Trans>Description (optional)</Trans>
+              <Textarea
+                value={newDescription}
+                onChange={(event) => setNewDescription(event.target.value)}
+                maxLength={3_000}
+                className="mt-1 min-h-24"
+              />
+            </label>
             <TagEditor tags={newTags} setTags={setNewTags} existingTags={existingTags} />
           </div>
-          <DialogFooter><Button variant="outline" onClick={() => setCreating(false)}><Trans>Cancel</Trans></Button><Button disabled={!newTitle.trim()} onClick={() => void createNode()}><Plus className="size-4" /><Trans>Add note</Trans></Button></DialogFooter>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setCreating(false)}>
+              <Trans>Cancel</Trans>
+            </Button>
+            <Button disabled={!newTitle.trim()} onClick={() => void createNode()}>
+              <Plus className="size-4" />
+              <Trans>Add note</Trans>
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && closeEdit()}>
         <DialogContent showCloseButton>
           <DialogHeader>
-            <DialogTitle><Trans>Edit note</Trans></DialogTitle>
-            <DialogDescription>{editing?.sourceClueId ? <Trans>This title stays in sync with the mystery clue list.</Trans> : <Trans>Only the title and tags appear on the canvas.</Trans>}</DialogDescription>
+            <DialogTitle>
+              <Trans>Edit note</Trans>
+            </DialogTitle>
+            <DialogDescription>
+              {editing?.sourceClueId ? (
+                <Trans>This title stays in sync with the mystery clue list.</Trans>
+              ) : (
+                <Trans>Only the title and tags appear on the canvas.</Trans>
+              )}
+            </DialogDescription>
           </DialogHeader>
-          {editing && <div className="space-y-3">
-            <label className="block text-sm font-medium"><Trans>Title</Trans><Input value={editing.draftTitle} disabled={Boolean(editing.sourceClueId)} onChange={(event) => setEditing({ ...editing, draftTitle: event.target.value })} maxLength={400} className="mt-1" /></label>
-            <label className="block text-sm font-medium"><Trans>Description (optional)</Trans><Textarea value={editing.draftDescription} onChange={(event) => setEditing({ ...editing, draftDescription: event.target.value })} maxLength={3_000} className="mt-1 min-h-24" /></label>
-            <TagEditor tags={editing.draftTags} setTags={(draftTags) => setEditing({ ...editing, draftTags })} existingTags={existingTags} baseTag={editing.baseTag} />
-          </div>}
+          {editing && (
+            <div className="space-y-3">
+              <label className="block text-sm font-medium">
+                <Trans>Title</Trans>
+                <Input
+                  value={editing.draftTitle}
+                  disabled={Boolean(editing.sourceClueId)}
+                  onChange={(event) => setEditing({ ...editing, draftTitle: event.target.value })}
+                  maxLength={400}
+                  className="mt-1"
+                />
+              </label>
+              <label className="block text-sm font-medium">
+                <Trans>Description (optional)</Trans>
+                <Textarea
+                  value={editing.draftDescription}
+                  onChange={(event) =>
+                    setEditing({ ...editing, draftDescription: event.target.value })
+                  }
+                  maxLength={3_000}
+                  className="mt-1 min-h-24"
+                />
+              </label>
+              <TagEditor
+                tags={editing.draftTags}
+                setTags={(draftTags) => setEditing({ ...editing, draftTags })}
+                existingTags={existingTags}
+                baseTag={editing.baseTag}
+              />
+            </div>
+          )}
           <DialogFooter className="sm:justify-between">
-            <div>{editing && !editing.sourceClueId && <Button variant="destructive" onClick={() => void deleteNode()}><Trash2 className="size-4" /><Trans>Delete</Trans></Button>}</div>
-            <div className="flex gap-2"><Button variant="outline" onClick={closeEdit}><Trans>Cancel</Trans></Button><Button onClick={() => void saveEdit()}><Trans>Save note</Trans></Button></div>
+            <div>
+              {editing && !editing.sourceClueId && (
+                <Button variant="destructive" onClick={() => void deleteNode()}>
+                  <Trash2 className="size-4" />
+                  <Trans>Delete</Trans>
+                </Button>
+              )}
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={closeEdit}>
+                <Trans>Cancel</Trans>
+              </Button>
+              <Button onClick={() => void saveEdit()}>
+                <Trans>Save note</Trans>
+              </Button>
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -548,19 +741,76 @@ function TagEditor({
   const [draft, setDraft] = useState("");
   const add = () => {
     const value = draft.trim();
-    if (!value || tags.some((tag) => tag.localeCompare(value, undefined, { sensitivity: "accent" }) === 0)) return;
+    if (
+      !value ||
+      tags.some((tag) => tag.localeCompare(value, undefined, { sensitivity: "accent" }) === 0)
+    )
+      return;
     setTags([...tags, value]);
     setDraft("");
   };
   return (
     <section>
-      <p className="flex items-center gap-1 text-sm font-medium"><Tag className="size-4" /><Trans>Tags</Trans></p>
-      {baseTag && <p className="mt-1 text-xs text-gray-400"><Trans>The</Trans> <strong>{baseTag}</strong> <Trans>tag is automatic.</Trans></p>}
+      <p className="flex items-center gap-1 text-sm font-medium">
+        <Tag className="size-4" />
+        <Trans>Tags</Trans>
+      </p>
+      {baseTag && (
+        <p className="mt-1 text-xs text-gray-400">
+          <Trans>The</Trans> <strong>{baseTag}</strong> <Trans>tag is automatic.</Trans>
+        </p>
+      )}
       <div className="mt-2 flex flex-wrap gap-1.5">
-        {tags.map((tag) => <Button key={tag} type="button" variant="bare" onClick={() => setTags(tags.filter((entry) => entry !== tag))} className="rounded-full border border-teal-300/50 bg-teal-300/10 px-2 py-1 text-xs text-teal-100" title={t`Remove tag`}>{tag} ×</Button>)}
+        {tags.map((tag) => (
+          <Button
+            key={tag}
+            type="button"
+            variant="bare"
+            onClick={() => setTags(tags.filter((entry) => entry !== tag))}
+            className="rounded-full border border-teal-300/50 bg-teal-300/10 px-2 py-1 text-xs text-teal-100"
+            title={t`Remove tag`}
+          >
+            {tag} ×
+          </Button>
+        ))}
       </div>
-      {existingTags.filter((tag) => !tags.includes(tag)).length > 0 && <div className="mt-2 flex flex-wrap gap-1"><span className="w-full text-xs text-gray-400"><Trans>Existing tags</Trans></span>{existingTags.filter((tag) => !tags.includes(tag)).map((tag) => <Button key={tag} type="button" variant="bare" onClick={() => setTags([...tags, tag])} className="rounded-full border border-gray-600 px-2 py-0.5 text-xs text-gray-200 hover:border-teal-300">+ {tag}</Button>)}</div>}
-      <div className="mt-2 flex gap-2"><Input value={draft} onChange={(event) => setDraft(event.target.value)} onKeyDown={(event) => { if (event.key === "Enter") { event.preventDefault(); add(); } }} placeholder={t`Create a tag`} maxLength={40} /><Button type="button" variant="outline" size="sm" onClick={add} disabled={!draft.trim()}><Trans>Add</Trans></Button></div>
+      {existingTags.filter((tag) => !tags.includes(tag)).length > 0 && (
+        <div className="mt-2 flex flex-wrap gap-1">
+          <span className="w-full text-xs text-gray-400">
+            <Trans>Existing tags</Trans>
+          </span>
+          {existingTags
+            .filter((tag) => !tags.includes(tag))
+            .map((tag) => (
+              <Button
+                key={tag}
+                type="button"
+                variant="bare"
+                onClick={() => setTags([...tags, tag])}
+                className="rounded-full border border-gray-600 px-2 py-0.5 text-xs text-gray-200 hover:border-teal-300"
+              >
+                + {tag}
+              </Button>
+            ))}
+        </div>
+      )}
+      <div className="mt-2 flex gap-2">
+        <Input
+          value={draft}
+          onChange={(event) => setDraft(event.target.value)}
+          onKeyDown={(event) => {
+            if (event.key === "Enter") {
+              event.preventDefault();
+              add();
+            }
+          }}
+          placeholder={t`Create a tag`}
+          maxLength={40}
+        />
+        <Button type="button" variant="outline" size="sm" onClick={add} disabled={!draft.trim()}>
+          <Trans>Add</Trans>
+        </Button>
+      </div>
     </section>
   );
 }

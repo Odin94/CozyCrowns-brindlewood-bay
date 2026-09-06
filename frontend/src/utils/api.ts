@@ -181,7 +181,11 @@ export type TheoryEdge = {
   updatedAt: string;
 };
 
-export type TheoryBoard = { nodes: TheoryNode[]; edges: TheoryEdge[] };
+export type TheoryBoard = {
+  mystery: { id: string; title: string };
+  nodes: TheoryNode[];
+  edges: TheoryEdge[];
+};
 
 export const tokenStorage = {
   get: (): string | null => {
