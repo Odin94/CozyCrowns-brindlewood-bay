@@ -29,14 +29,19 @@ import {
   Tag,
   Trash2,
   UserRound,
+  WandSparkles,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import "./theorize-board.css";
 
 const BOARD_WIDTH = 6_000;
 const BOARD_HEIGHT = 4_000;
 const NODE_WIDTH = 286;
-const NODE_HEIGHT = 126;
+const NODE_HEIGHT = 150;
+const DEFAULT_ZOOM = 1;
+const MIN_ZOOM = 0.35;
+const MAX_ZOOM = 1.8;
 
 const kindLabel = (kind: TheoryNodeKind) => {
   switch (kind) {
@@ -52,26 +57,188 @@ const kindLabel = (kind: TheoryNodeKind) => {
 };
 
 const nodeTone: Record<TheoryNodeKind, string> = {
-  clue: "border-teal-300/70 bg-teal-950/80 shadow-teal-400/10",
-  voidClue: "border-violet-300/70 bg-violet-950/80 shadow-violet-400/10",
-  suspect: "border-amber-300/70 bg-amber-950/80 shadow-amber-400/10",
-  other: "border-slate-400/70 bg-slate-900/90 shadow-slate-400/10",
+  clue: "theory-node--clue",
+  voidClue: "theory-node--void-clue",
+  suspect: "theory-node--suspect",
+  other: "theory-node--other",
 };
 
 type EditNode = TheoryNode & { draftTitle: string; draftDescription: string; draftTags: string[] };
 
-const midpoint = (source: TheoryNode, target: TheoryNode) => ({
-  x: (source.x + NODE_WIDTH + target.x) / 2,
-  y: (source.y + NODE_HEIGHT / 2 + target.y + NODE_HEIGHT / 2) / 2,
+type Point = { x: number; y: number };
+
+const nodeCenter = (node: TheoryNode): Point => ({
+  x: node.x + NODE_WIDTH / 2,
+  y: node.y + NODE_HEIGHT / 2,
 });
 
-const pathFor = (source: TheoryNode, target: TheoryNode) => {
-  const startX = source.x + NODE_WIDTH;
-  const startY = source.y + NODE_HEIGHT / 2;
-  const endX = target.x;
-  const endY = target.y + NODE_HEIGHT / 2;
-  const distance = Math.max(100, Math.abs(endX - startX) * 0.48);
-  return `M ${startX} ${startY} C ${startX + distance} ${startY}, ${endX - distance} ${endY}, ${endX} ${endY}`;
+const pointOnNodeEdge = (node: TheoryNode, toward: Point): Point => {
+  const center = nodeCenter(node);
+  const deltaX = toward.x - center.x;
+  const deltaY = toward.y - center.y;
+  if (!deltaX && !deltaY) return center;
+  const scale =
+    1 / Math.max(Math.abs(deltaX) / (NODE_WIDTH / 2), Math.abs(deltaY) / (NODE_HEIGHT / 2));
+  return { x: center.x + deltaX * scale, y: center.y + deltaY * scale };
+};
+
+const edgeGeometry = (source: TheoryNode, target: TheoryNode) => {
+  const sourceCenter = nodeCenter(source);
+  const targetCenter = nodeCenter(target);
+  const start = pointOnNodeEdge(source, targetCenter);
+  const end = pointOnNodeEdge(target, sourceCenter);
+  return {
+    path: `M ${start.x} ${start.y} L ${end.x} ${end.y}`,
+    midpoint: { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 },
+  };
+};
+
+const hash = (value: string) => {
+  let result = 0;
+  for (let index = 0; index < value.length; index += 1)
+    result = (result * 31 + value.charCodeAt(index)) >>> 0;
+  return result;
+};
+
+const autoLayout = (nodes: TheoryNode[], edges: TheoryEdge[]) => {
+  if (nodes.length < 2) return new Map(nodes.map((node) => [node.id, { x: node.x, y: node.y }]));
+
+  const center = { x: BOARD_WIDTH / 2, y: BOARD_HEIGHT / 2 };
+  const indexById = new Map(nodes.map((node, index) => [node.id, index]));
+  const degree = nodes.map(() => 0);
+  const linkedEdges = edges.flatMap((edge) => {
+    const source = indexById.get(edge.sourceNodeId);
+    const target = indexById.get(edge.targetNodeId);
+    if (source === undefined || target === undefined) return [];
+    degree[source] += 1;
+    degree[target] += 1;
+    return [{ source, target }];
+  });
+  const order: Array<{ node: TheoryNode; index: number }> = nodes.map((node, index) => ({
+    node,
+    index,
+  }));
+  order.sort(
+    (left, right) =>
+      degree[right.index] - degree[left.index] || left.node.id.localeCompare(right.node.id),
+  );
+  const kindAngles: Record<TheoryNodeKind, number> = {
+    suspect: 0,
+    other: Math.PI / 2,
+    clue: Math.PI,
+    voidClue: -Math.PI / 2,
+  };
+  const kindOffsets: Record<TheoryNodeKind, Point> = {
+    suspect: { x: 460, y: 0 },
+    other: { x: 0, y: 340 },
+    clue: { x: -460, y: 0 },
+    voidClue: { x: 0, y: -340 },
+  };
+  const kindCounts = new Map<TheoryNodeKind, number>();
+  const positions = nodes.map(() => ({ ...center }));
+  order.forEach(({ node, index }, rank) => {
+    if (rank === 0) return;
+    const kindIndex = kindCounts.get(node.kind) ?? 0;
+    kindCounts.set(node.kind, kindIndex + 1);
+    const jitter = ((hash(node.id) % 1_000) / 1_000 - 0.5) * 0.55;
+    const angle = kindAngles[node.kind] + kindIndex * 2.399_963 + jitter;
+    const radius = 190 + Math.sqrt(rank) * 150;
+    positions[index] = {
+      x: center.x + Math.cos(angle) * radius,
+      y: center.y + Math.sin(angle) * radius,
+    };
+  });
+
+  const velocities = nodes.map(() => ({ x: 0, y: 0 }));
+  for (let iteration = 0; iteration < 300; iteration += 1) {
+    const forces = nodes.map(() => ({ x: 0, y: 0 }));
+    for (let left = 0; left < nodes.length; left += 1) {
+      for (let right = left + 1; right < nodes.length; right += 1) {
+        let deltaX = positions[right].x - positions[left].x;
+        let deltaY = positions[right].y - positions[left].y;
+        let distance = Math.hypot(deltaX, deltaY);
+        if (distance < 1) {
+          deltaX = ((hash(nodes[left].id) % 17) - 8) / 8;
+          deltaY = ((hash(nodes[right].id) % 17) - 8) / 8;
+          distance = Math.max(1, Math.hypot(deltaX, deltaY));
+        }
+        if (distance > 950) continue;
+        const strength = (950 - distance) * 0.0015 + 16_000 / (distance * distance);
+        const forceX = (deltaX / distance) * strength;
+        const forceY = (deltaY / distance) * strength;
+        forces[left].x -= forceX;
+        forces[left].y -= forceY;
+        forces[right].x += forceX;
+        forces[right].y += forceY;
+      }
+    }
+    linkedEdges.forEach(({ source, target }) => {
+      const deltaX = positions[target].x - positions[source].x;
+      const deltaY = positions[target].y - positions[source].y;
+      const distance = Math.max(1, Math.hypot(deltaX, deltaY));
+      const strength = (distance - 360) * 0.008;
+      const forceX = (deltaX / distance) * strength;
+      const forceY = (deltaY / distance) * strength;
+      forces[source].x += forceX;
+      forces[source].y += forceY;
+      forces[target].x -= forceX;
+      forces[target].y -= forceY;
+    });
+    nodes.forEach((node, index) => {
+      const importance = degree[index] / Math.max(1, linkedEdges.length);
+      const centerStrength = 0.0018 + importance * 0.055;
+      forces[index].x += (center.x - positions[index].x) * centerStrength;
+      forces[index].y += (center.y - positions[index].y) * centerStrength;
+      const typeAnchor = kindOffsets[node.kind];
+      forces[index].x += (center.x + typeAnchor.x - positions[index].x) * 0.0012;
+      forces[index].y += (center.y + typeAnchor.y - positions[index].y) * 0.0012;
+      velocities[index].x = (velocities[index].x + forces[index].x) * 0.76;
+      velocities[index].y = (velocities[index].y + forces[index].y) * 0.76;
+      const speed = Math.hypot(velocities[index].x, velocities[index].y);
+      if (speed > 20) {
+        velocities[index].x = (velocities[index].x / speed) * 20;
+        velocities[index].y = (velocities[index].y / speed) * 20;
+      }
+      positions[index].x += velocities[index].x;
+      positions[index].y += velocities[index].y;
+    });
+  }
+
+  for (let iteration = 0; iteration < 80; iteration += 1) {
+    for (let left = 0; left < nodes.length; left += 1) {
+      for (let right = left + 1; right < nodes.length; right += 1) {
+        const deltaX = positions[right].x - positions[left].x;
+        const deltaY = positions[right].y - positions[left].y;
+        const overlapX = NODE_WIDTH + 52 - Math.abs(deltaX);
+        const overlapY = NODE_HEIGHT + 52 - Math.abs(deltaY);
+        if (overlapX <= 0 || overlapY <= 0) continue;
+        if (overlapX < overlapY) {
+          const direction = deltaX === 0 ? (hash(nodes[left].id) % 2 ? 1 : -1) : Math.sign(deltaX);
+          positions[left].x -= (overlapX / 2) * direction;
+          positions[right].x += (overlapX / 2) * direction;
+        } else {
+          const direction = deltaY === 0 ? (hash(nodes[right].id) % 2 ? 1 : -1) : Math.sign(deltaY);
+          positions[left].y -= (overlapY / 2) * direction;
+          positions[right].y += (overlapY / 2) * direction;
+        }
+      }
+    }
+  }
+  const hub = positions[order[0].index];
+  positions.forEach((position) => {
+    position.x += center.x - hub.x;
+    position.y += center.y - hub.y;
+  });
+
+  return new Map(
+    nodes.map((node, index) => [
+      node.id,
+      {
+        x: Math.round(positions[index].x - NODE_WIDTH / 2),
+        y: Math.round(positions[index].y - NODE_HEIGHT / 2),
+      },
+    ]),
+  );
 };
 
 export default function TheorizeBoard({
@@ -83,6 +250,8 @@ export default function TheorizeBoard({
   mysteryId: string;
   onClose: () => void;
 }) {
+  const canvasRef = useRef<HTMLElement>(null);
+  const bulkUpdateRef = useRef(false);
   const [mysteryTitle, setMysteryTitle] = useState("");
   const [nodes, setNodes] = useState<TheoryNode[]>([]);
   const [edges, setEdges] = useState<TheoryEdge[]>([]);
@@ -93,18 +262,16 @@ export default function TheorizeBoard({
     suspect: true,
     other: true,
   });
-  const [zoom, setZoom] = useState(0.82);
-  const [pan, setPan] = useState({ x: -45, y: -50 });
+  const [zoom, setZoom] = useState(DEFAULT_ZOOM);
+  const [pan, setPan] = useState({ x: 48, y: 48 });
   const [drag, setDrag] = useState<
     | { type: "node"; node: TheoryNode; clientX: number; clientY: number; x: number; y: number }
     | { type: "pan"; clientX: number; clientY: number; x: number; y: number }
     | null
   >(null);
-  const [connecting, setConnecting] = useState<{
-    sourceId: string;
-    clientX: number;
-    clientY: number;
-  } | null>(null);
+  const [connecting, setConnecting] = useState<{ sourceId: string; pointer: Point } | null>(null);
+  const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [aligning, setAligning] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newKind, setNewKind] = useState<TheoryNodeKind>("other");
   const [newTitle, setNewTitle] = useState("");
@@ -112,6 +279,10 @@ export default function TheorizeBoard({
   const [newTags, setNewTags] = useState<string[]>([]);
   const [editing, setEditing] = useState<EditNode | null>(null);
   const [inlineEdge, setInlineEdge] = useState<TheoryEdge | null>(null);
+  const zoomRef = useRef(zoom);
+  const panRef = useRef(pan);
+  zoomRef.current = zoom;
+  panRef.current = pan;
 
   const refresh = useCallback(
     async (quiet = false) => {
@@ -132,9 +303,116 @@ export default function TheorizeBoard({
 
   useEffect(() => {
     void refresh();
-    const socket = connectBookClubUpdates(() => void refresh(true));
+    const socket = connectBookClubUpdates(() => {
+      if (!bulkUpdateRef.current) void refresh(true);
+    });
     return () => socket?.close();
   }, [refresh]);
+
+  const clientToBoard = useCallback((clientX: number, clientY: number): Point => {
+    const bounds = canvasRef.current?.getBoundingClientRect();
+    return {
+      x: (clientX - (bounds?.left ?? 0) - panRef.current.x) / zoomRef.current,
+      y: (clientY - (bounds?.top ?? 0) - panRef.current.y) / zoomRef.current,
+    };
+  }, []);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const onWheel = (event: WheelEvent) => {
+      event.preventDefault();
+      const deltaScale = event.deltaMode === WheelEvent.DOM_DELTA_LINE ? 16 : 1;
+      if (!event.ctrlKey && !event.metaKey) {
+        const currentPan = panRef.current;
+        const nextPan = {
+          x: currentPan.x - event.deltaX * deltaScale,
+          y: currentPan.y - event.deltaY * deltaScale,
+        };
+        panRef.current = nextPan;
+        setPan(nextPan);
+        return;
+      }
+      const bounds = canvas.getBoundingClientRect();
+      const pointer = { x: event.clientX - bounds.left, y: event.clientY - bounds.top };
+      const currentZoom = zoomRef.current;
+      const nextZoom = Math.max(
+        MIN_ZOOM,
+        Math.min(MAX_ZOOM, currentZoom * Math.exp(-event.deltaY * 0.0015)),
+      );
+      if (nextZoom === currentZoom) return;
+      const currentPan = panRef.current;
+      const nextPan = {
+        x: pointer.x - ((pointer.x - currentPan.x) * nextZoom) / currentZoom,
+        y: pointer.y - ((pointer.y - currentPan.y) * nextZoom) / currentZoom,
+      };
+      zoomRef.current = nextZoom;
+      panRef.current = nextPan;
+      setZoom(nextZoom);
+      setPan(nextPan);
+    };
+    let pinch:
+      | { distance: number; zoom: number; boardPoint: Point }
+      | undefined;
+    const touchDistance = (event: TouchEvent) =>
+      Math.hypot(
+        event.touches[1].clientX - event.touches[0].clientX,
+        event.touches[1].clientY - event.touches[0].clientY,
+      );
+    const touchMidpoint = (event: TouchEvent) => {
+      const bounds = canvas.getBoundingClientRect();
+      return {
+        x: (event.touches[0].clientX + event.touches[1].clientX) / 2 - bounds.left,
+        y: (event.touches[0].clientY + event.touches[1].clientY) / 2 - bounds.top,
+      };
+    };
+    const onTouchStart = (event: TouchEvent) => {
+      if (event.touches.length !== 2) return;
+      event.preventDefault();
+      setDrag(null);
+      const midpoint = touchMidpoint(event);
+      pinch = {
+        distance: touchDistance(event),
+        zoom: zoomRef.current,
+        boardPoint: {
+          x: (midpoint.x - panRef.current.x) / zoomRef.current,
+          y: (midpoint.y - panRef.current.y) / zoomRef.current,
+        },
+      };
+    };
+    const onTouchMove = (event: TouchEvent) => {
+      if (!pinch || event.touches.length !== 2) return;
+      event.preventDefault();
+      const midpoint = touchMidpoint(event);
+      const nextZoom = Math.max(
+        MIN_ZOOM,
+        Math.min(MAX_ZOOM, pinch.zoom * (touchDistance(event) / pinch.distance)),
+      );
+      const nextPan = {
+        x: midpoint.x - pinch.boardPoint.x * nextZoom,
+        y: midpoint.y - pinch.boardPoint.y * nextZoom,
+      };
+      zoomRef.current = nextZoom;
+      panRef.current = nextPan;
+      setZoom(nextZoom);
+      setPan(nextPan);
+    };
+    const onTouchEnd = (event: TouchEvent) => {
+      if (event.touches.length < 2) pinch = undefined;
+    };
+    canvas.addEventListener("wheel", onWheel, { passive: false });
+    canvas.addEventListener("touchstart", onTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", onTouchMove, { passive: false });
+    canvas.addEventListener("touchend", onTouchEnd);
+    canvas.addEventListener("touchcancel", onTouchEnd);
+    return () => {
+      canvas.removeEventListener("wheel", onWheel);
+      canvas.removeEventListener("touchstart", onTouchStart);
+      canvas.removeEventListener("touchmove", onTouchMove);
+      canvas.removeEventListener("touchend", onTouchEnd);
+      canvas.removeEventListener("touchcancel", onTouchEnd);
+    };
+  }, []);
 
   useEffect(() => {
     if (!drag) return;
@@ -177,11 +455,14 @@ export default function TheorizeBoard({
       }
       setDrag(null);
     };
+    const onCancel = () => setDrag(null);
     window.addEventListener("pointermove", onMove);
     window.addEventListener("pointerup", onUp, { once: true });
+    window.addEventListener("pointercancel", onCancel, { once: true });
     return () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
     };
   }, [bookClubId, drag, mysteryId, refresh, zoom]);
 
@@ -203,31 +484,117 @@ export default function TheorizeBoard({
   const nodeMap = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
   const existingTags = useMemo(() => [...new Set(nodes.flatMap((node) => node.tags))], [nodes]);
 
-  const startConnection = (event: React.PointerEvent, sourceId: string) => {
-    event.stopPropagation();
-    setConnecting({ sourceId, clientX: event.clientX, clientY: event.clientY });
-  };
-
-  const finishConnection = (event: React.PointerEvent, targetId: string) => {
-    event.stopPropagation();
-    if (!connecting || connecting.sourceId === targetId) {
-      setConnecting(null);
+  const centerViewport = useCallback((candidates: TheoryNode[]) => {
+    const bounds = canvasRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+    const nextZoom = DEFAULT_ZOOM;
+    if (!candidates.length) {
+      const nextPan = { x: 48, y: 48 };
+      zoomRef.current = nextZoom;
+      panRef.current = nextPan;
+      setZoom(nextZoom);
+      setPan(nextPan);
       return;
     }
-    const sourceId = connecting.sourceId;
-    setConnecting(null);
-    void (async () => {
-      try {
-        const edge = await api.createBookClubTheoryEdge(bookClubId, mysteryId, {
-          sourceNodeId: sourceId,
-          targetNodeId: targetId,
-        });
-        setEdges((current) => [...current, edge]);
-      } catch (error) {
-        toast.error(error instanceof Error ? error.message : t`Could not connect those notes`);
-      }
-    })();
+    const minX = Math.min(...candidates.map((node) => node.x));
+    const maxX = Math.max(...candidates.map((node) => node.x + NODE_WIDTH));
+    const minY = Math.min(...candidates.map((node) => node.y));
+    const maxY = Math.max(...candidates.map((node) => node.y + NODE_HEIGHT));
+    const nextPan = {
+      x: bounds.width / 2 - ((minX + maxX) / 2) * nextZoom,
+      y: bounds.height / 2 - ((minY + maxY) / 2) * nextZoom,
+    };
+    zoomRef.current = nextZoom;
+    panRef.current = nextPan;
+    setZoom(nextZoom);
+    setPan(nextPan);
+  }, []);
+
+  const resetView = () => centerViewport(visibleNodes.length ? visibleNodes : nodes);
+
+  const alignBoard = async () => {
+    if (nodes.length < 2 || aligning) return;
+    setAligning(true);
+    bulkUpdateRef.current = true;
+    const layout = autoLayout(nodes, edges);
+    const arranged = nodes.map((node) => ({ ...node, ...layout.get(node.id)! }));
+    setNodes(arranged);
+    centerViewport(arranged);
+    try {
+      const results = await Promise.allSettled(
+        nodes.map((node) => {
+          const position = layout.get(node.id)!;
+          return api.updateBookClubTheoryNode(bookClubId, mysteryId, node.id, {
+            version: node.version,
+            x: position.x,
+            y: position.y,
+          });
+        }),
+      );
+      const failed = results.find((result) => result.status === "rejected");
+      if (failed) throw failed.reason;
+      const updated = results.flatMap((result) =>
+        result.status === "fulfilled" ? [result.value] : [],
+      );
+      setNodes(updated);
+      centerViewport(updated);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t`Could not auto-align the board`);
+      await refresh(true);
+    } finally {
+      bulkUpdateRef.current = false;
+      setAligning(false);
+    }
   };
+
+  const startConnection = (event: React.PointerEvent, sourceId: string) => {
+    if (event.button !== 0) return;
+    event.preventDefault();
+    event.stopPropagation();
+    setConnecting({ sourceId, pointer: clientToBoard(event.clientX, event.clientY) });
+  };
+
+  const createConnection = useCallback(
+    (sourceId: string, targetId: string) => {
+      void (async () => {
+        try {
+          const edge = await api.createBookClubTheoryEdge(bookClubId, mysteryId, {
+            sourceNodeId: sourceId,
+            targetNodeId: targetId,
+          });
+          setEdges((current) => [...current, edge]);
+        } catch (error) {
+          toast.error(error instanceof Error ? error.message : t`Could not connect those notes`);
+        }
+      })();
+    },
+    [bookClubId, mysteryId],
+  );
+
+  const connectingSourceId = connecting?.sourceId;
+  useEffect(() => {
+    if (!connectingSourceId) return;
+    const onMove = (event: PointerEvent) => {
+      const pointer = clientToBoard(event.clientX, event.clientY);
+      setConnecting((current) => (current ? { ...current, pointer } : null));
+    };
+    const onUp = (event: PointerEvent) => {
+      const element = document.elementFromPoint(event.clientX, event.clientY);
+      const targetId = element?.closest<HTMLElement>("[data-theory-node-id]")?.dataset.theoryNodeId;
+      setConnecting(null);
+      if (targetId && targetId !== connectingSourceId)
+        createConnection(connectingSourceId, targetId);
+    };
+    const onCancel = () => setConnecting(null);
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp, { once: true });
+    window.addEventListener("pointercancel", onCancel, { once: true });
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onCancel);
+    };
+  }, [clientToBoard, connectingSourceId, createConnection]);
 
   const openEdit = async (node: TheoryNode) => {
     try {
@@ -318,20 +685,52 @@ export default function TheorizeBoard({
 
   const deleteEdge = async () => {
     if (!inlineEdge) return;
+    const deletedEdge = inlineEdge;
     try {
-      await api.deleteBookClubTheoryEdge(bookClubId, mysteryId, inlineEdge.id, inlineEdge.version);
-      setEdges((current) => current.filter((edge) => edge.id !== inlineEdge.id));
+      await api.deleteBookClubTheoryEdge(
+        bookClubId,
+        mysteryId,
+        deletedEdge.id,
+        deletedEdge.version,
+      );
+      setEdges((current) => current.filter((edge) => edge.id !== deletedEdge.id));
       setInlineEdge(null);
+      toast.success(t`Connection removed`, {
+        duration: 8_000,
+        action: {
+          label: t`Undo`,
+          onClick: () =>
+            void api
+              .createBookClubTheoryEdge(bookClubId, mysteryId, {
+                sourceNodeId: deletedEdge.sourceNodeId,
+                targetNodeId: deletedEdge.targetNodeId,
+                label: deletedEdge.label,
+              })
+              .then((restored) =>
+                setEdges((current) => [
+                  ...current.filter((edge) => edge.id !== restored.id),
+                  restored,
+                ]),
+              )
+              .catch((error) =>
+                toast.error(
+                  error instanceof Error ? error.message : t`Could not restore that connection`,
+                ),
+              ),
+        },
+      });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not delete that connection`);
     }
   };
 
   const connectorPreview = connecting ? nodeMap.get(connecting.sourceId) : null;
+  const connectorStart =
+    connectorPreview && connecting ? pointOnNodeEdge(connectorPreview, connecting.pointer) : null;
 
   return (
-    <div className="flex min-h-screen flex-col bg-[#11141c] text-gray-100">
-      <header className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700 bg-[#1b2230] px-4 py-3 shadow-lg">
+    <div className="theory-board flex min-h-screen flex-col">
+      <header className="theory-board__header flex flex-wrap items-center justify-between gap-3 px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <Button
             variant="bare"
@@ -343,19 +742,19 @@ export default function TheorizeBoard({
             <ChevronLeft className="size-5" aria-hidden="true" />
           </Button>
           <div className="min-w-0">
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-teal-200">
+            <p className="theory-board__eyebrow text-xs font-bold uppercase tracking-[0.18em]">
               <Trans>Theorize</Trans>
             </p>
-            <h1 className="truncate !text-2xl leading-none text-white">{mysteryTitle}</h1>
+            <h1 className="truncate !text-2xl leading-none">{mysteryTitle}</h1>
           </div>
         </div>
-        <Button onClick={() => setCreating(true)}>
+        <Button className="theory-board__primary-action" onClick={() => setCreating(true)}>
           <Plus className="size-4" /> <Trans>Add note</Trans>
         </Button>
       </header>
 
-      <div className="flex flex-wrap items-center gap-2 border-b border-slate-800 bg-[#151a24] px-4 py-2 text-sm">
-        <span className="mr-1 flex items-center gap-1 text-slate-400">
+      <div className="theory-board__toolbar flex flex-wrap items-center gap-2 px-4 py-2 text-sm">
+        <span className="mr-1 flex items-center gap-1">
           <Filter className="size-4" /> <Trans>Show</Trans>
         </span>
         {(Object.keys(filters) as TheoryNodeKind[]).map((kind) => (
@@ -364,61 +763,59 @@ export default function TheorizeBoard({
             type="button"
             variant="bare"
             onClick={() => setFilters((current) => ({ ...current, [kind]: !current[kind] }))}
-            className={`rounded-full border px-3 py-1 text-xs font-semibold transition ${filters[kind] ? "border-teal-300/60 bg-teal-300/15 text-teal-100" : "border-slate-700 bg-slate-900 text-slate-500"}`}
+            className={`theory-filter rounded-full border px-3 py-1 text-xs font-semibold transition ${filters[kind] ? "is-active" : ""}`}
           >
             {kindLabel(kind)}
           </Button>
         ))}
-        <div className="ml-auto flex items-center gap-2 text-xs text-slate-400">
+        <div className="ml-auto flex items-center gap-2 text-xs">
           <span className="hidden sm:inline">
-            <Trans>Drag a note to move it. Drag a dot to connect it.</Trans>
+            <Trans>Drag the board to move around. Drag a pin to connect notes.</Trans>
           </span>
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => {
-              setZoom(0.82);
-              setPan({ x: -45, y: -50 });
-            }}
+            onClick={() => void alignBoard()}
+            disabled={aligning || nodes.length < 2}
+            title={t`Auto-align notes`}
           >
-            <Maximize className="size-4" />{" "}
+            <WandSparkles className="size-4" />
+            <span className="hidden md:inline">
+              {aligning ? <Trans>Aligning…</Trans> : <Trans>Auto-align</Trans>}
+            </span>
+          </Button>
+          <Button variant="ghost" size="sm" onClick={resetView} title={t`Recenter and reset zoom`}>
+            <Maximize className="size-4" />
             <span className="sr-only">
-              <Trans>Reset view</Trans>
+              <Trans>Recenter and reset zoom</Trans>
             </span>
           </Button>
         </div>
       </div>
 
       <main
-        className="relative min-h-[calc(100vh-9.5rem)] flex-1 touch-none overflow-hidden bg-[#10131a]"
-        style={{
-          backgroundImage:
-            "linear-gradient(rgba(148,163,184,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(148,163,184,.09) 1px, transparent 1px)",
-          backgroundSize: `${26 * zoom}px ${26 * zoom}px`,
-          backgroundPosition: `${pan.x}px ${pan.y}px`,
-        }}
+        ref={canvasRef}
+        className="theory-board__canvas relative min-h-0 flex-1 touch-none overflow-hidden"
         onPointerDown={(event) => {
-          if (event.target === event.currentTarget)
-            setDrag({
-              type: "pan",
-              clientX: event.clientX,
-              clientY: event.clientY,
-              x: pan.x,
-              y: pan.y,
-            });
-        }}
-        onPointerMove={(event) => {
-          if (connecting)
-            setConnecting({ ...connecting, clientX: event.clientX, clientY: event.clientY });
-        }}
-        onPointerUp={() => setConnecting(null)}
-        onWheel={(event) => {
+          if (
+            event.button !== 0 ||
+            (event.pointerType === "touch" && !event.isPrimary) ||
+            connecting ||
+            (event.target as Element).closest("[data-board-interactive]")
+          )
+            return;
           event.preventDefault();
-          setZoom((current) => Math.max(0.45, Math.min(1.35, current - event.deltaY * 0.001)));
+          setDrag({
+            type: "pan",
+            clientX: event.clientX,
+            clientY: event.clientY,
+            x: pan.x,
+            y: pan.y,
+          });
         }}
       >
         {loading && (
-          <p className="absolute left-1/2 top-1/2 -translate-x-1/2 text-sm text-slate-400">
+          <p className="theory-board__loading absolute left-1/2 top-1/2 -translate-x-1/2 text-sm">
             <Trans>Opening the case files…</Trans>
           </p>
         )}
@@ -437,14 +834,24 @@ export default function TheorizeBoard({
           >
             <defs>
               <marker
-                id="theory-arrow"
+                id="theory-arrow-subtle"
                 markerWidth="8"
                 markerHeight="8"
                 refX="6"
                 refY="3"
                 orient="auto"
               >
-                <path d="M0,0 L0,6 L7,3 z" fill="#94a3b8" />
+                <path d="M0,0 L0,6 L7,3 z" fill="#655f56" fillOpacity="0.52" />
+              </marker>
+              <marker
+                id="theory-arrow-highlighted"
+                markerWidth="8"
+                markerHeight="8"
+                refX="6"
+                refY="3"
+                orient="auto"
+              >
+                <path d="M0,0 L0,6 L7,3 z" fill="#51483e" fillOpacity="0.92" />
               </marker>
             </defs>
             {edges.map((edge) => {
@@ -452,24 +859,23 @@ export default function TheorizeBoard({
               const target = nodeMap.get(edge.targetNodeId);
               if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
                 return null;
+              const highlighted =
+                hoveredNodeId === edge.sourceNodeId || hoveredNodeId === edge.targetNodeId;
               return (
                 <path
                   key={edge.id}
-                  d={pathFor(source, target)}
+                  d={edgeGeometry(source, target).path}
                   fill="none"
-                  stroke="#94a3b8"
-                  strokeWidth="2.4"
-                  markerEnd="url(#theory-arrow)"
+                  className={`theory-edge ${highlighted ? "is-highlighted" : ""}`}
+                  markerEnd={`url(#theory-arrow-${highlighted ? "highlighted" : "subtle"})`}
                 />
               );
             })}
-            {connectorPreview && (
+            {connectorPreview && connectorStart && connecting && (
               <path
-                d={`M ${connectorPreview.x + NODE_WIDTH} ${connectorPreview.y + NODE_HEIGHT / 2} L ${(connecting!.clientX - pan.x) / zoom} ${(connecting!.clientY - pan.y) / zoom}`}
+                d={`M ${connectorStart.x} ${connectorStart.y} L ${connecting.pointer.x} ${connecting.pointer.y}`}
                 fill="none"
-                stroke="#5eead4"
-                strokeWidth="3"
-                strokeDasharray="8 6"
+                className="theory-edge-preview"
               />
             )}
           </svg>
@@ -479,17 +885,21 @@ export default function TheorizeBoard({
             const target = nodeMap.get(edge.targetNodeId);
             if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
               return null;
-            const point = midpoint(source, target);
+            const point = edgeGeometry(source, target).midpoint;
+            const highlighted =
+              hoveredNodeId === edge.sourceNodeId || hoveredNodeId === edge.targetNodeId;
             if (inlineEdge?.id === edge.id) {
               return (
                 <div
                   key={edge.id}
-                  className="absolute z-30 flex gap-1"
+                  data-board-interactive
+                  className="theory-edge-editor absolute z-30 flex gap-1"
                   style={{ left: point.x - 86, top: point.y - 16 }}
+                  onPointerDown={(event) => event.stopPropagation()}
                 >
                   <Input
                     autoFocus
-                    className="h-8 w-40 border-teal-300 bg-slate-950 px-2 text-xs text-white"
+                    className="h-8 w-40 px-2 text-xs"
                     value={inlineEdge.label}
                     onChange={(event) =>
                       setInlineEdge({ ...inlineEdge, label: event.target.value })
@@ -506,7 +916,7 @@ export default function TheorizeBoard({
                     aria-label={t`Delete connection`}
                     onMouseDown={(event) => event.preventDefault()}
                     onClick={() => void deleteEdge()}
-                    className="rounded bg-slate-950 px-2 text-rose-300 hover:bg-rose-950"
+                    className="theory-edge-editor__delete rounded px-2"
                   >
                     <Trash2 className="size-3.5" />
                   </Button>
@@ -518,10 +928,12 @@ export default function TheorizeBoard({
                 key={edge.id}
                 type="button"
                 variant="bare"
-                className="absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded border border-slate-500 bg-[#151a24] px-2 py-0.5 text-xs text-slate-200 shadow hover:border-teal-300"
+                data-board-interactive
+                className={`theory-edge-label absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded px-2 py-0.5 text-xs ${highlighted ? "is-highlighted" : ""}`}
                 style={{ left: point.x, top: point.y }}
-                onDoubleClick={() => setInlineEdge({ ...edge })}
-                title={t`Double click to name this connection`}
+                onPointerDown={(event) => event.stopPropagation()}
+                onClick={() => setInlineEdge({ ...edge })}
+                title={t`Click to name this connection`}
               >
                 {edge.label || <Link2 className="size-3" />}
               </Button>
@@ -531,10 +943,17 @@ export default function TheorizeBoard({
           {visibleNodes.map((node) => (
             <article
               key={node.id}
-              className={`absolute z-10 flex cursor-grab select-none flex-col border-2 p-3 shadow-xl active:cursor-grabbing ${nodeTone[node.kind]} ${node.kind === "suspect" ? "rounded-[1.65rem]" : "rounded-xl"}`}
-              style={{ left: node.x, top: node.y, width: NODE_WIDTH, minHeight: NODE_HEIGHT }}
+              data-theory-node-id={node.id}
+              data-board-interactive
+              className={`theory-node absolute z-10 flex cursor-grab select-none flex-col p-3 active:cursor-grabbing ${nodeTone[node.kind]} ${connecting?.sourceId === node.id ? "is-connection-source" : connecting ? "is-connection-target" : ""}`}
+              style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
+              onPointerEnter={() => setHoveredNodeId(node.id)}
+              onPointerLeave={() =>
+                setHoveredNodeId((current) => (current === node.id ? null : current))
+              }
               onPointerDown={(event) => {
-                if (event.button !== 0) return;
+                if (event.button !== 0 || (event.pointerType === "touch" && !event.isPrimary))
+                  return;
                 event.stopPropagation();
                 setDrag({
                   type: "node",
@@ -550,47 +969,33 @@ export default function TheorizeBoard({
                 void openEdit(node);
               }}
             >
-              <Button
+              <button
                 type="button"
-                variant="bare"
                 aria-label={t`Create connection from this note`}
-                className="absolute -right-2 top-1/2 z-20 size-5 -translate-y-1/2 rounded-full border-2 border-teal-200 bg-teal-500 shadow"
+                data-board-interactive
+                className="theory-node__pin absolute z-20 rounded-full"
                 onPointerDown={(event) => startConnection(event, node.id)}
               />
-              {connecting && connecting.sourceId !== node.id && (
-                <Button
-                  type="button"
-                  variant="bare"
-                  aria-label={t`Connect to this note`}
-                  className="absolute -left-2 top-1/2 z-20 size-5 -translate-y-1/2 rounded-full border-2 border-teal-100 bg-slate-800 shadow"
-                  onPointerUp={(event) => finishConnection(event, node.id)}
-                />
-              )}
               <div className="flex items-start gap-2 pr-2">
                 {node.kind === "suspect" ? (
-                  <UserRound className="mt-0.5 size-4 shrink-0 text-amber-200" />
+                  <UserRound className="theory-node__icon mt-0.5 size-4 shrink-0" />
                 ) : (
-                  <Crosshair className="mt-0.5 size-4 shrink-0 text-teal-200" />
+                  <Crosshair className="theory-node__icon mt-0.5 size-4 shrink-0" />
                 )}
-                <h2 className="line-clamp-4 text-sm font-semibold leading-snug text-white">
-                  {node.title}
-                </h2>
+                <h2 className="line-clamp-4 text-sm font-semibold leading-snug">{node.title}</h2>
               </div>
-              <div className="mt-auto flex flex-wrap gap-1 pt-2">
-                <span className="rounded-full bg-black/25 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-white">
+              <div className="theory-node__tags mt-auto flex max-h-11 flex-wrap gap-1 overflow-hidden pt-2">
+                <span className="theory-node__base-tag rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
                   {node.baseTag}
                 </span>
                 {node.tags.map((tag) => (
-                  <span
-                    key={tag}
-                    className="rounded-full border border-white/20 bg-white/10 px-2 py-0.5 text-[10px] text-slate-100"
-                  >
+                  <span key={tag} className="theory-node__tag rounded-full px-2 py-0.5 text-[10px]">
                     {tag}
                   </span>
                 ))}
               </div>
               {node.editingByNickname && (
-                <span className="mt-1 flex items-center gap-1 text-[10px] text-amber-100">
+                <span className="theory-node__lock mt-1 flex items-center gap-1 text-[10px]">
                   <Lock className="size-3" /> {node.editingByNickname}
                 </span>
               )}
@@ -600,7 +1005,7 @@ export default function TheorizeBoard({
       </main>
 
       <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent showCloseButton>
+        <DialogContent className="theory-dialog" showCloseButton>
           <DialogHeader>
             <DialogTitle>
               <Trans>Add to the theory board</Trans>
@@ -615,7 +1020,7 @@ export default function TheorizeBoard({
               <select
                 value={newKind}
                 onChange={(event) => setNewKind(event.target.value as TheoryNodeKind)}
-                className="mt-1 h-10 w-full rounded-md border border-gray-600 bg-gray-900 px-3 text-sm text-white"
+                className="theory-dialog__select mt-1 h-10 w-full rounded-md border px-3 text-sm"
               >
                 {(Object.keys(filters) as TheoryNodeKind[]).map((kind) => (
                   <option key={kind} value={kind}>
@@ -659,7 +1064,7 @@ export default function TheorizeBoard({
       </Dialog>
 
       <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && closeEdit()}>
-        <DialogContent showCloseButton>
+        <DialogContent className="theory-dialog" showCloseButton>
           <DialogHeader>
             <DialogTitle>
               <Trans>Edit note</Trans>
@@ -767,7 +1172,7 @@ function TagEditor({
             type="button"
             variant="bare"
             onClick={() => setTags(tags.filter((entry) => entry !== tag))}
-            className="rounded-full border border-teal-300/50 bg-teal-300/10 px-2 py-1 text-xs text-teal-100"
+            className="theory-tag-choice rounded-full border px-2 py-1 text-xs"
             title={t`Remove tag`}
           >
             {tag} ×
@@ -787,7 +1192,7 @@ function TagEditor({
                 type="button"
                 variant="bare"
                 onClick={() => setTags([...tags, tag])}
-                className="rounded-full border border-gray-600 px-2 py-0.5 text-xs text-gray-200 hover:border-teal-300"
+                className="theory-tag-choice rounded-full border px-2 py-0.5 text-xs"
               >
                 + {tag}
               </Button>
