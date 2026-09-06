@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { db, schema } from "../db/index.js";
@@ -101,12 +101,14 @@ let activeBookClubSockets = 0;
 
 async function membership(bookClubId: string, userId: string) {
   return db
-    .select()
+    .select({ userId: schema.bookClubMembers.userId })
     .from(schema.bookClubMembers)
+    .innerJoin(schema.bookClubs, eq(schema.bookClubMembers.bookClubId, schema.bookClubs.id))
     .where(
       and(
         eq(schema.bookClubMembers.bookClubId, bookClubId),
         eq(schema.bookClubMembers.userId, userId),
+        isNull(schema.bookClubs.deletedAt),
       ),
     )
     .get();
@@ -114,13 +116,15 @@ async function membership(bookClubId: string, userId: string) {
 
 async function gameMaster(bookClubId: string, userId: string) {
   return db
-    .select()
+    .select({ userId: schema.bookClubMembers.userId })
     .from(schema.bookClubMembers)
+    .innerJoin(schema.bookClubs, eq(schema.bookClubMembers.bookClubId, schema.bookClubs.id))
     .where(
       and(
         eq(schema.bookClubMembers.bookClubId, bookClubId),
         eq(schema.bookClubMembers.userId, userId),
         eq(schema.bookClubMembers.isGameMaster, true),
+        isNull(schema.bookClubs.deletedAt),
       ),
     )
     .get();
@@ -159,7 +163,10 @@ async function overview(bookClubId: string) {
 async function overviews(bookClubIds: string[]) {
   if (!bookClubIds.length) return [];
   const [clubs, members, characterRows, mysteries, rollRows] = await Promise.all([
-    db.select().from(schema.bookClubs).where(inArray(schema.bookClubs.id, bookClubIds)),
+    db
+      .select()
+      .from(schema.bookClubs)
+      .where(and(inArray(schema.bookClubs.id, bookClubIds), isNull(schema.bookClubs.deletedAt))),
     db
       .select()
       .from(schema.bookClubMembers)
@@ -284,9 +291,12 @@ async function invitationsFor(userId: string) {
       .select()
       .from(schema.bookClubs)
       .where(
-        inArray(
-          schema.bookClubs.id,
-          invitations.map((invitation) => invitation.bookClubId),
+        and(
+          inArray(
+            schema.bookClubs.id,
+            invitations.map((invitation) => invitation.bookClubId),
+          ),
+          isNull(schema.bookClubs.deletedAt),
         ),
       ),
     db
@@ -568,7 +578,11 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       .update(schema.bookClubs)
       .set({ name: parsed.data.name, updatedAt: new Date() })
       .where(
-        and(eq(schema.bookClubs.id, params.data.id), eq(schema.bookClubs.ownerId, request.userId!)),
+        and(
+          eq(schema.bookClubs.id, params.data.id),
+          eq(schema.bookClubs.ownerId, request.userId!),
+          isNull(schema.bookClubs.deletedAt),
+        ),
       )
       .returning();
     if (!updated.length)
@@ -586,9 +600,14 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       .from(schema.bookClubMembers)
       .where(eq(schema.bookClubMembers.bookClubId, params.data.id));
     const deleted = await db
-      .delete(schema.bookClubs)
+      .update(schema.bookClubs)
+      .set({ deletedAt: new Date(), updatedAt: new Date() })
       .where(
-        and(eq(schema.bookClubs.id, params.data.id), eq(schema.bookClubs.ownerId, request.userId!)),
+        and(
+          eq(schema.bookClubs.id, params.data.id),
+          eq(schema.bookClubs.ownerId, request.userId!),
+          isNull(schema.bookClubs.deletedAt),
+        ),
       )
       .returning();
     if (!deleted.length)
@@ -596,6 +615,30 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
     notifyBookClubUsers(memberIds.map(({ userId }) => userId));
     return { success: true };
   });
+
+  fastify.post(
+    "/book-clubs/:id/restore",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = idInput.safeParse(request.params);
+      if (!params.success) return reply.code(400).send({ error: "Invalid book club" });
+      const restored = await db
+        .update(schema.bookClubs)
+        .set({ deletedAt: null, updatedAt: new Date() })
+        .where(
+          and(
+            eq(schema.bookClubs.id, params.data.id),
+            eq(schema.bookClubs.ownerId, request.userId!),
+            isNotNull(schema.bookClubs.deletedAt),
+          ),
+        )
+        .returning();
+      if (!restored.length) return reply.code(404).send({ error: "Deleted Book Club not found" });
+      const result = await overview(params.data.id);
+      await notifyBookClub(params.data.id);
+      return result;
+    },
+  );
 
   fastify.get("/book-clubs/:id/notes", { preHandler: authenticateUser }, async (request, reply) => {
     const params = idInput.safeParse(request.params);
@@ -731,12 +774,17 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       const params = idInput.safeParse(request.params);
       if (!params.success) return reply.code(400).send({ error: "Invalid invitation" });
       const invitation = await db
-        .select()
+        .select({ bookClubId: schema.bookClubInvitations.bookClubId })
         .from(schema.bookClubInvitations)
+        .innerJoin(
+          schema.bookClubs,
+          eq(schema.bookClubInvitations.bookClubId, schema.bookClubs.id),
+        )
         .where(
           and(
             eq(schema.bookClubInvitations.bookClubId, params.data.id),
             eq(schema.bookClubInvitations.userId, request.userId!),
+            isNull(schema.bookClubs.deletedAt),
           ),
         )
         .get();
@@ -798,6 +846,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           and(
             eq(schema.bookClubs.id, params.data.id),
             eq(schema.bookClubs.ownerId, request.userId!),
+            isNull(schema.bookClubs.deletedAt),
           ),
         )
         .get();
