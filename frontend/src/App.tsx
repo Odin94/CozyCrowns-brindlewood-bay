@@ -17,6 +17,7 @@ const AuthCallback = lazy(() =>
 const MysteriesPage = lazy(() => import("./pages/MysteriesPage"));
 const LibraryPage = lazy(() => import("./pages/LibraryPage"));
 const BookClubOverview = lazy(() => import("./pages/BookClubOverview"));
+const TheorizeBoard = lazy(() => import("./pages/TheorizeBoard"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 
 const currentLocation = () =>
@@ -47,6 +48,7 @@ function AppRoutes() {
   const pathname = new URL(location, window.location.origin).pathname;
   const searchParams = new URLSearchParams(new URL(location, window.location.origin).search);
   const bookClubMatch = pathname.match(/^\/book-clubs(?:\/([^/]+))?\/?$/);
+  const theorizeMatch = pathname.match(/^\/book-clubs\/([^/]+)\/mysteries\/([^/]+)\/theorize\/?$/);
   const requestedBookClubPanel = searchParams.get("panel");
   const bookClubPanel = bookClubPanels.find((panel) => panel === requestedBookClubPanel) ?? null;
   const isDarkConspiracyRoute = pathname === "/dark-conspiracy";
@@ -101,6 +103,18 @@ function AppRoutes() {
             activeView="darkConspiracy"
             onSwitchToCharacter={() => navigate("/")}
           />
+        ) : theorizeMatch ? (
+          <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
+            <TheorizeBoard
+              bookClubId={decodeURIComponent(theorizeMatch[1])}
+              mysteryId={decodeURIComponent(theorizeMatch[2])}
+              onClose={() =>
+                navigate(
+                  `/book-clubs/${encodeURIComponent(decodeURIComponent(theorizeMatch[1]))}?panel=clues`,
+                )
+              }
+            />
+          </ProtectedRoute>
         ) : bookClubMatch ? (
           <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
             <BookClubOverview
@@ -116,6 +130,11 @@ function AppRoutes() {
                   : "/book-clubs";
                 navigate(panel ? `${path}?panel=${panel}` : path);
               }}
+              onTheorize={(bookClubId, mysteryId) =>
+                navigate(
+                  `/book-clubs/${encodeURIComponent(bookClubId)}/mysteries/${encodeURIComponent(mysteryId)}/theorize`,
+                )
+              }
             />
           </ProtectedRoute>
         ) : (

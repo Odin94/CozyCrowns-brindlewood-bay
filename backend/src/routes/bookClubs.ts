@@ -355,7 +355,7 @@ function isLockedByAnotherUser(
 
 async function theoryMystery(bookClubId: string, mysteryId: string) {
   return db
-    .select({ id: schema.bookClubMysteries.id })
+    .select({ id: schema.bookClubMysteries.id, title: schema.bookClubMysteries.title })
     .from(schema.bookClubMysteries)
     .where(
       and(
@@ -1160,8 +1160,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       if (!params.success) return reply.code(400).send({ error: "Invalid mystery" });
       if (!(await membership(params.data.id, request.userId!)))
         return reply.code(403).send({ error: "You are not in this book club" });
-      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
-        return reply.code(404).send({ error: "Mystery not found" });
+      const mystery = await theoryMystery(params.data.id, params.data.mysteryId);
+      if (!mystery) return reply.code(404).send({ error: "Mystery not found" });
       await ensureTheoryClueNodes(params.data.mysteryId);
       const [nodes, edges] = await Promise.all([
         db
@@ -1175,6 +1175,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .where(eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId)),
       ]);
       return {
+        mystery,
         nodes: nodes.map(({ node, nickname }) => ({
           ...node,
           tags: parsedTags(node.tags),
