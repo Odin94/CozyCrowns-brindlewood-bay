@@ -64,6 +64,13 @@
       "when": 1788721644280,
       "tag": "0008_unknown_lady_deathstrike",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1788725022891,
+      "tag": "0009_icy_switch",
+      "breakpoints": true
     }
   ]
 }
