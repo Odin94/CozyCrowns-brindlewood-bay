@@ -5,7 +5,11 @@ import { z } from "zod";
 import { db, schema } from "../db/index.js";
 import { authenticateSealedSession, authenticateUser } from "../middleware/auth.js";
 import { notifyBookClub } from "../realtime/bookClubNotifications.js";
-import { notifyBookClubUsers, registerBookClubSocket } from "../realtime/bookClubUpdates.js";
+import {
+  notifyBookClubUsers,
+  notifyBookClubUsersWithMessage,
+  registerBookClubSocket,
+} from "../realtime/bookClubUpdates.js";
 import { characterDataSchema } from "../schema/character.js";
 
 const idInput = z.object({ id: z.string().min(1) });
@@ -34,7 +38,18 @@ const rollInput = z.object({
   label: z.string().trim().min(1).max(160),
   dice: z.string().trim().min(1).max(80),
   result: z.string().trim().min(1).max(160),
-  characterId: z.string().min(1),
+  characterId: z.string().min(1).nullable().optional(),
+});
+const notesInput = z.object({
+  kind: z.enum(["shared", "private"]),
+  content: z.string().max(100_000),
+  baseVersion: z.number().int().nonnegative(),
+});
+const noteCursorInput = z.object({
+  type: z.literal("book-club-note-cursor"),
+  bookClubId: z.string().min(1),
+  start: z.number().int().nonnegative(),
+  end: z.number().int().nonnegative(),
 });
 const clueInput = z.object({
   text: z.string().trim().min(1).max(maxClueLength),
@@ -111,6 +126,15 @@ async function gameMaster(bookClubId: string, userId: string) {
     .get();
 }
 
+function preserveConcurrentNotes(current: string, incoming: string, versionsMatch: boolean) {
+  if (versionsMatch || current === incoming) return incoming;
+  if (!current.trim()) return incoming;
+  if (!incoming.trim()) return current;
+  if (current.includes(incoming)) return current;
+  if (incoming.includes(current)) return incoming;
+  return `${current}\n\n${incoming}`;
+}
+
 function characterOverview(rawData: string) {
   try {
     const parsed = characterDataSchema.safeParse(JSON.parse(rawData));
@@ -154,7 +178,10 @@ async function overviews(bookClubIds: string[]) {
         ),
       )
       .then((rows) =>
-        rows.map((row) => ({ bookClubId: row.book_club_character_assignments.bookClubId, character: row.characters })),
+        rows.map((row) => ({
+          bookClubId: row.book_club_character_assignments.bookClubId,
+          character: row.characters,
+        })),
       ),
     db
       .select()
@@ -190,12 +217,12 @@ async function overviews(bookClubIds: string[]) {
   const users = userIds.length
     ? await db.select().from(schema.users).where(inArray(schema.users.id, userIds))
     : [];
-  const activeMysteryIds = mysteries.filter((mystery) => mystery.isActive).map((mystery) => mystery.id);
-  const clues = activeMysteryIds.length
+  const mysteryIds = mysteries.map((mystery) => mystery.id);
+  const clues = mysteryIds.length
     ? await db
         .select()
         .from(schema.bookClubClues)
-        .where(inArray(schema.bookClubClues.mysteryId, activeMysteryIds))
+        .where(inArray(schema.bookClubClues.mysteryId, mysteryIds))
         .orderBy(desc(schema.bookClubClues.checked), desc(schema.bookClubClues.updatedAt))
     : [];
   const usersById = new Map(users.map((user) => [user.id, user]));
@@ -208,6 +235,8 @@ async function overviews(bookClubIds: string[]) {
       id: club.id,
       name: club.name,
       ownerId: club.ownerId,
+      sharedNotes: club.sharedNotes,
+      sharedNotesVersion: club.sharedNotesVersion,
       createdAt: club.createdAt,
       members: clubMembers.map((member) => ({
         id: member.userId,
@@ -232,6 +261,7 @@ async function overviews(bookClubIds: string[]) {
         title: mystery.title,
         isActive: mystery.isActive,
         createdAt: mystery.createdAt,
+        voidClues: clues.filter((clue) => clue.mysteryId === mystery.id && clue.isVoid),
       })),
       activeMystery: activeMystery
         ? {
@@ -375,6 +405,8 @@ async function syncTheoryClueNode(clue: { id: string; text: string; isVoid: bool
 export async function bookClubRoutes(fastify: FastifyInstance) {
   fastify.get("/book-clubs/live", { websocket: true }, (socket, request) => {
     let unregister: (() => void) | undefined;
+    let authenticatedUserId: string | undefined;
+    let authenticatedNickname: string | null = null;
     let authenticating = false;
     let closed = false;
     let pendingReleased = false;
@@ -416,7 +448,6 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       unregister?.();
     });
     socket.on("message", async (payload: { toString: () => string }, isBinary: boolean) => {
-      if (unregister || authenticating) return;
       if (isBinary) {
         socket.close(1003, "Binary messages are not supported");
         return;
@@ -426,9 +457,36 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       try {
         message = JSON.parse(payload.toString());
       } catch {
-        socket.close(1008, "Invalid authentication message");
+        if (!unregister) socket.close(1008, "Invalid authentication message");
         return;
       }
+
+      if (unregister && authenticatedUserId) {
+        if (
+          message &&
+          typeof message === "object" &&
+          "type" in message &&
+          message.type === "heartbeat"
+        )
+          return;
+        const cursor = noteCursorInput.safeParse(message);
+        if (!cursor.success || !(await membership(cursor.data.bookClubId, authenticatedUserId)))
+          return;
+        const members = await db
+          .select({ userId: schema.bookClubMembers.userId })
+          .from(schema.bookClubMembers)
+          .where(eq(schema.bookClubMembers.bookClubId, cursor.data.bookClubId));
+        notifyBookClubUsersWithMessage(
+          members.map(({ userId }) => userId),
+          {
+            ...cursor.data,
+            userId: authenticatedUserId,
+            nickname: authenticatedNickname,
+          },
+        );
+        return;
+      }
+      if (authenticating) return;
 
       const parsed = websocketAuthInput.safeParse(message);
       if (!parsed.success) {
@@ -450,6 +508,15 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return;
       }
       unregister = removeSocket;
+      authenticatedUserId = session.user.id;
+      authenticatedNickname =
+        (
+          await db
+            .select({ nickname: schema.users.nickname })
+            .from(schema.users)
+            .where(eq(schema.users.id, session.user.id))
+            .get()
+        )?.nickname ?? null;
       releasePendingSocket();
       clearTimeout(authTimeout);
       socket.send(JSON.stringify({ type: "ready", token: session.refreshedToken }));
@@ -490,6 +557,139 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
     const result = await overview(id);
     await notifyBookClub(id);
     return result;
+  });
+
+  fastify.put("/book-clubs/:id", { preHandler: authenticateUser }, async (request, reply) => {
+    const params = idInput.safeParse(request.params);
+    const parsed = nameInput.safeParse(request.body);
+    if (!params.success || !parsed.success)
+      return reply.code(400).send({ error: "A book club needs a name" });
+    const updated = await db
+      .update(schema.bookClubs)
+      .set({ name: parsed.data.name, updatedAt: new Date() })
+      .where(
+        and(eq(schema.bookClubs.id, params.data.id), eq(schema.bookClubs.ownerId, request.userId!)),
+      )
+      .returning();
+    if (!updated.length)
+      return reply.code(403).send({ error: "Only the book club owner can rename it" });
+    const result = await overview(params.data.id);
+    await notifyBookClub(params.data.id);
+    return result;
+  });
+
+  fastify.delete("/book-clubs/:id", { preHandler: authenticateUser }, async (request, reply) => {
+    const params = idInput.safeParse(request.params);
+    if (!params.success) return reply.code(400).send({ error: "Invalid book club" });
+    const memberIds = await db
+      .select({ userId: schema.bookClubMembers.userId })
+      .from(schema.bookClubMembers)
+      .where(eq(schema.bookClubMembers.bookClubId, params.data.id));
+    const deleted = await db
+      .delete(schema.bookClubs)
+      .where(
+        and(eq(schema.bookClubs.id, params.data.id), eq(schema.bookClubs.ownerId, request.userId!)),
+      )
+      .returning();
+    if (!deleted.length)
+      return reply.code(403).send({ error: "Only the book club owner can delete it" });
+    notifyBookClubUsers(memberIds.map(({ userId }) => userId));
+    return { success: true };
+  });
+
+  fastify.get("/book-clubs/:id/notes", { preHandler: authenticateUser }, async (request, reply) => {
+    const params = idInput.safeParse(request.params);
+    if (!params.success) return reply.code(400).send({ error: "Invalid book club" });
+    if (!(await membership(params.data.id, request.userId!)))
+      return reply.code(403).send({ error: "You are not in this book club" });
+    const [club, personal] = await Promise.all([
+      db
+        .select({
+          content: schema.bookClubs.sharedNotes,
+          version: schema.bookClubs.sharedNotesVersion,
+        })
+        .from(schema.bookClubs)
+        .where(eq(schema.bookClubs.id, params.data.id))
+        .get(),
+      db
+        .select({
+          content: schema.bookClubPersonalNotes.notes,
+          version: schema.bookClubPersonalNotes.version,
+        })
+        .from(schema.bookClubPersonalNotes)
+        .where(
+          and(
+            eq(schema.bookClubPersonalNotes.bookClubId, params.data.id),
+            eq(schema.bookClubPersonalNotes.userId, request.userId!),
+          ),
+        )
+        .get(),
+    ]);
+    return {
+      shared: club ?? { content: "", version: 0 },
+      private: personal ?? { content: "", version: 0 },
+    };
+  });
+
+  fastify.put("/book-clubs/:id/notes", { preHandler: authenticateUser }, async (request, reply) => {
+    const params = idInput.safeParse(request.params);
+    const parsed = notesInput.safeParse(request.body);
+    if (!params.success || !parsed.success)
+      return reply.code(400).send({ error: "Invalid notes update" });
+    if (!(await membership(params.data.id, request.userId!)))
+      return reply.code(403).send({ error: "You are not in this book club" });
+
+    if (parsed.data.kind === "shared") {
+      const current = await db
+        .select({
+          content: schema.bookClubs.sharedNotes,
+          version: schema.bookClubs.sharedNotesVersion,
+        })
+        .from(schema.bookClubs)
+        .where(eq(schema.bookClubs.id, params.data.id))
+        .get();
+      if (!current) return reply.code(404).send({ error: "Book Club not found" });
+      const content = preserveConcurrentNotes(
+        current.content,
+        parsed.data.content,
+        current.version === parsed.data.baseVersion,
+      );
+      const version = current.version + 1;
+      await db
+        .update(schema.bookClubs)
+        .set({ sharedNotes: content, sharedNotesVersion: version, updatedAt: new Date() })
+        .where(eq(schema.bookClubs.id, params.data.id));
+      await notifyBookClub(params.data.id);
+      return { content, version };
+    }
+
+    const current = await db
+      .select({
+        content: schema.bookClubPersonalNotes.notes,
+        version: schema.bookClubPersonalNotes.version,
+      })
+      .from(schema.bookClubPersonalNotes)
+      .where(
+        and(
+          eq(schema.bookClubPersonalNotes.bookClubId, params.data.id),
+          eq(schema.bookClubPersonalNotes.userId, request.userId!),
+        ),
+      )
+      .get();
+    const content = preserveConcurrentNotes(
+      current?.content ?? "",
+      parsed.data.content,
+      (current?.version ?? 0) === parsed.data.baseVersion,
+    );
+    const version = (current?.version ?? 0) + 1;
+    await db
+      .insert(schema.bookClubPersonalNotes)
+      .values({ bookClubId: params.data.id, userId: request.userId!, notes: content, version })
+      .onConflictDoUpdate({
+        target: [schema.bookClubPersonalNotes.bookClubId, schema.bookClubPersonalNotes.userId],
+        set: { notes: content, version, updatedAt: new Date() },
+      });
+    return { content, version };
   });
 
   fastify.post(
@@ -701,32 +901,43 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(400).send({ error: "Invalid roll" });
       if (!(await membership(params.data.id, request.userId!)))
         return reply.code(403).send({ error: "You are not in this book club" });
-      const character = await db
-        .select({ id: schema.characters.id, name: schema.characters.name })
-        .from(schema.characters)
-        .innerJoin(
-          schema.bookClubCharacterAssignments,
-          eq(schema.bookClubCharacterAssignments.characterId, schema.characters.id),
-        )
-        .where(
-          and(
-            eq(schema.characters.id, parsed.data.characterId),
-            eq(schema.characters.userId, request.userId!),
-            eq(schema.bookClubCharacterAssignments.bookClubId, params.data.id),
-            isNull(schema.characters.deletedAt),
-          ),
-        )
-        .get();
-      if (!character)
+      const character = parsed.data.characterId
+        ? await db
+            .select({ id: schema.characters.id, name: schema.characters.name })
+            .from(schema.characters)
+            .innerJoin(
+              schema.bookClubCharacterAssignments,
+              eq(schema.bookClubCharacterAssignments.characterId, schema.characters.id),
+            )
+            .where(
+              and(
+                eq(schema.characters.id, parsed.data.characterId),
+                eq(schema.characters.userId, request.userId!),
+                eq(schema.bookClubCharacterAssignments.bookClubId, params.data.id),
+                isNull(schema.characters.deletedAt),
+              ),
+            )
+            .get()
+        : null;
+      if (parsed.data.characterId && !character)
         return reply.code(404).send({ error: "Your character is not at this book club" });
+      const roller = character
+        ? character.name || "Unnamed Maven"
+        : ((
+            await db
+              .select({ nickname: schema.users.nickname })
+              .from(schema.users)
+              .where(eq(schema.users.id, request.userId!))
+              .get()
+          )?.nickname ?? "Player");
       const [roll] = await db
         .insert(schema.bookClubRollEvents)
         .values({
           id: nanoid(),
           bookClubId: params.data.id,
           userId: request.userId!,
-          characterId: character.id,
-          characterName: character.name || "Unnamed Maven",
+          characterId: character?.id ?? null,
+          characterName: roller,
           label: parsed.data.label,
           dice: parsed.data.dice,
           result: parsed.data.result,
@@ -920,7 +1131,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           tags: parsedTags(node.tags),
           baseTag: baseTagForKind(node.kind),
           editingByNickname:
-            node.editLockExpiresAt && node.editLockExpiresAt.getTime() > Date.now() ? nickname : null,
+            node.editLockExpiresAt && node.editLockExpiresAt.getTime() > Date.now()
+              ? nickname
+              : null,
           editingByUserId:
             node.editLockExpiresAt && node.editLockExpiresAt.getTime() > Date.now()
               ? node.editingByUserId
@@ -986,13 +1199,21 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .set({ editingByUserId: request.userId!, editLockExpiresAt: expiresAt })
           .where(eq(schema.bookClubTheoryNodes.id, node.id))
           .run();
-        return { status: "ok" as const, node: { ...node, editingByUserId: request.userId!, editLockExpiresAt: expiresAt } };
+        return {
+          status: "ok" as const,
+          node: { ...node, editingByUserId: request.userId!, editLockExpiresAt: expiresAt },
+        };
       });
-      if (result.status === "missing") return reply.code(404).send({ error: "Board note not found" });
+      if (result.status === "missing")
+        return reply.code(404).send({ error: "Board note not found" });
       if (result.status === "locked")
         return reply.code(423).send({ error: "This note is being edited by another player" });
       await notifyBookClub(params.data.id);
-      return { ...result.node, tags: parsedTags(result.node.tags), baseTag: baseTagForKind(result.node.kind) };
+      return {
+        ...result.node,
+        tags: parsedTags(result.node.tags),
+        baseTag: baseTagForKind(result.node.kind),
+      };
     },
   );
 
@@ -1055,7 +1276,13 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         if (isLockedByAnotherUser(node, request.userId!)) return { status: "locked" as const };
         if (node.sourceClueId && parsed.data.title !== undefined)
           return { status: "sourceClue" as const };
-        if (contentChanged && (!node.editingByUserId || node.editingByUserId !== request.userId! || !node.editLockExpiresAt || node.editLockExpiresAt.getTime() <= Date.now()))
+        if (
+          contentChanged &&
+          (!node.editingByUserId ||
+            node.editingByUserId !== request.userId! ||
+            !node.editLockExpiresAt ||
+            node.editLockExpiresAt.getTime() <= Date.now())
+        )
           return { status: "unlocked" as const };
         const update = {
           ...parsed.data,
@@ -1071,9 +1298,12 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .get();
         return { status: "ok" as const, node: updated };
       });
-      if (result.status === "missing") return reply.code(404).send({ error: "Board note not found" });
+      if (result.status === "missing")
+        return reply.code(404).send({ error: "Board note not found" });
       if (result.status === "conflict")
-        return reply.code(409).send({ error: "This note changed elsewhere. The board has been refreshed." });
+        return reply
+          .code(409)
+          .send({ error: "This note changed elsewhere. The board has been refreshed." });
       if (result.status === "locked")
         return reply.code(423).send({ error: "This note is being edited by another player" });
       if (result.status === "sourceClue")
@@ -1081,7 +1311,11 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       if (result.status === "unlocked")
         return reply.code(423).send({ error: "Reopen this note to edit it" });
       await notifyBookClub(params.data.id);
-      return { ...result.node, tags: parsedTags(result.node.tags), baseTag: baseTagForKind(result.node.kind) };
+      return {
+        ...result.node,
+        tags: parsedTags(result.node.tags),
+        baseTag: baseTagForKind(result.node.kind),
+      };
     },
   );
 
@@ -1111,7 +1345,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       if (node.sourceClueId)
         return reply.code(422).send({ error: "Linked clues stay on the board with their mystery" });
       if (node.version !== parsed.data.version)
-        return reply.code(409).send({ error: "This note changed elsewhere. The board has been refreshed." });
+        return reply
+          .code(409)
+          .send({ error: "This note changed elsewhere. The board has been refreshed." });
       if (isLockedByAnotherUser(node, request.userId!))
         return reply.code(423).send({ error: "This note is being edited by another player" });
       if (
@@ -1159,11 +1395,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         eq(schema.bookClubTheoryEdges.targetNodeId, target.id),
       );
       const result = db.transaction((tx) => {
-        const existing = tx
-          .select()
-          .from(schema.bookClubTheoryEdges)
-          .where(connectionWhere)
-          .get();
+        const existing = tx.select().from(schema.bookClubTheoryEdges).where(connectionWhere).get();
         if (existing) return { edge: existing, created: false };
         const edge = tx
           .insert(schema.bookClubTheoryEdges)
@@ -1201,7 +1433,11 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(404).send({ error: "Mystery not found" });
       const [edge] = await db
         .update(schema.bookClubTheoryEdges)
-        .set({ label: parsed.data.label, version: sql`${schema.bookClubTheoryEdges.version} + 1`, updatedAt: new Date() })
+        .set({
+          label: parsed.data.label,
+          version: sql`${schema.bookClubTheoryEdges.version} + 1`,
+          updatedAt: new Date(),
+        })
         .where(
           and(
             eq(schema.bookClubTheoryEdges.id, params.data.edgeId),
@@ -1211,7 +1447,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         )
         .returning();
       if (!edge)
-        return reply.code(409).send({ error: "This connection changed elsewhere. The board has been refreshed." });
+        return reply
+          .code(409)
+          .send({ error: "This connection changed elsewhere. The board has been refreshed." });
       await notifyBookClub(params.data.id);
       return edge;
     },
@@ -1240,7 +1478,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         )
         .returning();
       if (!deleted.length)
-        return reply.code(409).send({ error: "This connection changed elsewhere. The board has been refreshed." });
+        return reply
+          .code(409)
+          .send({ error: "This connection changed elsewhere. The board has been refreshed." });
       await notifyBookClub(params.data.id);
       return { success: true };
     },

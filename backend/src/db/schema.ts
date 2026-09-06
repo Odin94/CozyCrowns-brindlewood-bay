@@ -181,6 +181,8 @@ export const bookClubs = sqliteTable(
     ownerId: text("owner_id")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
+    sharedNotes: text("shared_notes").notNull().default(""),
+    sharedNotesVersion: integer("shared_notes_version").notNull().default(0),
     createdAt: integer("created_at", { mode: "timestamp" })
       .notNull()
       .default(sql`(unixepoch())`),
@@ -189,6 +191,27 @@ export const bookClubs = sqliteTable(
       .default(sql`(unixepoch())`),
   },
   (table) => ({ ownerIdx: index("book_clubs_owner_idx").on(table.ownerId) }),
+);
+
+export const bookClubPersonalNotes = sqliteTable(
+  "book_club_personal_notes",
+  {
+    bookClubId: text("book_club_id")
+      .notNull()
+      .references(() => bookClubs.id, { onDelete: "cascade" }),
+    userId: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    notes: text("notes").notNull().default(""),
+    version: integer("version").notNull().default(0),
+    updatedAt: integer("updated_at", { mode: "timestamp" })
+      .notNull()
+      .default(sql`(unixepoch())`),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.bookClubId, table.userId] }),
+    userIdx: index("book_club_personal_notes_user_idx").on(table.userId),
+  }),
 );
 
 export const bookClubMembers = sqliteTable(
