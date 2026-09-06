@@ -85,9 +85,9 @@ const drawerPages: Array<{
     description: t`Bring Mavens to the table`,
     icon: Users,
   },
-  { id: "settings", label: t`Settings`, description: t`Manage this Book Club`, icon: Settings },
   { id: "notes", label: t`Notes`, description: t`Shared and private notes`, icon: NotebookPen },
   { id: "clues", label: t`Clues`, description: t`Review every clue`, icon: Lightbulb },
+  { id: "settings", label: t`Settings`, description: t`Manage this Book Club`, icon: Settings },
 ];
 
 const characterName = (character: Pick<BookClubCharacter, "name">) =>
