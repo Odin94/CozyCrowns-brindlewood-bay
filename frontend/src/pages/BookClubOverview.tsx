@@ -1503,40 +1503,55 @@ function CardSummary({
 
 function CardOrnament({ ornament }: { ornament: Ornament }) {
   return (
-    <svg
-      className={`book-club-card-ornament book-club-card-ornament--${ornament}`}
-      viewBox="0 0 100 100"
+    <div
+      className={`book-club-card-filigree book-club-card-filigree--${ornament}`}
       aria-hidden="true"
     >
-      {ornament === "tentacles" && (
-        <>
-          <path d="M5 44C7 17 22 6 48 6M6 66c8-25 27-24 24-49M22 8c0 19 14 17 15 4" />
-          <circle cx="7" cy="67" r="2" />
-        </>
-      )}
-      {ornament === "yarn" && (
-        <>
-          <circle cx="18" cy="20" r="11" />
-          <path d="M9 16c9 1 13 7 18 13M8 24c8-7 14-9 20-7M29 31c13 5 17 14 13 29M35 4l18 47M43 3l10 48" />
-        </>
-      )}
-      {ornament === "tea" && (
-        <>
-          <path d="M7 8c18 1 31 12 35 32M15 21c8-9 18-8 21-5-2 10-9 16-20 14M31 32c4-12 13-15 19-14 1 10-4 17-15 19M9 49h31c0 13-6 20-16 20S9 62 9 49Zm31 4c14-2 14 12 2 12" />
-        </>
-      )}
-      {ornament === "biscuits" && (
-        <>
-          <circle cx="18" cy="19" r="12" />
-          <circle cx="18" cy="19" r="3" />
-          <circle cx="12" cy="13" r="1.5" />
-          <circle cx="25" cy="14" r="1.5" />
-          <circle cx="11" cy="24" r="1.5" />
-          <circle cx="26" cy="25" r="1.5" />
-          <path d="M6 48c13-10 27-8 40 4M16 39c5 10 13 17 25 21" />
-        </>
-      )}
-    </svg>
+      {(["top-left", "top-right", "bottom-left", "bottom-right"] as const).map((corner) => (
+        <svg key={corner} className={`book-club-card-ornament is-${corner}`} viewBox="0 0 100 100">
+          <path className="filigree-frame" d="M5 82V5h77" />
+          {ornament === "tentacles" && (
+            <>
+              <path d="M6 62c3-24 21-31 28-19 6 11-6 19-13 12-5-5 1-12 7-8M8 39c17-3 23-17 16-25-5-7-16-2-13 6 2 6 10 4 10-1M39 7c-3 18 11 26 23 18 10-6 21 3 14 12-5 7-14 1-10-5M58 6c16 5 19 18 10 25" />
+              <path className="filigree-accent" d="M6 73c13-9 16-21 9-31M73 6c-8 13-20 16-31 9" />
+              <circle cx="7" cy="72" r="2.2" />
+              <circle cx="73" cy="7" r="2.2" />
+            </>
+          )}
+          {ornament === "yarn" && (
+            <>
+              <circle cx="22" cy="22" r="13" />
+              <path d="M10 19c12-5 21 2 25 12M12 29c8-10 17-13 27-8M17 10c-1 13 7 23 19 27M33 34c17 3 28 13 25 27-2 9-13 12-17 4-3-7 6-12 11-7M35 12c12 11 25 12 39 5" />
+              <path className="filigree-accent" d="M7 74c12-7 22-18 25-35M74 7c-11 9-23 13-36 13" />
+              <path d="M49 5l18 31M57 5l14 27" />
+            </>
+          )}
+          {ornament === "tea" && (
+            <>
+              <path d="M7 72c15-11 18-24 14-39C18 20 26 10 40 7M21 37c-11-6-14-15-10-22 10-1 17 5 18 16M23 43c12-8 22-7 28-1-2 11-12 16-25 10M43 7c-5 13 0 23 11 27 10 4 14 13 8 21M49 19c6-10 15-12 23-7 0 10-7 17-18 17" />
+              <path
+                className="filigree-accent"
+                d="M6 82V70M70 6h12M10 60c11-4 18-12 21-24M61 10c-10 7-19 9-28 6"
+              />
+            </>
+          )}
+          {ornament === "biscuits" && (
+            <>
+              <circle cx="22" cy="23" r="14" />
+              <circle cx="22" cy="23" r="3" />
+              <circle cx="15" cy="17" r="1.6" />
+              <circle cx="29" cy="17" r="1.6" />
+              <circle cx="15" cy="29" r="1.6" />
+              <circle cx="29" cy="30" r="1.6" />
+              <path d="M10 43c18-5 30 4 31 20 1 11-13 17-19 8-5-8 5-16 12-10M42 12c12 15 26 17 38 9M41 28c9 11 20 16 34 14" />
+              <path className="filigree-accent" d="M7 73c9-8 14-18 15-29M73 7c-9 8-20 12-31 11" />
+              <circle cx="11" cy="53" r="1.8" />
+              <circle cx="53" cy="11" r="1.8" />
+            </>
+          )}
+        </svg>
+      ))}
+    </div>
   );
 }
 

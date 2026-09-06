@@ -142,6 +142,7 @@
 
 .book-club-invite-station {
   position: fixed;
+  z-index: 7;
   top: 18px;
   right: 18px;
   display: grid;
@@ -324,7 +325,9 @@
   transform: translateY(-9px) rotate(0.25deg);
 }
 .book-club-maven-card header {
-  padding: 0 10px 11px;
+  position: relative;
+  z-index: 1;
+  padding: 9px 10px 11px;
   text-align: center;
   border-bottom: 1px solid rgb(94 61 105 / 0.2);
 }
@@ -378,8 +381,11 @@
   white-space: nowrap;
 }
 .book-club-maven-card > button {
+  position: relative;
+  z-index: 1;
   justify-content: space-between;
   margin-top: auto;
+  margin-bottom: 24px;
   padding-top: 10px;
   color: var(--club-plum);
   border-top: 1px solid rgb(94 61 105 / 0.18);
@@ -390,23 +396,55 @@
   height: 13px;
 }
 
+.book-club-card-filigree {
+  position: absolute;
+  z-index: 0;
+  inset: 3px;
+  pointer-events: none;
+}
+
 .book-club-card-ornament {
   position: absolute;
   top: 3px;
   left: 3px;
-  width: 66px;
-  height: 66px;
+  width: 56px;
+  height: 56px;
   fill: none;
   stroke: var(--club-plum);
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 2.1;
-  opacity: 0.48;
+  stroke-width: 1.8;
+  opacity: 0.4;
 }
-.book-club-card-ornament::after {
-  content: "";
+
+.book-club-card-ornament .filigree-frame {
+  stroke-width: 1.2;
+  opacity: 0.46;
 }
-.book-club-card-ornament--biscuits circle {
+
+.book-club-card-ornament .filigree-accent {
+  stroke-width: 2.7;
+  opacity: 0.55;
+}
+
+.book-club-card-ornament.is-top-right {
+  right: 3px;
+  left: auto;
+  transform: scaleX(-1);
+}
+
+.book-club-card-ornament.is-bottom-left {
+  top: auto;
+  bottom: 3px;
+  transform: scaleY(-1);
+}
+
+.book-club-card-ornament.is-bottom-right {
+  inset: auto 3px 3px auto;
+  transform: scale(-1);
+}
+
+.book-club-card-filigree--biscuits circle {
   fill: rgb(237 193 125 / 0.16);
 }
 
@@ -465,6 +503,7 @@
 
 .book-club-drawer-rail {
   position: fixed;
+  z-index: 5;
   top: 50%;
   left: 12px;
   display: flex;
@@ -475,6 +514,11 @@
 }
 .book-club-shell.has-drawer .book-club-drawer-rail {
   left: calc(var(--drawer-width) + 10px);
+}
+
+.book-club-shell.has-drawer .book-club-club-picker {
+  opacity: 0;
+  pointer-events: none;
 }
 .book-club-drawer-rail button {
   position: relative;
@@ -1058,12 +1102,14 @@
   }
   .book-club-invite-station > button {
     justify-content: center;
+    font-size: 0;
   }
   .book-club-invite-station > button span {
     display: none;
   }
   .book-club-invite-station > button::after {
     content: "Copy link";
+    font-size: 12px;
   }
   .book-club-stage {
     min-height: 100dvh;
@@ -1160,6 +1206,13 @@
   .book-club-drawer-scroll {
     height: calc(100% - 72px);
     padding: 20px 20px 42px;
+  }
+  .book-club-shell.has-drawer .book-club-drawer > header {
+    height: 145px;
+    padding-top: 88px;
+  }
+  .book-club-shell.has-drawer .book-club-drawer-scroll {
+    height: calc(100% - 145px);
   }
   .book-club-invitations {
     top: 103px;
