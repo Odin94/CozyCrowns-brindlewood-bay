@@ -105,7 +105,7 @@ type BookClubOverviewProps = {
   clubId: string | null;
   panel: DrawerPage | null;
   onClose: () => void;
-  onClubChange: (clubId: string) => void;
+  onClubChange: (clubId: string | null) => void;
   onPanelChange: (panel: DrawerPage | null) => void;
 };
 
@@ -181,6 +181,7 @@ const BookClubOverview = ({
         selectedClubIdRef.current = next;
         setSelectedClubId(next);
         if (next && next !== clubId) onClubChange(next);
+        else if (!next && clubId) onClubChange(null);
       } catch (error) {
         if (showError)
           toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
@@ -373,14 +374,37 @@ const BookClubOverview = ({
   };
   const deleteClub = async () => {
     if (!club) return;
+    const deletedClub = club;
     try {
-      await api.deleteBookClub(club.id);
-      const remaining = clubs.filter((entry) => entry.id !== club.id);
+      await api.deleteBookClub(deletedClub.id);
+      const remaining = clubs.filter((entry) => entry.id !== deletedClub.id);
       setClubs(remaining);
       onPanelChange(null);
       if (remaining[0]) selectClub(remaining[0].id);
-      else onClose();
-      toast.success(t`Book Club deleted`);
+      else {
+        selectedClubIdRef.current = null;
+        setSelectedClubId(null);
+        onClubChange(null);
+      }
+      toast.success(t`Book Club deleted`, {
+        duration: 8_000,
+        action: {
+          label: t`Undo`,
+          onClick: () =>
+            void api
+              .restoreBookClub(deletedClub.id)
+              .then((restored) => {
+                setClubs((current) => [
+                  restored,
+                  ...current.filter((entry) => entry.id !== restored.id),
+                ]);
+                selectClub(restored.id);
+              })
+              .catch((error) =>
+                toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`),
+              ),
+        },
+      });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not delete the Book Club`);
     }
@@ -977,8 +1001,6 @@ function SettingsPanel({
   onDelete: () => void;
 }) {
   const [name, setName] = useState(club.name);
-  const [deleteOpen, setDeleteOpen] = useState(false);
-  const [deleteName, setDeleteName] = useState("");
   useEffect(() => setName(club.name), [club.name]);
   const rename = async (event: FormEvent) => {
     event.preventDefault();
@@ -1041,47 +1063,11 @@ function SettingsPanel({
           <h3>
             <Trans>Close this chapter</Trans>
           </h3>
-          <p>
-            <Trans>
-              Deleting a Book Club removes its shared mysteries, clues, rolls, and notes for
-              everyone.
-            </Trans>
-          </p>
-          <Button variant="destructive" onClick={() => setDeleteOpen(true)}>
+          <Button variant="destructive" onClick={() => void onDelete()}>
             <Trash2 aria-hidden="true" /> <Trans>Delete Book Club</Trans>
           </Button>
         </section>
       )}
-      <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
-        <DialogContent className="book-club-delete-dialog sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>
-              <Trans>Delete “{club.name}”?</Trans>
-            </DialogTitle>
-            <DialogDescription>
-              <Trans>This cannot be undone. Type the Book Club name to confirm.</Trans>
-            </DialogDescription>
-          </DialogHeader>
-          <Input
-            value={deleteName}
-            onChange={(event) => setDeleteName(event.target.value)}
-            placeholder={club.name}
-            autoFocus
-          />
-          <div className="book-club-dialog-actions">
-            <Button variant="outline" onClick={() => setDeleteOpen(false)}>
-              <Trans>Keep Book Club</Trans>
-            </Button>
-            <Button
-              variant="destructive"
-              disabled={deleteName !== club.name}
-              onClick={() => void onDelete()}
-            >
-              <Trash2 aria-hidden="true" /> <Trans>Delete forever</Trans>
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

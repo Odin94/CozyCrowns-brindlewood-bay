@@ -107,7 +107,9 @@ function AppRoutes() {
               clubId={bookClubMatch[1] ? decodeURIComponent(bookClubMatch[1]) : null}
               panel={bookClubPanel}
               onClose={() => navigate("/")}
-              onClubChange={(clubId) => navigate(`/book-clubs/${encodeURIComponent(clubId)}`)}
+              onClubChange={(clubId) =>
+                navigate(clubId ? `/book-clubs/${encodeURIComponent(clubId)}` : "/book-clubs")
+              }
               onPanelChange={(panel) => {
                 const path = bookClubMatch[1]
                   ? `/book-clubs/${encodeURIComponent(decodeURIComponent(bookClubMatch[1]))}`
