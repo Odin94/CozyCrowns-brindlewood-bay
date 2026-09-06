@@ -576,6 +576,14 @@ export const api = {
     return handleResponse(response);
   },
 
+  restoreBookClub: async (bookClubId: string): Promise<BookClub> => {
+    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/restore`, {
+      method: "POST",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
   getBookClubNotes: async (
     bookClubId: string,
   ): Promise<{
