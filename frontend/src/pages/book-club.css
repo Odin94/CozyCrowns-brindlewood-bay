@@ -523,6 +523,7 @@
   position: relative;
   width: 46px;
   height: 46px;
+  overflow: hidden;
   color: var(--club-lilac);
   border: 1px solid rgb(217 200 226 / 0.2);
   border-radius: 5px 10px 10px 5px;
