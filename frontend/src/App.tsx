@@ -113,6 +113,7 @@ function AppRoutes() {
               characterId={decodeURIComponent(mavenMatch[2])}
               onBack={() => navigate(`/book-clubs/${mavenMatch[1]}`)}
               onGoToSheet={() => navigate("/")}
+              onGoToDarkConspiracy={() => navigate("/dark-conspiracy")}
             />
           </ProtectedRoute>
         ) : theorizeMatch ? (
