@@ -2334,3 +2334,19 @@ msgstr "Charakterbogen von {0} · Schreibgeschützt"
 #: src/pages/BookClubMaven.tsx:120
 msgid "XP"
 msgstr "EP"
+
+#: src/pages/TheorizeBoard.tsx:804
+msgid "Drag the board to move around. Drag a link handle to connect notes."
+msgstr "Ziehe die Pinnwand, um dich umzusehen. Ziehe an einem Verbindungspunkt, um Notizen zu verbinden."
+
+#: src/pages/TheorizeBoard.tsx:1055
+msgid "Drag to connect notes"
+msgstr "Ziehen, um Notizen zu verbinden"
+
+#: src/pages/TheorizeBoard.tsx:1089
+msgid "Has a description"
+msgstr "Hat eine Beschreibung"
+
+#: src/pages/TheorizeBoard.tsx:1191
+msgid "Hover over a note to read its description."
+msgstr "Bewege den Mauszeiger über eine Notiz, um ihre Beschreibung zu lesen."
