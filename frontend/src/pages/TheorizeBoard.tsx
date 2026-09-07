@@ -296,6 +296,7 @@ export default function TheorizeBoard({
   >(null);
   const [connecting, setConnecting] = useState<ConnectionDraft | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+  const [descriptionNodeId, setDescriptionNodeId] = useState<string | null>(null);
   const [aligning, setAligning] = useState(false);
   const [creating, setCreating] = useState(false);
   const [newKind, setNewKind] = useState<TheoryNodeKind>("other");
@@ -981,8 +982,13 @@ export default function TheorizeBoard({
             <Tooltip
               key={node.id}
               delayDuration={350}
+              onOpenChange={(open) =>
+                setDescriptionNodeId((current) =>
+                  open ? node.id : current === node.id ? null : current,
+                )
+              }
               open={Boolean(
-                hoveredNodeId === node.id && !drag && !connecting && node.description?.trim(),
+                descriptionNodeId === node.id && !drag && !connecting && node.description?.trim(),
               )}
             >
               <TooltipTrigger asChild>
