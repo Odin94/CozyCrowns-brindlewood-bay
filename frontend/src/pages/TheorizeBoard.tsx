@@ -8,6 +8,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
 import {
   api,
@@ -26,6 +27,7 @@ import {
   Lock,
   Maximize,
   Plus,
+  Pencil,
   Tag,
   Trash2,
   UserRound,
@@ -229,10 +231,29 @@ const autoLayout = (nodes: TheoryNode[], edges: TheoryEdge[]) => {
     }
   }
   const hub = positions[order[0].index];
+  const offset = { x: center.x - hub.x, y: center.y - hub.y };
   positions.forEach((position) => {
-    position.x += center.x - hub.x;
-    position.y += center.y - hub.y;
+    position.x = Math.round(position.x + offset.x);
+    position.y = Math.round(position.y + offset.y);
   });
+
+  // Pairwise relaxation can leave collisions in dense graphs. Place each note
+  // beyond any already placed rectangles it still intersects.
+  const placed: Point[] = [];
+  for (const { index } of order) {
+    const position = positions[index];
+    let collision: Point | undefined;
+    while (
+      (collision = placed.find(
+        (other) =>
+          Math.abs(other.x - position.x) < NODE_WIDTH + 52 &&
+          Math.abs(other.y - position.y) < NODE_HEIGHT + 52,
+      ))
+    ) {
+      position.y = collision.y + NODE_HEIGHT + 52;
+    }
+    placed.push(position);
+  }
 
   return new Map(
     nodes.map((node, index) => [
@@ -780,7 +801,7 @@ export default function TheorizeBoard({
         ))}
         <div className="ml-auto flex items-center gap-2 text-xs">
           <span className="hidden sm:inline">
-            <Trans>Drag the board to move around. Drag a pin to connect notes.</Trans>
+            <Trans>Drag the board to move around. Drag a link handle to connect notes.</Trans>
           </span>
           <Button
             variant="ghost"
@@ -957,109 +978,143 @@ export default function TheorizeBoard({
           })}
 
           {visibleNodes.map((node) => (
-            <article
+            <Tooltip
               key={node.id}
-              data-theory-node-id={node.id}
-              data-board-interactive
-              role={
-                connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                  ? "button"
-                  : undefined
-              }
-              tabIndex={
-                connecting?.mode === "keyboard" && connecting.sourceId !== node.id ? 0 : undefined
-              }
-              aria-label={
-                connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                  ? `${t`Connect to this note`}: ${node.title}`
-                  : undefined
-              }
-              className={`theory-node absolute z-10 flex cursor-grab select-none flex-col p-3 active:cursor-grabbing ${nodeTone[node.kind]} ${connecting?.sourceId === node.id ? "is-connection-source" : connecting ? "is-connection-target" : ""}`}
-              style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
-              onPointerEnter={() => setHoveredNodeId(node.id)}
-              onPointerLeave={() =>
-                setHoveredNodeId((current) => (current === node.id ? null : current))
-              }
-              onPointerDown={(event) => {
-                if (event.button !== 0 || (event.pointerType === "touch" && !event.isPrimary))
-                  return;
-                if (connecting?.mode === "keyboard") {
-                  event.preventDefault();
-                  event.stopPropagation();
-                  if (connecting.sourceId !== node.id) {
-                    const sourceId = connecting.sourceId;
-                    setConnecting(null);
-                    createConnection(sourceId, node.id);
-                  }
-                  return;
-                }
-                event.stopPropagation();
-                setDrag({
-                  type: "node",
-                  node,
-                  clientX: event.clientX,
-                  clientY: event.clientY,
-                  x: node.x,
-                  y: node.y,
-                });
-              }}
-              onDoubleClick={(event) => {
-                event.stopPropagation();
-                void openEdit(node);
-              }}
-              onKeyDown={(event) => {
-                if (
-                  connecting?.mode === "keyboard" &&
-                  connecting.sourceId !== node.id &&
-                  (event.key === "Enter" || event.key === " ")
-                ) {
-                  event.preventDefault();
-                  const sourceId = connecting.sourceId;
-                  setConnecting(null);
-                  createConnection(sourceId, node.id);
-                }
-              }}
-            >
-              <button
-                type="button"
-                aria-label={t`Create connection from this note`}
-                aria-hidden={connecting?.mode === "keyboard" && connecting.sourceId !== node.id}
-                tabIndex={
-                  connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                    ? -1
-                    : undefined
-                }
-                data-board-interactive
-                className="theory-node__pin absolute z-20 rounded-full"
-                onPointerDown={(event) => startConnection(event, node.id)}
-                onClick={(event) => {
-                  if (event.detail === 0) setConnecting({ sourceId: node.id, mode: "keyboard" });
-                }}
-              />
-              <div className="flex items-start gap-2 pr-2">
-                {node.kind === "suspect" ? (
-                  <UserRound className="theory-node__icon mt-0.5 size-4 shrink-0" />
-                ) : (
-                  <Crosshair className="theory-node__icon mt-0.5 size-4 shrink-0" />
-                )}
-                <h2 className="line-clamp-4 text-sm font-semibold leading-snug">{node.title}</h2>
-              </div>
-              <div className="theory-node__tags mt-auto flex max-h-11 flex-wrap gap-1 overflow-hidden pt-2">
-                <span className="theory-node__base-tag rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
-                  {node.baseTag}
-                </span>
-                {node.tags.map((tag) => (
-                  <span key={tag} className="theory-node__tag rounded-full px-2 py-0.5 text-[10px]">
-                    {tag}
-                  </span>
-                ))}
-              </div>
-              {node.editingByNickname && (
-                <span className="theory-node__lock mt-1 flex items-center gap-1 text-[10px]">
-                  <Lock className="size-3" /> {node.editingByNickname}
-                </span>
+              delayDuration={350}
+              open={Boolean(
+                hoveredNodeId === node.id && !drag && !connecting && node.description?.trim(),
               )}
-            </article>
+            >
+              <TooltipTrigger asChild>
+                <article
+                  data-theory-node-id={node.id}
+                  data-board-interactive
+                  role={
+                    connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                      ? "button"
+                      : undefined
+                  }
+                  tabIndex={0}
+                  aria-label={
+                    connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                      ? `${t`Connect to this note`}: ${node.title}`
+                      : undefined
+                  }
+                  className={`theory-node absolute z-10 flex cursor-grab select-none flex-col p-3 active:cursor-grabbing ${nodeTone[node.kind]} ${connecting?.sourceId === node.id ? "is-connection-source" : connecting ? "is-connection-target" : ""}`}
+                  style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
+                  onFocus={() => setHoveredNodeId(node.id)}
+                  onBlur={() => setHoveredNodeId(null)}
+                  onPointerEnter={() => setHoveredNodeId(node.id)}
+                  onPointerLeave={() =>
+                    setHoveredNodeId((current) => (current === node.id ? null : current))
+                  }
+                  onPointerDown={(event) => {
+                    if (event.button !== 0 || (event.pointerType === "touch" && !event.isPrimary))
+                      return;
+                    if (connecting?.mode === "keyboard") {
+                      event.preventDefault();
+                      event.stopPropagation();
+                      if (connecting.sourceId !== node.id) {
+                        const sourceId = connecting.sourceId;
+                        setConnecting(null);
+                        createConnection(sourceId, node.id);
+                      }
+                      return;
+                    }
+                    event.stopPropagation();
+                    setDrag({
+                      type: "node",
+                      node,
+                      clientX: event.clientX,
+                      clientY: event.clientY,
+                      x: node.x,
+                      y: node.y,
+                    });
+                  }}
+                  onDoubleClick={(event) => {
+                    event.stopPropagation();
+                    void openEdit(node);
+                  }}
+                  onKeyDown={(event) => {
+                    if (
+                      connecting?.mode === "keyboard" &&
+                      connecting.sourceId !== node.id &&
+                      (event.key === "Enter" || event.key === " ")
+                    ) {
+                      event.preventDefault();
+                      const sourceId = connecting.sourceId;
+                      setConnecting(null);
+                      createConnection(sourceId, node.id);
+                    }
+                  }}
+                >
+                  {(["top", "right", "bottom", "left"] as const).map((side) => (
+                    <button
+                      key={side}
+                      type="button"
+                      title={t`Drag to connect notes`}
+                      aria-label={t`Create connection from this note`}
+                      aria-hidden={
+                        connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                      }
+                      tabIndex={
+                        connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                          ? -1
+                          : undefined
+                      }
+                      data-board-interactive
+                      className={`theory-node__pin theory-node__pin--${side} absolute z-20 rounded-full`}
+                      onPointerDown={(event) => startConnection(event, node.id)}
+                      onClick={(event) => {
+                        if (event.detail === 0)
+                          setConnecting({ sourceId: node.id, mode: "keyboard" });
+                      }}
+                    >
+                      <Link2 className="size-3.5" aria-hidden="true" />
+                    </button>
+                  ))}
+                  <div className="flex items-start gap-2 pr-2">
+                    {node.kind === "suspect" ? (
+                      <UserRound className="theory-node__icon mt-0.5 size-4 shrink-0" />
+                    ) : (
+                      <Crosshair className="theory-node__icon mt-0.5 size-4 shrink-0" />
+                    )}
+                    <h2 className="line-clamp-4 text-sm font-semibold leading-snug">
+                      {node.title}
+                    </h2>
+                  </div>
+                  {node.description?.trim() && (
+                    <Pencil
+                      className="theory-node__description ml-auto size-3.5 shrink-0"
+                      aria-label={t`Has a description`}
+                    />
+                  )}
+                  <div className="theory-node__tags mt-auto flex max-h-11 flex-wrap gap-1 overflow-hidden pt-2">
+                    <span className="theory-node__base-tag rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
+                      {node.baseTag}
+                    </span>
+                    {node.tags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="theory-node__tag rounded-full px-2 py-0.5 text-[10px]"
+                      >
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  {node.editingByNickname && (
+                    <span className="theory-node__lock mt-1 flex items-center gap-1 text-[10px]">
+                      <Lock className="size-3" /> {node.editingByNickname}
+                    </span>
+                  )}
+                </article>
+              </TooltipTrigger>
+              {node.description?.trim() && (
+                <TooltipContent className="theory-description-tooltip whitespace-pre-wrap break-words">
+                  {node.description}
+                </TooltipContent>
+              )}
+            </Tooltip>
           ))}
         </div>
       </main>
@@ -1133,7 +1188,7 @@ export default function TheorizeBoard({
               {editing?.sourceClueId ? (
                 <Trans>This title stays in sync with the mystery clue list.</Trans>
               ) : (
-                <Trans>Only the title and tags appear on the canvas.</Trans>
+                <Trans>Hover over a note to read its description.</Trans>
               )}
             </DialogDescription>
           </DialogHeader>
@@ -1259,7 +1314,7 @@ function TagEditor({
             ))}
         </div>
       )}
-      <div className="mt-2 flex gap-2">
+      <div className="theory-tag-entry mt-2 flex gap-2">
         <Input
           value={draft}
           onChange={(event) => setDraft(event.target.value)}

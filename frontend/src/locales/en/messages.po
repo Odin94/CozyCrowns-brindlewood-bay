@@ -2338,3 +2338,19 @@ msgstr "Viewing {0} · Read only"
 #: src/pages/BookClubMaven.tsx:120
 msgid "XP"
 msgstr "XP"
+
+#: src/pages/TheorizeBoard.tsx:804
+msgid "Drag the board to move around. Drag a link handle to connect notes."
+msgstr "Drag the board to move around. Drag a link handle to connect notes."
+
+#: src/pages/TheorizeBoard.tsx:1055
+msgid "Drag to connect notes"
+msgstr "Drag to connect notes"
+
+#: src/pages/TheorizeBoard.tsx:1089
+msgid "Has a description"
+msgstr "Has a description"
+
+#: src/pages/TheorizeBoard.tsx:1191
+msgid "Hover over a note to read its description."
+msgstr "Hover over a note to read its description."
