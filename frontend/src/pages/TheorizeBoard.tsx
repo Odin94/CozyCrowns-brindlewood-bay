@@ -971,7 +971,7 @@ export default function TheorizeBoard({
               }
               aria-label={
                 connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                  ? t`Connect to this note`
+                  ? `${t`Connect to this note`}: ${node.title}`
                   : undefined
               }
               className={`theory-node absolute z-10 flex cursor-grab select-none flex-col p-3 active:cursor-grabbing ${nodeTone[node.kind]} ${connecting?.sourceId === node.id ? "is-connection-source" : connecting ? "is-connection-target" : ""}`}
@@ -1023,6 +1023,12 @@ export default function TheorizeBoard({
               <button
                 type="button"
                 aria-label={t`Create connection from this note`}
+                aria-hidden={connecting?.mode === "keyboard" && connecting.sourceId !== node.id}
+                tabIndex={
+                  connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                    ? -1
+                    : undefined
+                }
                 data-board-interactive
                 className="theory-node__pin absolute z-20 rounded-full"
                 onPointerDown={(event) => startConnection(event, node.id)}
