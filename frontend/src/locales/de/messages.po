@@ -2308,3 +2308,29 @@ msgstr ""
 #: src/game_data.ts:38
 msgid "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
 msgstr "Dein Verstand wird um 1 verringert. Dein Gespür wird um 1 erhöht."
+
+#: src/pages/BookClubMaven.tsx:98
+msgid "Loading…"
+msgstr "Wird geladen…"
+
+#. placeholder {0}: characterName(character)
+#: src/pages/BookClubOverview.tsx:1555
+msgid "Open {0}’s character sheet"
+msgstr "Charakterbogen von {0} öffnen"
+
+#: src/pages/BookClubMaven.tsx:48
+msgid "This Maven is no longer available in this Book Club."
+msgstr "Diese Ermittlerin ist in diesem Buchclub nicht mehr verfügbar."
+
+#: src/pages/BookClubMaven.tsx:93
+msgid "Try again"
+msgstr "Erneut versuchen"
+
+#. placeholder {0}: result.character.name || t`Unnamed Maven`
+#: src/pages/BookClubMaven.tsx:82
+msgid "Viewing {0} · Read only"
+msgstr "Charakterbogen von {0} · Schreibgeschützt"
+
+#: src/pages/BookClubMaven.tsx:120
+msgid "XP"
+msgstr "EP"

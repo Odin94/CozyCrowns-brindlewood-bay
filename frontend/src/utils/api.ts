@@ -78,7 +78,7 @@ export type PublishedMystery = {
 export type BookClubCharacter = {
   id: string;
   name: string;
-  data: {
+  data: Partial<import("@/lib/character_document").CharacterData> & {
     conditions: string;
     mavenMoves: string;
     voidChecks: boolean[];

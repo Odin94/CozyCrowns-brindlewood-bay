@@ -543,8 +543,7 @@ button:focus-visible {
   outline: none !important;
 }
 
-/* Override Tailwind focus ring box-shadow with theme color */
-*:focus,
+/* Keep focus feedback for keyboard navigation without ringing mouse clicks. */
 *:focus-visible {
   box-shadow: 0 0 0 2px hsl(var(--ring)) !important;
   --tw-ring-shadow: 0 0 0 2px hsl(var(--ring)) !important;
@@ -553,7 +552,6 @@ button:focus-visible {
   --tw-ring-offset-shadow: none !important;
 }
 
-*:focus.dark-ring,
 *:focus-visible.dark-ring {
   box-shadow: 0 0 0 2px hsl(var(--dark-secondary)) !important;
   --tw-ring-shadow: 0 0 0 2px hsl(var(--dark-secondary)) !important;

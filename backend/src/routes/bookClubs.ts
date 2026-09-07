@@ -160,12 +160,7 @@ function characterOverview(rawData: string) {
   try {
     const parsed = characterDataSchema.safeParse(JSON.parse(rawData));
     if (parsed.success) {
-      return {
-        conditions: parsed.data.conditions,
-        mavenMoves: parsed.data.mavenMoves,
-        voidChecks: parsed.data.voidChecks,
-        cozyItems: parsed.data.cozyItems,
-      };
+      return parsed.data;
     }
   } catch {
     // A legacy/corrupt sheet should never make an entire Book Club unavailable.
