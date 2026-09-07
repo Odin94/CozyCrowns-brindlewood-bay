@@ -170,6 +170,8 @@ export type TheoryNode = {
   updatedAt: string;
 };
 
+export type TheoryNodePosition = Pick<TheoryNode, "id" | "x" | "y" | "version" | "updatedAt">;
+
 export type TheoryEdge = {
   id: string;
   mysteryId: string;
@@ -801,6 +803,18 @@ export const api = {
     const response = await fetch(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}`,
       { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify(data) },
+    );
+    return handleResponse(response);
+  },
+
+  updateBookClubTheoryNodePositions: async (
+    bookClubId: string,
+    mysteryId: string,
+    nodes: Array<Pick<TheoryNode, "id" | "version" | "x" | "y">>,
+  ): Promise<{ nodes: TheoryNodePosition[] }> => {
+    const response = await fetch(
+      `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/positions`,
+      { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify({ nodes }) },
     );
     return handleResponse(response);
   },

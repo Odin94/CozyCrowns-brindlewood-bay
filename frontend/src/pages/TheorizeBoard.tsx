@@ -67,6 +67,10 @@ type EditNode = TheoryNode & { draftTitle: string; draftDescription: string; dra
 
 type Point = { x: number; y: number };
 
+type ConnectionDraft =
+  | { sourceId: string; mode: "pointer"; pointer: Point }
+  | { sourceId: string; mode: "keyboard" };
+
 const nodeCenter = (node: TheoryNode): Point => ({
   x: node.x + NODE_WIDTH / 2,
   y: node.y + NODE_HEIGHT / 2,
@@ -269,7 +273,7 @@ export default function TheorizeBoard({
     | { type: "pan"; clientX: number; clientY: number; x: number; y: number }
     | null
   >(null);
-  const [connecting, setConnecting] = useState<{ sourceId: string; pointer: Point } | null>(null);
+  const [connecting, setConnecting] = useState<ConnectionDraft | null>(null);
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [aligning, setAligning] = useState(false);
   const [creating, setCreating] = useState(false);
@@ -351,9 +355,7 @@ export default function TheorizeBoard({
       setZoom(nextZoom);
       setPan(nextPan);
     };
-    let pinch:
-      | { distance: number; zoom: number; boardPoint: Point }
-      | undefined;
+    let pinch: { distance: number; zoom: number; boardPoint: Point } | undefined;
     const touchDistance = (event: TouchEvent) =>
       Math.hypot(
         event.touches[1].clientX - event.touches[0].clientX,
@@ -521,21 +523,13 @@ export default function TheorizeBoard({
     setNodes(arranged);
     centerViewport(arranged);
     try {
-      const results = await Promise.allSettled(
-        nodes.map((node) => {
-          const position = layout.get(node.id)!;
-          return api.updateBookClubTheoryNode(bookClubId, mysteryId, node.id, {
-            version: node.version,
-            x: position.x,
-            y: position.y,
-          });
-        }),
+      const result = await api.updateBookClubTheoryNodePositions(
+        bookClubId,
+        mysteryId,
+        arranged.map(({ id, version, x, y }) => ({ id, version, x, y })),
       );
-      const failed = results.find((result) => result.status === "rejected");
-      if (failed) throw failed.reason;
-      const updated = results.flatMap((result) =>
-        result.status === "fulfilled" ? [result.value] : [],
-      );
+      const positions = new Map(result.nodes.map((node) => [node.id, node]));
+      const updated = arranged.map((node) => Object.assign(node, positions.get(node.id)!));
       setNodes(updated);
       centerViewport(updated);
     } catch (error) {
@@ -551,7 +545,11 @@ export default function TheorizeBoard({
     if (event.button !== 0) return;
     event.preventDefault();
     event.stopPropagation();
-    setConnecting({ sourceId, pointer: clientToBoard(event.clientX, event.clientY) });
+    setConnecting({
+      sourceId,
+      mode: "pointer",
+      pointer: clientToBoard(event.clientX, event.clientY),
+    });
   };
 
   const createConnection = useCallback(
@@ -571,12 +569,12 @@ export default function TheorizeBoard({
     [bookClubId, mysteryId],
   );
 
-  const connectingSourceId = connecting?.sourceId;
+  const connectingSourceId = connecting?.mode === "pointer" ? connecting.sourceId : null;
   useEffect(() => {
     if (!connectingSourceId) return;
     const onMove = (event: PointerEvent) => {
       const pointer = clientToBoard(event.clientX, event.clientY);
-      setConnecting((current) => (current ? { ...current, pointer } : null));
+      setConnecting((current) => (current?.mode === "pointer" ? { ...current, pointer } : current));
     };
     const onUp = (event: PointerEvent) => {
       const element = document.elementFromPoint(event.clientX, event.clientY);
@@ -595,6 +593,16 @@ export default function TheorizeBoard({
       window.removeEventListener("pointercancel", onCancel);
     };
   }, [clientToBoard, connectingSourceId, createConnection]);
+
+  const connectionMode = connecting?.mode;
+  useEffect(() => {
+    if (!connectionMode) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setConnecting(null);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [connectionMode]);
 
   const openEdit = async (node: TheoryNode) => {
     try {
@@ -724,12 +732,14 @@ export default function TheorizeBoard({
     }
   };
 
-  const connectorPreview = connecting ? nodeMap.get(connecting.sourceId) : null;
+  const connectorPreview = connecting?.mode === "pointer" ? nodeMap.get(connecting.sourceId) : null;
   const connectorStart =
-    connectorPreview && connecting ? pointOnNodeEdge(connectorPreview, connecting.pointer) : null;
+    connectorPreview && connecting?.mode === "pointer"
+      ? pointOnNodeEdge(connectorPreview, connecting.pointer)
+      : null;
 
   return (
-    <div className="theory-board flex min-h-screen flex-col">
+    <div className="theory-board flex flex-col">
       <header className="theory-board__header flex flex-wrap items-center justify-between gap-3 px-4 py-3">
         <div className="flex min-w-0 items-center gap-3">
           <Button
@@ -821,11 +831,14 @@ export default function TheorizeBoard({
         )}
         <div
           className="absolute left-0 top-0 origin-top-left"
-          style={{
-            width: BOARD_WIDTH,
-            height: BOARD_HEIGHT,
-            transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
-          }}
+          style={
+            {
+              width: BOARD_WIDTH,
+              height: BOARD_HEIGHT,
+              transform: `translate(${pan.x}px, ${pan.y}px) scale(${zoom})`,
+              "--theory-inverse-zoom": `${1 / zoom}`,
+            } as React.CSSProperties
+          }
         >
           <svg
             className="pointer-events-none absolute inset-0 overflow-visible"
@@ -871,7 +884,7 @@ export default function TheorizeBoard({
                 />
               );
             })}
-            {connectorPreview && connectorStart && connecting && (
+            {connectorPreview && connectorStart && connecting?.mode === "pointer" && (
               <path
                 d={`M ${connectorStart.x} ${connectorStart.y} L ${connecting.pointer.x} ${connecting.pointer.y}`}
                 fill="none"
@@ -896,6 +909,10 @@ export default function TheorizeBoard({
                   className="theory-edge-editor absolute z-30 flex gap-1"
                   style={{ left: point.x - 86, top: point.y - 16 }}
                   onPointerDown={(event) => event.stopPropagation()}
+                  onBlur={(event) => {
+                    if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+                      void saveEdgeLabel();
+                  }}
                 >
                   <Input
                     autoFocus
@@ -908,7 +925,6 @@ export default function TheorizeBoard({
                       if (event.key === "Enter") void saveEdgeLabel();
                       if (event.key === "Escape") setInlineEdge(null);
                     }}
-                    onBlur={() => void saveEdgeLabel()}
                   />
                   <Button
                     type="button"
@@ -945,6 +961,19 @@ export default function TheorizeBoard({
               key={node.id}
               data-theory-node-id={node.id}
               data-board-interactive
+              role={
+                connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                  ? "button"
+                  : undefined
+              }
+              tabIndex={
+                connecting?.mode === "keyboard" && connecting.sourceId !== node.id ? 0 : undefined
+              }
+              aria-label={
+                connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                  ? t`Connect to this note`
+                  : undefined
+              }
               className={`theory-node absolute z-10 flex cursor-grab select-none flex-col p-3 active:cursor-grabbing ${nodeTone[node.kind]} ${connecting?.sourceId === node.id ? "is-connection-source" : connecting ? "is-connection-target" : ""}`}
               style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
               onPointerEnter={() => setHoveredNodeId(node.id)}
@@ -954,6 +983,16 @@ export default function TheorizeBoard({
               onPointerDown={(event) => {
                 if (event.button !== 0 || (event.pointerType === "touch" && !event.isPrimary))
                   return;
+                if (connecting?.mode === "keyboard") {
+                  event.preventDefault();
+                  event.stopPropagation();
+                  if (connecting.sourceId !== node.id) {
+                    const sourceId = connecting.sourceId;
+                    setConnecting(null);
+                    createConnection(sourceId, node.id);
+                  }
+                  return;
+                }
                 event.stopPropagation();
                 setDrag({
                   type: "node",
@@ -968,6 +1007,18 @@ export default function TheorizeBoard({
                 event.stopPropagation();
                 void openEdit(node);
               }}
+              onKeyDown={(event) => {
+                if (
+                  connecting?.mode === "keyboard" &&
+                  connecting.sourceId !== node.id &&
+                  (event.key === "Enter" || event.key === " ")
+                ) {
+                  event.preventDefault();
+                  const sourceId = connecting.sourceId;
+                  setConnecting(null);
+                  createConnection(sourceId, node.id);
+                }
+              }}
             >
               <button
                 type="button"
@@ -975,6 +1026,9 @@ export default function TheorizeBoard({
                 data-board-interactive
                 className="theory-node__pin absolute z-20 rounded-full"
                 onPointerDown={(event) => startConnection(event, node.id)}
+                onClick={(event) => {
+                  if (event.detail === 0) setConnecting({ sourceId: node.id, mode: "keyboard" });
+                }}
               />
               <div className="flex items-start gap-2 pr-2">
                 {node.kind === "suspect" ? (

@@ -235,31 +235,47 @@
 }
 
 .theory-node__pin {
-  top: 0.65rem;
-  right: 0.7rem;
+  top: -0.5rem;
+  right: -0.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: crosshair;
+  transform: scale(var(--theory-inverse-zoom, 1)) !important;
+  transform-origin: center;
+}
+
+.theory-node__pin::after {
+  position: absolute;
+  top: 50%;
+  left: 50%;
   width: 1rem;
   height: 1rem;
-  padding: 0;
   border: 2px solid #efe1b9;
+  border-radius: 9999px;
   background: #887255;
   box-shadow:
     0 1px 2px rgb(45 30 17 / 42%),
     inset 0 1px rgb(255 255 255 / 35%);
-  cursor: crosshair;
-  transform: none !important;
+  content: "";
+  transform: translate(-50%, -50%);
   transition:
     background-color 120ms ease-out,
     box-shadow 120ms ease-out;
 }
 
-.theory-node__pin:hover,
-.theory-node__pin:focus-visible {
+.theory-node__pin:hover::after,
+.theory-node__pin:focus-visible::after {
   background: #66513a;
   box-shadow:
     0 0 0 3px rgb(255 245 213 / 44%),
     0 1px 2px rgb(45 30 17 / 42%);
+}
+
+.theory-node__pin:focus-visible {
   outline: none;
-  transform: none !important;
 }
 
 .theory-node__base-tag,

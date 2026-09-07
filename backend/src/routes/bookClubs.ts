@@ -77,6 +77,23 @@ const theoryNodeUpdateInput = z.object({
   x: z.number().int().min(-10_000).max(10_000).optional(),
   y: z.number().int().min(-10_000).max(10_000).optional(),
 });
+const theoryNodePositionsInput = z
+  .object({
+    nodes: z
+      .array(
+        z.object({
+          id: z.string().min(1),
+          version: z.number().int().positive(),
+          x: z.number().int().min(-10_000).max(10_000),
+          y: z.number().int().min(-10_000).max(10_000),
+        }),
+      )
+      .min(1)
+      .max(300),
+  })
+  .refine((data) => new Set(data.nodes.map((node) => node.id)).size === data.nodes.length, {
+    message: "Board notes must be unique",
+  });
 const theoryEdgeInput = z
   .object({
     sourceNodeId: z.string().min(1),
@@ -1217,6 +1234,77 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .returning();
       await notifyBookClub(params.data.id);
       return { ...node, tags: parsedTags(node.tags), baseTag: baseTagForKind(node.kind) };
+    },
+  );
+
+  fastify.put(
+    "/book-clubs/:id/mysteries/:mysteryId/theorize/nodes/positions",
+    { preHandler: authenticateUser },
+    async (request, reply) => {
+      const params = theoryParams.safeParse(request.params);
+      const parsed = theoryNodePositionsInput.safeParse(request.body);
+      if (!params.success || !parsed.success)
+        return reply.code(400).send({ error: "Invalid board positions" });
+      if (!(await membership(params.data.id, request.userId!)))
+        return reply.code(403).send({ error: "You are not in this book club" });
+      if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
+        return reply.code(404).send({ error: "Mystery not found" });
+
+      const result = db.transaction((tx) => {
+        const requestedById = new Map(parsed.data.nodes.map((node) => [node.id, node]));
+        const current = tx
+          .select()
+          .from(schema.bookClubTheoryNodes)
+          .where(
+            and(
+              eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId),
+              inArray(
+                schema.bookClubTheoryNodes.id,
+                parsed.data.nodes.map((node) => node.id),
+              ),
+            ),
+          )
+          .all();
+        if (current.length !== parsed.data.nodes.length) return { status: "missing" as const };
+        if (current.some((node) => node.version !== requestedById.get(node.id)!.version))
+          return { status: "conflict" as const };
+        if (current.some((node) => isLockedByAnotherUser(node, request.userId!)))
+          return { status: "locked" as const };
+
+        const updatedAt = new Date();
+        const nodes = current.map((node) => {
+          const requested = requestedById.get(node.id)!;
+          const updated = {
+            id: node.id,
+            x: requested.x,
+            y: requested.y,
+            version: node.version + 1,
+            updatedAt,
+          };
+          tx.update(schema.bookClubTheoryNodes)
+            .set({
+              x: updated.x,
+              y: updated.y,
+              version: updated.version,
+              updatedAt: updated.updatedAt,
+            })
+            .where(eq(schema.bookClubTheoryNodes.id, node.id))
+            .run();
+          return updated;
+        });
+        return { status: "ok" as const, nodes };
+      });
+
+      if (result.status === "missing")
+        return reply.code(404).send({ error: "Board note not found" });
+      if (result.status === "conflict")
+        return reply
+          .code(409)
+          .send({ error: "A note changed elsewhere. The board has been refreshed." });
+      if (result.status === "locked")
+        return reply.code(423).send({ error: "A note is being edited by another player" });
+      await notifyBookClub(params.data.id);
+      return { nodes: result.nodes };
     },
   );
 
