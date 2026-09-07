@@ -19,11 +19,13 @@ export default function BookClubMaven({
   characterId,
   onBack,
   onGoToSheet,
+  onGoToDarkConspiracy,
 }: {
   clubId: string;
   characterId: string;
   onBack: () => void;
   onGoToSheet: () => void;
+  onGoToDarkConspiracy: () => void;
 }) {
   const { user } = useAuth();
   const [result, setResult] = useState<{
@@ -98,7 +100,11 @@ export default function BookClubMaven({
           <Trans>Loading…</Trans>
         </p>
       ) : result.own ? (
-        <CharacterSheet onBookClubsClick={onBack} onSwitchToCharacter={onGoToSheet} />
+        <CharacterSheet
+          onBookClubsClick={onBack}
+          onSwitchToCharacter={onGoToSheet}
+          onSwitchToDarkConspiracy={onGoToDarkConspiracy}
+        />
       ) : (
         <ReadOnlySheet character={result.character} />
       )}
