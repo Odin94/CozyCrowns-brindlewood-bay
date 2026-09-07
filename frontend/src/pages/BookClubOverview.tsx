@@ -1,3 +1,4 @@
+import { Die } from "@/components/character/DiceRoller";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -115,6 +116,7 @@ type BookClubOverviewProps = {
   onClose: () => void;
   onClubChange: (clubId: string | null) => void;
   onPanelChange: (panel: DrawerPage | null) => void;
+  onOpenMaven: (clubId: string, characterId: string) => void;
   onTheorize: (bookClubId: string, mysteryId: string) => void;
 };
 
@@ -125,7 +127,18 @@ const BookClubOverview = ({
   onClubChange,
   onPanelChange,
   onTheorize,
+  onOpenMaven,
 }: BookClubOverviewProps) => {
+  const [retainedPanel, setRetainedPanel] = useState(panel);
+  useEffect(() => {
+    if (panel) {
+      setRetainedPanel(panel);
+      return;
+    }
+    const timer = window.setTimeout(() => setRetainedPanel(null), 240);
+    return () => window.clearTimeout(timer);
+  }, [panel]);
+  const displayedPanel = panel ?? retainedPanel;
   const { user } = useAuth();
   const [clubs, setClubs] = useState<BookClub[]>([]);
   const [invitations, setInvitations] = useState<BookClubInvitation[]>([]);
@@ -148,7 +161,7 @@ const BookClubOverview = ({
   const isRefreshing = useRef(false);
   const refreshQueued = useRef(false);
   const socketRef = useRef<WebSocket | null>(null);
-  const { characters: localCharacters, setCurrentCharacter } = useCharacterStore();
+  const { characters: localCharacters } = useCharacterStore();
   const setActiveBookClub = useBookClubStore((state) => state.setActiveBookClub);
   const setShareRolls = useBookClubStore((state) => state.setShareRolls);
 
@@ -384,12 +397,6 @@ const BookClubOverview = ({
       toast.error(error instanceof Error ? error.message : t`Could not activate the mystery`);
     }
   };
-  const openOwnSheet = (character: CharacterWithOwner) => {
-    const index = localCharacters.findIndex((entry) => entry.id === character.id);
-    if (index < 0) return void toast.error(t`Your Maven is still syncing. Try again in a moment.`);
-    setCurrentCharacter(index);
-    onClose();
-  };
   const deleteClub = async () => {
     if (!club) return;
     const deletedClub = club;
@@ -530,7 +537,8 @@ const BookClubOverview = ({
                   character={character}
                   own={character.ownerId === user?.id}
                   ornament={ornament}
-                  onOpen={() => openOwnSheet(character)}
+                  href={`/book-clubs/${encodeURIComponent(club.id)}/mavens/${encodeURIComponent(character.id)}`}
+                  onOpen={() => onOpenMaven(club.id, character.id)}
                 />
               ))}
               {characters.length === 0 && (
@@ -565,16 +573,19 @@ const BookClubOverview = ({
           onSelect={(page) => onPanelChange(panel === page ? null : page)}
         />
       )}
-      {club && panel && (
+      {club && displayedPanel && (
         <ClubDrawer
-          title={drawerPages.find(({ id }) => id === panel)!.label}
+          closing={!panel}
+          title={drawerPages.find(({ id }) => id === displayedPanel)!.label}
           onClose={() => onPanelChange(null)}
         >
-          {panel === "mystery" && (
+          {displayedPanel === "mystery" && (
             <MysteryPanel club={club} isGameMaster={isGameMaster} onActivate={activateMystery} />
           )}
-          {panel === "rolls" && <RollsPanel club={club} onRefresh={() => void refresh(false)} />}
-          {panel === "characters" && (
+          {displayedPanel === "rolls" && (
+            <RollsPanel club={club} onRefresh={() => void refresh(false)} />
+          )}
+          {displayedPanel === "characters" && (
             <CharactersPanel
               localCharacters={localCharacters}
               assignedIds={assignedCharacterIds}
@@ -582,7 +593,7 @@ const BookClubOverview = ({
               onRemove={removeCharacter}
             />
           )}
-          {panel === "settings" && (
+          {displayedPanel === "settings" && (
             <SettingsPanel
               club={club}
               isOwner={isOwner}
@@ -591,7 +602,7 @@ const BookClubOverview = ({
               onDelete={deleteClub}
             />
           )}
-          {panel === "notes" && (
+          {displayedPanel === "notes" && (
             <NotesPanel
               key={club.id}
               club={club}
@@ -601,7 +612,7 @@ const BookClubOverview = ({
               )}
             />
           )}
-          {panel === "clues" && (
+          {displayedPanel === "clues" && (
             <CluesPanel club={club} onTheorize={(mysteryId) => onTheorize(club.id, mysteryId)} />
           )}
         </ClubDrawer>
@@ -725,6 +736,7 @@ function DrawerRail({
 }
 
 function ClubDrawer({
+  closing,
   title,
   onClose,
   children,
@@ -732,9 +744,14 @@ function ClubDrawer({
   title: string;
   onClose: () => void;
   children: React.ReactNode;
+  closing: boolean;
 }) {
   return (
-    <aside className="book-club-drawer" aria-label={title}>
+    <aside
+      className={`book-club-drawer ${closing ? "is-closing" : ""}`}
+      inert={closing}
+      aria-label={title}
+    >
       <header>
         <div>
           <span>
@@ -834,6 +851,13 @@ function RollsPanel({ club, onRefresh }: { club: BookClub; onRefresh: () => void
   const [diceCount, setDiceCount] = useState(2);
   const [rolling, setRolling] = useState(false);
   const [lastRoll, setLastRoll] = useState<Array<{ id: string; value: number }> | null>(null);
+  const [animating, setAnimating] = useState(false);
+  useEffect(() => {
+    if (!lastRoll) return;
+    setAnimating(true);
+    const timer = window.setTimeout(() => setAnimating(false), 900);
+    return () => window.clearTimeout(timer);
+  }, [lastRoll]);
   const roll = async () => {
     const dice = Array.from({ length: diceCount }, (_, index) => ({
       id: `${Date.now()}-${index}`,
@@ -889,12 +913,23 @@ function RollsPanel({ club, onRefresh }: { club: BookClub; onRefresh: () => void
         </div>
         {lastRoll && (
           <div className="book-club-dice-result" aria-live="polite">
-            {lastRoll.map((die) => (
-              <span key={die.id}>{die.value}</span>
+            {lastRoll.map((die, index) => (
+              <Die
+                key={die.id}
+                value={die.value}
+                rollId={Number(die.id.split("-")[0])}
+                index={index}
+                isRemoved={false}
+              />
             ))}
+            <p className="w-full text-center">
+              {animating
+                ? t`Rolling…`
+                : `${lastRoll.reduce((sum, die) => sum + die.value, 0)} (${lastRoll.map((die) => die.value).join(", ")})`}
+            </p>
           </div>
         )}
-        <Button variant="dark" onClick={() => void roll()} disabled={rolling}>
+        <Button variant="dark" onClick={() => void roll()} disabled={rolling || animating}>
           <Dices aria-hidden="true" />
           {rolling ? t`Rolling…` : t`Roll at the table`}
         </Button>
@@ -1496,11 +1531,13 @@ function EmptyClubState({
 }
 
 function MavenCard({
+  href,
   character,
   own,
   ornament,
   onOpen,
 }: {
+  href: string;
   character: CharacterWithOwner;
   own: boolean;
   ornament: Ornament;
@@ -1514,7 +1551,16 @@ function MavenCard({
   );
   const usedItems = (data.cozyItems ?? []).filter((item) => item.text?.trim() && item.checked);
   return (
-    <article className="book-club-maven-card">
+    <a
+      className="book-club-maven-card"
+      href={href}
+      aria-label={t`Open ${characterName(character)}’s character sheet`}
+      onClick={(event) => {
+        if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        onOpen();
+      }}
+    >
       <CardOrnament ornament={ornament} />
       <header>
         <span>{own ? t`Your Maven` : (character.nickname ?? t`Player`)}</span>
@@ -1546,13 +1592,7 @@ function MavenCard({
         ]}
         empty={t`No available items`}
       />
-      {own && (
-        <Button variant="bare" onClick={onOpen}>
-          <Trans>Open my sheet</Trans>
-          <ChevronRight aria-hidden="true" />
-        </Button>
-      )}
-    </article>
+    </a>
   );
 }
 

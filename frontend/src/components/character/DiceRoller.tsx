@@ -119,7 +119,7 @@ const DieFace = ({ value, className }: { value: number; className: string }) => 
   </div>
 );
 
-const Die = ({
+export const Die = ({
   isRemoved,
   value,
   rollId,

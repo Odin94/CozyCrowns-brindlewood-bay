@@ -16,6 +16,7 @@ const AuthCallback = lazy(() =>
 );
 const MysteriesPage = lazy(() => import("./pages/MysteriesPage"));
 const LibraryPage = lazy(() => import("./pages/LibraryPage"));
+const BookClubMaven = lazy(() => import("./pages/BookClubMaven"));
 const BookClubOverview = lazy(() => import("./pages/BookClubOverview"));
 const TheorizeBoard = lazy(() => import("./pages/TheorizeBoard"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
@@ -48,6 +49,7 @@ function AppRoutes() {
   const pathname = new URL(location, window.location.origin).pathname;
   const searchParams = new URLSearchParams(new URL(location, window.location.origin).search);
   const bookClubMatch = pathname.match(/^\/book-clubs(?:\/([^/]+))?\/?$/);
+  const mavenMatch = pathname.match(/^\/book-clubs\/([^/]+)\/mavens\/([^/]+)\/?$/);
   const theorizeMatch = pathname.match(/^\/book-clubs\/([^/]+)\/mysteries\/([^/]+)\/theorize\/?$/);
   const requestedBookClubPanel = searchParams.get("panel");
   const bookClubPanel = bookClubPanels.find((panel) => panel === requestedBookClubPanel) ?? null;
@@ -103,6 +105,16 @@ function AppRoutes() {
             activeView="darkConspiracy"
             onSwitchToCharacter={() => navigate("/")}
           />
+        ) : mavenMatch ? (
+          <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
+            <BookClubMaven
+              key={pathname}
+              clubId={decodeURIComponent(mavenMatch[1])}
+              characterId={decodeURIComponent(mavenMatch[2])}
+              onBack={() => navigate(`/book-clubs/${mavenMatch[1]}`)}
+              onGoToSheet={() => navigate("/")}
+            />
+          </ProtectedRoute>
         ) : theorizeMatch ? (
           <ProtectedRoute returnTo={location} onRequireSignIn={requireSignIn}>
             <TheorizeBoard
@@ -120,6 +132,11 @@ function AppRoutes() {
             <BookClubOverview
               clubId={bookClubMatch[1] ? decodeURIComponent(bookClubMatch[1]) : null}
               panel={bookClubPanel}
+              onOpenMaven={(clubId, characterId) =>
+                navigate(
+                  `/book-clubs/${encodeURIComponent(clubId)}/mavens/${encodeURIComponent(characterId)}`,
+                )
+              }
               onClose={() => navigate("/")}
               onClubChange={(clubId) =>
                 navigate(clubId ? `/book-clubs/${encodeURIComponent(clubId)}` : "/book-clubs")

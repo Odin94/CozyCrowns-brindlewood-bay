@@ -2312,3 +2312,29 @@ msgstr "Your Maven is still syncing. Try again in a moment."
 #: src/game_data.ts:38
 msgid "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
 msgstr "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
+
+#: src/pages/BookClubMaven.tsx:98
+msgid "Loading…"
+msgstr "Loading…"
+
+#. placeholder {0}: characterName(character)
+#: src/pages/BookClubOverview.tsx:1555
+msgid "Open {0}’s character sheet"
+msgstr "Open {0}’s character sheet"
+
+#: src/pages/BookClubMaven.tsx:48
+msgid "This Maven is no longer available in this Book Club."
+msgstr "This Maven is no longer available in this Book Club."
+
+#: src/pages/BookClubMaven.tsx:93
+msgid "Try again"
+msgstr "Try again"
+
+#. placeholder {0}: result.character.name || t`Unnamed Maven`
+#: src/pages/BookClubMaven.tsx:82
+msgid "Viewing {0} · Read only"
+msgstr "Viewing {0} · Read only"
+
+#: src/pages/BookClubMaven.tsx:120
+msgid "XP"
+msgstr "XP"
