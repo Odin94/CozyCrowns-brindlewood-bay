@@ -687,6 +687,7 @@ export const api = {
 
   createBookClubMystery: async (
     bookClubId: string,
+    sourceMysteryId: string,
     name: string,
     clues: string[],
     voidClues: string[] = [],
@@ -694,7 +695,7 @@ export const api = {
     const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/mysteries`, {
       method: "POST",
       headers: getAuthHeaders(),
-      body: JSON.stringify({ name, clues, voidClues }),
+      body: JSON.stringify({ sourceMysteryId, name, clues, voidClues }),
     });
     return handleResponse(response);
   },

@@ -11,7 +11,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 
-type ConfirmationTone = "danger" | "warning";
+type ConfirmationTone = "danger" | "warning" | "dark";
 
 type ConfirmationDialogPanelProps = {
   title: React.ReactNode;
@@ -34,7 +34,7 @@ export const ConfirmationDialogPanel = ({
   tone = "danger",
   notice,
 }: ConfirmationDialogPanelProps) => {
-  const Icon = tone === "danger" ? Trash2 : AlertTriangle;
+  const Icon = tone === "warning" ? AlertTriangle : Trash2;
 
   return (
     <div className="confirmation-dialog__body">

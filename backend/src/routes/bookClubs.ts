@@ -27,6 +27,7 @@ const theoryEdgeParams = theoryParams.extend({ edgeId: z.string().min(1) });
 const nameInput = z.object({ name: z.string().trim().min(2).max(80) });
 const maxClueLength = 20_500;
 const mysteryInput = z.object({
+  sourceMysteryId: z.string().min(1).optional(),
   name: z.string().trim().min(1).max(255),
   clues: z.array(z.string().trim().min(1).max(maxClueLength)).max(200).default([]),
   voidClues: z.array(z.string().trim().min(1).max(maxClueLength)).max(200).default([]),
@@ -1019,11 +1020,78 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(400).send({ error: "A mystery needs a title" });
       if (!(await gameMaster(params.data.id, request.userId!)))
         return reply.code(403).send({ error: "Only the GM can create a mystery" });
-      const id = nanoid();
+      if (parsed.data.sourceMysteryId) {
+        const sourceMystery = await db
+          .select({ id: schema.mysteries.id })
+          .from(schema.mysteries)
+          .where(
+            and(
+              eq(schema.mysteries.id, parsed.data.sourceMysteryId),
+              eq(schema.mysteries.userId, request.userId!),
+              isNull(schema.mysteries.deletedAt),
+            ),
+          )
+          .get();
+        if (!sourceMystery) return reply.code(404).send({ error: "Mystery not found" });
+      }
+      const existingBySource = parsed.data.sourceMysteryId
+        ? await db
+            .select()
+            .from(schema.bookClubMysteries)
+            .where(
+              and(
+                eq(schema.bookClubMysteries.bookClubId, params.data.id),
+                eq(schema.bookClubMysteries.sourceMysteryId, parsed.data.sourceMysteryId),
+              ),
+            )
+            .get()
+        : undefined;
+      const existingByTitle = existingBySource
+        ? undefined
+        : await db
+            .select()
+            .from(schema.bookClubMysteries)
+            .where(
+              and(
+                eq(schema.bookClubMysteries.bookClubId, params.data.id),
+                eq(schema.bookClubMysteries.title, parsed.data.name),
+              ),
+            )
+            .get();
+      if (
+        parsed.data.sourceMysteryId &&
+        existingByTitle?.sourceMysteryId &&
+        existingByTitle.sourceMysteryId !== parsed.data.sourceMysteryId
+      ) {
+        return reply
+          .code(409)
+          .send({ error: "A mystery with this title is already in the Book Club" });
+      }
+      if (existingBySource) return overview(params.data.id);
+      const existing = existingBySource ?? existingByTitle;
+      const id = existing?.id ?? nanoid();
       db.transaction((tx) => {
-        tx.insert(schema.bookClubMysteries)
-          .values({ id, bookClubId: params.data.id, title: parsed.data.name, isActive: false })
-          .run();
+        if (existing) {
+          tx.update(schema.bookClubMysteries)
+            .set({
+              title: parsed.data.name,
+              sourceMysteryId: parsed.data.sourceMysteryId ?? existing.sourceMysteryId,
+              updatedAt: new Date(),
+            })
+            .where(eq(schema.bookClubMysteries.id, id))
+            .run();
+          tx.delete(schema.bookClubClues).where(eq(schema.bookClubClues.mysteryId, id)).run();
+        } else {
+          tx.insert(schema.bookClubMysteries)
+            .values({
+              id,
+              bookClubId: params.data.id,
+              sourceMysteryId: parsed.data.sourceMysteryId,
+              title: parsed.data.name,
+              isActive: false,
+            })
+            .run();
+        }
         const clues = [
           ...parsed.data.clues.map((text) => ({ text, isVoid: false })),
           ...parsed.data.voidClues.map((text) => ({ text, isVoid: true })),

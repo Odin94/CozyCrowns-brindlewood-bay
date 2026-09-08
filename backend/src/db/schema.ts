@@ -313,6 +313,9 @@ export const bookClubMysteries = sqliteTable(
     bookClubId: text("book_club_id")
       .notNull()
       .references(() => bookClubs.id, { onDelete: "cascade" }),
+    sourceMysteryId: text("source_mystery_id").references(() => mysteries.id, {
+      onDelete: "set null",
+    }),
     title: text("title").notNull(),
     isActive: integer("is_active", { mode: "boolean" }).notNull().default(false),
     createdAt: integer("created_at", { mode: "timestamp" })
@@ -322,7 +325,13 @@ export const bookClubMysteries = sqliteTable(
       .notNull()
       .default(sql`(unixepoch())`),
   },
-  (table) => ({ bookClubIdx: index("book_club_mysteries_book_club_idx").on(table.bookClubId) }),
+  (table) => ({
+    bookClubIdx: index("book_club_mysteries_book_club_idx").on(table.bookClubId),
+    sourceMysteryIdx: uniqueIndex("book_club_mysteries_source_mystery_idx").on(
+      table.bookClubId,
+      table.sourceMysteryId,
+    ),
+  }),
 );
 
 export const bookClubClues = sqliteTable(
