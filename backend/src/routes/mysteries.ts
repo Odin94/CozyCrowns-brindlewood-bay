@@ -1,9 +1,10 @@
 import type { FastifyInstance } from "fastify";
-import { and, desc, eq, inArray, isNull } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
-import { db } from "../db/index.js";
+import { db, schema } from "../db/index.js";
 import { mysteries, mysteryVersions, publishedMysteries, users } from "../db/schema.js";
 import { authenticateUser } from "../middleware/auth.js";
+import { notifyBookClub } from "../realtime/bookClubNotifications.js";
 import {
   createMysterySchema,
   mysteryParamsSchema,
@@ -25,17 +26,29 @@ const serializeMystery = (mystery: typeof mysteries.$inferSelect) => ({
   updatedAt: mystery.updatedAt,
 });
 
-const keepVersionHistory = (mysteryId: string, kind: "auto" | "manual") => {
+const keepVersionHistory = (mysteryId: string) => {
   const saved = db
     .select({ id: mysteryVersions.id })
     .from(mysteryVersions)
-    .where(and(eq(mysteryVersions.mysteryId, mysteryId), eq(mysteryVersions.kind, kind)))
+    .where(and(eq(mysteryVersions.mysteryId, mysteryId), eq(mysteryVersions.kind, "manual")))
     .orderBy(desc(mysteryVersions.sourceVersion))
     .all();
   const discarded = saved.slice(10).map((version) => version.id);
   if (discarded.length)
     db.delete(mysteryVersions).where(inArray(mysteryVersions.id, discarded)).run();
 };
+
+const bookClubClues = (data: UpdateMysteryInput["data"]) =>
+  [
+    ...data.clues.map((clue) => ({
+      text: [clue.title.trim(), clue.description.trim()].filter(Boolean).join(" — "),
+      isVoid: false,
+    })),
+    ...data.voidClues.map((clue) => ({
+      text: [clue.title.trim(), clue.description.trim()].filter(Boolean).join(" — "),
+      isVoid: true,
+    })),
+  ].filter((clue) => clue.text);
 
 const isSuperadmin = (userId: string) =>
   db.select({ isSuperadmin: users.isSuperadmin }).from(users).where(eq(users.id, userId)).get()
@@ -116,12 +129,10 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
       if (!existing) return reply.code(404).send({ error: "Mystery not found" });
       if (existing.userId !== request.userId) return reply.code(403).send({ error: "Forbidden" });
       if (existing.version !== request.body.version) {
-        return reply
-          .code(409)
-          .send({
-            error: "This mystery changed elsewhere. Reload it before saving again.",
-            current: serializeMystery(existing),
-          });
+        return reply.code(409).send({
+          error: "This mystery changed elsewhere. Reload it before saving again.",
+          current: serializeMystery(existing),
+        });
       }
 
       const now = new Date();
@@ -135,25 +146,86 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
           .returning()
           .get();
         if (!mystery) return null;
-        db.insert(mysteryVersions)
-          .values({
-            id: nanoid(),
-            mysteryId: mystery.id,
-            title: mystery.title,
-            data: mystery.data,
-            sourceVersion: mystery.version,
-            kind: request.body.saveKind,
-            createdAt: now,
+        if (request.body.saveKind === "manual") {
+          db.insert(mysteryVersions)
+            .values({
+              id: nanoid(),
+              mysteryId: mystery.id,
+              title: mystery.title,
+              data: mystery.data,
+              sourceVersion: mystery.version,
+              kind: "manual",
+              createdAt: now,
+            })
+            .run();
+          keepVersionHistory(mystery.id);
+        }
+        const linkedMysteries = db
+          .select({
+            id: schema.bookClubMysteries.id,
+            bookClubId: schema.bookClubMysteries.bookClubId,
           })
-          .run();
-        keepVersionHistory(mystery.id, request.body.saveKind);
-        return mystery;
+          .from(schema.bookClubMysteries)
+          .where(eq(schema.bookClubMysteries.sourceMysteryId, mystery.id))
+          .all();
+        const clues = bookClubClues(request.body.data);
+        linkedMysteries.forEach((linkedMystery) => {
+          db.update(schema.bookClubMysteries)
+            .set({ title: mystery.title, updatedAt: now })
+            .where(eq(schema.bookClubMysteries.id, linkedMystery.id))
+            .run();
+          const unmatchedExistingClues = db
+            .select({
+              id: schema.bookClubClues.id,
+              text: schema.bookClubClues.text,
+              isVoid: schema.bookClubClues.isVoid,
+            })
+            .from(schema.bookClubClues)
+            .where(eq(schema.bookClubClues.mysteryId, linkedMystery.id))
+            .all();
+          const newClues = clues.filter((clue) => {
+            const existingIndex = unmatchedExistingClues.findIndex(
+              (existingClue) =>
+                existingClue.text === clue.text && existingClue.isVoid === clue.isVoid,
+            );
+            if (existingIndex < 0) return true;
+            unmatchedExistingClues.splice(existingIndex, 1);
+            return false;
+          });
+          if (unmatchedExistingClues.length) {
+            db.delete(schema.bookClubClues)
+              .where(
+                inArray(
+                  schema.bookClubClues.id,
+                  unmatchedExistingClues.map((clue) => clue.id),
+                ),
+              )
+              .run();
+          }
+          if (newClues.length) {
+            db.insert(schema.bookClubClues)
+              .values(
+                newClues.map((clue) => ({
+                  id: nanoid(),
+                  mysteryId: linkedMystery.id,
+                  text: clue.text,
+                  isVoid: clue.isVoid,
+                })),
+              )
+              .run();
+          }
+        });
+        return {
+          mystery,
+          bookClubIds: linkedMysteries.map((linkedMystery) => linkedMystery.bookClubId),
+        };
       });
       if (!saved)
         return reply
           .code(409)
           .send({ error: "This mystery changed elsewhere. Reload it before saving again." });
-      return serializeMystery(saved);
+      await Promise.all(saved.bookClubIds.map((bookClubId) => notifyBookClub(bookClubId)));
+      return serializeMystery(saved.mystery);
     },
   );
 
@@ -161,13 +233,17 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
     "/mysteries/:id/versions",
     { preHandler: authenticateUser, schema: { params: zodToFastifySchema(mysteryParamsSchema) } },
     async (request, reply) => {
-      const mystery = db.select().from(mysteries).where(eq(mysteries.id, request.params.id)).get();
+      const mystery = db
+        .select()
+        .from(mysteries)
+        .where(and(eq(mysteries.id, request.params.id), isNull(mysteries.deletedAt)))
+        .get();
       if (!mystery) return reply.code(404).send({ error: "Mystery not found" });
       if (mystery.userId !== request.userId) return reply.code(403).send({ error: "Forbidden" });
       const versions = db
         .select()
         .from(mysteryVersions)
-        .where(eq(mysteryVersions.mysteryId, mystery.id))
+        .where(and(eq(mysteryVersions.mysteryId, mystery.id), eq(mysteryVersions.kind, "manual")))
         .orderBy(desc(mysteryVersions.sourceVersion))
         .all();
       return {
@@ -192,7 +268,11 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
     async (request, reply) => {
       const result = db
         .update(mysteries)
-        .set({ deletedAt: new Date(), updatedAt: new Date() })
+        .set({
+          deletedAt: new Date(),
+          updatedAt: new Date(),
+          version: sql`${mysteries.version} + 1`,
+        })
         .where(
           and(
             eq(mysteries.id, request.params.id),
@@ -203,6 +283,31 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
         .run();
       if (!result.changes) return reply.code(404).send({ error: "Mystery not found" });
       return { success: true };
+    },
+  );
+
+  fastify.post<{ Params: MysteryParams }>(
+    "/mysteries/:id/restore",
+    { preHandler: authenticateUser, schema: { params: zodToFastifySchema(mysteryParamsSchema) } },
+    async (request, reply) => {
+      const restored = db
+        .update(mysteries)
+        .set({
+          deletedAt: null,
+          updatedAt: new Date(),
+          version: sql`${mysteries.version} + 1`,
+        })
+        .where(
+          and(
+            eq(mysteries.id, request.params.id),
+            eq(mysteries.userId, request.userId!),
+            isNotNull(mysteries.deletedAt),
+          ),
+        )
+        .returning()
+        .get();
+      if (!restored) return reply.code(404).send({ error: "Mystery not found" });
+      return serializeMystery(restored);
     },
   );
 
@@ -233,10 +338,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
           .select()
           .from(mysteryVersions)
           .where(
-            and(
-              eq(mysteryVersions.mysteryId, mystery.id),
-              eq(mysteryVersions.kind, "publication"),
-            ),
+            and(eq(mysteryVersions.mysteryId, mystery.id), eq(mysteryVersions.kind, "publication")),
           )
           .get();
         const submission = pending
@@ -409,10 +511,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
         .select()
         .from(mysteryVersions)
         .where(
-          and(
-            eq(mysteryVersions.id, request.params.id),
-            eq(mysteryVersions.kind, "publication"),
-          ),
+          and(eq(mysteryVersions.id, request.params.id), eq(mysteryVersions.kind, "publication")),
         )
         .get();
       if (submission) {

@@ -9,6 +9,8 @@ import { Trans } from "@lingui/react/macro";
 import {
   ArchiveRestore,
   ChevronLeft,
+  ChevronDown,
+  ChevronUp,
   BookOpen,
   Feather,
   Library,
@@ -17,7 +19,6 @@ import {
   Send,
   Trash2,
   Users,
-  X,
 } from "lucide-react";
 import type React from "react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -29,7 +30,7 @@ const defaultMystery = (): MysteryData => ({
   title: t`Untitled Mystery`,
   intro: "",
   establishingQuestions: [],
-  complexity: 4,
+  complexity: 6,
   locations: [],
   suspects: [],
   clues: [],
@@ -37,10 +38,12 @@ const defaultMystery = (): MysteryData => ({
   moments: [],
 });
 
-const blankLocation = () => ({ title: "", description: "", prompt: "" });
-const blankSuspect = () => ({ name: "", title: "", description: "", quote: "" });
-const blankClue = () => ({ title: "", description: "" });
-const blankMoment = () => ({ description: "" });
+const newEntryId = () => crypto.randomUUID();
+const blankLocation = () => ({ id: newEntryId(), title: "", description: "", prompt: "" });
+const blankSuspect = () => ({ id: newEntryId(), name: "", title: "", description: "", quote: "" });
+const blankClue = () => ({ id: newEntryId(), title: "", description: "" });
+const blankMoment = () => ({ id: newEntryId(), description: "" });
+const autoSaveDelay = 2_500;
 const contentSnapshot = (mystery: Pick<Mystery, "title" | "data">) =>
   JSON.stringify({ title: mystery.title, data: mystery.data });
 const hasEnteredInformation = (entry: object) =>
@@ -85,12 +88,20 @@ const Field = ({
   onChange,
   multi = false,
   placeholder = "",
+  autoFocus = false,
+  type = "text",
+  min,
+  step,
 }: {
   label: React.ReactNode;
   value: string;
   onChange: (value: string) => void;
   multi?: boolean;
   placeholder?: string;
+  autoFocus?: boolean;
+  type?: React.HTMLInputTypeAttribute;
+  min?: number;
+  step?: number | "any";
 }) => (
   <label className="mystery-field">
     <span>{label}</span>
@@ -99,12 +110,53 @@ const Field = ({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
+        autoFocus={autoFocus}
       />
+    ) : type === "number" ? (
+      <div className="mystery-number-input">
+        <Input
+          value={value}
+          onChange={(event) => onChange(event.target.value)}
+          placeholder={placeholder}
+          autoFocus={autoFocus}
+          type={type}
+          min={min}
+          step={step}
+        />
+        <div className="mystery-number-input__controls">
+          <Button
+            type="button"
+            variant="dark"
+            size="sm"
+            aria-label={t`Increase complexity`}
+            title={t`Increase complexity`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => onChange(String((Number(value) || 0) + 1))}
+          >
+            <ChevronUp aria-hidden="true" />
+          </Button>
+          <Button
+            type="button"
+            variant="dark"
+            size="sm"
+            aria-label={t`Decrease complexity`}
+            title={t`Decrease complexity`}
+            onMouseDown={(event) => event.preventDefault()}
+            onClick={() => onChange(String(Math.max(min ?? 0, (Number(value) || 0) - 1)))}
+          >
+            <ChevronDown aria-hidden="true" />
+          </Button>
+        </div>
+      </div>
     ) : (
       <Input
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
+        autoFocus={autoFocus}
+        type={type}
+        min={min}
+        step={step}
       />
     )}
   </label>
@@ -129,9 +181,15 @@ const Section = ({
 );
 
 const RemoveCard = ({ onClick }: { onClick: () => void }) => (
-  <Button size="sm" variant="ghost" className="ml-auto flex h-7" onClick={onClick}>
-    <X className="size-3" />
-    <Trans>Remove</Trans>
+  <Button
+    size="sm"
+    variant="dark"
+    className="ml-auto flex h-7 w-7 p-0"
+    onClick={onClick}
+    aria-label={t`Remove entry`}
+    title={t`Remove entry`}
+  >
+    <Trash2 className="size-3.5" aria-hidden="true" />
   </Button>
 );
 
@@ -144,10 +202,13 @@ const MysteriesPage = () => {
   const [versions, setVersions] = useState<MysteryVersion[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [bringingToBookClub, setBringingToBookClub] = useState(false);
+  const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
+  const [complexityInput, setComplexityInput] = useState("");
   const [confirmation, setConfirmation] = useState<
-    | { kind: "delete" }
+    | { kind: "delete"; title: string }
+    | { kind: "publish" }
     | { kind: "restore"; version: MysteryVersion }
-    | { kind: "remove-entry"; onConfirm: () => void }
+    | { kind: "remove-entry"; title?: string; onConfirm: () => void }
     | null
   >(null);
   const lastSavedById = useRef(new Map<string, string>());
@@ -156,10 +217,13 @@ const MysteriesPage = () => {
   const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
 
   const choose = useCallback((mystery: Mystery) => {
+    const isAlreadySelected = selectedRef.current?.id === mystery.id;
     lastSavedById.current.set(mystery.id, contentSnapshot(mystery));
     latestVersionById.current.set(mystery.id, mystery.version);
     selectedRef.current = mystery;
-    setVersions([]);
+    setFocusedEntryId(null);
+    setComplexityInput(String(mystery.data.complexity));
+    if (!isAlreadySelected) setVersions([]);
     setSelected(mystery);
   }, []);
 
@@ -191,7 +255,8 @@ const MysteriesPage = () => {
           localStorage.removeItem(draftKey);
         }
       }
-      if (result.mysteries[0]) {
+      if (result.mysteries[0] && !selectedRef.current) {
+        setComplexityInput(String(result.mysteries[0].data.complexity));
         setSelected((current) => {
           if (current) return current;
           lastSavedById.current.set(result.mysteries[0].id, contentSnapshot(result.mysteries[0]));
@@ -235,7 +300,9 @@ const MysteriesPage = () => {
       remove();
       return;
     }
-    setConfirmation({ kind: "remove-entry", onConfirm: remove });
+    const title =
+      "title" in entry && typeof entry.title === "string" ? entry.title.trim() : undefined;
+    setConfirmation({ kind: "remove-entry", title: title || undefined, onConfirm: remove });
   };
 
   const save = useCallback(
@@ -283,7 +350,7 @@ const MysteriesPage = () => {
   const saveSignature = useMemo(() => (selected ? contentSnapshot(selected) : ""), [selected]);
   useEffect(() => {
     if (!selected || saveSignature === lastSavedById.current.get(selected.id)) return;
-    const timer = window.setTimeout(() => void save("auto"), 900);
+    const timer = window.setTimeout(() => void save("auto"), autoSaveDelay);
     return () => window.clearTimeout(timer);
   }, [save, saveSignature, selected]);
 
@@ -300,21 +367,67 @@ const MysteriesPage = () => {
   };
 
   const deleteMystery = async () => {
-    if (!selected) return;
+    const deletedMystery = selectedRef.current;
+    if (!deletedMystery) return;
     try {
-      await api.deleteMystery(selected.id);
-      const remaining = mysteries.filter((mystery) => mystery.id !== selected.id);
+      await api.deleteMystery(deletedMystery.id);
+      const remaining = mysteries.filter((mystery) => mystery.id !== deletedMystery.id);
       selectedRef.current = remaining[0] ?? null;
       setMysteries(remaining);
       setSelected(remaining[0] ?? null);
       setVersions([]);
-      lastSavedById.current.delete(selected.id);
-      latestVersionById.current.delete(selected.id);
+      lastSavedById.current.delete(deletedMystery.id);
+      latestVersionById.current.delete(deletedMystery.id);
       localStorage.removeItem(draftKey);
       setConfirmation(null);
+      toast.success(t`Mystery deleted.`, {
+        action: {
+          label: t`Undo`,
+          onClick: () =>
+            void api
+              .restoreMystery(deletedMystery.id)
+              .then((restored) => {
+                setMysteries((current) => [
+                  restored,
+                  ...current.filter((mystery) => mystery.id !== restored.id),
+                ]);
+                choose(restored);
+                toast.success(t`Mystery restored.`);
+              })
+              .catch((error) =>
+                toast.error(error instanceof Error ? error.message : t`Could not restore mystery`),
+              ),
+        },
+      });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not remove mystery`);
     }
+  };
+
+  const restoreVersion = async (version: MysteryVersion) => {
+    const previous = selectedRef.current;
+    if (!previous) return;
+    const restored = { ...previous, title: version.title, data: version.data };
+    selectedRef.current = restored;
+    setSelected(restored);
+    setComplexityInput(String(version.data.complexity));
+    if (!(await save("auto"))) {
+      selectedRef.current = previous;
+      setSelected(previous);
+      setComplexityInput(String(previous.data.complexity));
+      return;
+    }
+    toast.success(t`Version restored.`, {
+      action: {
+        label: t`Undo`,
+        onClick: () => {
+          selectedRef.current = previous;
+          setSelected(previous);
+          setComplexityInput(String(previous.data.complexity));
+          void save("auto");
+        },
+      },
+    });
   };
 
   const publish = async () => {
@@ -341,6 +454,7 @@ const MysteriesPage = () => {
     try {
       await api.createBookClubMystery(
         bookClubId,
+        mystery.id,
         mystery.title || t`Untitled Mystery`,
         clueLabels(mystery.data.clues),
         clueLabels(mystery.data.voidClues),
@@ -416,7 +530,7 @@ const MysteriesPage = () => {
                   <Save className="size-4" />
                   <Trans>Save version</Trans>
                 </Button>
-                <Button onClick={() => void publish()} variant="secondary">
+                <Button onClick={() => setConfirmation({ kind: "publish" })} variant="secondary">
                   <Send className="size-4" />
                   <Trans>Publish</Trans>
                 </Button>
@@ -442,10 +556,17 @@ const MysteriesPage = () => {
             <div className="mystery-meta-grid">
               <Field
                 label={<Trans>Complexity</Trans>}
-                value={String(selected.data.complexity)}
-                onChange={(value) =>
-                  updateSelected({ complexity: Math.max(1, Math.min(12, Number(value) || 1)) })
-                }
+                value={complexityInput}
+                onChange={(value) => {
+                  setComplexityInput(value);
+                  const complexity = Number(value);
+                  updateSelected({
+                    complexity: Number.isFinite(complexity) && complexity >= 0 ? complexity : 0,
+                  });
+                }}
+                type="number"
+                min={0}
+                step="any"
               />
               <Field
                 label={<Trans>Establishing questions (one per line)</Trans>}
@@ -461,16 +582,18 @@ const MysteriesPage = () => {
               action={
                 <Button
                   size="sm"
-                  onClick={() =>
-                    updateSelected({ locations: [...selected.data.locations, blankLocation()] })
-                  }
+                  onClick={() => {
+                    const location = blankLocation();
+                    setFocusedEntryId(location.id);
+                    updateSelected({ locations: [...selected.data.locations, location] });
+                  }}
                 >
                   <Plus className="size-4" />
                 </Button>
               }
             >
               {selected.data.locations.map((location, index) => (
-                <div key={location.id ?? `${location.title}-${index}`} className="mystery-card">
+                <div key={location.id ?? index} className="mystery-card">
                   <RemoveCard
                     onClick={() =>
                       removeEntry(location, () =>
@@ -483,6 +606,7 @@ const MysteriesPage = () => {
                   <Field
                     label={<Trans>Title</Trans>}
                     value={location.title}
+                    autoFocus={focusedEntryId === location.id}
                     onChange={(title) =>
                       updateSelected({
                         locations: selected.data.locations.map((item, i) =>
@@ -523,16 +647,18 @@ const MysteriesPage = () => {
               action={
                 <Button
                   size="sm"
-                  onClick={() =>
-                    updateSelected({ suspects: [...selected.data.suspects, blankSuspect()] })
-                  }
+                  onClick={() => {
+                    const suspect = blankSuspect();
+                    setFocusedEntryId(suspect.id);
+                    updateSelected({ suspects: [...selected.data.suspects, suspect] });
+                  }}
                 >
                   <Plus className="size-4" />
                 </Button>
               }
             >
               {selected.data.suspects.map((suspect, index) => (
-                <div key={suspect.id ?? `${suspect.name}-${index}`} className="mystery-card">
+                <div key={suspect.id ?? index} className="mystery-card">
                   <RemoveCard
                     onClick={() =>
                       removeEntry(suspect, () =>
@@ -545,6 +671,7 @@ const MysteriesPage = () => {
                   <Field
                     label={<Trans>Name</Trans>}
                     value={suspect.name}
+                    autoFocus={focusedEntryId === suspect.id}
                     onChange={(name) =>
                       updateSelected({
                         suspects: selected.data.suspects.map((item, i) =>
@@ -603,14 +730,18 @@ const MysteriesPage = () => {
                 action={
                   <Button
                     size="sm"
-                    onClick={() => updateSelected({ [key]: [...selected.data[key], blankClue()] })}
+                    onClick={() => {
+                      const clue = blankClue();
+                      setFocusedEntryId(clue.id);
+                      updateSelected({ [key]: [...selected.data[key], clue] });
+                    }}
                   >
                     <Plus className="size-4" />
                   </Button>
                 }
               >
                 {selected.data[key].map((clue, index) => (
-                  <div key={clue.id ?? `${clue.title}-${index}`} className="mystery-card">
+                  <div key={clue.id ?? index} className="mystery-card">
                     <RemoveCard
                       onClick={() =>
                         removeEntry(clue, () =>
@@ -623,6 +754,7 @@ const MysteriesPage = () => {
                     <Field
                       label={<Trans>Title</Trans>}
                       value={clue.title}
+                      autoFocus={focusedEntryId === clue.id}
                       onChange={(title) =>
                         updateSelected({
                           [key]: selected.data[key].map((item, i) =>
@@ -652,16 +784,18 @@ const MysteriesPage = () => {
               action={
                 <Button
                   size="sm"
-                  onClick={() =>
-                    updateSelected({ moments: [...selected.data.moments, blankMoment()] })
-                  }
+                  onClick={() => {
+                    const moment = blankMoment();
+                    setFocusedEntryId(moment.id);
+                    updateSelected({ moments: [...selected.data.moments, moment] });
+                  }}
                 >
                   <Plus className="size-4" />
                 </Button>
               }
             >
               {selected.data.moments.map((moment, index) => (
-                <div key={moment.id ?? `${moment.description}-${index}`} className="mystery-card">
+                <div key={moment.id ?? index} className="mystery-card">
                   <RemoveCard
                     onClick={() =>
                       removeEntry(moment, () =>
@@ -674,6 +808,7 @@ const MysteriesPage = () => {
                   <Field
                     label={<Trans>Description</Trans>}
                     value={moment.description}
+                    autoFocus={focusedEntryId === moment.id}
                     multi
                     onChange={(description) =>
                       updateSelected({
@@ -687,13 +822,13 @@ const MysteriesPage = () => {
               ))}
             </Section>
             <footer className="mystery-footer">
-              <Button variant="destructive" onClick={() => setConfirmation({ kind: "delete" })}>
+              <Button
+                variant="dark"
+                onClick={() => setConfirmation({ kind: "delete", title: selected.title.trim() })}
+              >
                 <Trash2 className="size-4" />
                 <Trans>Delete</Trans>
               </Button>
-              <p>
-                <Trans>Autosaves are kept separately from your manual versions.</Trans>
-              </p>
             </footer>
           </article>
         ) : (
@@ -712,25 +847,29 @@ const MysteriesPage = () => {
             <Trans>Version drawer</Trans>
           </h2>
           <p>
-            <Trans>Last 10 auto-saves and 10 manual saves are preserved.</Trans>
+            <Trans>Last 10 versions preserved.</Trans>
+            <br />
+            <Trans>Latest version is updated with auto-save.</Trans>
           </p>
-          {versions.map((version) => (
-            <Button
-              key={version.id}
-              variant="bare"
-              onClick={() => {
-                if (selected) setConfirmation({ kind: "restore", version });
-              }}
-            >
-              <strong>
-                {version.kind === "manual" ? <Trans>Manual save</Trans> : <Trans>Autosave</Trans>}
-              </strong>
-              <span>{new Date(version.savedAt).toLocaleString()}</span>
-              <small>
-                <Trans>Restore this version</Trans>
-              </small>
-            </Button>
-          ))}
+          {versions
+            .filter((version) => version.kind === "manual")
+            .map((version) => (
+              <Button
+                key={version.id}
+                variant="bare"
+                onClick={() => {
+                  if (selected) setConfirmation({ kind: "restore", version });
+                }}
+              >
+                <strong>
+                  <Trans>Manual save</Trans>
+                </strong>
+                <span>{new Date(version.savedAt).toLocaleString()}</span>
+                <small>
+                  <Trans>Restore this version</Trans>
+                </small>
+              </Button>
+            ))}
         </aside>
       </div>
       {confirmation ? (
@@ -742,6 +881,8 @@ const MysteriesPage = () => {
           title={
             confirmation.kind === "delete" ? (
               <Trans>Delete</Trans>
+            ) : confirmation.kind === "publish" ? (
+              <Trans>Publish mystery</Trans>
             ) : confirmation.kind === "remove-entry" ? (
               <Trans>Remove entry</Trans>
             ) : (
@@ -750,9 +891,24 @@ const MysteriesPage = () => {
           }
           description={
             confirmation.kind === "delete" ? (
-              <Trans>Remove this mystery from your private library?</Trans>
+              confirmation.title ? (
+                <Trans>Remove "{confirmation.title}" from your private library?</Trans>
+              ) : (
+                <Trans>Remove this mystery from your private library?</Trans>
+              )
+            ) : confirmation.kind === "publish" ? (
+              <Trans>
+                An admin must check and approve this mystery before it appears in the public
+                library. Review can take up to a week.
+              </Trans>
             ) : confirmation.kind === "remove-entry" ? (
-              <Trans>Remove this entry? Any information entered here will be lost.</Trans>
+              confirmation.title ? (
+                <Trans>
+                  Remove "{confirmation.title}"? Any information entered here will be lost.
+                </Trans>
+              ) : (
+                <Trans>Remove this entry? Any information entered here will be lost.</Trans>
+              )
             ) : (
               <Trans>
                 Restore this saved version? Your current unsaved changes will be replaced.
@@ -762,6 +918,8 @@ const MysteriesPage = () => {
           confirmLabel={
             confirmation.kind === "delete" ? (
               <Trans>Delete</Trans>
+            ) : confirmation.kind === "publish" ? (
+              <Trans>Submit for approval</Trans>
             ) : confirmation.kind === "remove-entry" ? (
               <Trans>Remove</Trans>
             ) : (
@@ -774,22 +932,23 @@ const MysteriesPage = () => {
               void deleteMystery();
               return;
             }
+            if (confirmation.kind === "publish") {
+              setConfirmation(null);
+              void publish();
+              return;
+            }
             if (confirmation.kind === "remove-entry") {
               confirmation.onConfirm();
               setConfirmation(null);
               return;
             }
-            if (selected) {
-              setSelected({
-                ...selected,
-                title: confirmation.version.title,
-                data: confirmation.version.data,
-              });
-            }
+            void restoreVersion(confirmation.version);
             setConfirmation(null);
           }}
           onCancel={() => setConfirmation(null)}
-          tone={confirmation.kind === "restore" ? "warning" : "danger"}
+          tone={
+            confirmation.kind === "restore" || confirmation.kind === "publish" ? "warning" : "dark"
+          }
         />
       ) : null}
     </main>

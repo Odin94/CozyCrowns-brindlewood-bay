@@ -280,6 +280,52 @@ body {
   min-height: 4.5rem;
   resize: vertical;
 }
+.mystery-number-input {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 2.35rem;
+  overflow: hidden;
+  border-bottom: 1px solid hsl(280 26% 40%);
+  background: hsl(275 48% 98% / 0.6);
+  box-shadow: inset 0 1px hsl(0 0% 100% / 0.55);
+}
+.mystery-field .mystery-number-input input {
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+.mystery-number-input input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+.mystery-number-input input[type="number"]::-webkit-inner-spin-button,
+.mystery-number-input input[type="number"]::-webkit-outer-spin-button {
+  margin: 0;
+  appearance: none;
+}
+.mystery-number-input__controls {
+  display: grid;
+  grid-template-rows: 1fr 1fr;
+  gap: 1px;
+  padding: 0.2rem;
+  background: hsl(280 30% 29%);
+}
+.mystery-number-input__controls button {
+  min-width: 0;
+  height: 1.15rem;
+  padding: 0;
+  border-radius: 0.2rem;
+  color: hsl(280 60% 96%);
+  box-shadow: none;
+}
+.mystery-number-input__controls button:hover {
+  background: hsl(280 36% 19%);
+}
+.mystery-number-input__controls svg {
+  width: 0.9rem;
+  height: 0.9rem;
+}
 .mystery-meta-grid {
   display: grid;
   grid-template-columns: 9rem 1fr;

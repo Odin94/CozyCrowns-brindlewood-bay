@@ -24,7 +24,7 @@ export const mysteryDataSchema = z.object({
   title: title.default("Untitled Mystery"),
   intro: text,
   establishingQuestions: z.array(text).max(30).optional().default([]),
-  complexity: z.number().int().min(1).max(12).optional().default(4),
+  complexity: z.number().nonnegative().optional().default(6),
   locations: z.array(locationSchema).max(100).optional().default([]),
   suspects: z.array(suspectSchema).max(100).optional().default([]),
   clues: z.array(clueSchema).max(200).optional().default([]),
