@@ -1,15 +1,16 @@
 import { useCharacterStore } from "@/lib/character_store";
 import { toPersistedCharacter } from "@/lib/character_document";
-import { api } from "@/utils/api";
+import { characterCoordinator } from "@/lib/character_sync_runtime";
 import { t } from "@lingui/core/macro";
 import { useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useAuth } from "./useAuth";
 
 export const useCharacterSave = () => {
-  const { user, isAuthenticated } = useAuth();
-  const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
-  const latestVersionByCharacter = useRef(new Map<string, number>());
+  const { user, isAuthenticated, loading } = useAuth();
+  if (!loading) characterCoordinator.setOwner(user?.id);
+  const currentOwner = useRef(user?.id);
+  currentOwner.current = user?.id;
 
   const saveCurrentCharacter = useCallback(async (): Promise<boolean> => {
     if (!isAuthenticated || !user) {
@@ -28,27 +29,14 @@ export const useCharacterSave = () => {
       name: currentCharacter.name,
       data: toPersistedCharacter(currentCharacter),
     };
-    const characterKey = currentCharacter.id ?? `local:${user.id}:${currentCharacter.localId}`;
-
     const task = async (): Promise<boolean> => {
       try {
-        const latestCharacter = characterStore.record(localId);
-        if (!latestCharacter || (!latestCharacter.name.trim() && !latestCharacter.id)) return true;
-        const version =
-          latestVersionByCharacter.current.get(characterKey) ?? latestCharacter?.version ?? 1;
-
-        const result = latestCharacter?.id
-          ? await api.updateCharacter(latestCharacter.id, { ...characterPayload, version })
-          : await api.createCharacter({ ...characterPayload, version });
-        characterStore.updateRemoteVersion(
+        return await characterCoordinator.save(
+          user.id,
           localId,
-          result.id,
-          result.version,
-          JSON.stringify(characterPayload.data),
+          characterPayload,
+          () => currentOwner.current === user.id,
         );
-        latestVersionByCharacter.current.set(characterKey, result.version);
-
-        return true;
       } catch (error) {
         console.error("Failed to save character:", error);
         if ((error as Error & { status?: number }).status === 409) {
@@ -63,8 +51,7 @@ export const useCharacterSave = () => {
       }
     };
 
-    saveQueue.current = saveQueue.current.catch(() => false).then(task);
-    return saveQueue.current;
+    return task();
   }, [isAuthenticated, user]);
 
   return {

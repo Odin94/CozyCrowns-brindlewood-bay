@@ -25,6 +25,7 @@ type MainMenuViewProps = {
   onLoadFromJSON: () => void;
   onResetClick: () => void;
   onCreditsClick: () => void;
+  onRecoveryClick: () => void;
   onMeClick: () => void;
   onLanguageChange: (locale: string) => void;
   isAuthenticated?: boolean;
@@ -37,6 +38,7 @@ export const MainMenuView = ({
   onLoadFromJSON,
   onResetClick,
   onCreditsClick,
+  onRecoveryClick,
   onMeClick,
   onLanguageChange,
   isAuthenticated,
@@ -91,6 +93,9 @@ export const MainMenuView = ({
         <Button onClick={onLoadFromJSON} variant="dark" className="w-full dark-ring">
           <Upload className="w-4 h-4 mr-2" />
           <Trans>Load from save file</Trans>
+        </Button>
+        <Button onClick={onRecoveryClick} variant="dark" className="w-full dark-ring">
+          <Trans>Recently deleted Mavens</Trans>
         </Button>
         <Button onClick={onResetClick} variant="destructive" className="w-full dark-ring">
           <Trash2 className="w-4 h-4 mr-2" />

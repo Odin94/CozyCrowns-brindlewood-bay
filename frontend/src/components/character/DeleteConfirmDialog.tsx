@@ -23,8 +23,8 @@ const DeleteConfirmDialog = ({
         title={<Trans>Delete "{characterName}"</Trans>}
         description={
           <Trans>
-            Are you sure you want to delete "{characterName}"? This will clear all data and cannot
-            be undone.
+            Delete "{characterName}"? A local recovery copy will remain available in the menu for 30
+            days.
           </Trans>
         }
         notice={

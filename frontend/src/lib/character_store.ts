@@ -8,7 +8,11 @@ import {
   type CharacterData,
   type CozyItem,
 } from "@/lib/character_document";
-import { createCharacterStorage } from "@/lib/character_storage";
+import {
+  createCharacterStorage,
+  MAX_RECOVERABLE_CHARACTERS,
+  RECOVERY_RETENTION_MS,
+} from "@/lib/character_storage";
 import { toPersistedCharacter } from "@/lib/character_document";
 import { toast } from "sonner";
 import { t } from "@lingui/core/macro";
@@ -21,6 +25,7 @@ export type CharacterRecord = CharacterData & {
   id?: string;
   version?: number;
   remoteContent?: string;
+  creationId?: string;
 };
 
 export type BackendCharacterData = Omit<CharacterData, "schemaVersion">;
@@ -47,18 +52,23 @@ const newRecord = (): CharacterRecord => ({
 });
 const recordFrom = (
   input: unknown,
-  metadata: Pick<CharacterRecord, "localId" | "id" | "version" | "remoteContent">,
+  metadata: Pick<CharacterRecord, "localId" | "id" | "version" | "remoteContent" | "creationId">,
 ) => ({
   ...normalizeCharacter(input),
   ...metadata,
 });
 
+export type ArchivedCharacter = { record: CharacterRecord; deletedAt: number };
+
 export type CharacterState = {
+  archivedCharacters: ArchivedCharacter[];
+  restoreArchived: (localId: string) => void;
   characters: CharacterRecord[];
   selectedCharacterId: string;
 
   select: (localId: string) => void;
   create: () => string;
+  ensureCreationId: (localId: string) => string | undefined;
   remove: (localId: string) => void;
   updateSelected: (change: Partial<CharacterData>) => void;
   selected: () => CharacterRecord;
@@ -120,6 +130,20 @@ export const useCharacterStore = create<CharacterState>()(
       const initial = newRecord();
       return {
         characters: [initial],
+        archivedCharacters: [],
+        restoreArchived: (localId) => {
+          const state = get();
+          const archive = state.archivedCharacters.find(
+            (entry) => entry.record.localId === localId,
+          );
+          if (!archive) return;
+          const restored = recordFrom(archive.record, { localId: newLocalId() });
+          set({
+            characters: [...state.characters, restored],
+            selectedCharacterId: restored.localId,
+            archivedCharacters: state.archivedCharacters.filter((entry) => entry !== archive),
+          });
+        },
         selectedCharacterId: initial.localId,
         select: (localId) => {
           if (get().characters.some((character) => character.localId === localId)) {
@@ -134,6 +158,18 @@ export const useCharacterStore = create<CharacterState>()(
           }));
           return character.localId;
         },
+        ensureCreationId: (localId) => {
+          const record = get().record(localId);
+          if (!record) return undefined;
+          if (record.creationId) return record.creationId;
+          const creationId = crypto.randomUUID();
+          set((state) => ({
+            characters: state.characters.map((character) =>
+              character.localId === localId ? { ...character, creationId } : character,
+            ),
+          }));
+          return creationId;
+        },
         remove: (localId) => {
           const state = get();
           const index = state.characters.findIndex((character) => character.localId === localId);
@@ -142,7 +178,14 @@ export const useCharacterStore = create<CharacterState>()(
           const next = characters[Math.min(index, characters.length - 1)] ?? newRecord();
           set({
             characters: characters.length > 0 ? characters : [next],
-            selectedCharacterId: next.localId,
+            selectedCharacterId:
+              state.selectedCharacterId === localId ? next.localId : state.selectedCharacterId,
+            archivedCharacters: [
+              { record: state.characters[index], deletedAt: Date.now() },
+              ...state.archivedCharacters,
+            ]
+              .filter((entry) => entry.deletedAt >= Date.now() - RECOVERY_RETENTION_MS)
+              .slice(0, MAX_RECOVERABLE_CHARACTERS),
           });
         },
         updateSelected,
@@ -174,6 +217,7 @@ export const useCharacterStore = create<CharacterState>()(
               delete localCharacter.id;
               delete localCharacter.version;
               delete localCharacter.remoteContent;
+              delete localCharacter.creationId;
               return localCharacter;
             }),
           }));
@@ -209,6 +253,7 @@ export const useCharacterStore = create<CharacterState>()(
                 delete recovery.id;
                 delete recovery.version;
                 delete recovery.remoteContent;
+                delete recovery.creationId;
                 characters.push(recovery);
                 if (state.selectedCharacterId === local.localId)
                   selectedCharacterId = recovery.localId;
@@ -294,6 +339,7 @@ export const useCharacterStore = create<CharacterState>()(
                 id: character.id,
                 version: character.version,
                 remoteContent: character.remoteContent,
+                creationId: character.creationId,
               }),
             )
           : current.characters;
@@ -302,7 +348,17 @@ export const useCharacterStore = create<CharacterState>()(
         )
           ? state.selectedCharacterId!
           : characters[0].localId;
-        return { ...current, characters, selectedCharacterId };
+        const archivedCharacters = (state.archivedCharacters ?? [])
+          .filter(
+            (entry) =>
+              entry && entry.record && entry.deletedAt >= Date.now() - RECOVERY_RETENTION_MS,
+          )
+          .slice(0, MAX_RECOVERABLE_CHARACTERS)
+          .map((entry) => ({
+            deletedAt: entry.deletedAt,
+            record: recordFrom(entry.record, { localId: entry.record.localId }),
+          }));
+        return { ...current, characters, selectedCharacterId, archivedCharacters };
       },
     },
   ),

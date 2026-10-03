@@ -126,3 +126,29 @@ history so discoveries and theory-board connections are retained.
 PDF exports use Helvetica for supported text and lazily fetch the licensed Noto
 CJK font only for Unicode text that requires it. The Unicode font is embedded in full because fontkit subsets dropped composite CJK glyphs in common readers. This increases Unicode exports to approximately 6.7 MB; Latin exports keep their original size. Unsupported symbols show a warning, with original text retained in the
 editable PDF form fields.
+
+
+### Recovery and deletion follow-up guarantees
+
+Mystery drafts are scoped by owner and document ID. Missing unscoped legacy
+IDs are never automatically uploaded to a different account. Pending conflicting
+drafts remain visible with retry/export controls. Stable recovery request IDs
+make recovery creation idempotent, including Strict Mode and reload retries.
+Obsolete account loads cannot select or overwrite the current account's drafts.
+
+Maven save/delete operations share one per-owner document queue. Deletion intents
+persist before waiting for a create acknowledgement; orphaned late creates are
+removed or retained as a pending cloud deletion. Both account generation and
+live bearer identity gate queued mutations and completion. An idempotent create
+retry compares the actual accepted baseline before updating a newer local draft.
+
+Deleted payload recovery is bounded to the latest 20 documents for 30 days and
+available through the menu. Compaction prunes older payloads while retaining
+small identity tombstones. A stale tab editing a pruned deletion contributes a
+full anonymous recovery snapshot rather than resurrecting the cloud identity.
+Invalid checkpoints are quarantined without blocking valid journal replay.
+
+Legacy source entries use content-derived identities until a source save
+persists explicit IDs. Ambiguous idless duplicate deletions conservatively keep
+prior progress and create a new source identity. Category changes update the
+same Book Club clue and theory node in place.

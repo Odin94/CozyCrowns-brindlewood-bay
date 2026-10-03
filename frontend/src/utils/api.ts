@@ -1,7 +1,7 @@
 import { env } from "../config/env.ts";
+import { createTokenStorage } from "../lib/auth_token";
 
 const API_URL = env.VITE_API_URL;
-const TOKEN_STORAGE_KEY = "auth_token";
 
 type User = {
   id: string;
@@ -195,19 +195,16 @@ export type TheoryBoard = {
   edges: TheoryEdge[];
 };
 
-export const tokenStorage = {
-  get: (): string | null => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
-  },
-  set: (token: string): void => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
-  },
-  remove: (): void => {
-    if (typeof window === "undefined") return;
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
-  },
+export const tokenStorage = createTokenStorage(localStorage);
+
+const fetchWithSession = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const epoch = tokenStorage.sessionKey();
+  const authorization = new Headers(init?.headers).get("Authorization");
+  const requestToken = authorization?.startsWith("Bearer ") ? authorization.slice(7) : null;
+  const response = await fetch(input, init);
+  const renewed = response.headers.get("X-New-Token");
+  if (renewed) tokenStorage.rotate(renewed, requestToken, epoch);
+  return response;
 };
 
 const getAuthHeaders = ({
@@ -238,6 +235,7 @@ export const connectBookClubUpdates = (
   const token = tokenStorage.get();
   if (!token) return null;
 
+  const epoch = tokenStorage.sessionKey();
   const socket = new WebSocket(getBookClubWebSocketUrl());
   const heartbeat = window.setInterval(() => {
     if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: "heartbeat" }));
@@ -250,7 +248,7 @@ export const connectBookClubUpdates = (
     try {
       const message = JSON.parse(String(event.data));
       if (message.type === "ready" && typeof message.token === "string") {
-        tokenStorage.set(message.token);
+        tokenStorage.rotate(message.token, token, epoch);
       }
       if (message.type === "book-clubs-updated") onUpdate();
       if (message.type === "book-club-note-cursor") onMessage?.(message);
@@ -264,11 +262,6 @@ export const connectBookClubUpdates = (
 };
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
-  const newToken = response.headers.get("X-New-Token");
-  if (newToken) {
-    tokenStorage.set(newToken);
-  }
-
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
     try {
@@ -296,17 +289,26 @@ const handleResponse = async <T>(response: Response): Promise<T> => {
 
 export const api = {
   loginLocally: async (): Promise<AuthCallbackResponse> => {
-    const response = await fetch(`${API_URL}/auth/local-login`, {
+    const response = await fetchWithSession(`${API_URL}/auth/local-login`, {
       method: "POST",
     });
     return handleResponse<AuthCallbackResponse>(response);
   },
 
   getCurrentUser: async (): Promise<User & { token?: string }> => {
-    const response = await fetch(`${API_URL}/auth/me`, {
+    const epoch = tokenStorage.sessionKey();
+    const token = tokenStorage.get();
+    const response = await fetchWithSession(`${API_URL}/auth/me`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
-    return handleResponse<User & { token?: string }>(response);
+    // An obsolete response must not replace the new login's token or user.
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
+    const data = await handleResponse<User & { token?: string }>(response);
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
+    if (data.token) tokenStorage.rotate(data.token, token, epoch);
+    return data;
   },
 
   handleAuthCallback: async (code: string, state?: string): Promise<AuthCallbackResponse> => {
@@ -314,7 +316,7 @@ export const api = {
     if (state) {
       params.append("state", state);
     }
-    const response = await fetch(`${API_URL}/auth/callback?${params.toString()}`, {
+    const response = await fetchWithSession(`${API_URL}/auth/callback?${params.toString()}`, {
       credentials: "include",
     });
     const data = await handleResponse<AuthCallbackResponse>(response);
@@ -325,7 +327,7 @@ export const api = {
   },
 
   logout: async (): Promise<LogoutResponse> => {
-    const response = await fetch(`${API_URL}/auth/logout`, {
+    const response = await fetchWithSession(`${API_URL}/auth/logout`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     const data = await handleResponse<LogoutResponse>(response);
@@ -334,7 +336,7 @@ export const api = {
   },
 
   updateUserProfile: async (data: UpdateUserInput): Promise<User> => {
-    const response = await fetch(`${API_URL}/auth/me`, {
+    const response = await fetchWithSession(`${API_URL}/auth/me`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -354,13 +356,14 @@ export const api = {
       owned: boolean;
     }>;
   }> => {
-    const response = await fetch(`${API_URL}/characters`, {
+    const response = await fetchWithSession(`${API_URL}/characters`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
   },
 
   createCharacter: async (data: {
+    creationId?: string;
     name: string;
     data: any;
     version?: number;
@@ -373,7 +376,7 @@ export const api = {
     createdAt: Date;
     updatedAt: Date;
   }> => {
-    const response = await fetch(`${API_URL}/characters`, {
+    const response = await fetchWithSession(`${API_URL}/characters`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -393,7 +396,7 @@ export const api = {
     createdAt: Date;
     updatedAt: Date;
   }> => {
-    const response = await fetch(`${API_URL}/characters/${id}`, {
+    const response = await fetchWithSession(`${API_URL}/characters/${id}`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -402,7 +405,7 @@ export const api = {
   },
 
   deleteCharacter: async (id: string): Promise<{ success: boolean }> => {
-    const response = await fetch(`${API_URL}/characters/${id}`, {
+    const response = await fetchWithSession(`${API_URL}/characters/${id}`, {
       method: "DELETE",
       headers: getAuthHeaders({ includeContentType: false }),
     });
@@ -419,7 +422,7 @@ export const api = {
       updatedAt: Date;
     }>;
   }> => {
-    const response = await fetch(`${API_URL}/dark-conspiracies`, {
+    const response = await fetchWithSession(`${API_URL}/dark-conspiracies`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
@@ -437,7 +440,7 @@ export const api = {
     createdAt: Date;
     updatedAt: Date;
   }> => {
-    const response = await fetch(`${API_URL}/dark-conspiracies`, {
+    const response = await fetchWithSession(`${API_URL}/dark-conspiracies`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -456,7 +459,7 @@ export const api = {
     createdAt: Date;
     updatedAt: Date;
   }> => {
-    const response = await fetch(`${API_URL}/dark-conspiracies/${id}`, {
+    const response = await fetchWithSession(`${API_URL}/dark-conspiracies/${id}`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -465,14 +468,18 @@ export const api = {
   },
 
   getMysteries: async (): Promise<{ mysteries: Mystery[] }> => {
-    const response = await fetch(`${API_URL}/mysteries`, {
+    const response = await fetchWithSession(`${API_URL}/mysteries`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
   },
 
-  createMystery: async (data: { title: string; data: MysteryData }): Promise<Mystery> => {
-    const response = await fetch(`${API_URL}/mysteries`, {
+  createMystery: async (data: {
+    title: string;
+    data: MysteryData;
+    recoveryId?: string;
+  }): Promise<Mystery> => {
+    const response = await fetchWithSession(`${API_URL}/mysteries`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -484,7 +491,7 @@ export const api = {
     id: string,
     data: { title: string; data: MysteryData; version: number; saveKind: "auto" | "manual" },
   ): Promise<Mystery> => {
-    const response = await fetch(`${API_URL}/mysteries/${id}`, {
+    const response = await fetchWithSession(`${API_URL}/mysteries/${id}`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -493,7 +500,7 @@ export const api = {
   },
 
   deleteMystery: async (id: string): Promise<{ success: boolean }> => {
-    const response = await fetch(`${API_URL}/mysteries/${id}`, {
+    const response = await fetchWithSession(`${API_URL}/mysteries/${id}`, {
       method: "DELETE",
       headers: getAuthHeaders({ includeContentType: false }),
     });
@@ -501,7 +508,7 @@ export const api = {
   },
 
   restoreMystery: async (id: string): Promise<Mystery> => {
-    const response = await fetch(`${API_URL}/mysteries/${id}/restore`, {
+    const response = await fetchWithSession(`${API_URL}/mysteries/${id}/restore`, {
       method: "POST",
       headers: getAuthHeaders({ includeContentType: false }),
     });
@@ -509,7 +516,7 @@ export const api = {
   },
 
   getMysteryVersions: async (id: string): Promise<{ versions: MysteryVersion[] }> => {
-    const response = await fetch(`${API_URL}/mysteries/${id}/versions`, {
+    const response = await fetchWithSession(`${API_URL}/mysteries/${id}/versions`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
@@ -518,7 +525,7 @@ export const api = {
   publishMystery: async (
     id: string,
   ): Promise<{ id: string; status: string; submittedAt: string }> => {
-    const response = await fetch(`${API_URL}/mysteries/${id}/publish`, {
+    const response = await fetchWithSession(`${API_URL}/mysteries/${id}/publish`, {
       method: "POST",
       headers: getAuthHeaders({ includeContentType: false }),
     });
@@ -526,21 +533,21 @@ export const api = {
   },
 
   getLibrarySummaries: async (): Promise<{ mysteries: LibraryMysterySummary[] }> => {
-    const response = await fetch(`${API_URL}/library?summary=true`, {
+    const response = await fetchWithSession(`${API_URL}/library?summary=true`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
   },
 
   getLibrary: async (): Promise<{ mysteries: PublishedMystery[] }> => {
-    const response = await fetch(`${API_URL}/library`, {
+    const response = await fetchWithSession(`${API_URL}/library`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
   },
 
   copyLibraryMystery: async (id: string): Promise<Mystery> => {
-    const response = await fetch(`${API_URL}/library/${id}/copy`, {
+    const response = await fetchWithSession(`${API_URL}/library/${id}/copy`, {
       method: "POST",
       headers: getAuthHeaders({ includeContentType: false }),
     });
@@ -548,29 +555,32 @@ export const api = {
   },
 
   getPendingPublishedMysteries: async (): Promise<{ mysteries: PublishedMystery[] }> => {
-    const response = await fetch(`${API_URL}/superadmin/published-mysteries`, {
+    const response = await fetchWithSession(`${API_URL}/superadmin/published-mysteries`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
   },
 
   approvePublishedMystery: async (id: string): Promise<{ id: string; status: string }> => {
-    const response = await fetch(`${API_URL}/superadmin/published-mysteries/${id}/approve`, {
-      method: "PUT",
-      headers: getAuthHeaders({ includeContentType: false }),
-    });
+    const response = await fetchWithSession(
+      `${API_URL}/superadmin/published-mysteries/${id}/approve`,
+      {
+        method: "PUT",
+        headers: getAuthHeaders({ includeContentType: false }),
+      },
+    );
     return handleResponse(response);
   },
 
   getBookClubs: async (): Promise<{ clubs: BookClub[]; invitations: BookClubInvitation[] }> => {
-    const response = await fetch(`${API_URL}/book-clubs`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
   },
 
   createBookClub: async (name: string): Promise<BookClub> => {
-    const response = await fetch(`${API_URL}/book-clubs`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ name }),
@@ -579,7 +589,7 @@ export const api = {
   },
 
   renameBookClub: async (bookClubId: string, name: string): Promise<BookClub> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify({ name }),
@@ -588,7 +598,7 @@ export const api = {
   },
 
   deleteBookClub: async (bookClubId: string): Promise<{ success: boolean }> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}`, {
       method: "DELETE",
       headers: getAuthHeaders({ includeContentType: false }),
     });
@@ -596,7 +606,7 @@ export const api = {
   },
 
   restoreBookClub: async (bookClubId: string): Promise<BookClub> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/restore`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}/restore`, {
       method: "POST",
       headers: getAuthHeaders({ includeContentType: false }),
     });
@@ -609,7 +619,7 @@ export const api = {
     shared: { content: string; version: number };
     private: { content: string; version: number };
   }> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/notes`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}/notes`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);
@@ -619,7 +629,7 @@ export const api = {
     bookClubId: string,
     data: { kind: "shared" | "private"; content: string; baseVersion: number },
   ): Promise<{ content: string; version: number }> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/notes`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}/notes`, {
       method: "PUT",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -628,7 +638,7 @@ export const api = {
   },
 
   inviteToBookClub: async (bookClubId: string, nickname: string): Promise<{ success: boolean }> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/invitations`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}/invitations`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ nickname }),
@@ -640,7 +650,7 @@ export const api = {
     bookClubId: string,
     accept: boolean,
   ): Promise<BookClub | { success: boolean }> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/invitations${accept ? "/accept" : ""}`,
       {
         method: accept ? "POST" : "DELETE",
@@ -655,7 +665,7 @@ export const api = {
     userId: string,
     isGameMaster: boolean,
   ): Promise<BookClub> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/members/${userId}/game-master`,
       {
         method: "PUT",
@@ -667,7 +677,7 @@ export const api = {
   },
 
   assignBookClubCharacter: async (bookClubId: string, characterId: string): Promise<BookClub> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/characters`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}/characters`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ characterId }),
@@ -679,10 +689,13 @@ export const api = {
     bookClubId: string,
     characterId: string,
   ): Promise<{ success: boolean }> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/characters/${characterId}`, {
-      method: "DELETE",
-      headers: getAuthHeaders({ includeContentType: false }),
-    });
+    const response = await fetchWithSession(
+      `${API_URL}/book-clubs/${bookClubId}/characters/${characterId}`,
+      {
+        method: "DELETE",
+        headers: getAuthHeaders({ includeContentType: false }),
+      },
+    );
     return handleResponse(response);
   },
 
@@ -690,7 +703,7 @@ export const api = {
     bookClubId: string,
     data: { label: string; dice: string; result: string; characterId?: string | null },
   ) => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/rolls`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}/rolls`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify(data),
@@ -705,7 +718,7 @@ export const api = {
     clues: string[],
     voidClues: string[] = [],
   ): Promise<BookClub> => {
-    const response = await fetch(`${API_URL}/book-clubs/${bookClubId}/mysteries`, {
+    const response = await fetchWithSession(`${API_URL}/book-clubs/${bookClubId}/mysteries`, {
       method: "POST",
       headers: getAuthHeaders(),
       body: JSON.stringify({ sourceMysteryId, name, clues, voidClues }),
@@ -714,7 +727,7 @@ export const api = {
   },
 
   activateBookClubMystery: async (bookClubId: string, mysteryId: string): Promise<BookClub> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/activate`,
       {
         method: "PUT",
@@ -730,7 +743,7 @@ export const api = {
     text: string,
     isVoid: boolean,
   ): Promise<BookClub> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/clues`,
       {
         method: "POST",
@@ -747,7 +760,7 @@ export const api = {
     clueId: string,
     data: { checked?: boolean; text?: string },
   ): Promise<BookClub> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/clues/${clueId}`,
       {
         method: "PUT",
@@ -759,7 +772,7 @@ export const api = {
   },
 
   getBookClubTheory: async (bookClubId: string, mysteryId: string): Promise<TheoryBoard> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize`,
       { headers: getAuthHeaders({ includeContentType: false }) },
     );
@@ -778,7 +791,7 @@ export const api = {
       y?: number;
     },
   ): Promise<TheoryNode> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes`,
       { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(data) },
     );
@@ -786,7 +799,7 @@ export const api = {
   },
 
   lockBookClubTheoryNode: async (bookClubId: string, mysteryId: string, nodeId: string) => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}/lock`,
       { method: "PUT", headers: getAuthHeaders({ includeContentType: false }) },
     );
@@ -794,7 +807,7 @@ export const api = {
   },
 
   releaseBookClubTheoryNode: async (bookClubId: string, mysteryId: string, nodeId: string) => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}/lock`,
       { method: "DELETE", headers: getAuthHeaders({ includeContentType: false }) },
     );
@@ -814,7 +827,7 @@ export const api = {
       y?: number;
     },
   ): Promise<TheoryNode> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}`,
       { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify(data) },
     );
@@ -826,7 +839,7 @@ export const api = {
     mysteryId: string,
     nodes: Array<Pick<TheoryNode, "id" | "version" | "x" | "y">>,
   ): Promise<{ nodes: TheoryNodePosition[] }> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/positions`,
       { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify({ nodes }) },
     );
@@ -839,7 +852,7 @@ export const api = {
     nodeId: string,
     version: number,
   ) => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/nodes/${nodeId}`,
       { method: "DELETE", headers: getAuthHeaders(), body: JSON.stringify({ version }) },
     );
@@ -851,7 +864,7 @@ export const api = {
     mysteryId: string,
     data: { sourceNodeId: string; targetNodeId: string; label?: string },
   ): Promise<TheoryEdge> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/edges`,
       { method: "POST", headers: getAuthHeaders(), body: JSON.stringify(data) },
     );
@@ -864,7 +877,7 @@ export const api = {
     edgeId: string,
     data: { version: number; label: string },
   ): Promise<TheoryEdge> => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/edges/${edgeId}`,
       { method: "PUT", headers: getAuthHeaders(), body: JSON.stringify(data) },
     );
@@ -877,7 +890,7 @@ export const api = {
     edgeId: string,
     version: number,
   ) => {
-    const response = await fetch(
+    const response = await fetchWithSession(
       `${API_URL}/book-clubs/${bookClubId}/mysteries/${mysteryId}/theorize/edges/${edgeId}`,
       { method: "DELETE", headers: getAuthHeaders(), body: JSON.stringify({ version }) },
     );

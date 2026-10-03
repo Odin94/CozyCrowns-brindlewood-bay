@@ -33,6 +33,7 @@ export const mysteryDataSchema = z.object({
 });
 
 export const createMysterySchema = z.object({
+  recoveryId: z.string().uuid().optional(),
   title: z.string().trim().min(1).max(255),
   data: mysteryDataSchema,
 });

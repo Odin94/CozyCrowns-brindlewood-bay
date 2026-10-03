@@ -1,3 +1,13 @@
+import {
+  loadMysteryDrafts,
+  persistMysteryDraft,
+  storedMysteryDraft,
+  recoverMysteryDraft,
+  completeMysteryRecovery,
+  forgetMysteryDraft,
+  isDirtyMysteryDraft,
+  type MysteryDraft,
+} from "@/lib/mystery_drafts";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
@@ -25,7 +35,6 @@ import type React from "react";
 import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
-const draftKey = "cozycrowns-mystery-draft";
 const defaultMystery = (): MysteryData => ({
   schemaVersion: 1,
   title: t`Untitled Mystery`,
@@ -203,7 +212,14 @@ const RemoveCard = ({ onClick }: { onClick: () => void }) => {
 };
 
 const MysteriesPage = () => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
+  const ownerId = user?.id;
+  const accountRef = useRef(ownerId);
+  accountRef.current = ownerId;
+  const loadSequence = useRef(0);
+  const selectedOwner = useRef<string | undefined>(undefined);
+  const [pendingDrafts, setPendingDrafts] = useState<MysteryDraft[]>([]);
+  const [recoveringDrafts, setRecoveringDrafts] = useState<Set<string>>(new Set());
   const bookClubId = new URLSearchParams(window.location.search).get("bookClubId");
   const bookClubPath = bookClubId ? `/book-clubs/${encodeURIComponent(bookClubId)}` : null;
   const [mysteries, setMysteries] = useState<Mystery[]>([]);
@@ -225,16 +241,78 @@ const MysteriesPage = () => {
   const selectedRef = useRef<Mystery | null>(null);
   const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
 
-  const choose = useCallback((mystery: Mystery, confirmed = true) => {
-    const isAlreadySelected = selectedRef.current?.id === mystery.id;
-    if (confirmed) lastSavedById.current.set(mystery.id, contentSnapshot(mystery));
-    latestVersionById.current.set(mystery.id, mystery.version);
-    selectedRef.current = mystery;
-    setFocusedEntryId(null);
-    setComplexityInput(String(mystery.data.complexity));
-    if (!isAlreadySelected) setVersions([]);
-    setSelected(mystery);
-  }, []);
+  const choose = useCallback(
+    (mystery: Mystery, confirmed = true) => {
+      const isAlreadySelected = selectedRef.current?.id === mystery.id;
+      let chosen = mystery;
+      if (confirmed) {
+        lastSavedById.current.set(mystery.id, contentSnapshot(mystery));
+        const stored = ownerId ? storedMysteryDraft(localStorage, ownerId, mystery.id) : undefined;
+        if (stored && isDirtyMysteryDraft(stored) && stored.mystery.version === mystery.version)
+          chosen = stored.mystery;
+      }
+      latestVersionById.current.set(mystery.id, mystery.version);
+      selectedOwner.current = ownerId;
+      selectedRef.current = chosen;
+      setFocusedEntryId(null);
+      setComplexityInput(String(chosen.data.complexity));
+      if (!isAlreadySelected) setVersions([]);
+      setSelected(chosen);
+    },
+    [ownerId],
+  );
+
+  const retryRecovery = useCallback(
+    async (draft: MysteryDraft, sequence = loadSequence.current) => {
+      if (!ownerId || draft.ownerId !== ownerId || accountRef.current !== ownerId) return;
+      const initialSelection = selectedRef.current?.id;
+      const initialContent = selectedRef.current ? contentSnapshot(selectedRef.current) : undefined;
+      setRecoveringDrafts((current) => new Set([...current, draft.mystery.id]));
+      try {
+        const recoveredName = draft.mystery.title.slice(0, 220);
+        const title = t`${recoveredName} (Recovered draft)`;
+        const recovered = await recoverMysteryDraft(
+          localStorage,
+          ownerId,
+          draft,
+          title,
+          api.createMystery,
+        );
+        const completed = completeMysteryRecovery(localStorage, ownerId, draft, recovered);
+        if (accountRef.current !== ownerId || sequence !== loadSequence.current) return;
+        setPendingDrafts((current) => {
+          const remaining = current.filter((entry) => entry.mystery.id !== draft.mystery.id);
+          const latest = storedMysteryDraft(localStorage, ownerId, draft.mystery.id);
+          return !completed && latest ? [...remaining, latest] : remaining;
+        });
+        setMysteries((current) => [
+          recovered,
+          ...current.filter((entry) => entry.id !== recovered.id),
+        ]);
+        if (
+          completed &&
+          selectedRef.current?.id === initialSelection &&
+          (!selectedRef.current || contentSnapshot(selectedRef.current) === initialContent)
+        )
+          choose(recovered);
+        toast.success(t`Recovered your local mystery as a separate copy.`);
+      } catch (error) {
+        if (accountRef.current === ownerId && sequence === loadSequence.current)
+          toast.error(
+            t`Your local mystery draft is preserved. Retry recovery when the connection returns.`,
+          );
+        console.error("Could not recover mystery draft", error);
+      } finally {
+        if (accountRef.current === ownerId && sequence === loadSequence.current)
+          setRecoveringDrafts((current) => {
+            const next = new Set(current);
+            next.delete(draft.mystery.id);
+            return next;
+          });
+      }
+    },
+    [choose, ownerId],
+  );
 
   const refreshVersions = useCallback(async (id: string) => {
     try {
@@ -246,72 +324,74 @@ const MysteriesPage = () => {
   }, []);
 
   const load = useCallback(async () => {
+    if (!ownerId) return;
+    const sequence = ++loadSequence.current;
     try {
       const result = await api.getMysteries();
+      if (accountRef.current !== ownerId || sequence !== loadSequence.current) return;
       setMysteries(result.mysteries);
-      const savedDraft = localStorage.getItem(draftKey);
-      if (savedDraft) {
-        try {
-          const persisted = JSON.parse(savedDraft) as
-            | Mystery
-            | { mystery: Mystery; baseContent?: string; baseVersion?: number };
-          const draft = "mystery" in persisted ? persisted.mystery : persisted;
-          const canonical = result.mysteries.find((mystery) => mystery.id === draft.id);
-          const baseContent = "mystery" in persisted ? persisted.baseContent : undefined;
-          const dirty = baseContent
-            ? contentSnapshot(draft) !== baseContent
-            : !canonical || contentSnapshot(draft) !== contentSnapshot(canonical);
-          if (canonical && (!dirty || canonical.version === draft.version)) {
-            choose(canonical);
-            if (dirty) choose({ ...draft, version: canonical.version }, false);
-          } else if (dirty) {
-            // Preserve the only local copy before any network call or storage
-            // replacement. A newer remote document never absorbs this draft.
-            localStorage.setItem(`${draftKey}:recovery:${draft.id}`, JSON.stringify(persisted));
-            const recoveredName = draft.title.slice(0, 220);
-            const title = t`${recoveredName} (Recovered draft)`;
-            const recovered = await api.createMystery({ title, data: { ...draft.data, title } });
-            setMysteries((current) => [recovered, ...current]);
-            choose(recovered);
-            toast.success(t`Recovered your local mystery as a separate copy.`);
-          } else if (canonical) choose(canonical);
-        } catch (error) {
-          console.error("Could not recover mystery draft", error);
-          // Retain malformed or temporarily unavailable drafts for recovery.
-        }
-      }
-      if (result.mysteries[0] && !selectedRef.current) {
-        setComplexityInput(String(result.mysteries[0].data.complexity));
-        setSelected((current) => {
-          if (current) return current;
-          lastSavedById.current.set(result.mysteries[0].id, contentSnapshot(result.mysteries[0]));
-          latestVersionById.current.set(result.mysteries[0].id, result.mysteries[0].version);
-          selectedRef.current = result.mysteries[0];
-          return result.mysteries[0];
-        });
-      }
+      const stored = loadMysteryDrafts(
+        localStorage,
+        ownerId,
+        new Set(result.mysteries.map((mystery) => mystery.id)),
+      );
+      const pending = stored.drafts.filter((draft) => {
+        const canonical = result.mysteries.find((mystery) => mystery.id === draft.mystery.id);
+        return (
+          isDirtyMysteryDraft(draft) &&
+          (!canonical || contentSnapshot(draft.mystery) !== contentSnapshot(canonical)) &&
+          (!canonical || canonical.version !== draft.mystery.version)
+        );
+      });
+      setPendingDrafts(pending);
+      const preferred = stored.selected;
+      const canonical = result.mysteries.find((mystery) => mystery.id === preferred?.mystery.id);
+      if (canonical) {
+        choose(canonical);
+        if (
+          preferred &&
+          isDirtyMysteryDraft(preferred) &&
+          preferred.mystery.version === canonical.version
+        )
+          choose(preferred.mystery, false);
+      } else if (result.mysteries[0]) choose(result.mysteries[0]);
+      const retry = pending.find((draft) => draft.mystery.id === preferred?.mystery.id);
+      if (retry) await retryRecovery(retry, sequence);
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not load mysteries`);
+      if (accountRef.current === ownerId && sequence === loadSequence.current)
+        toast.error(error instanceof Error ? error.message : t`Could not load mysteries`);
     } finally {
-      setLoaded(true);
+      if (accountRef.current === ownerId && sequence === loadSequence.current) setLoaded(true);
     }
-  }, [choose]);
+  }, [choose, ownerId, retryRecovery]);
 
   useEffect(() => {
-    if (isAuthenticated) void load();
-  }, [isAuthenticated, load]);
+    selectedOwner.current = undefined;
+    selectedRef.current = null;
+    lastSavedById.current.clear();
+    latestVersionById.current.clear();
+    setSelected(null);
+    setMysteries([]);
+    setPendingDrafts([]);
+    setRecoveringDrafts(new Set());
+    setLoaded(false);
+    if (isAuthenticated && ownerId) void load();
+    return () => {
+      // eslint-disable-next-line react-hooks/exhaustive-deps -- This is a request generation counter, not a DOM ref.
+      loadSequence.current++;
+    };
+  }, [isAuthenticated, ownerId, load]);
   useEffect(() => {
-    if (selected)
-      localStorage.setItem(
-        draftKey,
-        JSON.stringify({
-          mystery: selected,
-          baseContent: lastSavedById.current.get(selected.id),
-          baseVersion: latestVersionById.current.get(selected.id),
-        }),
-      );
-    selectedRef.current = selected;
-  }, [selected]);
+    if (selected && ownerId && selectedOwner.current === ownerId) {
+      persistMysteryDraft(localStorage, {
+        ownerId,
+        mystery: selected,
+        baseContent: lastSavedById.current.get(selected.id),
+        baseVersion: latestVersionById.current.get(selected.id),
+      });
+      selectedRef.current = selected;
+    }
+  }, [ownerId, selected]);
   useEffect(() => {
     if (selected?.id) void refreshVersions(selected.id);
   }, [refreshVersions, selected?.id]);
@@ -341,13 +421,15 @@ const MysteriesPage = () => {
   const save = useCallback(
     (kind: "auto" | "manual"): Promise<boolean> => {
       const submitted = selectedRef.current;
-      if (!submitted) return Promise.resolve(false);
+      if (!submitted || !ownerId || selectedOwner.current !== ownerId)
+        return Promise.resolve(false);
       const submittedContent = contentSnapshot(submitted);
       if (kind === "auto" && lastSavedById.current.get(submitted.id) === submittedContent) {
         return Promise.resolve(true);
       }
 
       const task = async (): Promise<boolean> => {
+        if (accountRef.current !== ownerId) return false;
         try {
           const saved = await api.updateMystery(submitted.id, {
             title: submitted.title || t`Untitled Mystery`,
@@ -355,6 +437,7 @@ const MysteriesPage = () => {
             version: latestVersionById.current.get(submitted.id) ?? submitted.version,
             saveKind: kind,
           });
+          if (accountRef.current !== ownerId) return false;
           latestVersionById.current.set(saved.id, saved.version);
           lastSavedById.current.set(saved.id, contentSnapshot(saved));
           setMysteries((current) =>
@@ -377,7 +460,7 @@ const MysteriesPage = () => {
       saveQueue.current = saveQueue.current.catch(() => false).then(task);
       return saveQueue.current;
     },
-    [refreshVersions],
+    [ownerId, refreshVersions],
   );
 
   const saveSignature = useMemo(() => (selected ? contentSnapshot(selected) : ""), [selected]);
@@ -411,7 +494,7 @@ const MysteriesPage = () => {
       setVersions([]);
       lastSavedById.current.delete(deletedMystery.id);
       latestVersionById.current.delete(deletedMystery.id);
-      localStorage.removeItem(draftKey);
+      if (ownerId) forgetMysteryDraft(localStorage, ownerId, deletedMystery.id);
       setConfirmation(null);
       toast.success(t`Mystery deleted.`, {
         action: {
@@ -544,6 +627,45 @@ const MysteriesPage = () => {
               </p>
             )}
           </div>
+          {pendingDrafts.length > 0 && (
+            <section
+              className="rounded-lg border border-amber-500/50 bg-gray-900 p-4 text-gray-100"
+              aria-label={t`Pending local drafts`}
+            >
+              <p>
+                <Trans>Your unsaved local mystery drafts are preserved separately.</Trans>
+              </p>
+              {pendingDrafts.map((draft) => (
+                <div key={draft.mystery.id} className="mt-3 flex flex-wrap items-center gap-3">
+                  <span>{draft.mystery.title}</span>
+                  <Button
+                    variant="dark"
+                    disabled={recoveringDrafts.has(draft.mystery.id)}
+                    onClick={() => void retryRecovery(draft)}
+                  >
+                    <Trans>Retry recovery</Trans>
+                  </Button>
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      const url = URL.createObjectURL(
+                        new Blob([JSON.stringify(draft.mystery, null, 2)], {
+                          type: "application/json",
+                        }),
+                      );
+                      const link = document.createElement("a");
+                      link.href = url;
+                      link.download = "mystery-draft.json";
+                      link.click();
+                      URL.revokeObjectURL(url);
+                    }}
+                  >
+                    <Trans>Download draft</Trans>
+                  </Button>
+                </div>
+              ))}
+            </section>
+          )}
         </aside>
         {selected ? (
           <article className="mystery-parchment mystery-editor">

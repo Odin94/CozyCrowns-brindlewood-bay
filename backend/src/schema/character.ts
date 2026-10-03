@@ -53,6 +53,7 @@ export const characterDataSchema = z.object({
 });
 
 export const createCharacterSchema = z.object({
+  creationId: z.string().uuid().optional(),
   name: z.string().min(1).max(255),
   data: characterDataSchema,
   version: z.number().int().positive().optional().default(1),

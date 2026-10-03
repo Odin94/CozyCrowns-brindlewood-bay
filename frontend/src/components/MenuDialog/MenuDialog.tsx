@@ -1,3 +1,6 @@
+import { characterCoordinator } from "@/lib/character_sync_runtime";
+import { Button } from "@/components/ui/button";
+import { Trans } from "@lingui/react/macro";
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
 import { createDefaultCharacter, normalizeCharacter } from "@/lib/character_document";
 import { useSettingsStore } from "@/lib/settings_store";
@@ -30,6 +33,9 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   const { i18n } = useLingui();
   const { user, updateProfile, isUpdatingProfile, signOut, isAuthenticated } = useAuth();
   const { saveCurrentCharacter } = useCharacterSave();
+  const archivedCharacters = useCharacterStore((state) => state.archivedCharacters);
+  const [showRecovery, setShowRecovery] = useState(false);
+  const [, setRecoveryTick] = useState(0);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [showMe, setShowMe] = useState(false);
@@ -48,6 +54,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
       setShowResetConfirm(false);
       setShowCredits(false);
       setShowMe(false);
+      setShowRecovery(false);
     }
   }, [open]);
 
@@ -246,7 +253,68 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
       <VisuallyHidden.Root asChild>
         <DialogTitle>Menu</DialogTitle>
       </VisuallyHidden.Root>
-      {showResetConfirm ? (
+      {showRecovery ? (
+        <div className="space-y-4 text-white">
+          <h2 className="text-lg font-semibold">
+            <Trans>Recently deleted Mavens</Trans>
+          </h2>
+          <p className="text-sm text-gray-300">
+            <Trans>
+              The most recent 20 deleted Mavens are available for 30 days. Restoring creates a
+              separate local copy.
+            </Trans>
+          </p>
+          {archivedCharacters.length === 0 && (
+            <p>
+              <Trans>No deleted Mavens to recover.</Trans>
+            </p>
+          )}
+          {user &&
+            characterCoordinator.pending(user.id).map((deletion) => (
+              <div key={deletion.localId} className="flex items-center justify-between gap-3">
+                <span>
+                  <Trans>Pending cloud deletion</Trans>
+                </span>
+                <Button
+                  variant="dark"
+                  onClick={() =>
+                    void characterCoordinator
+                      .delete(user.id, deletion.localId)
+                      .then(() => setRecoveryTick((tick) => tick + 1))
+                      .catch(() =>
+                        toast.error(
+                          i18n._(msg`Could not finish deletion. The pending request is preserved.`),
+                        ),
+                      )
+                  }
+                >
+                  <Trans>Retry</Trans>
+                </Button>
+              </div>
+            ))}
+          <div className="max-h-80 space-y-2 overflow-y-auto">
+            {archivedCharacters.map((entry) => (
+              <div key={entry.record.localId} className="flex items-center justify-between gap-3">
+                <span className="min-w-0 truncate">
+                  {entry.record.name || i18n._(msg`Unnamed Maven`)}
+                </span>
+                <Button
+                  variant="dark"
+                  onClick={() => {
+                    characterStore.restoreArchived(entry.record.localId);
+                    onOpenChange?.(false);
+                  }}
+                >
+                  <Trans>Restore copy</Trans>
+                </Button>
+              </div>
+            ))}
+          </div>
+          <Button variant="outline" onClick={() => setShowRecovery(false)}>
+            <Trans>Back</Trans>
+          </Button>
+        </div>
+      ) : showResetConfirm ? (
         <ResetConfirmView onConfirm={confirmReset} onCancel={cancelReset} />
       ) : showMe ? (
         <MeView
@@ -265,6 +333,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
           onLoadFromJSON={handleLoadFromJSON}
           onResetClick={() => setShowResetConfirm(true)}
           onCreditsClick={() => setShowCredits(true)}
+          onRecoveryClick={() => setShowRecovery(true)}
           onMeClick={() => setShowMe(true)}
           onLanguageChange={handleLanguageChange}
           isAuthenticated={isAuthenticated}

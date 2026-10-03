@@ -25,9 +25,6 @@ export const useAuth = () => {
     queryKey: ["auth", "me"],
     queryFn: async () => {
       const data = await api.getCurrentUser();
-      if (data.token) {
-        tokenStorage.set(data.token);
-      }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { token, ...user } = data;
       return user;

@@ -1,10 +1,13 @@
 import { useCharacterStore } from "@/lib/character_store";
 import { useRef, useState } from "react";
-import { api } from "@/utils/api";
+import { characterCoordinator } from "@/lib/character_sync_runtime";
+import { useAuth } from "./useAuth";
 import { toast } from "sonner";
 import { t } from "@lingui/core/macro";
 
 export const useDeleteConfirmation = () => {
+  const { user, loading } = useAuth();
+  if (!loading) characterCoordinator.setOwner(user?.id);
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [target, setTarget] = useState<{ localId: string; name: string } | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -18,6 +21,7 @@ export const useDeleteConfirmation = () => {
   };
   const cancelDelete = () => {
     if (pending.current) return;
+    if (target) characterCoordinator.cancelDeletion(user?.id ?? "anonymous", target.localId);
     setTarget(null);
     setDeleteConfirmOpen(false);
   };
@@ -31,8 +35,7 @@ export const useDeleteConfirmation = () => {
     pending.current = true;
     setIsDeleting(true);
     try {
-      if (character.id) await api.deleteCharacter(character.id);
-      useCharacterStore.getState().remove(target.localId);
+      await characterCoordinator.delete(user?.id ?? "anonymous", target.localId);
       setTarget(null);
       setDeleteConfirmOpen(false);
     } catch (error) {
@@ -52,8 +55,8 @@ export const useDeleteConfirmation = () => {
     cancelDelete,
     setDeleteConfirmOpen: (open: boolean) => {
       if (!pending.current) {
-        setDeleteConfirmOpen(open);
-        if (!open) setTarget(null);
+        if (!open) cancelDelete();
+        else setDeleteConfirmOpen(true);
       }
     },
   };
