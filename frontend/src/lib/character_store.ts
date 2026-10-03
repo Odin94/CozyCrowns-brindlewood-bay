@@ -5,6 +5,7 @@ import {
   createDefaultCharacter,
   applyCharacterChange,
   normalizeCharacter,
+  toPersistedCharacter,
   type Ability,
   type CharacterData,
   type CozyItem,
@@ -250,15 +251,28 @@ export const useCharacterStore = create<CharacterState>()(
             }),
           }));
         },
-        mergeRemote: (backendCharacters, ownerId, canReplace = () => true) => {
+        mergeRemote: (
+          backendCharacters,
+          ownerId,
+          canReplace = (record) =>
+            (record.syncedContent ?? record.remoteContent) ===
+            JSON.stringify(toPersistedCharacter(record)),
+        ) => {
+          const state = get();
+          let selectedCharacterId = state.selectedCharacterId;
+          const characters = reconcileMavenRecords(
+            state.characters,
+            backendCharacters,
+            ownerId,
+            canReplace,
+            newLocalId,
+            (original, preserved) => {
+              if (selectedCharacterId === original.localId) selectedCharacterId = preserved.localId;
+            },
+          );
           set({
-            characters: reconcileMavenRecords(
-              get().characters,
-              backendCharacters,
-              ownerId,
-              canReplace,
-              newLocalId,
-            ),
+            characters,
+            selectedCharacterId,
           });
         },
         setName: (name) => updateSelected({ name }),

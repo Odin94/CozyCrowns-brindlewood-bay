@@ -114,7 +114,7 @@ msgstr "Charakter erfolgreich zurückgesetzt!"
 #~ msgid "(owner)"
 #~ msgstr ""
 
-#: src/pages/MysteriesPage.tsx:868
+#: src/pages/MysteriesPage.tsx:874
 msgid "{label}"
 msgstr ""
 
@@ -258,7 +258,7 @@ msgstr ""
 #~ msgstr ""
 
 #: src/pages/BookClubOverview.tsx:1019
-#: src/pages/TheorizeBoard.tsx:1766
+#: src/pages/TheorizeBoard.tsx:1759
 msgid "Add"
 msgstr ""
 
@@ -290,20 +290,31 @@ msgstr ""
 #~ msgid "Add any opening clues, one per line..."
 #~ msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1389
+#: src/pages/TheorizeBoard.tsx:1382
 msgid "Add at least two notes to auto-align."
 msgstr "Füge mindestens zwei Notizen hinzu, um sie automatisch anzuordnen."
 
-#: src/pages/BookClubOverview.tsx:886
-#~ msgid "Add clue"
-#~ msgstr ""
+#: src/pages/MysteriesPage.tsx:878
+#: src/pages/MysteriesPage.tsx:879
+msgid "Add clue"
+msgstr "Hinweis hinzufügen"
 
-#: src/pages/TheorizeBoard.tsx:1322
-#: src/pages/TheorizeBoard.tsx:1529
+#: src/pages/MysteriesPage.tsx:639
+#: src/pages/MysteriesPage.tsx:640
+msgid "Add location"
+msgstr "Ort hinzufügen"
+
+#: src/pages/MysteriesPage.tsx:810
+#: src/pages/MysteriesPage.tsx:811
+msgid "Add moment"
+msgstr "Moment hinzufügen"
+
+#: src/pages/TheorizeBoard.tsx:1315
+#: src/pages/TheorizeBoard.tsx:1522
 msgid "Add note"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1320
+#: src/pages/TheorizeBoard.tsx:1313
 msgid "Add note (N)"
 msgstr ""
 
@@ -311,9 +322,19 @@ msgstr ""
 msgid "Add one die"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1457
+#: src/pages/MysteriesPage.tsx:720
+#: src/pages/MysteriesPage.tsx:721
+msgid "Add suspect"
+msgstr "Verdächtige Person hinzufügen"
+
+#: src/pages/TheorizeBoard.tsx:1450
 msgid "Add to the theory board"
 msgstr ""
+
+#: src/pages/MysteriesPage.tsx:878
+#: src/pages/MysteriesPage.tsx:879
+msgid "Add void clue"
+msgstr "Leere-Hinweis hinzufügen"
 
 #: src/components/character/Advancements.tsx:25
 #: src/pages/BookClubMaven.tsx:129
@@ -336,8 +357,8 @@ msgstr "Vorteil"
 msgid "Alexis Carrington Colby"
 msgstr "Alexis Carrington Colby"
 
-#: src/pages/TheorizeBoard.tsx:1377
-#: src/pages/TheorizeBoard.tsx:1391
+#: src/pages/TheorizeBoard.tsx:1370
+#: src/pages/TheorizeBoard.tsx:1384
 msgid "Aligning…"
 msgstr ""
 
@@ -413,12 +434,12 @@ msgstr "Zu Beginn jeder Sitzung wird die Spielleiter/in eine Anrufbeantworter-Na
 msgid "At the table"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1377
+#: src/pages/TheorizeBoard.tsx:1370
 msgid "Auto-align"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1373
-#: src/pages/TheorizeBoard.tsx:1392
+#: src/pages/TheorizeBoard.tsx:1366
+#: src/pages/TheorizeBoard.tsx:1385
 msgid "Auto-align notes"
 msgstr ""
 
@@ -455,7 +476,7 @@ msgid "Awaiting your approval"
 msgstr ""
 
 #: src/components/MenuDialog/CreditsView.tsx:77
-#: src/components/MenuDialog/MenuDialog.tsx:341
+#: src/components/MenuDialog/MenuDialog.tsx:351
 #: src/components/MenuDialog/MeView.tsx:159
 #: src/components/MenuDialog/MeView.tsx:169
 msgid "Back"
@@ -489,7 +510,7 @@ msgstr "College-Professorin"
 #: src/pages/BookClubMaven.tsx:82
 #: src/pages/BookClubOverview.tsx:491
 #: src/pages/BookClubOverview.tsx:761
-#: src/pages/TheorizeBoard.tsx:1304
+#: src/pages/TheorizeBoard.tsx:1297
 msgid "Book Club"
 msgstr ""
 
@@ -552,7 +573,7 @@ msgstr ""
 #~ msgid "Browse published mysteries"
 #~ msgstr ""
 
-#: src/lib/character_store.ts:303
+#: src/lib/character_store.ts:312
 msgid "Browser storage is full or unavailable. Keep this page open and export your Maven before reloading."
 msgstr ""
 
@@ -565,7 +586,7 @@ msgstr "von Odin"
 #: src/components/MenuDialog/SaveFailureDialog.tsx:22
 #: src/pages/BookClubOverview.tsx:1676
 #: src/pages/MysteriesPage.tsx:589
-#: src/pages/TheorizeBoard.tsx:1608
+#: src/pages/TheorizeBoard.tsx:1601
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -634,7 +655,7 @@ msgstr "Klassisch"
 msgid "Click an ability score to roll 2d6."
 msgstr "Klicke auf einen Attributwert, um 2W6 zu würfeln."
 
-#: src/pages/TheorizeBoard.tsx:1143
+#: src/pages/TheorizeBoard.tsx:1142
 msgid "Click to name this connection"
 msgstr ""
 
@@ -688,7 +709,7 @@ msgstr "Sammeln"
 msgid "Complexity"
 msgstr ""
 
-#: src/lib/character_store.ts:43
+#: src/lib/character_store.ts:44
 msgid "Composure"
 msgstr "Gemütsruhe"
 
@@ -701,7 +722,7 @@ msgstr "Zustände"
 msgid "Confirm Reset"
 msgstr "Zurücksetzen bestätigen"
 
-#: src/pages/TheorizeBoard.tsx:1163
+#: src/pages/TheorizeBoard.tsx:1162
 msgid "Connect to this note"
 msgstr ""
 
@@ -802,7 +823,7 @@ msgstr ""
 msgid "Could not delete this Maven. It is still here. Please retry."
 msgstr ""
 
-#: src/components/MenuDialog/MenuDialog.tsx:312
+#: src/components/MenuDialog/MenuDialog.tsx:315
 msgid "Could not finish deletion. The pending request is preserved."
 msgstr ""
 
@@ -826,7 +847,7 @@ msgid "Could not load notes"
 msgstr ""
 
 #: src/pages/TheorizeBoard.tsx:290
-#: src/pages/TheorizeBoard.tsx:1332
+#: src/pages/TheorizeBoard.tsx:1325
 msgid "Could not load the theory board"
 msgstr ""
 
@@ -940,7 +961,7 @@ msgstr "CozyCrowns ist eine unabhängige Produktion von Odin und ist nicht mit T
 #~ msgid "Create a mystery"
 #~ msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1755
+#: src/pages/TheorizeBoard.tsx:1748
 msgid "Create a tag"
 msgstr ""
 
@@ -948,7 +969,7 @@ msgstr ""
 msgid "Create Book Club"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1223
+#: src/pages/TheorizeBoard.tsx:1222
 msgid "Create connection from this note"
 msgstr ""
 
@@ -1033,7 +1054,7 @@ msgstr ""
 #: src/pages/MysteriesPage.tsx:490
 #: src/pages/MysteriesPage.tsx:543
 #: src/pages/MysteriesPage.tsx:580
-#: src/pages/TheorizeBoard.tsx:1663
+#: src/pages/TheorizeBoard.tsx:1656
 msgid "Delete"
 msgstr ""
 
@@ -1058,7 +1079,7 @@ msgstr ""
 msgid "Delete Character"
 msgstr "Charakter löschen"
 
-#: src/pages/TheorizeBoard.tsx:1123
+#: src/pages/TheorizeBoard.tsx:1122
 msgid "Delete connection"
 msgstr ""
 
@@ -1070,11 +1091,11 @@ msgstr ""
 msgid "Delete mystery"
 msgstr "Mysterium löschen"
 
-#: src/pages/TheorizeBoard.tsx:1594
+#: src/pages/TheorizeBoard.tsx:1587
 msgid "Delete note"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1642
+#: src/pages/TheorizeBoard.tsx:1635
 msgid "Delete this note?"
 msgstr ""
 
@@ -1083,19 +1104,19 @@ msgstr ""
 #~ msgstr ""
 
 #: src/pages/BookClubOverview.tsx:1652
-#: src/pages/MysteriesPage.tsx:673
-#: src/pages/MysteriesPage.tsx:761
-#: src/pages/MysteriesPage.tsx:828
-#: src/pages/MysteriesPage.tsx:906
+#: src/pages/MysteriesPage.tsx:675
+#: src/pages/MysteriesPage.tsx:765
+#: src/pages/MysteriesPage.tsx:834
+#: src/pages/MysteriesPage.tsx:914
 msgid "Description"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1511
-#: src/pages/TheorizeBoard.tsx:1566
+#: src/pages/TheorizeBoard.tsx:1504
+#: src/pages/TheorizeBoard.tsx:1559
 msgid "Description (optional)"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1548
+#: src/pages/TheorizeBoard.tsx:1541
 msgid "Descriptions appear directly on the note cards."
 msgstr "Beschreibungen erscheinen direkt auf den Notizkarten."
 
@@ -1167,7 +1188,7 @@ msgstr "Speicherdatei herunterladen"
 #~ msgid "Drag a note to move it. Drag a dot to connect it."
 #~ msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1362
+#: src/pages/TheorizeBoard.tsx:1355
 msgid "Drag the board to move around. Drag a link handle to connect notes."
 msgstr "Ziehe die Pinnwand, um dich umzusehen. Ziehe an einem Verbindungspunkt, um Notizen zu verbinden."
 
@@ -1175,7 +1196,7 @@ msgstr "Ziehe die Pinnwand, um dich umzusehen. Ziehe an einem Verbindungspunkt, 
 #~ msgid "Drag the board to move around. Drag a pin to connect notes."
 #~ msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1222
+#: src/pages/TheorizeBoard.tsx:1221
 msgid "Drag to connect notes"
 msgstr "Ziehen, um Notizen zu verbinden"
 
@@ -1187,7 +1208,7 @@ msgstr "Ziehe einen Spielstand hierher oder füge eine JSON-Datei ein."
 msgid "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "Tagsüber kannst du jeden Ort betreten, den du möchtest, und dich frei bewegen, sobald du drinnen bist, solange du nichts aktiv Feindseliges gegenüber den anwesenden Personen tust."
 
-#: src/pages/TheorizeBoard.tsx:1542
+#: src/pages/TheorizeBoard.tsx:1535
 msgid "Edit note"
 msgstr ""
 
@@ -1224,7 +1245,7 @@ msgstr ""
 msgid "Everyone in the club can read and edit this."
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1722
+#: src/pages/TheorizeBoard.tsx:1715
 msgid "Existing tags"
 msgstr ""
 
@@ -1444,7 +1465,7 @@ msgstr ""
 #~ msgid "Keep Book Club"
 #~ msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1656
+#: src/pages/TheorizeBoard.tsx:1649
 msgid "Keep note"
 msgstr ""
 
@@ -1578,7 +1599,7 @@ msgstr "Menü"
 msgid "Midnight meeting"
 msgstr ""
 
-#: src/pages/MysteriesPage.tsx:802
+#: src/pages/MysteriesPage.tsx:806
 msgid "Moments"
 msgstr ""
 
@@ -1647,7 +1668,7 @@ msgid "Mystery title"
 msgstr ""
 
 #: src/components/character/Name.tsx:21
-#: src/pages/MysteriesPage.tsx:740
+#: src/pages/MysteriesPage.tsx:744
 msgid "Name"
 msgstr "Name"
 
@@ -1761,7 +1782,7 @@ msgstr ""
 msgid "Notes aligned"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1460
+#: src/pages/TheorizeBoard.tsx:1453
 msgid "Notes are shared with everyone in this Book Club."
 msgstr ""
 
@@ -1852,7 +1873,7 @@ msgstr "Mysterium öffnen"
 msgid "Opening save file…"
 msgstr "Der Spielstand wird geöffnet…"
 
-#: src/pages/TheorizeBoard.tsx:1435
+#: src/pages/TheorizeBoard.tsx:1428
 msgid "Opening the case files…"
 msgstr ""
 
@@ -1872,8 +1893,8 @@ msgstr "Gegensätzliches Geschwister für Hilfe, gibt Vorteil (aber hilft zu ein
 msgid "Other"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1401
-#: src/pages/TheorizeBoard.tsx:1405
+#: src/pages/TheorizeBoard.tsx:1394
+#: src/pages/TheorizeBoard.tsx:1398
 msgid "Overview"
 msgstr ""
 
@@ -1893,7 +1914,7 @@ msgstr "Als jünger durchgehen mit Vorteil bei Würfen"
 #~ msgid "Paste a bullet list of clues to add them all when activating the mystery."
 #~ msgstr ""
 
-#: src/components/MenuDialog/MenuDialog.tsx:301
+#: src/components/MenuDialog/MenuDialog.tsx:304
 msgid "Pending cloud deletion"
 msgstr ""
 
@@ -1931,7 +1952,7 @@ msgstr "Log dich ein um dein Profil anzusehen."
 msgid "Pottery"
 msgstr "Töpfern"
 
-#: src/lib/character_store.ts:45
+#: src/lib/character_store.ts:46
 msgid "Presence"
 msgstr "Ausstrahlung"
 
@@ -1951,7 +1972,7 @@ msgstr ""
 msgid "Profile"
 msgstr "Profil"
 
-#: src/pages/MysteriesPage.tsx:685
+#: src/pages/MysteriesPage.tsx:687
 msgid "Prompt"
 msgstr ""
 
@@ -1975,11 +1996,11 @@ msgstr "Queen SVG von <0>Darius Dan auf svgrepo</0>."
 msgid "Quilting"
 msgstr "Sticken"
 
-#: src/pages/MysteriesPage.tsx:773
+#: src/pages/MysteriesPage.tsx:777
 msgid "Quote"
 msgstr ""
 
-#: src/lib/character_store.ts:44
+#: src/lib/character_store.ts:45
 msgid "Reason"
 msgstr "Verstand"
 
@@ -2048,7 +2069,7 @@ msgstr ""
 msgid "Remove one die"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1713
+#: src/pages/TheorizeBoard.tsx:1706
 msgid "Remove tag"
 msgstr ""
 
@@ -2073,7 +2094,7 @@ msgstr "Charakter zurücksetzen"
 #~ msgid "Reset view"
 #~ msgstr ""
 
-#: src/components/MenuDialog/MenuDialog.tsx:335
+#: src/components/MenuDialog/MenuDialog.tsx:341
 msgid "Restore copy"
 msgstr ""
 
@@ -2095,7 +2116,7 @@ msgstr ""
 msgid "Retire your character in a way that shows how they are lost to the Void."
 msgstr "Schicke Deine Krimi-Kennerin auf eine Weise in den Ruhestand, die zeigt, dass sie an den Abgrund verloren ist."
 
-#: src/components/MenuDialog/MenuDialog.tsx:317
+#: src/components/MenuDialog/MenuDialog.tsx:320
 #: src/hooks/useBackendDarkConspiraciesSync.ts:131
 msgid "Retry"
 msgstr ""
@@ -2159,7 +2180,7 @@ msgstr ""
 msgid "Save JSON"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1619
+#: src/pages/TheorizeBoard.tsx:1612
 msgid "Save note"
 msgstr ""
 
@@ -2217,7 +2238,7 @@ msgstr "Geheime Ghostwriterin; beide Gold-Crown-Vorteile, solange das Geheimnis 
 msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 msgstr "Wähle zu Beginn einen Spielzug. Zu Beginn darf kein Spielzug von mehr als einem Charakter gewählt werden."
 
-#: src/lib/character_store.ts:46
+#: src/lib/character_store.ts:47
 msgid "Sensitivity"
 msgstr "Gespür"
 
@@ -2253,11 +2274,11 @@ msgstr ""
 #~ msgid "Sheets"
 #~ msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1346
+#: src/pages/TheorizeBoard.tsx:1339
 msgid "Show"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1400
+#: src/pages/TheorizeBoard.tsx:1393
 msgid "Show all notes"
 msgstr ""
 
@@ -2346,7 +2367,7 @@ msgstr ""
 
 #: src/pages/LibraryPage.tsx:232
 #: src/pages/LibraryPage.tsx:295
-#: src/pages/MysteriesPage.tsx:714
+#: src/pages/MysteriesPage.tsx:716
 msgid "Suspects"
 msgstr ""
 
@@ -2354,11 +2375,11 @@ msgstr ""
 msgid "Table roll"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1702
+#: src/pages/TheorizeBoard.tsx:1695
 msgid "tag is automatic."
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1698
+#: src/pages/TheorizeBoard.tsx:1691
 msgid "Tags"
 msgstr ""
 
@@ -2374,7 +2395,7 @@ msgstr ""
 msgid "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 msgstr "Tentakel-Icon von <0>Teewara soontorn auf Noun Project</0>."
 
-#: src/pages/TheorizeBoard.tsx:1702
+#: src/pages/TheorizeBoard.tsx:1695
 msgid "The"
 msgstr ""
 
@@ -2427,7 +2448,7 @@ msgstr ""
 msgid "The Mystery Library"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1645
+#: src/pages/TheorizeBoard.tsx:1638
 msgid "The note and its connections will be permanently removed."
 msgstr ""
 
@@ -2447,7 +2468,7 @@ msgstr ""
 msgid "The Void."
 msgstr "Der Abgrund."
 
-#: src/pages/TheorizeBoard.tsx:1310
+#: src/pages/TheorizeBoard.tsx:1303
 msgid "Theorize"
 msgstr ""
 
@@ -2479,7 +2500,7 @@ msgstr "Dieser Spielzug hat keine Funktion, bis du einen Fall löst und dadurch 
 msgid "This note is currently locked"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1546
+#: src/pages/TheorizeBoard.tsx:1539
 msgid "This title stays in sync with the mystery clue list."
 msgstr ""
 
@@ -2487,11 +2508,11 @@ msgstr ""
 msgid "This will also delete the character from the backend."
 msgstr "Das wird den Charakter auch vom Server löschen."
 
-#: src/pages/MysteriesPage.tsx:661
-#: src/pages/MysteriesPage.tsx:750
-#: src/pages/MysteriesPage.tsx:894
-#: src/pages/TheorizeBoard.tsx:1499
-#: src/pages/TheorizeBoard.tsx:1555
+#: src/pages/MysteriesPage.tsx:663
+#: src/pages/MysteriesPage.tsx:754
+#: src/pages/MysteriesPage.tsx:902
+#: src/pages/TheorizeBoard.tsx:1492
+#: src/pages/TheorizeBoard.tsx:1548
 msgid "Title"
 msgstr ""
 
@@ -2511,7 +2532,7 @@ msgstr "Zuverlässiges Fahrzeug für Vorteil bei Würfen"
 #: src/pages/BookClubOverview.tsx:479
 #: src/pages/LibraryPage.tsx:194
 #: src/pages/LibraryPage.tsx:257
-#: src/pages/TheorizeBoard.tsx:1339
+#: src/pages/TheorizeBoard.tsx:1332
 msgid "Try again"
 msgstr "Erneut versuchen"
 
@@ -2519,8 +2540,8 @@ msgstr "Erneut versuchen"
 msgid "Two extra Cozy Activities; trigger Cozy Move with non-Mavens; stumble on Clue or clear Condition during Cozy Moves"
 msgstr "Zwei zusätzliche Gemütliche Aktivitäten; Gemütlichen Spielzug mit Nicht-Kennerinnen auslösen; Hinweis finden oder Zustand entfernen bei Gemütlichen Spielzügen"
 
-#: src/pages/TheorizeBoard.tsx:1465
-#: src/pages/TheorizeBoard.tsx:1473
+#: src/pages/TheorizeBoard.tsx:1458
+#: src/pages/TheorizeBoard.tsx:1466
 msgid "Type"
 msgstr ""
 
@@ -2545,7 +2566,7 @@ msgstr "Entferne die Markierungen aller Gegenstände in Deinem Gemütlichen Zuha
 msgid "Unmark every Crown of the Void box once"
 msgstr "Einmalig jedes Kästchen der Krone des Abgrunds frei machen"
 
-#: src/components/MenuDialog/MenuDialog.tsx:325
+#: src/components/MenuDialog/MenuDialog.tsx:331
 #: src/pages/BookClubMaven.tsx:81
 #: src/pages/BookClubMaven.tsx:148
 #: src/pages/BookClubOverview.tsx:113
@@ -2588,7 +2609,7 @@ msgstr ""
 msgid "Viewing {0} · Read only"
 msgstr "Charakterbogen von {0} · Schreibgeschützt"
 
-#: src/lib/character_store.ts:42
+#: src/lib/character_store.ts:43
 msgid "Vitality"
 msgstr "Vitalität"
 
@@ -2605,7 +2626,7 @@ msgstr ""
 msgid "Void Clues from other mysteries"
 msgstr ""
 
-#: src/pages/TheorizeBoard.tsx:1506
+#: src/pages/TheorizeBoard.tsx:1499
 msgid "What do you know?"
 msgstr ""
 

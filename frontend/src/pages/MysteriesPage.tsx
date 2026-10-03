@@ -636,6 +636,8 @@ const LocationsSection = memo(function LocationsSection({
       action={
         <Button
           size="sm"
+          aria-label={t`Add location`}
+          title={t`Add location`}
           onClick={() => {
             const location = blankLocation();
             setFocusedEntryId(location.id);
@@ -715,6 +717,8 @@ const SuspectsSection = memo(function SuspectsSection({
       action={
         <Button
           size="sm"
+          aria-label={t`Add suspect`}
+          title={t`Add suspect`}
           onClick={() => {
             const suspect = blankSuspect();
             setFocusedEntryId(suspect.id);
@@ -803,6 +807,8 @@ const MomentsSection = memo(function MomentsSection({
       action={
         <Button
           size="sm"
+          aria-label={t`Add moment`}
+          title={t`Add moment`}
           onClick={() => {
             const moment = blankMoment();
             setFocusedEntryId(moment.id);
@@ -869,6 +875,8 @@ const CluesSections = memo(function CluesSections({
       action={
         <Button
           size="sm"
+          aria-label={key === "clues" ? t`Add clue` : t`Add void clue`}
+          title={key === "clues" ? t`Add clue` : t`Add void clue`}
           onClick={() => {
             const clue = blankClue();
             setFocusedEntryId(clue.id);

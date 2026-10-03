@@ -2,9 +2,10 @@
 
 ## Unreleased
 
+- Keep unsaved Mavens selected as separate recovery copies when any sync entry point receives a newer cloud version.
 - Show theory-note descriptions on the cards without duplicate hover tooltips; keep descriptions readable alongside longer titles, tags and edit indicators.
 - Improve deleted-Maven recovery dialog contrast, spacing and mobile layout.
-
+- Label mystery entry controls for keyboard and screen-reader navigation.
 - Preserve unsaved Mavens and Dark Conspiracies when newer cloud copies arrive.
 - Coordinate browser tabs with field journals, conflict recovery copies, and durable deletion history.
 - Recover unsaved mystery drafts and retain a separate copy when their cloud revision diverges.

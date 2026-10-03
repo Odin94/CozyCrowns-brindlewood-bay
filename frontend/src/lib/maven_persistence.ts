@@ -190,6 +190,7 @@ export function reconcileMavenRecords(
   ownerId: string | undefined,
   canReplace: (record: CharacterRecord) => boolean,
   newId: () => string,
+  onPreserved?: (original: CharacterRecord, preserved: CharacterRecord) => void,
 ): CharacterRecord[] {
   const characters = [...records];
   for (const remote of remotes) {
@@ -216,7 +217,10 @@ export function reconcileMavenRecords(
         delete preserved.id;
         delete preserved.version;
         delete preserved.syncedContent;
+        delete preserved.remoteContent;
+        delete preserved.creationId;
         characters.push(preserved);
+        onPreserved?.(current, preserved);
       }
       characters[index] = canonical;
     } else {
