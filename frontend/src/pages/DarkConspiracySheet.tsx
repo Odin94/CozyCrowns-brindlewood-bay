@@ -42,60 +42,69 @@ const exportDarkConspiracy = (data: DarkConspiracyData) => {
   URL.revokeObjectURL(url);
 };
 
+type TextField = {
+  [K in keyof DarkConspiracyData]-?: DarkConspiracyData[K] extends string ? K : never;
+}[keyof DarkConspiracyData];
 const KeeperTextarea = ({
-  value,
-  onChange,
+  field,
   minRows = 3,
   label,
 }: {
-  value: string;
-  onChange: (value: string) => void;
+  field: TextField;
   minRows?: number;
   label: string;
-}) => (
-  <Textarea
-    aria-label={label}
-    value={value}
-    onChange={(event) => onChange(event.target.value)}
-    className="keeper-input min-h-0 resize-none text-[0.7rem] leading-tight text-foreground no-ring focus-visible:ring-0"
-    style={{ height: `${minRows * 1.6}rem` }}
-  />
-);
+}) => {
+  const value = useDarkConspiracyStore((state) => state.current[field]);
+  const update = useDarkConspiracyStore((state) => state.updateCurrentDarkConspiracy);
+  return (
+    <Textarea
+      aria-label={label}
+      value={value}
+      onChange={(event) => update({ [field]: event.target.value })}
+      className="keeper-input min-h-0 resize-none text-[0.7rem] leading-tight text-foreground no-ring focus-visible:ring-0"
+      style={{ height: `${minRows * 1.6}rem` }}
+    />
+  );
+};
 
 const FieldLabel = ({ children }: { children: React.ReactNode }) => (
   <p className="keeper-field-label">{children}</p>
 );
 
 const CheckedParagraph = ({
-  checked,
-  onCheckedChange,
+  field,
+  index,
   children,
 }: {
-  checked: boolean;
-  onCheckedChange: (checked: boolean) => void;
+  field: "layerTwoChecks" | "layerThreeChecks";
+  index: number;
   children: React.ReactNode;
-}) => (
-  <label className="grid grid-cols-[1rem_1fr] gap-2 text-[0.62rem] leading-[1.05] text-foreground">
-    <Checkbox
-      checked={checked}
-      onCheckedChange={(value) => onCheckedChange(value === true)}
-      className="mt-0.5 size-3 border-dark-secondary bg-transparent data-[state=checked]:bg-primary"
-    />
-    <span>{children}</span>
-  </label>
-);
-
-const MysteryTracker = ({
-  mysteries,
-  onChange,
-}: {
-  mysteries: MysteryRecord[];
-  onChange: (mysteries: MysteryRecord[]) => void;
 }) => {
+  const checked = useDarkConspiracyStore((state) => state.current[field][index] ?? false);
+  return (
+    <label className="grid grid-cols-[1rem_1fr] gap-2 text-[0.62rem] leading-[1.05] text-foreground">
+      <Checkbox
+        checked={checked}
+        onCheckedChange={(value) => {
+          const state = useDarkConspiracyStore.getState();
+          const checks = [...state.current[field]];
+          checks[index] = value === true;
+          state.updateCurrentDarkConspiracy({ [field]: checks });
+        }}
+        className="mt-0.5 size-3 border-dark-secondary bg-transparent data-[state=checked]:bg-primary"
+      />
+      <span>{children}</span>
+    </label>
+  );
+};
+
+const MysteryTracker = () => {
+  const mysteries = useDarkConspiracyStore((state) => state.current.mysteries);
+  const update = useDarkConspiracyStore((state) => state.updateCurrentDarkConspiracy);
   const updateMystery = (index: number, updates: Partial<MysteryRecord>) => {
     const nextMysteries = [...mysteries];
     nextMysteries[index] = { ...nextMysteries[index], ...updates };
-    onChange(nextMysteries);
+    update({ mysteries: nextMysteries });
   };
 
   return (
@@ -132,24 +141,14 @@ const MysteryTracker = ({
   );
 };
 
-const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterSheet: () => void }) => {
-  const current = useDarkConspiracyStore((state) => state.current);
-  const update = useDarkConspiracyStore((state) => state.updateCurrentDarkConspiracy);
+const DarkConspiracySheet = ({
+  onBackToCharacterSheet,
+}: {
+  onBackToCharacterSheet: () => void;
+}) => {
   const replaceCurrentDarkConspiracy = useDarkConspiracyStore(
     (state) => state.replaceCurrentDarkConspiracy,
   );
-
-  const updateLayerTwoCheck = (index: number, checked: boolean) => {
-    const layerTwoChecks = [...current.layerTwoChecks];
-    layerTwoChecks[index] = checked;
-    update({ layerTwoChecks });
-  };
-
-  const updateLayerThreeCheck = (index: number, checked: boolean) => {
-    const layerThreeChecks = [...current.layerThreeChecks];
-    layerThreeChecks[index] = checked;
-    update({ layerThreeChecks });
-  };
 
   const handleUpload = () => {
     const input = document.createElement("input");
@@ -194,18 +193,14 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
         </Button>
         <div className="flex gap-2">
           <Button
-            onClick={() => exportDarkConspiracy(current)}
+            onClick={() => exportDarkConspiracy(useDarkConspiracyStore.getState().current)}
             variant="dark"
             className="h-8 dark-ring"
           >
             <Download className="mr-2 size-4" />
             Save JSON
           </Button>
-          <Button
-            onClick={handleUpload}
-            variant="dark"
-            className="h-8 dark-ring"
-          >
+          <Button onClick={handleUpload} variant="dark" className="h-8 dark-ring">
             <Upload className="mr-2 size-4" />
             Load JSON
           </Button>
@@ -229,12 +224,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
               ...is always the Midwives' first appearance in the story. It should be brief, and you
               should emphasize their smooth white masks.
             </p>
-            <KeeperTextarea
-              label="First Void Clue"
-              value={current.firstVoidClue}
-              onChange={(firstVoidClue) => update({ firstVoidClue })}
-              minRows={3}
-            />
+            <KeeperTextarea label="First Void Clue" field="firstVoidClue" minRows={3} />
 
             <h3 className="dark-conspiracy-section-title mt-4">Layer One: The Midwives Scene</h3>
             <p className="dark-conspiracy-copy">
@@ -242,17 +232,11 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
               show hooded figures chanting on a moonlit beach as a shadow rises from the ocean.
             </p>
             <FieldLabel>What will the Child of Persephone do when summoned?</FieldLabel>
-            <KeeperTextarea
-              label="Child of Persephone"
-              value={current.childOfPersephone}
-              onChange={(childOfPersephone) => update({ childOfPersephone })}
-              minRows={5}
-            />
+            <KeeperTextarea label="Child of Persephone" field="childOfPersephone" minRows={5} />
             <FieldLabel>Characters connected to the Dark Conspiracy</FieldLabel>
             <KeeperTextarea
               label="Connected characters layer one"
-              value={current.connectedCharactersLayerOne}
-              onChange={(connectedCharactersLayerOne) => update({ connectedCharactersLayerOne })}
+              field="connectedCharactersLayerOne"
               minRows={4}
             />
           </section>
@@ -267,11 +251,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
             </p>
             <div className="mt-2 grid grid-cols-2 gap-x-5 gap-y-2">
               {layerTwoHistory.map((history, index) => (
-                <CheckedParagraph
-                  key={history}
-                  checked={current.layerTwoChecks[index] ?? false}
-                  onCheckedChange={(checked) => updateLayerTwoCheck(index, checked)}
-                >
+                <CheckedParagraph key={history} field="layerTwoChecks" index={index}>
                   {history}
                 </CheckedParagraph>
               ))}
@@ -281,8 +261,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
                 <FieldLabel>Returning character for the Void Mystery</FieldLabel>
                 <KeeperTextarea
                   label="Returning character"
-                  value={current.returningCharacter}
-                  onChange={(returningCharacter) => update({ returningCharacter })}
+                  field="returningCharacter"
                   minRows={3}
                 />
               </div>
@@ -290,8 +269,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
                 <FieldLabel>Revise the Child of Persephone and the Midwives' motive</FieldLabel>
                 <KeeperTextarea
                   label="Layer two child revision"
-                  value={current.childRevisionLayerTwo}
-                  onChange={(childRevisionLayerTwo) => update({ childRevisionLayerTwo })}
+                  field="childRevisionLayerTwo"
                   minRows={3}
                 />
               </div>
@@ -299,8 +277,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
             <FieldLabel>New characters connected to the Dark Conspiracy</FieldLabel>
             <KeeperTextarea
               label="Connected characters layer two"
-              value={current.connectedCharactersLayerTwo}
-              onChange={(connectedCharactersLayerTwo) => update({ connectedCharactersLayerTwo })}
+              field="connectedCharactersLayerTwo"
               minRows={4}
             />
           </section>
@@ -323,11 +300,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
             </p>
             <div className="mt-2 space-y-2">
               {layerThreeReveals.map((reveal, index) => (
-                <CheckedParagraph
-                  key={reveal}
-                  checked={current.layerThreeChecks[index] ?? false}
-                  onCheckedChange={(checked) => updateLayerThreeCheck(index, checked)}
-                >
+                <CheckedParagraph key={reveal} field="layerThreeChecks" index={index}>
                   {reveal}
                 </CheckedParagraph>
               ))}
@@ -335,24 +308,19 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
             <FieldLabel>Leader of the Midwives</FieldLabel>
             <KeeperTextarea
               label="Leader of the Midwives"
-              value={current.leaderOfTheMidwives}
-              onChange={(leaderOfTheMidwives) => update({ leaderOfTheMidwives })}
+              field="leaderOfTheMidwives"
               minRows={2}
             />
             <FieldLabel>Revise what the Midwives are trying to accomplish</FieldLabel>
             <KeeperTextarea
               label="Midwives goal revision"
-              value={current.midwivesGoalRevision}
-              onChange={(midwivesGoalRevision) => update({ midwivesGoalRevision })}
+              field="midwivesGoalRevision"
               minRows={5}
             />
             <FieldLabel>New characters connected to the Dark Conspiracy</FieldLabel>
             <KeeperTextarea
               label="Connected characters layer three"
-              value={current.connectedCharactersLayerThree}
-              onChange={(connectedCharactersLayerThree) =>
-                update({ connectedCharactersLayerThree })
-              }
+              field="connectedCharactersLayerThree"
               minRows={4}
             />
           </section>
@@ -374,21 +342,11 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
             <p className="dark-conspiracy-copy">
               What do these creatures look like? What powers do they have? How can they be stopped?
             </p>
-            <KeeperTextarea
-              label="Servitors"
-              value={current.servitors}
-              onChange={(servitors) => update({ servitors })}
-              minRows={5}
-            />
+            <KeeperTextarea label="Servitors" field="servitors" minRows={5} />
             <FieldLabel>
               Final revision of the Child of Persephone and the Midwives' plan
             </FieldLabel>
-            <KeeperTextarea
-              label="Final child revision"
-              value={current.finalChildRevision}
-              onChange={(finalChildRevision) => update({ finalChildRevision })}
-              minRows={4}
-            />
+            <KeeperTextarea label="Final child revision" field="finalChildRevision" minRows={4} />
           </section>
         </div>
       </article>
@@ -407,10 +365,7 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
             </p>
           </section>
 
-          <MysteryTracker
-            mysteries={current.mysteries}
-            onChange={(mysteries) => update({ mysteries })}
-          />
+          <MysteryTracker />
         </div>
       </article>
     </div>

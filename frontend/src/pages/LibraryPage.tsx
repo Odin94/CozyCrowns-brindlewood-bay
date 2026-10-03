@@ -1,29 +1,38 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
-import { api, type PublishedMystery } from "@/utils/api";
+import { api, type LibraryMysterySummary, type PublishedMystery } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { Check, ChevronLeft, Feather, Library, ScrollText } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
-const copyMystery = async (mystery: PublishedMystery) => {
+const copyMystery = async (mystery: Pick<PublishedMystery, "id">) => {
   await api.copyLibraryMystery(mystery.id);
 };
 
 const LibraryPage = () => {
   const { isAuthenticated, loading, signIn, user } = useAuth();
-  const [mysteries, setMysteries] = useState<PublishedMystery[]>([]);
+  const [mysteries, setMysteries] = useState<LibraryMysterySummary[]>([]);
   const [pending, setPending] = useState<PublishedMystery[]>([]);
 
   const refresh = useCallback(async () => {
     try {
-      const library = await api.getLibrary();
-      setMysteries(library.mysteries);
-      if (user?.isSuperadmin) {
-        const moderation = await api.getPendingPublishedMysteries();
-        setPending(moderation.mysteries);
-      }
+      const [library, moderation] = await Promise.allSettled([
+        api.getLibrarySummaries().then((result) => {
+          setMysteries(result.mysteries);
+          return result;
+        }),
+        user?.isSuperadmin
+          ? api.getPendingPublishedMysteries().then((result) => {
+              setPending(result.mysteries);
+              return result;
+            })
+          : Promise.resolve(null),
+      ]);
+      if (!user?.isSuperadmin) setPending([]);
+      if (library.status === "rejected") throw library.reason;
+      if (moderation.status === "rejected") throw moderation.reason;
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not load library`);
     }
@@ -52,7 +61,7 @@ const LibraryPage = () => {
       </main>
     );
 
-  const copy = async (mystery: PublishedMystery) => {
+  const copy = async (mystery: Pick<PublishedMystery, "id">) => {
     try {
       await copyMystery(mystery);
       toast.success(t`Copied to your private mystery library.`);
@@ -60,7 +69,7 @@ const LibraryPage = () => {
       toast.error(error instanceof Error ? error.message : t`Could not copy mystery`);
     }
   };
-  const approve = async (mystery: PublishedMystery) => {
+  const approve = async (mystery: Pick<PublishedMystery, "id">) => {
     try {
       await api.approvePublishedMystery(mystery.id);
       toast.success(t`Mystery approved.`);
@@ -111,13 +120,13 @@ const LibraryPage = () => {
                     <dt>
                       <Trans>Locations</Trans>
                     </dt>
-                    <dd>{mystery.data.locations.length}</dd>
+                    <dd>{mystery.locationCount}</dd>
                   </div>
                   <div>
                     <dt>
                       <Trans>Suspects</Trans>
                     </dt>
-                    <dd>{mystery.data.suspects.length}</dd>
+                    <dd>{mystery.suspectCount}</dd>
                   </div>
                 </dl>
                 <Button onClick={() => void copy(mystery)}>

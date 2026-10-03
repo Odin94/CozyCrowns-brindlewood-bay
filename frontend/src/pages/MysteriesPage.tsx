@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { api, type Mystery, type MysteryData, type MysteryVersion } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
+import { useLingui } from "@lingui/react";
 import {
   ArchiveRestore,
   ChevronLeft,
@@ -21,7 +22,7 @@ import {
   Users,
 } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 const draftKey = "cozycrowns-mystery-draft";
@@ -50,6 +51,11 @@ const hasEnteredInformation = (entry: object) =>
   Object.entries(entry).some(
     ([key, value]) => key !== "id" && typeof value === "string" && value.trim().length > 0,
   );
+
+const patchEntry = <T extends object>(entry: T, changes: Partial<T>): T => ({
+  ...entry,
+  ...changes,
+});
 
 const clueLabels = (clues: MysteryData["clues"]) =>
   clues
@@ -180,18 +186,21 @@ const Section = ({
   </section>
 );
 
-const RemoveCard = ({ onClick }: { onClick: () => void }) => (
-  <Button
-    size="sm"
-    variant="dark"
-    className="ml-auto flex h-7 w-7 p-0"
-    onClick={onClick}
-    aria-label={t`Remove entry`}
-    title={t`Remove entry`}
-  >
-    <Trash2 className="size-3.5" aria-hidden="true" />
-  </Button>
-);
+const RemoveCard = ({ onClick }: { onClick: () => void }) => {
+  useLingui();
+  return (
+    <Button
+      size="sm"
+      variant="dark"
+      className="ml-auto flex h-7 w-7 p-0"
+      onClick={onClick}
+      aria-label={t`Remove entry`}
+      title={t`Remove entry`}
+    >
+      <Trash2 className="size-3.5" aria-hidden="true" />
+    </Button>
+  );
+};
 
 const MysteriesPage = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -283,7 +292,7 @@ const MysteriesPage = () => {
     if (selected?.id) void refreshVersions(selected.id);
   }, [refreshVersions, selected?.id]);
 
-  const updateSelected = (updates: Partial<MysteryData> & { title?: string }) => {
+  const updateSelected = useCallback((updates: Partial<MysteryData> & { title?: string }) => {
     setSelected((current) =>
       current
         ? {
@@ -293,9 +302,9 @@ const MysteriesPage = () => {
           }
         : current,
     );
-  };
+  }, []);
 
-  const removeEntry = (entry: object, remove: () => void) => {
+  const removeEntry = useCallback((entry: object, remove: () => void) => {
     if (!hasEnteredInformation(entry)) {
       remove();
       return;
@@ -303,7 +312,7 @@ const MysteriesPage = () => {
     const title =
       "title" in entry && typeof entry.title === "string" ? entry.title.trim() : undefined;
     setConfirmation({ kind: "remove-entry", title: title || undefined, onConfirm: remove });
-  };
+  }, []);
 
   const save = useCallback(
     (kind: "auto" | "manual"): Promise<boolean> => {
@@ -577,250 +586,35 @@ const MysteriesPage = () => {
                 multi
               />
             </div>
-            <Section
-              title={<Trans>Locations</Trans>}
-              action={
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    const location = blankLocation();
-                    setFocusedEntryId(location.id);
-                    updateSelected({ locations: [...selected.data.locations, location] });
-                  }}
-                >
-                  <Plus className="size-4" />
-                </Button>
-              }
-            >
-              {selected.data.locations.map((location, index) => (
-                <div key={location.id ?? index} className="mystery-card">
-                  <RemoveCard
-                    onClick={() =>
-                      removeEntry(location, () =>
-                        updateSelected({
-                          locations: selected.data.locations.filter((_, i) => i !== index),
-                        }),
-                      )
-                    }
-                  />
-                  <Field
-                    label={<Trans>Title</Trans>}
-                    value={location.title}
-                    autoFocus={focusedEntryId === location.id}
-                    onChange={(title) =>
-                      updateSelected({
-                        locations: selected.data.locations.map((item, i) =>
-                          i === index ? { ...item, title } : item,
-                        ),
-                      })
-                    }
-                  />
-                  <Field
-                    label={<Trans>Description</Trans>}
-                    value={location.description}
-                    multi
-                    onChange={(description) =>
-                      updateSelected({
-                        locations: selected.data.locations.map((item, i) =>
-                          i === index ? { ...item, description } : item,
-                        ),
-                      })
-                    }
-                  />
-                  <Field
-                    label={<Trans>Prompt</Trans>}
-                    value={location.prompt}
-                    multi
-                    onChange={(prompt) =>
-                      updateSelected({
-                        locations: selected.data.locations.map((item, i) =>
-                          i === index ? { ...item, prompt } : item,
-                        ),
-                      })
-                    }
-                  />
-                </div>
-              ))}
-            </Section>
-            <Section
-              title={<Trans>Suspects</Trans>}
-              action={
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    const suspect = blankSuspect();
-                    setFocusedEntryId(suspect.id);
-                    updateSelected({ suspects: [...selected.data.suspects, suspect] });
-                  }}
-                >
-                  <Plus className="size-4" />
-                </Button>
-              }
-            >
-              {selected.data.suspects.map((suspect, index) => (
-                <div key={suspect.id ?? index} className="mystery-card">
-                  <RemoveCard
-                    onClick={() =>
-                      removeEntry(suspect, () =>
-                        updateSelected({
-                          suspects: selected.data.suspects.filter((_, i) => i !== index),
-                        }),
-                      )
-                    }
-                  />
-                  <Field
-                    label={<Trans>Name</Trans>}
-                    value={suspect.name}
-                    autoFocus={focusedEntryId === suspect.id}
-                    onChange={(name) =>
-                      updateSelected({
-                        suspects: selected.data.suspects.map((item, i) =>
-                          i === index ? { ...item, name } : item,
-                        ),
-                      })
-                    }
-                  />
-                  <Field
-                    label={<Trans>Title</Trans>}
-                    value={suspect.title}
-                    onChange={(title) =>
-                      updateSelected({
-                        suspects: selected.data.suspects.map((item, i) =>
-                          i === index ? { ...item, title } : item,
-                        ),
-                      })
-                    }
-                  />
-                  <Field
-                    label={<Trans>Description</Trans>}
-                    value={suspect.description}
-                    multi
-                    onChange={(description) =>
-                      updateSelected({
-                        suspects: selected.data.suspects.map((item, i) =>
-                          i === index ? { ...item, description } : item,
-                        ),
-                      })
-                    }
-                  />
-                  <Field
-                    label={<Trans>Quote</Trans>}
-                    value={suspect.quote}
-                    multi
-                    onChange={(quote) =>
-                      updateSelected({
-                        suspects: selected.data.suspects.map((item, i) =>
-                          i === index ? { ...item, quote } : item,
-                        ),
-                      })
-                    }
-                  />
-                </div>
-              ))}
-            </Section>
-            {(
-              [
-                ["Clues", "clues"],
-                ["Void Clues", "voidClues"],
-              ] as const
-            ).map(([label, key]) => (
-              <Section
-                key={key}
-                title={<Trans>{label}</Trans>}
-                action={
-                  <Button
-                    size="sm"
-                    onClick={() => {
-                      const clue = blankClue();
-                      setFocusedEntryId(clue.id);
-                      updateSelected({ [key]: [...selected.data[key], clue] });
-                    }}
-                  >
-                    <Plus className="size-4" />
-                  </Button>
-                }
-              >
-                {selected.data[key].map((clue, index) => (
-                  <div key={clue.id ?? index} className="mystery-card">
-                    <RemoveCard
-                      onClick={() =>
-                        removeEntry(clue, () =>
-                          updateSelected({
-                            [key]: selected.data[key].filter((_, i) => i !== index),
-                          }),
-                        )
-                      }
-                    />
-                    <Field
-                      label={<Trans>Title</Trans>}
-                      value={clue.title}
-                      autoFocus={focusedEntryId === clue.id}
-                      onChange={(title) =>
-                        updateSelected({
-                          [key]: selected.data[key].map((item, i) =>
-                            i === index ? { ...item, title } : item,
-                          ),
-                        })
-                      }
-                    />
-                    <Field
-                      label={<Trans>Description</Trans>}
-                      value={clue.description}
-                      multi
-                      onChange={(description) =>
-                        updateSelected({
-                          [key]: selected.data[key].map((item, i) =>
-                            i === index ? { ...item, description } : item,
-                          ),
-                        })
-                      }
-                    />
-                  </div>
-                ))}
-              </Section>
-            ))}
-            <Section
-              title={<Trans>Moments</Trans>}
-              action={
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    const moment = blankMoment();
-                    setFocusedEntryId(moment.id);
-                    updateSelected({ moments: [...selected.data.moments, moment] });
-                  }}
-                >
-                  <Plus className="size-4" />
-                </Button>
-              }
-            >
-              {selected.data.moments.map((moment, index) => (
-                <div key={moment.id ?? index} className="mystery-card">
-                  <RemoveCard
-                    onClick={() =>
-                      removeEntry(moment, () =>
-                        updateSelected({
-                          moments: selected.data.moments.filter((_, i) => i !== index),
-                        }),
-                      )
-                    }
-                  />
-                  <Field
-                    label={<Trans>Description</Trans>}
-                    value={moment.description}
-                    autoFocus={focusedEntryId === moment.id}
-                    multi
-                    onChange={(description) =>
-                      updateSelected({
-                        moments: selected.data.moments.map((item, i) =>
-                          i === index ? { ...item, description } : item,
-                        ),
-                      })
-                    }
-                  />
-                </div>
-              ))}
-            </Section>
+            <LocationsSection
+              locations={selected.data.locations}
+              focusedEntryId={focusedEntryId}
+              setFocusedEntryId={setFocusedEntryId}
+              updateSelected={updateSelected}
+              removeEntry={removeEntry}
+            />
+            <SuspectsSection
+              suspects={selected.data.suspects}
+              focusedEntryId={focusedEntryId}
+              setFocusedEntryId={setFocusedEntryId}
+              updateSelected={updateSelected}
+              removeEntry={removeEntry}
+            />
+            <CluesSections
+              clues={selected.data.clues}
+              voidClues={selected.data.voidClues}
+              focusedEntryId={focusedEntryId}
+              setFocusedEntryId={setFocusedEntryId}
+              updateSelected={updateSelected}
+              removeEntry={removeEntry}
+            />
+            <MomentsSection
+              moments={selected.data.moments}
+              focusedEntryId={focusedEntryId}
+              setFocusedEntryId={setFocusedEntryId}
+              updateSelected={updateSelected}
+              removeEntry={removeEntry}
+            />
             <footer className="mystery-footer">
               <Button
                 variant="dark"
@@ -956,3 +750,306 @@ const MysteriesPage = () => {
 };
 
 export default MysteriesPage;
+
+const LocationsSection = memo(function LocationsSection({
+  locations,
+  focusedEntryId,
+  setFocusedEntryId,
+  updateSelected,
+  removeEntry,
+}: {
+  locations: MysteryData["locations"];
+  focusedEntryId: string | null;
+  setFocusedEntryId: (id: string | null) => void;
+  updateSelected: (updates: Partial<MysteryData> & { title?: string }) => void;
+  removeEntry: (entry: object, remove: () => void) => void;
+}) {
+  return (
+    <Section
+      title={<Trans>Locations</Trans>}
+      action={
+        <Button
+          size="sm"
+          onClick={() => {
+            const location = blankLocation();
+            setFocusedEntryId(location.id);
+            updateSelected({ locations: [...locations, location] });
+          }}
+        >
+          <Plus className="size-4" />
+        </Button>
+      }
+    >
+      {locations.map((location, index) => (
+        <div key={location.id ?? index} className="mystery-card">
+          <RemoveCard
+            onClick={() =>
+              removeEntry(location, () =>
+                updateSelected({
+                  locations: locations.filter((_, i) => i !== index),
+                }),
+              )
+            }
+          />
+          <Field
+            label={<Trans>Title</Trans>}
+            value={location.title}
+            autoFocus={focusedEntryId === location.id}
+            onChange={(title) =>
+              updateSelected({
+                locations: locations.map((item, i) =>
+                  i === index ? patchEntry(item, { title }) : item,
+                ),
+              })
+            }
+          />
+          <Field
+            label={<Trans>Description</Trans>}
+            value={location.description}
+            multi
+            onChange={(description) =>
+              updateSelected({
+                locations: locations.map((item, i) =>
+                  i === index ? patchEntry(item, { description }) : item,
+                ),
+              })
+            }
+          />
+          <Field
+            label={<Trans>Prompt</Trans>}
+            value={location.prompt}
+            multi
+            onChange={(prompt) =>
+              updateSelected({
+                locations: locations.map((item, i) => (i === index ? { ...item, prompt } : item)),
+              })
+            }
+          />
+        </div>
+      ))}
+    </Section>
+  );
+});
+const SuspectsSection = memo(function SuspectsSection({
+  suspects,
+  focusedEntryId,
+  setFocusedEntryId,
+  updateSelected,
+  removeEntry,
+}: {
+  suspects: MysteryData["suspects"];
+  focusedEntryId: string | null;
+  setFocusedEntryId: (id: string | null) => void;
+  updateSelected: (updates: Partial<MysteryData> & { title?: string }) => void;
+  removeEntry: (entry: object, remove: () => void) => void;
+}) {
+  return (
+    <Section
+      title={<Trans>Suspects</Trans>}
+      action={
+        <Button
+          size="sm"
+          onClick={() => {
+            const suspect = blankSuspect();
+            setFocusedEntryId(suspect.id);
+            updateSelected({ suspects: [...suspects, suspect] });
+          }}
+        >
+          <Plus className="size-4" />
+        </Button>
+      }
+    >
+      {suspects.map((suspect, index) => (
+        <div key={suspect.id ?? index} className="mystery-card">
+          <RemoveCard
+            onClick={() =>
+              removeEntry(suspect, () =>
+                updateSelected({
+                  suspects: suspects.filter((_, i) => i !== index),
+                }),
+              )
+            }
+          />
+          <Field
+            label={<Trans>Name</Trans>}
+            value={suspect.name}
+            autoFocus={focusedEntryId === suspect.id}
+            onChange={(name) =>
+              updateSelected({
+                suspects: suspects.map((item, i) => (i === index ? { ...item, name } : item)),
+              })
+            }
+          />
+          <Field
+            label={<Trans>Title</Trans>}
+            value={suspect.title}
+            onChange={(title) =>
+              updateSelected({
+                suspects: suspects.map((item, i) =>
+                  i === index ? patchEntry(item, { title }) : item,
+                ),
+              })
+            }
+          />
+          <Field
+            label={<Trans>Description</Trans>}
+            value={suspect.description}
+            multi
+            onChange={(description) =>
+              updateSelected({
+                suspects: suspects.map((item, i) =>
+                  i === index ? patchEntry(item, { description }) : item,
+                ),
+              })
+            }
+          />
+          <Field
+            label={<Trans>Quote</Trans>}
+            value={suspect.quote}
+            multi
+            onChange={(quote) =>
+              updateSelected({
+                suspects: suspects.map((item, i) => (i === index ? { ...item, quote } : item)),
+              })
+            }
+          />
+        </div>
+      ))}
+    </Section>
+  );
+});
+const MomentsSection = memo(function MomentsSection({
+  moments,
+  focusedEntryId,
+  setFocusedEntryId,
+  updateSelected,
+  removeEntry,
+}: {
+  moments: MysteryData["moments"];
+  focusedEntryId: string | null;
+  setFocusedEntryId: (id: string | null) => void;
+  updateSelected: (updates: Partial<MysteryData> & { title?: string }) => void;
+  removeEntry: (entry: object, remove: () => void) => void;
+}) {
+  return (
+    <Section
+      title={<Trans>Moments</Trans>}
+      action={
+        <Button
+          size="sm"
+          onClick={() => {
+            const moment = blankMoment();
+            setFocusedEntryId(moment.id);
+            updateSelected({ moments: [...moments, moment] });
+          }}
+        >
+          <Plus className="size-4" />
+        </Button>
+      }
+    >
+      {moments.map((moment, index) => (
+        <div key={moment.id ?? index} className="mystery-card">
+          <RemoveCard
+            onClick={() =>
+              removeEntry(moment, () =>
+                updateSelected({
+                  moments: moments.filter((_, i) => i !== index),
+                }),
+              )
+            }
+          />
+          <Field
+            label={<Trans>Description</Trans>}
+            value={moment.description}
+            autoFocus={focusedEntryId === moment.id}
+            multi
+            onChange={(description) =>
+              updateSelected({
+                moments: moments.map((item, i) =>
+                  i === index ? patchEntry(item, { description }) : item,
+                ),
+              })
+            }
+          />
+        </div>
+      ))}
+    </Section>
+  );
+});
+const CluesSections = memo(function CluesSections({
+  clues,
+  voidClues,
+  focusedEntryId,
+  setFocusedEntryId,
+  updateSelected,
+  removeEntry,
+}: {
+  clues: MysteryData["clues"];
+  voidClues: MysteryData["voidClues"];
+  focusedEntryId: string | null;
+  setFocusedEntryId: (id: string | null) => void;
+  updateSelected: (updates: Partial<MysteryData> & { title?: string }) => void;
+  removeEntry: (entry: object, remove: () => void) => void;
+}) {
+  return (
+    [
+      ["Clues", "clues"],
+      ["Void Clues", "voidClues"],
+    ] as const
+  ).map(([label, key]) => (
+    <Section
+      key={key}
+      title={<Trans>{label}</Trans>}
+      action={
+        <Button
+          size="sm"
+          onClick={() => {
+            const clue = blankClue();
+            setFocusedEntryId(clue.id);
+            updateSelected({ [key]: [...(key === "clues" ? clues : voidClues), clue] });
+          }}
+        >
+          <Plus className="size-4" />
+        </Button>
+      }
+    >
+      {(key === "clues" ? clues : voidClues).map((clue, index) => (
+        <div key={clue.id ?? index} className="mystery-card">
+          <RemoveCard
+            onClick={() =>
+              removeEntry(clue, () =>
+                updateSelected({
+                  [key]: (key === "clues" ? clues : voidClues).filter((_, i) => i !== index),
+                }),
+              )
+            }
+          />
+          <Field
+            label={<Trans>Title</Trans>}
+            value={clue.title}
+            autoFocus={focusedEntryId === clue.id}
+            onChange={(title) =>
+              updateSelected({
+                [key]: (key === "clues" ? clues : voidClues).map((item, i) =>
+                  i === index ? patchEntry(item, { title }) : item,
+                ),
+              })
+            }
+          />
+          <Field
+            label={<Trans>Description</Trans>}
+            value={clue.description}
+            multi
+            onChange={(description) =>
+              updateSelected({
+                [key]: (key === "clues" ? clues : voidClues).map((item, i) =>
+                  i === index ? patchEntry(item, { description }) : item,
+                ),
+              })
+            }
+          />
+        </div>
+      ))}
+    </Section>
+  ));
+});

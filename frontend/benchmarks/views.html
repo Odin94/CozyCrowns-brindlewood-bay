@@ -1,0 +1,41 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>CozyCrowns view benchmarks</title>
+    <script>
+      window.benchErrors = [];
+      window.addEventListener("error", (event) =>
+        window.benchErrors.push({ message: event.message, stack: event.error?.stack }),
+      );
+      window.addEventListener("unhandledrejection", (event) =>
+        window.benchErrors.push({ message: String(event.reason), stack: event.reason?.stack }),
+      );
+      window.viewRenderCounts = {};
+      window.__REACT_DEVTOOLS_GLOBAL_HOOK__ = {
+        supportsFiber: true,
+        inject() {
+          return 1;
+        },
+        onCommitFiberUnmount() {},
+        onCommitFiberRoot(id, root) {
+          window.lastBenchmarkRoot = root;
+          function walk(fiber) {
+            if (!fiber) return;
+            const type = fiber.type;
+            const name = typeof type === "function" ? type.name : type?.type?.name;
+            if (name && fiber.flags & 1 && fiber.actualStartTime >= root.current.actualStartTime)
+              window.viewRenderCounts[name] = (window.viewRenderCounts[name] || 0) + 1;
+            walk(fiber.child);
+            walk(fiber.sibling);
+          }
+          walk(root.current);
+        },
+      };
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/benchmarks/views.tsx"></script>
+  </body>
+</html>

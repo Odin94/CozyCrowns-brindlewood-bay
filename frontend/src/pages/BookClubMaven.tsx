@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { useAuth } from "@/hooks/useAuth";
@@ -12,7 +12,7 @@ import {
   getCrownOfTheVoid,
 } from "@/game_data";
 import { Button } from "@/components/ui/button";
-import CharacterSheet from "./CharacterSheet";
+const CharacterSheet = lazy(() => import("./CharacterSheet"));
 
 export default function BookClubMaven({
   clubId,
@@ -100,11 +100,13 @@ export default function BookClubMaven({
           <Trans>Loading…</Trans>
         </p>
       ) : result.own ? (
-        <CharacterSheet
-          onBookClubsClick={onBack}
-          onSwitchToCharacter={onGoToSheet}
-          onSwitchToDarkConspiracy={onGoToDarkConspiracy}
-        />
+        <Suspense fallback={null}>
+          <CharacterSheet
+            onBookClubsClick={onBack}
+            onSwitchToCharacter={onGoToSheet}
+            onSwitchToDarkConspiracy={onGoToDarkConspiracy}
+          />
+        </Suspense>
       ) : (
         <ReadOnlySheet character={result.character} />
       )}

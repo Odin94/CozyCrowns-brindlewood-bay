@@ -4,7 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 import { lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useAuth } from "./hooks/useAuth";
-import CharacterSheet from "./pages/CharacterSheet";
+const CharacterSheet = lazy(() => import("./pages/CharacterSheet"));
 import { CookieConsent } from "./components/cookie-consent";
 import { clearAuthReturnTo, isSafeAuthReturnTo } from "./lib/auth_return_to";
 
@@ -73,6 +73,20 @@ function AppRoutes() {
     },
     [navigate],
   );
+  const onClubChange = useCallback(
+    (clubId: string | null) => {
+      navigate(clubId ? `/book-clubs/${encodeURIComponent(clubId)}` : "/book-clubs");
+    },
+    [navigate],
+  );
+  const onOpenMaven = useCallback(
+    (clubId: string, characterId: string) => {
+      navigate(
+        `/book-clubs/${encodeURIComponent(clubId)}/mavens/${encodeURIComponent(characterId)}`,
+      );
+    },
+    [navigate],
+  );
   const signInReturnTo = new URLSearchParams(new URL(location, window.location.origin).search).get(
     "returnTo",
   );
@@ -133,15 +147,9 @@ function AppRoutes() {
             <BookClubOverview
               clubId={bookClubMatch[1] ? decodeURIComponent(bookClubMatch[1]) : null}
               panel={bookClubPanel}
-              onOpenMaven={(clubId, characterId) =>
-                navigate(
-                  `/book-clubs/${encodeURIComponent(clubId)}/mavens/${encodeURIComponent(characterId)}`,
-                )
-              }
+              onOpenMaven={onOpenMaven}
               onClose={() => navigate("/")}
-              onClubChange={(clubId) =>
-                navigate(clubId ? `/book-clubs/${encodeURIComponent(clubId)}` : "/book-clubs")
-              }
+              onClubChange={onClubChange}
               onPanelChange={(panel) => {
                 const path = bookClubMatch[1]
                   ? `/book-clubs/${encodeURIComponent(decodeURIComponent(bookClubMatch[1]))}`

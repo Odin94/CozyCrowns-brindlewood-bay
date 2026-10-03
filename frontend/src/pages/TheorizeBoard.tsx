@@ -18,6 +18,7 @@ import {
   type TheoryNodeKind,
 } from "@/utils/api";
 import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
 import {
   ChevronLeft,
@@ -278,6 +279,7 @@ export default function TheorizeBoard({
   const canvasRef = useRef<HTMLElement>(null);
   const bulkUpdateRef = useRef(false);
   const [mysteryTitle, setMysteryTitle] = useState("");
+  const { i18n } = useLingui();
   const [nodes, setNodes] = useState<TheoryNode[]>([]);
   const [edges, setEdges] = useState<TheoryEdge[]>([]);
   const [loading, setLoading] = useState(true);
@@ -563,16 +565,19 @@ export default function TheorizeBoard({
     }
   };
 
-  const startConnection = (event: React.PointerEvent, sourceId: string) => {
-    if (event.button !== 0) return;
-    event.preventDefault();
-    event.stopPropagation();
-    setConnecting({
-      sourceId,
-      mode: "pointer",
-      pointer: clientToBoard(event.clientX, event.clientY),
-    });
-  };
+  const startConnection = useCallback(
+    (event: React.PointerEvent, sourceId: string) => {
+      if (event.button !== 0) return;
+      event.preventDefault();
+      event.stopPropagation();
+      setConnecting({
+        sourceId,
+        mode: "pointer",
+        pointer: clientToBoard(event.clientX, event.clientY),
+      });
+    },
+    [clientToBoard],
+  );
 
   const createConnection = useCallback(
     (sourceId: string, targetId: string) => {
@@ -626,20 +631,23 @@ export default function TheorizeBoard({
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [connectionMode]);
 
-  const openEdit = async (node: TheoryNode) => {
-    try {
-      const locked = await api.lockBookClubTheoryNode(bookClubId, mysteryId, node.id);
-      setEditing({
-        ...locked,
-        draftTitle: locked.title,
-        draftDescription: locked.description,
-        draftTags: locked.tags,
-      });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`This note is currently locked`);
-      void refresh(true);
-    }
-  };
+  const openEdit = useCallback(
+    async (node: TheoryNode) => {
+      try {
+        const locked = await api.lockBookClubTheoryNode(bookClubId, mysteryId, node.id);
+        setEditing({
+          ...locked,
+          draftTitle: locked.title,
+          draftDescription: locked.description,
+          draftTags: locked.tags,
+        });
+      } catch (error) {
+        toast.error(error instanceof Error ? error.message : t`This note is currently locked`);
+        void refresh(true);
+      }
+    },
+    [bookClubId, mysteryId, refresh],
+  );
 
   const closeEdit = () => setEditing(null);
 
@@ -698,7 +706,7 @@ export default function TheorizeBoard({
     }
   };
 
-  const saveEdgeLabel = async () => {
+  const saveEdgeLabel = useCallback(async () => {
     if (!inlineEdge) return;
     try {
       const updated = await api.updateBookClubTheoryEdge(bookClubId, mysteryId, inlineEdge.id, {
@@ -711,9 +719,9 @@ export default function TheorizeBoard({
       toast.error(error instanceof Error ? error.message : t`Could not rename that connection`);
       void refresh(true);
     }
-  };
+  }, [bookClubId, mysteryId, inlineEdge, refresh]);
 
-  const deleteEdge = async () => {
+  const deleteEdge = useCallback(async () => {
     if (!inlineEdge) return;
     const deletedEdge = inlineEdge;
     try {
@@ -752,13 +760,295 @@ export default function TheorizeBoard({
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not delete that connection`);
     }
-  };
+  }, [bookClubId, mysteryId, inlineEdge]);
 
-  const connectorPreview = connecting?.mode === "pointer" ? nodeMap.get(connecting.sourceId) : null;
-  const connectorStart =
-    connectorPreview && connecting?.mode === "pointer"
-      ? pointOnNodeEdge(connectorPreview, connecting.pointer)
-      : null;
+  const isDragging = Boolean(drag);
+  const scene = useMemo(() => {
+    void i18n.locale; // Refresh translated node controls when the locale changes.
+    const connectorPreview =
+      connecting?.mode === "pointer" ? nodeMap.get(connecting.sourceId) : null;
+    const connectorStart =
+      connectorPreview && connecting?.mode === "pointer"
+        ? pointOnNodeEdge(connectorPreview, connecting.pointer)
+        : null;
+    return (
+      <>
+        <svg
+          className="pointer-events-none absolute inset-0 overflow-visible"
+          width={BOARD_WIDTH}
+          height={BOARD_HEIGHT}
+        >
+          <defs>
+            <marker
+              id="theory-arrow-subtle"
+              markerWidth="8"
+              markerHeight="8"
+              refX="6"
+              refY="3"
+              orient="auto"
+            >
+              <path d="M0,0 L0,6 L7,3 z" fill="#655f56" fillOpacity="0.52" />
+            </marker>
+            <marker
+              id="theory-arrow-highlighted"
+              markerWidth="8"
+              markerHeight="8"
+              refX="6"
+              refY="3"
+              orient="auto"
+            >
+              <path d="M0,0 L0,6 L7,3 z" fill="#51483e" fillOpacity="0.92" />
+            </marker>
+          </defs>
+          {edges.map((edge) => {
+            const source = nodeMap.get(edge.sourceNodeId);
+            const target = nodeMap.get(edge.targetNodeId);
+            if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
+              return null;
+            const highlighted =
+              hoveredNodeId === edge.sourceNodeId || hoveredNodeId === edge.targetNodeId;
+            return (
+              <path
+                key={edge.id}
+                d={edgeGeometry(source, target).path}
+                fill="none"
+                className={`theory-edge ${highlighted ? "is-highlighted" : ""}`}
+                markerEnd={`url(#theory-arrow-${highlighted ? "highlighted" : "subtle"})`}
+              />
+            );
+          })}
+          {connectorPreview && connectorStart && connecting?.mode === "pointer" && (
+            <path
+              d={`M ${connectorStart.x} ${connectorStart.y} L ${connecting.pointer.x} ${connecting.pointer.y}`}
+              fill="none"
+              className="theory-edge-preview"
+            />
+          )}
+        </svg>
+
+        {edges.map((edge) => {
+          const source = nodeMap.get(edge.sourceNodeId);
+          const target = nodeMap.get(edge.targetNodeId);
+          if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
+            return null;
+          const point = edgeGeometry(source, target).midpoint;
+          const highlighted =
+            hoveredNodeId === edge.sourceNodeId || hoveredNodeId === edge.targetNodeId;
+          if (inlineEdge?.id === edge.id) {
+            return (
+              <div
+                key={edge.id}
+                data-board-interactive
+                className="theory-edge-editor absolute z-30 flex gap-1"
+                style={{ left: point.x - 86, top: point.y - 16 }}
+                onPointerDown={(event) => event.stopPropagation()}
+                onBlur={(event) => {
+                  if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+                    void saveEdgeLabel();
+                }}
+              >
+                <Input
+                  autoFocus
+                  className="h-8 w-40 px-2 text-xs"
+                  value={inlineEdge.label}
+                  onChange={(event) => setInlineEdge({ ...inlineEdge, label: event.target.value })}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") void saveEdgeLabel();
+                    if (event.key === "Escape") setInlineEdge(null);
+                  }}
+                />
+                <Button
+                  type="button"
+                  variant="bare"
+                  aria-label={t`Delete connection`}
+                  onMouseDown={(event) => event.preventDefault()}
+                  onClick={() => void deleteEdge()}
+                  className="theory-edge-editor__delete rounded px-2"
+                >
+                  <Trash2 className="size-3.5" />
+                </Button>
+              </div>
+            );
+          }
+          return (
+            <Button
+              key={edge.id}
+              type="button"
+              variant="bare"
+              data-board-interactive
+              className={`theory-edge-label absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded px-2 py-0.5 text-xs ${highlighted ? "is-highlighted" : ""}`}
+              style={{ left: point.x, top: point.y }}
+              onPointerDown={(event) => event.stopPropagation()}
+              onClick={() => setInlineEdge({ ...edge })}
+              title={t`Click to name this connection`}
+            >
+              {edge.label || <Link2 className="size-3" />}
+            </Button>
+          );
+        })}
+
+        {visibleNodes.map((node) => (
+          <Tooltip
+            key={node.id}
+            delayDuration={350}
+            onOpenChange={(open) =>
+              setDescriptionNodeId((current) =>
+                open ? node.id : current === node.id ? null : current,
+              )
+            }
+            open={Boolean(
+              descriptionNodeId === node.id &&
+              !isDragging &&
+              !connecting &&
+              node.description?.trim(),
+            )}
+          >
+            <TooltipTrigger asChild>
+              <article
+                data-theory-node-id={node.id}
+                data-board-interactive
+                role={
+                  connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                    ? "button"
+                    : undefined
+                }
+                tabIndex={0}
+                aria-label={
+                  connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                    ? `${t`Connect to this note`}: ${node.title}`
+                    : undefined
+                }
+                className={`theory-node absolute z-10 flex cursor-grab select-none flex-col p-3 active:cursor-grabbing ${nodeTone[node.kind]} ${connecting?.sourceId === node.id ? "is-connection-source" : connecting ? "is-connection-target" : ""}`}
+                style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
+                onFocus={() => setHoveredNodeId(node.id)}
+                onBlur={() => setHoveredNodeId(null)}
+                onPointerEnter={() => setHoveredNodeId(node.id)}
+                onPointerLeave={() =>
+                  setHoveredNodeId((current) => (current === node.id ? null : current))
+                }
+                onPointerDown={(event) => {
+                  if (event.button !== 0 || (event.pointerType === "touch" && !event.isPrimary))
+                    return;
+                  if (connecting?.mode === "keyboard") {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    if (connecting.sourceId !== node.id) {
+                      const sourceId = connecting.sourceId;
+                      setConnecting(null);
+                      createConnection(sourceId, node.id);
+                    }
+                    return;
+                  }
+                  event.stopPropagation();
+                  setDrag({
+                    type: "node",
+                    node,
+                    clientX: event.clientX,
+                    clientY: event.clientY,
+                    x: node.x,
+                    y: node.y,
+                  });
+                }}
+                onDoubleClick={(event) => {
+                  event.stopPropagation();
+                  void openEdit(node);
+                }}
+                onKeyDown={(event) => {
+                  if (
+                    connecting?.mode === "keyboard" &&
+                    connecting.sourceId !== node.id &&
+                    (event.key === "Enter" || event.key === " ")
+                  ) {
+                    event.preventDefault();
+                    const sourceId = connecting.sourceId;
+                    setConnecting(null);
+                    createConnection(sourceId, node.id);
+                  }
+                }}
+              >
+                {(["top", "right", "bottom", "left"] as const).map((side) => (
+                  <button
+                    key={side}
+                    type="button"
+                    title={t`Drag to connect notes`}
+                    aria-label={t`Create connection from this note`}
+                    aria-hidden={connecting?.mode === "keyboard" && connecting.sourceId !== node.id}
+                    tabIndex={
+                      connecting?.mode === "keyboard" && connecting.sourceId !== node.id
+                        ? -1
+                        : undefined
+                    }
+                    data-board-interactive
+                    className={`theory-node__pin theory-node__pin--${side} absolute z-20 rounded-full`}
+                    onPointerDown={(event) => startConnection(event, node.id)}
+                    onClick={(event) => {
+                      if (event.detail === 0)
+                        setConnecting({ sourceId: node.id, mode: "keyboard" });
+                    }}
+                  >
+                    <Link2 className="size-3.5" aria-hidden="true" />
+                  </button>
+                ))}
+                <div className="flex items-start gap-2 pr-2">
+                  {node.kind === "suspect" ? (
+                    <UserRound className="theory-node__icon mt-0.5 size-4 shrink-0" />
+                  ) : (
+                    <Crosshair className="theory-node__icon mt-0.5 size-4 shrink-0" />
+                  )}
+                  <h2 className="line-clamp-4 text-sm font-semibold leading-snug">{node.title}</h2>
+                </div>
+                {node.description?.trim() && (
+                  <Pencil
+                    className="theory-node__description ml-auto size-3.5 shrink-0"
+                    aria-label={t`Has a description`}
+                  />
+                )}
+                <div className="theory-node__tags mt-auto flex max-h-11 flex-wrap gap-1 overflow-hidden pt-2">
+                  <span className="theory-node__base-tag rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
+                    {node.baseTag}
+                  </span>
+                  {node.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="theory-node__tag rounded-full px-2 py-0.5 text-[10px]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+                {node.editingByNickname && (
+                  <span className="theory-node__lock mt-1 flex items-center gap-1 text-[10px]">
+                    <Lock className="size-3" /> {node.editingByNickname}
+                  </span>
+                )}
+              </article>
+            </TooltipTrigger>
+            {node.description?.trim() && (
+              <TooltipContent className="theory-description-tooltip whitespace-pre-wrap break-words">
+                {node.description}
+              </TooltipContent>
+            )}
+          </Tooltip>
+        ))}
+      </>
+    );
+  }, [
+    edges,
+    nodeMap,
+    visibleIds,
+    visibleNodes,
+    hoveredNodeId,
+    descriptionNodeId,
+    isDragging,
+    connecting,
+    inlineEdge,
+    startConnection,
+    createConnection,
+    openEdit,
+    saveEdgeLabel,
+    deleteEdge,
+    i18n.locale,
+  ]);
 
   return (
     <div className="theory-board flex flex-col">
@@ -862,266 +1152,7 @@ export default function TheorizeBoard({
             } as React.CSSProperties
           }
         >
-          <svg
-            className="pointer-events-none absolute inset-0 overflow-visible"
-            width={BOARD_WIDTH}
-            height={BOARD_HEIGHT}
-          >
-            <defs>
-              <marker
-                id="theory-arrow-subtle"
-                markerWidth="8"
-                markerHeight="8"
-                refX="6"
-                refY="3"
-                orient="auto"
-              >
-                <path d="M0,0 L0,6 L7,3 z" fill="#655f56" fillOpacity="0.52" />
-              </marker>
-              <marker
-                id="theory-arrow-highlighted"
-                markerWidth="8"
-                markerHeight="8"
-                refX="6"
-                refY="3"
-                orient="auto"
-              >
-                <path d="M0,0 L0,6 L7,3 z" fill="#51483e" fillOpacity="0.92" />
-              </marker>
-            </defs>
-            {edges.map((edge) => {
-              const source = nodeMap.get(edge.sourceNodeId);
-              const target = nodeMap.get(edge.targetNodeId);
-              if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
-                return null;
-              const highlighted =
-                hoveredNodeId === edge.sourceNodeId || hoveredNodeId === edge.targetNodeId;
-              return (
-                <path
-                  key={edge.id}
-                  d={edgeGeometry(source, target).path}
-                  fill="none"
-                  className={`theory-edge ${highlighted ? "is-highlighted" : ""}`}
-                  markerEnd={`url(#theory-arrow-${highlighted ? "highlighted" : "subtle"})`}
-                />
-              );
-            })}
-            {connectorPreview && connectorStart && connecting?.mode === "pointer" && (
-              <path
-                d={`M ${connectorStart.x} ${connectorStart.y} L ${connecting.pointer.x} ${connecting.pointer.y}`}
-                fill="none"
-                className="theory-edge-preview"
-              />
-            )}
-          </svg>
-
-          {edges.map((edge) => {
-            const source = nodeMap.get(edge.sourceNodeId);
-            const target = nodeMap.get(edge.targetNodeId);
-            if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
-              return null;
-            const point = edgeGeometry(source, target).midpoint;
-            const highlighted =
-              hoveredNodeId === edge.sourceNodeId || hoveredNodeId === edge.targetNodeId;
-            if (inlineEdge?.id === edge.id) {
-              return (
-                <div
-                  key={edge.id}
-                  data-board-interactive
-                  className="theory-edge-editor absolute z-30 flex gap-1"
-                  style={{ left: point.x - 86, top: point.y - 16 }}
-                  onPointerDown={(event) => event.stopPropagation()}
-                  onBlur={(event) => {
-                    if (!event.currentTarget.contains(event.relatedTarget as Node | null))
-                      void saveEdgeLabel();
-                  }}
-                >
-                  <Input
-                    autoFocus
-                    className="h-8 w-40 px-2 text-xs"
-                    value={inlineEdge.label}
-                    onChange={(event) =>
-                      setInlineEdge({ ...inlineEdge, label: event.target.value })
-                    }
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") void saveEdgeLabel();
-                      if (event.key === "Escape") setInlineEdge(null);
-                    }}
-                  />
-                  <Button
-                    type="button"
-                    variant="bare"
-                    aria-label={t`Delete connection`}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={() => void deleteEdge()}
-                    className="theory-edge-editor__delete rounded px-2"
-                  >
-                    <Trash2 className="size-3.5" />
-                  </Button>
-                </div>
-              );
-            }
-            return (
-              <Button
-                key={edge.id}
-                type="button"
-                variant="bare"
-                data-board-interactive
-                className={`theory-edge-label absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded px-2 py-0.5 text-xs ${highlighted ? "is-highlighted" : ""}`}
-                style={{ left: point.x, top: point.y }}
-                onPointerDown={(event) => event.stopPropagation()}
-                onClick={() => setInlineEdge({ ...edge })}
-                title={t`Click to name this connection`}
-              >
-                {edge.label || <Link2 className="size-3" />}
-              </Button>
-            );
-          })}
-
-          {visibleNodes.map((node) => (
-            <Tooltip
-              key={node.id}
-              delayDuration={350}
-              onOpenChange={(open) =>
-                setDescriptionNodeId((current) =>
-                  open ? node.id : current === node.id ? null : current,
-                )
-              }
-              open={Boolean(
-                descriptionNodeId === node.id && !drag && !connecting && node.description?.trim(),
-              )}
-            >
-              <TooltipTrigger asChild>
-                <article
-                  data-theory-node-id={node.id}
-                  data-board-interactive
-                  role={
-                    connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                      ? "button"
-                      : undefined
-                  }
-                  tabIndex={0}
-                  aria-label={
-                    connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                      ? `${t`Connect to this note`}: ${node.title}`
-                      : undefined
-                  }
-                  className={`theory-node absolute z-10 flex cursor-grab select-none flex-col p-3 active:cursor-grabbing ${nodeTone[node.kind]} ${connecting?.sourceId === node.id ? "is-connection-source" : connecting ? "is-connection-target" : ""}`}
-                  style={{ left: node.x, top: node.y, width: NODE_WIDTH, height: NODE_HEIGHT }}
-                  onFocus={() => setHoveredNodeId(node.id)}
-                  onBlur={() => setHoveredNodeId(null)}
-                  onPointerEnter={() => setHoveredNodeId(node.id)}
-                  onPointerLeave={() =>
-                    setHoveredNodeId((current) => (current === node.id ? null : current))
-                  }
-                  onPointerDown={(event) => {
-                    if (event.button !== 0 || (event.pointerType === "touch" && !event.isPrimary))
-                      return;
-                    if (connecting?.mode === "keyboard") {
-                      event.preventDefault();
-                      event.stopPropagation();
-                      if (connecting.sourceId !== node.id) {
-                        const sourceId = connecting.sourceId;
-                        setConnecting(null);
-                        createConnection(sourceId, node.id);
-                      }
-                      return;
-                    }
-                    event.stopPropagation();
-                    setDrag({
-                      type: "node",
-                      node,
-                      clientX: event.clientX,
-                      clientY: event.clientY,
-                      x: node.x,
-                      y: node.y,
-                    });
-                  }}
-                  onDoubleClick={(event) => {
-                    event.stopPropagation();
-                    void openEdit(node);
-                  }}
-                  onKeyDown={(event) => {
-                    if (
-                      connecting?.mode === "keyboard" &&
-                      connecting.sourceId !== node.id &&
-                      (event.key === "Enter" || event.key === " ")
-                    ) {
-                      event.preventDefault();
-                      const sourceId = connecting.sourceId;
-                      setConnecting(null);
-                      createConnection(sourceId, node.id);
-                    }
-                  }}
-                >
-                  {(["top", "right", "bottom", "left"] as const).map((side) => (
-                    <button
-                      key={side}
-                      type="button"
-                      title={t`Drag to connect notes`}
-                      aria-label={t`Create connection from this note`}
-                      aria-hidden={
-                        connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                      }
-                      tabIndex={
-                        connecting?.mode === "keyboard" && connecting.sourceId !== node.id
-                          ? -1
-                          : undefined
-                      }
-                      data-board-interactive
-                      className={`theory-node__pin theory-node__pin--${side} absolute z-20 rounded-full`}
-                      onPointerDown={(event) => startConnection(event, node.id)}
-                      onClick={(event) => {
-                        if (event.detail === 0)
-                          setConnecting({ sourceId: node.id, mode: "keyboard" });
-                      }}
-                    >
-                      <Link2 className="size-3.5" aria-hidden="true" />
-                    </button>
-                  ))}
-                  <div className="flex items-start gap-2 pr-2">
-                    {node.kind === "suspect" ? (
-                      <UserRound className="theory-node__icon mt-0.5 size-4 shrink-0" />
-                    ) : (
-                      <Crosshair className="theory-node__icon mt-0.5 size-4 shrink-0" />
-                    )}
-                    <h2 className="line-clamp-4 text-sm font-semibold leading-snug">
-                      {node.title}
-                    </h2>
-                  </div>
-                  {node.description?.trim() && (
-                    <Pencil
-                      className="theory-node__description ml-auto size-3.5 shrink-0"
-                      aria-label={t`Has a description`}
-                    />
-                  )}
-                  <div className="theory-node__tags mt-auto flex max-h-11 flex-wrap gap-1 overflow-hidden pt-2">
-                    <span className="theory-node__base-tag rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
-                      {node.baseTag}
-                    </span>
-                    {node.tags.map((tag) => (
-                      <span
-                        key={tag}
-                        className="theory-node__tag rounded-full px-2 py-0.5 text-[10px]"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-                  {node.editingByNickname && (
-                    <span className="theory-node__lock mt-1 flex items-center gap-1 text-[10px]">
-                      <Lock className="size-3" /> {node.editingByNickname}
-                    </span>
-                  )}
-                </article>
-              </TooltipTrigger>
-              {node.description?.trim() && (
-                <TooltipContent className="theory-description-tooltip whitespace-pre-wrap break-words">
-                  {node.description}
-                </TooltipContent>
-              )}
-            </Tooltip>
-          ))}
+          {scene}
         </div>
       </main>
 

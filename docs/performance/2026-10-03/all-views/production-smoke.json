@@ -1,0 +1,22 @@
+{
+  "fixture": "Native production UI built from all-views source, VITE_API_URL=http://127.0.0.1:3313; real authenticated Fastify + migrated disposable SQLite fixture; no production data/real external OAuth",
+  "checks": [
+    "Local Sign In succeeds",
+    "Library24 approved4 pending, full20-clue copy increments private28→29",
+    "Moderation approve updates24→25 approved and4→3 pending",
+    "Mystery keyboard title/location edits save; manual version restore returns canonical old values",
+    "All6 Book Club drawers mount with7 visible sheets, deleted sheet excluded",
+    "Shared/private notes save",
+    "Theory30 ensured clue nodes, real create-note adds31st",
+    "Shared Maven12 read-only sections0 inputs, own editable17 inputs",
+    "Dark Conspiracy3 pages17 textareas",
+    "Missing-code OAuth callback inspected, existing Redirecting branch"
+  ],
+  "screenshots": {
+    "library": "/Users/odin/.t3/userdata/browser-artifacts/browser-screenshot-127-0-0-1-mus4an22-e4580b75.png",
+    "mystery": "/Users/odin/.t3/userdata/browser-artifacts/browser-screenshot-127-0-0-1-mus4bx5s-a1cf8f5f.png",
+    "bookClub": "/Users/odin/.t3/userdata/browser-artifacts/browser-screenshot-127-0-0-1-mus4bxnh-ceac7f96.png",
+    "theory": "/Users/odin/.t3/userdata/browser-artifacts/browser-screenshot-127-0-0-1-mus4cihv-c088b1ef.png",
+    "dark": "/Users/odin/.t3/userdata/browser-artifacts/browser-screenshot-127-0-0-1-mus4d87v-51c94d20.png"
+  }
+}

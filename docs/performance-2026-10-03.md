@@ -75,3 +75,98 @@ The supplementary production typing samples use real keyboard events and a Mutat
 Repository formatting, frontend/backend lint, both TypeScript builds and the test suite passed. Tests cover structural sharing, normalized partial edits, full imports, omitted local metadata, selected-Maven identity through remote updates, immediate persisted snapshots and rehydration. Delayed-initializer tests cover stale analytics identities during user transitions, cancellation on logout, reset-before-navigation ordering and failed/disabled analytics. The production browser smoke test confirmed anonymous name and ability edits survive reload. No user-facing strings or styles changed.
 
 The sheet still synchronously serializes local characters on every edit. That protects the local-first save contract; changing persistence scheduling would require separate durability design. Large Book Club responses still include full notes and clue lists; response reduction would need a compatible API/UI loading change. The 696 kB PDF chunk is already deferred to export. Measurements here establish reductions in actual work and local timings, not deployment-wide percentiles.
+
+## Second pass: all routes and major views
+
+This pass compares the completed first pass, `7b88cb2512fac15c920723d81e0a9cec10962e81`, with the all-views changes in this report. It does not reuse the original sheet baseline to inflate the new gains. Rendering/rerender work was treated as critical under the Vercel React best-practices guidance. Baseline source and production dist were retained outside git before changes.
+
+The editable character sheet is now loaded only by routes that use it. Book Club cards and scenery retain their rendered subtrees during unrelated edits, navigation and unchanged fresh HTTP JSON responses. Club refresh/socket callbacks remain stable across panel navigation. Mystery collection editors retain their subtrees during metadata edits. Theory board scenes retain nodes, edge editors and tooltips during viewport and unrelated dialog edits. Dark Conspiracy fields subscribe to their own values. Library browsing uses an optional approved-summary response, while copying, moderation and the existing full-library API retain complete documents. Public and moderation requests start together; each successful result renders independently even if the other request is slow or fails.
+
+### Mounted React workloads
+
+Three interleaved baseline/after pairs ran in the same native Chromium tab. The harness mounts the actual pages with Lingui, Query and deterministic API fixtures, including fresh JSON decoding. Each edit workload performs 30 separate `flushSync` updates. React Profiler records committed render duration; the React commit hook counts components actually executed, excluding skipped fibers carrying stale flags. These are development React measurements, not production paint, INP or deployment latency. Concurrent builds on this machine make deterministic work counts the stronger evidence.
+
+| Actual mounted view/workload | Component executions before → after | Median React duration before → after | Median synchronous elapsed before → after |
+| --- | --- | --- | --- |
+| Mystery, 100 collection entries, title edits | MysteryField 7,320 → 120 | 138.1 → 50.8 ms | 207.8 → 61.0 ms |
+| Book Club, 24 Mavens, invite nickname edits | MavenCard 720 → 0 | 48.7 → 8.3 ms | 82.8 → 13.8 ms |
+| Theory, 80 notes/100 edges, new-note title edits | Tooltip 4,800 → 0 | 379.8 → 11.6 ms | 631.7 → 26.3 ms |
+| Theory, same scene, 30 viewport zoom events | Tooltip 4,800 → 0 | 269.4 → 5.1 ms | 510.3 → 10.9 ms |
+| Dark Conspiracy, first Void Clue edits | KeeperTextarea 330 → 30; root 30 → 0 | 9.2 → 0.2 ms | 14.5 → 1.7 ms |
+| Book Club, 10 unchanged full-JSON refreshes | MavenCard 240 → 0 | 53.3 → 19.4 ms | Settling waits excluded from claims |
+
+The Dark Conspiracy duration is close to timer resolution; the execution count is more informative. Theory tooltip counts include nested commits. Fresh-refresh runs disable background polling during mount so only the ten explicit refreshes count; responses still clone their complete JSON and all eleven initial/refresh API calls occur. Version-only changes, changed timestamps/names, membership, GM/nickname changes, removals and reordered members remain fresh.
+
+The six Book Club panel navigations previously restarted seven overview reads and seven websocket connections including initial mount; they now require one overview read and one connection. Notes still fetch their separate note document. The Library fixture uses an artificial 80 ms delay per request: request start separation falls from roughly 87 ms to zero. This verifies removal of a request waterfall, not live backend latency. A mounted regression check holds moderation unresolved and verifies all 24 public cards render, then rejects moderation and verifies they remain visible.
+
+Raw reproducible evidence is in [all-views](performance/2026-10-03/all-views/): `react-views.json`, `fresh-json-refresh.json` and `view-contracts.json` retain workload results and correctness assertions.
+
+### Production route loading
+
+`route-bundles-before.json` and `route-bundles-after.json` measure the built Vite static import closure of entry, App, English locale and each actual route. They exclude previous-route cache, conditional analytics/PDF imports and conditional editable sheets. This is decoded minified JS, not compressed transfer or a cold-network latency prediction. Native no-store production checks independently sampled three complete navigations per public route: sign-in fell from 622,934 to approximately 427 kB; anonymous sheet and Dark Conspiracy remain approximately 621 kB. Final exact route totals are in the committed JSON.
+
+The biggest route savings come from removing the eager sheet from the common App chunk. Own-Maven navigation still downloads the editable sheet and is essentially unchanged. Keeping existing shared libraries avoids unnecessary splitting overhead; anonymous sheet/Dark bundle size is flat while their render workloads improve.
+
+| Route closure | Before JS bytes | Final JS bytes |
+| --- | ---: | ---: |
+| `/` | 621,688 | 621,496 |
+| `/dark-conspiracy` | 621,688 | 621,496 |
+| `/sign-in` | 622,934 | 427,307 |
+| `/auth/callback` | 622,701 | 426,504 |
+| `/mysteries` | 638,428 | 480,804 |
+| `/library` | 625,744 | 430,639 |
+| `/book-clubs (list,overview,6panels)` | 658,116 | 518,478 |
+| `/book-clubs/:id/mavens/:id (readonly)` | 625,064 | 439,195 |
+| `/book-clubs/:id/mavens/:id (own)` | 625,064 | 625,707 |
+| `/book-clubs/:id/mysteries/:id/theorize` | 647,588 | 524,875 |
+
+### Coverage matrix
+
+“Profiled” means the actual mounted page has a before/after workload above. “Smoke” means production UI correctness was checked against a disposable local migrated SQLite/Fastify backend. An audited small view has no claimed measured render improvement.
+
+| Route or major view | Evidence and resulting work | Remaining scope / unchanged rationale |
+| --- | --- | --- |
+| `/`, unknown-route fallback; character tabs, recovery, reset/delete, dice, export | First-pass actual section Profiler and production persistence evidence retained; second-pass route closure measured | Already optimized in first pass; local-first synchronous persistence retained. PDF remains deferred. |
+| `/dark-conspiracy`; all three pages, clue/check fields, trackers, import/export/reset | Profiled field editing, persisted remount contract, production three-page/17-textarea smoke | Independent field subscriptions implemented; scalar updates retain unrelated arrays. Backend read unchanged. |
+| `/sign-in`; local sign-in and provider entry | Production route bytes measured; real local sign-in smoke | Small form audited; auth SDK/provider flow unchanged. No real external OAuth session attempted. |
+| `/auth/callback` | Production closure measured; missing-code branch inspected | Cheap one-shot view unchanged; existing missing-code branch shows Redirecting. Provider exchange is audited, not live-tested. |
+| `/mysteries`, club-filtered list, search/select, title/intro/metadata editor | Profiled 100-entry editor; production edit/save/manual-version restore smoke | Full private documents needed for immediate editing remain eagerly loaded. Save/version semantics retained. |
+| Mystery locations, suspects, moments, normal/Void clues; add/remove, focus; publish/delete dialogs; manual versions/recovery | Cached collection subtrees; mounted location update + persisted draft contract; production full 20-clue document copy and manual-version restore | Dialogs audited; no useful independent optimization of small confirmations. |
+| `/library`; approved list, copy and moderation panels/actions | Parallel independent fetches + summary payload benchmark; real 24-card browse, full-document copy and approve smoke | Pending moderation still receives full documents because reviewers use them. |
+| `/book-clubs` list, creation/incoming invitation controls, club picker | Route closure; source audit; production fixture includes three clubs | Small list/control views retain existing behavior; no separately claimed list render gain. |
+| `/book-clubs/:id` overview; card summaries, invite station, quick navigator, scenery | Profiled edits and fresh-JSON refreshes; production seven visible Mavens, deleted sheet excluded | Member identities preserved only inside the matching club/member; club metadata remains incoming. |
+| Book Club Mystery panel | Native production active-mystery mount; six-panel lifecycle workload | Existing active-clue data uses club response; no extra reads introduced. |
+| Book Club Rolls panel, dice/options/history | Native production custom 2d6/history mount; lifecycle workload | First-pass indexed capped history read retained. Actual roll write not benchmarked. |
+| Book Club Characters panel, save/assignment controls | Native production mount + own/shared Maven navigation | Selection/autosave correctness retained from first pass. |
+| Book Club Settings panel, GM/member/owner controls | Native production owner/GM/member mount; helper metadata tests | Changed permission and nickname data invalidates affected member cards. |
+| Book Club Notes panel, shared/private editors | Native production shared/private save; lifecycle workload retains one notes fetch | Existing note conflict/version protocol remains intact. |
+| Book Club Clues panel, current clues/canvas | Native production drawer mount; lifecycle workload | Board scene is optimized separately. |
+| `/book-clubs/:id/mavens/:id`, shared read-only and own editable sheet | Production first-use smoke: 12 read-only sections/no inputs and own editable 17 inputs; separate route closures | Own editing lazily loads full sheet; shared route avoids it. No claim of faster own-sheet total download. |
+| `/book-clubs/:id/mysteries/:id/theorize`, visibility/filter/viewport | Profiled zoom and dialog edits; mounted filter 80→40 contract; real 30 auto-clue-node board | Pan/zoom transforms remain current outside cached scene. |
+| Theory note/clue cards, hover descriptions, drag, connect, inline edge editor; create/edit/tag/layout dialogs | Cached scene dependencies audited; production create-note action adds 31st node | Node/edge/hover/drag/connect changes invalidate scene; expensive drag/layout remains intentional work. Not every dialog action has a separate benchmark. |
+| Main/profile/locale/settings menus, credits and confirmations | Source audit; macro contexts retained, locale included in cached Theory dependencies | Small occasional views unchanged; no standalone timing claim. |
+
+### Backend paths supporting all views
+
+The fixture benchmark runs the real authenticated Fastify routes against a migrated disposable database, with five warmups and 30 measured injections per path. It verifies response statuses, approved/private scoping, deleted-character filtering and unique theory clue nodes. It includes three clubs/eight members, 28 private mysteries, 24 approved and four pending library documents with 100 entries each, 100 rolls per club and a Dark Conspiracy document. It never opens production data. `backend-pages.json` and `backend-pages-after.json` retain timings and response bytes.
+
+| Read path | Baseline median / bytes | Final median / bytes | Decision |
+| --- | --- | --- | --- |
+| Private mysteries | 1.553 ms / 447,827 | 1.556 ms / 447,827 | Full documents support immediate editor selection; unchanged. |
+| Full approved Library API | 1.285 ms / 383,131 | 1.314 ms / 383,131 | Compatible full response retained. |
+| Approved summary consumed by Library | Full response above | 0.173 ms / 3,355 | 99.1% fewer response bytes; SQL projects only fields/cards need, copy still fetches full snapshot. |
+| Pending moderation | 0.370 ms / 63,943 | 0.369 ms / 63,943 | Reviewer needs full documents; unchanged. |
+| Dark Conspiracy | 0.067 ms / 797 | 0.061 ms / 797 | Already a tiny one-document read; no backend edit justified. |
+| Three-club overview | 1.633 ms / 111,910 | 1.566 ms / 111,910 | First-pass indexed bounded queries retained; no new backend claim. |
+| Notes | 0.098 ms / 74 | 0.091 ms / 74 | Tiny isolated read, version protocol retained. |
+| Theory, 30 ensured clue nodes | 0.340 ms / 10,978 | 0.339 ms / 10,978 | Ensure/read consistency retained; measured cost did not justify changing write-on-read semantics. |
+
+The summary/full comparison uses the same final backend fixture. Timing is Fastify injection latency, excluding network, browser decoding and paint. Mystery/Library serialization was audited; only Library has a compatible summary consumer that avoids loading documents the visible cards never use.
+
+### Reproduction and verification
+
+Run `pnpm --dir backend exec tsx benchmarks/views.ts`; set `BENCHMARK_REF=7b88cb2` for the historical backend. `BENCHMARK_SERVE=3313` starts the same disposable auth/API fixture for browser smoke. To run the mounted harness, serve `frontend` with `pnpm exec vite --config benchmarks/vite.config.ts --host 127.0.0.1 --port 5343 --strictPort`, open `/benchmarks/views.html`, await `document.body.dataset.ready === 'true'`, and call `runViewBenchmark(view, workload)` for `mysteries`, `clubs`, `theory` or `dark`; Theory viewport uses workload `pan`. Call `runFreshOverviewBenchmark()`, `runPanelNavigationBenchmark()` and `checkViewContracts()` for refresh/navigation/correctness evidence. Use the same harness copied to archived baseline frontend, same dependencies, a distinct Vite cache/port, and alternate baseline/after runs. Real OAuth/websocket transports are replaced only in the lifecycle fixture, explicitly separate from production smoke.
+
+Build with `VITE_API_URL=http://127.0.0.1:3313 pnpm --dir frontend build`; then `VITE_API_URL=http://127.0.0.1:3313 pnpm --dir frontend exec vite build --manifest` and run `node frontend/benchmarks/route-bundles.mjs frontend/dist` for static closure metrics. Production smoke runs the built app against the local disposable API, including real keyboard edits, saved notes, full-document copy, approval and revision restore. Screenshots cover Library, Mystery editor, Book Club overview, Theory and Dark Conspiracy; artifact paths are retained in `production-smoke.json`.
+
+Repository formatting, lint, frontend/backend TypeScript checks, store checks and backend tests are required before commit. The new pure-helper tests cover full JSON sharing, version-only edits, fresh role/nickname/club metadata, deletion, reassignment and ordering. Mounted Library regressions cover unresolved/rejected moderation. Independent review identified and corrected the moderation failure/waterfall regression; review also checks scene invalidation, lazy-route boundaries and fresh response semantics. No visual design or user-facing strings changed.
