@@ -1,5 +1,7 @@
 # C04 — A schema-valid partial import overwrites the draft and bricks the sheet
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **High**. Confirmed through the real file chooser, import, and reload at `0cb664b`; screenshot: `../../../evidence/cozycrowns-import-crash.png`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.

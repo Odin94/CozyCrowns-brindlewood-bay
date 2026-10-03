@@ -1,5 +1,7 @@
 # C08 — Editing a source clue erases discovery and theory-board connections
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **High**. Confirmed against the actual local API at `0cb664b`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.

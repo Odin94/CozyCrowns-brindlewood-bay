@@ -1,5 +1,13 @@
 # Fix review loop
 
+**Complete:** C01–C09 are fixed and verified on `fix/odin/review-bug-fixes`.
+Independent final review of source revision `171a372` found no actionable feedback.
+
+Final checks pass: 39 backend tests; frontend store benchmark, document/conflict/
+import regressions, PDF XP and rendered Unicode checks, actual API session tests;
+formatting, lint, both builds/typechecks and migration validation. The additive
+source-identity migration is tested against existing duplicate clues and theory edges.
+
 ## Initial implementation
 
 Commit `c52fddf` implements C01–C09. Builds, lint, formatting, focused frontend
@@ -20,7 +28,7 @@ Seven actionable findings were implemented:
 
 Regression checks cover all seven paths, same-account request ordering, account
 changes during a queued create/delete, idempotent-create payload comparison,
-duplicate source descriptions and pre-migration theory connections. Each browser document also receives a fresh writer identity before any storage writes, including duplicated tabs; checkpoint compaction bounds reload journals. The next independent review evaluates this resulting implementation.
+duplicate source descriptions and pre-migration theory connections. Each browser document also receives a fresh writer identity before any storage writes, including duplicated tabs; checkpoint compaction bounds reload journals. This implementation and the following preflight corrections were frozen together at `0a3b17e`.
 
 A subsequent review preflight found quota failure followed by external hydration
 could discard an unsaved edit. Failed journals now remain as a memory overlay,
@@ -36,9 +44,27 @@ expose their stable identities before the first text correction.
 
 ## Frozen review follow-up
 
+Review of `0a3b17e` confirmed previous fixes and found two remaining issues:
+logged-out deletion of cached cloud Mavens, and obsolete logout response cleanup.
+Commit `d6a021d` implements both. Review of that revision found delayed analytics
+cleanup could still reset/navigate after a newer login; `171a372` guards it. Final
+independent review of `171a372` repeated the focused checks and found no further
+actionable feedback.
+
 Logged-out deletion now archives/removes only the browser's cached Maven and
 retains its cloud row. An obsolete logout response and its hook cleanup cannot
 clear another login's token, user cache or navigation.
 
 Logout's delayed analytics initialization also rechecks the completed session
 epoch before resetting identity and before navigation, preserving a later login.
+
+## Browser validation and final scope
+
+Native browser checks confirm safe partial imports, Dark Conspiracy idle and
+queued save behavior, failed mystery recovery followed by retry into a separate
+copy, two stale browser tabs retaining independent edits, failed Maven deletion
+remaining visible followed by successful retry/archive, and stable clue discovery
+and theory links across corrections/category changes. The original nine reports
+remain as historical reproductions; their implementation sections and this report
+record the fixes. All commits are local; no remote push, PR, production write or
+limit reset was performed. The primary checkout's unrelated edits remain untouched.

@@ -1,5 +1,7 @@
 # C06 — A second tab overwrites newer browser-only character edits
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **High**. Confirmed using two real anonymous tabs at `0cb664b`; reproduction: `../../../harness/cross-tab.js`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.

@@ -1,8 +1,8 @@
 # CozyCrowns deep bug review — 2026-10-03
 
-**9 confirmed open findings: 5 high and 4 medium.** Each report includes reproduction, observed impact, cause, a suggested fix, and a regression check.
+**All 9 findings are fixed and verified locally.** The original review found 5 high and 4 medium severity bugs. Each report preserves its reproduction, impact and proposed fix, followed by implementation status. Independent review of final source revision `171a372` found no remaining actionable feedback.
 
-Initial committed snapshot: `0cb664b`. Final revalidation: `cd74477` plus documentation-only review commits. The separate worktree is on `chore/odin/deep-bug-review`. The primary checkout's uncommitted architecture work was not reviewed or changed. Nothing was pushed and no PR was created.
+Initial committed snapshot: `0cb664b`. Final revalidation: `cd74477` plus documentation-only review commits. The original review used `chore/odin/deep-bug-review`; fixes are now on `fix/odin/review-bug-fixes`. The primary checkout's uncommitted architecture work was not reviewed or changed. Nothing was pushed and no PR was created.
 
 ## Findings
 
@@ -20,7 +20,7 @@ Initial committed snapshot: `0cb664b`. Final revalidation: `cd74477` plus docume
 
 ## Verification and scope
 
-Backend: 15 tests. Frontend and backend production builds/typechecks pass. Actual Maven PDF output was checked for XP values 0–5. Mystery save-revision control returned 409 for a stale manual save.
+Original review baseline: 15 backend tests. Final fix verification: **39 backend tests**, frontend store/conflict/import regressions, the 2,000-edit store benchmark, XP/Unicode PDF form and Poppler raster regressions, and actual API auth-session regression checks all pass. Formatting, lint, both production builds/typechecks and migration validation pass. Actual Maven PDF output was checked for XP values 0–5. Mystery save-revision control returned 409 for a stale manual save.
 
 All three apps were launched locally against disposable SQLite databases. Browser/API probes cover anonymous persistence, cross-tab editing, import/export, authenticated sync, conflicts, reload/recovery, character switching, and the reported interaction bugs. Default sheets were inspected at 390 × 844 with no horizontal overflow or page errors. Passing existing tests did not prevent the reported bugs.
 
@@ -35,4 +35,14 @@ Shared [browser results](../../../evidence/browser-results.json), [screenshots](
 
 ## Fix implementation
 
-All nine findings have local implementations and regression checks on `fix/odin/review-bug-fixes`. Independent review and browser validation are recorded in the final review-loop report.
+All nine findings have local implementations and regression checks on `fix/odin/review-bug-fixes`. Independent review and browser validation are recorded in [the completed review-loop report](FIX_REVIEW.md).
+
+Native browser follow-up checks confirm queued saves, idle request counts, safe
+partial imports, mystery recovery after an injected 503 and its retry, independent
+stale-tab edits, failed deletion and successful retry, and preserved clue/category
+changes with discovery and theory edges. Evidence includes
+[stale tabs](../../../evidence/fixes/cozycrowns-two-tab.json),
+[failed deletion](../../../evidence/fixes/cozycrowns-delete-failed.json),
+[deletion retry](../../../evidence/fixes/cozycrowns-delete-final.json),
+[mystery recovery](../../../evidence/fixes/cozycrowns-recovery-retry.json), and
+[clue category change](../../../evidence/fixes/cozycrowns-clue-category.json).

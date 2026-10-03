@@ -1,5 +1,7 @@
 # C07 — Mystery recovery suppresses unsaved drafts or discards them
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **High**. Both paths confirmed in the running editor/API at `0cb664b`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.

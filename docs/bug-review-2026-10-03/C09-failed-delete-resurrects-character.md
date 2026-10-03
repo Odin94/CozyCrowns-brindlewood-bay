@@ -1,5 +1,7 @@
 # C09 — Failed cloud deletion is presented as success and the Maven returns
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **Medium**. Confirmed through the actual delete controls at committed revision `cd74477`.
 
 ## Reproduction and evidence
@@ -22,6 +24,6 @@ Regression: 503, offline failure, and eventual success; a pending deletion must 
 
 ## Implementation
 
-Implemented localId-bound deletion, a stable confirmation name, disabled pending buttons and double-submit protection, and visible retryable failure. Local removal happens only after successful cloud deletion.
+Implemented localId-bound deletion, a stable confirmation name, disabled pending buttons and double-submit protection, and visible retryable failure. Authenticated cloud deletion removes the local record only after success; logged-out deletion removes and archives only the browser copy, preserving its cloud row. Shared save/delete ordering and durable owner-bound intents also handle late creation acknowledgements.
 
 Regression validation is recorded in the repository tests and the final review-loop report.

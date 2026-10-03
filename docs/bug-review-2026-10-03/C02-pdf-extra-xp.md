@@ -1,5 +1,7 @@
 # C02 — PDF exports mark one extra XP box
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **Medium**. Confirmed by generating a PDF with the running frontend and reading its actual AcroForm at `0cb664b`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.

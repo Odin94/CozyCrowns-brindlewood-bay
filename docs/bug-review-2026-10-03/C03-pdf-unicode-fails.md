@@ -1,5 +1,7 @@
 # C03 — Unicode accepted by the sheet can prevent PDF export
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **Medium**. Confirmed by calling the actual browser PDF generator at `0cb664b`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.

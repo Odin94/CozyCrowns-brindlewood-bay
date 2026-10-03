@@ -1,5 +1,7 @@
 # C01 — Remote reconciliation destroys an unsaved local draft
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **High**. Confirmed using the running browser's actual store at `0cb664b`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.

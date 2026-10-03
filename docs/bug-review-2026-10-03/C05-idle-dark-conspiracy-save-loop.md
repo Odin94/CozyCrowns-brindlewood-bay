@@ -1,5 +1,7 @@
 # C05 — Dark Conspiracy autosave sends endless writes while idle
 
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
 Severity: **Medium**. Confirmed through local sign-in and real HTTP requests at `0cb664b`; screenshot: `../../../evidence/cozycrowns-dark-conspiracy.png`.
 
 Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
