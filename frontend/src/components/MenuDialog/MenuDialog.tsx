@@ -267,7 +267,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
         event.preventDefault();
         void importFile(file);
       }}
-      className={`${isDraggingFile ? "ring-2 ring-primary" : ""} ${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : showRecovery ? "max-w-[calc(100%_-_2rem)] max-h-[calc(100dvh_-_2rem)] overflow-y-auto bg-secondary text-secondary-foreground border-border shadow-lg" : "bg-secondary/90 border-0 shadow-none"}`}
+      className={`${isDraggingFile ? "ring-2 ring-primary" : ""} ${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : showRecovery ? "flex flex-col max-w-[calc(100%_-_2rem)] max-h-[calc(100dvh_-_2rem)] overflow-y-auto bg-secondary text-secondary-foreground border-border shadow-lg" : "bg-secondary/90 border-0 shadow-none"}`}
       style={showResetConfirm || showRecovery ? undefined : { boxShadow: "none" }}
     >
       <VisuallyHidden.Root asChild>
@@ -279,11 +279,11 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
         </p>
       )}
       {showRecovery ? (
-        <div className="min-w-0 space-y-5">
-          <h2 className="text-lg font-semibold">
+        <div className="flex min-h-0 min-w-0 flex-col gap-5">
+          <h2 className="shrink-0 text-lg font-semibold">
             <Trans>Recently deleted Mavens</Trans>
           </h2>
-          <p className="text-sm leading-relaxed">
+          <p className="shrink-0 text-sm leading-relaxed">
             <Trans>
               The most recent 20 deleted Mavens are available for 30 days. Restoring creates a
               separate local copy.
@@ -321,7 +321,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
                 </Button>
               </div>
             ))}
-          <div className="max-h-80 space-y-4 overflow-y-auto px-1 py-1">
+          <div className="min-h-0 max-h-80 space-y-4 overflow-y-auto px-1 py-1">
             {archivedCharacters.map((entry) => (
               <div
                 key={entry.record.localId}
@@ -343,7 +343,11 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
               </div>
             ))}
           </div>
-          <Button variant="outline" onClick={() => setShowRecovery(false)}>
+          <Button
+            variant="outline"
+            className="self-start shrink-0"
+            onClick={() => setShowRecovery(false)}
+          >
             <Trans>Back</Trans>
           </Button>
         </div>
