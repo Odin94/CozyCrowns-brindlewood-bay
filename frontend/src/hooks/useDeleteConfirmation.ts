@@ -5,7 +5,6 @@ import { api } from "@/utils/api";
 export const useDeleteConfirmation = () => {
   const [deleteConfirmOpen, setDeleteConfirmOpen] = useState(false);
   const [deleteConfirmIndex, setDeleteConfirmIndex] = useState<number | null>(null);
-  const { removeCharacter, characters } = useCharacterStore();
 
   const handleDeleteCharacter = (index: number) => {
     setDeleteConfirmIndex(index);
@@ -14,6 +13,7 @@ export const useDeleteConfirmation = () => {
 
   const confirmDelete = async () => {
     if (deleteConfirmIndex !== null) {
+      const { removeCharacter, characters } = useCharacterStore.getState();
       const character = characters[deleteConfirmIndex];
       if (character?.id) {
         try {

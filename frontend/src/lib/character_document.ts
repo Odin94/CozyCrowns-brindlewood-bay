@@ -60,7 +60,8 @@ const cozyItems = (value: unknown): CozyItem[] => {
 };
 
 const abilities = (value: unknown): Ability[] => {
-  if (!Array.isArray(value) || value.length === 0) return DEFAULT_ABILITIES.map((ability) => ({ ...ability }));
+  if (!Array.isArray(value) || value.length === 0)
+    return DEFAULT_ABILITIES.map((ability) => ({ name: ability.name, value: ability.value }));
 
   return value.flatMap((ability) =>
     isRecord(ability) && typeof ability.name === "string" && typeof ability.value === "number"
@@ -93,6 +94,19 @@ export const normalizeCharacter = (input: unknown): CharacterData => {
     voidChecks: booleanArray(value.voidChecks, DEFAULT_LENGTHS.voidChecks),
     cozyItems: cozyItems(value.cozyItems),
   };
+};
+
+/** Normalize only supplied fields, preserving references for untouched sections. */
+export const applyCharacterChange = (
+  current: CharacterData,
+  change: Partial<CharacterData>,
+): CharacterData => {
+  const normalized = normalizeCharacter(change);
+  const next = { ...current };
+  for (const key of Object.keys(normalized) as Array<keyof CharacterData>) {
+    if (Object.hasOwn(change, key)) Object.assign(next, { [key]: normalized[key] });
+  }
+  return next;
 };
 
 /** Validates import structure before applying the shared normalization rules. */

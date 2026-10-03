@@ -1,0 +1,16 @@
+{
+  "benchmark": "2000 real store name edits, in-memory storage sink",
+  "medianMs": 15.480540999999903,
+  "notifications": 2000,
+  "fieldSelectorInvalidations": 2000,
+  "samplesMs": [
+    19.92162499999995,
+    13.932999999999993,
+    18.75516700000003,
+    18.741166999999905,
+    10.613041000000067,
+    15.480540999999903,
+    19.829500000000053,
+    14.720708000000059
+  ]
+}

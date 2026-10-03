@@ -2,21 +2,21 @@ import { useCharacterStore } from "@/lib/character_store";
 import { toPersistedCharacter } from "@/lib/character_document";
 import { api } from "@/utils/api";
 import { t } from "@lingui/core/macro";
-import { useRef } from "react";
+import { useCallback, useRef } from "react";
 import { toast } from "sonner";
 import { useAuth } from "./useAuth";
 
 export const useCharacterSave = () => {
   const { user, isAuthenticated } = useAuth();
-  const characterStore = useCharacterStore();
   const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
   const latestVersionByCharacter = useRef(new Map<string, number>());
 
-  const saveCurrentCharacter = async (): Promise<boolean> => {
+  const saveCurrentCharacter = useCallback(async (): Promise<boolean> => {
     if (!isAuthenticated || !user) {
       return true;
     }
 
+    const characterStore = useCharacterStore.getState();
     const currentCharacter = characterStore.selected();
     const localId = currentCharacter.localId;
 
@@ -60,7 +60,7 @@ export const useCharacterSave = () => {
 
     saveQueue.current = saveQueue.current.catch(() => false).then(task);
     return saveQueue.current;
-  };
+  }, [isAuthenticated, user]);
 
   return {
     saveCurrentCharacter,

@@ -1,0 +1,57 @@
+{
+  "name": "Performance benchmark Maven quick typing",
+  "samples": [
+    {
+      "commitMs": 2.599999999627471,
+      "mutations": 33
+    },
+    {
+      "commitMs": 2.6000000005587935,
+      "mutations": 33
+    },
+    {
+      "commitMs": 2.400000000372529,
+      "mutations": 33
+    },
+    {
+      "commitMs": 3.7000000001862645,
+      "mutations": 33
+    },
+    {
+      "commitMs": 1.7999999998137355,
+      "mutations": 33
+    },
+    {
+      "commitMs": 2.1000000005587935,
+      "mutations": 33
+    },
+    {
+      "commitMs": 3,
+      "mutations": 33
+    },
+    {
+      "commitMs": 2.900000000372529,
+      "mutations": 33
+    },
+    {
+      "commitMs": 3.1000000005587935,
+      "mutations": 33
+    },
+    {
+      "commitMs": 2.099999999627471,
+      "mutations": 33
+    },
+    {
+      "commitMs": 2.2999999998137355,
+      "mutations": 33
+    },
+    {
+      "commitMs": 1.7000000001862645,
+      "mutations": 33
+    },
+    {
+      "commitMs": 2.7000000001862645,
+      "mutations": 33
+    }
+  ]
+}

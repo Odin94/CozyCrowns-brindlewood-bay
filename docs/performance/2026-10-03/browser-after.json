@@ -1,0 +1,710 @@
+[
+  {
+    "domNodes": 353,
+    "inputs": [
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter character name",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter character style",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter cozy activity",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter any conditions or notes...",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter your Maven moves...",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      }
+    ],
+    "js": [
+      {
+        "bytes": 293963,
+        "duration": 2.900000000372529,
+        "name": "index-GJircZPr.js"
+      },
+      {
+        "bytes": 33820,
+        "duration": 1.400000000372529,
+        "name": "messages-Gx8LV4Z6.js"
+      },
+      {
+        "bytes": 8979,
+        "duration": 4.099999999627471,
+        "name": "createLucideIcon-Dl62_azA.js"
+      },
+      {
+        "bytes": 16629,
+        "duration": 4.699999999254942,
+        "name": "App-Btr4Bquo.js"
+      },
+      {
+        "bytes": 100734,
+        "duration": 5,
+        "name": "CharacterSheet-vZ6VJXwb.js"
+      },
+      {
+        "bytes": 37060,
+        "duration": 5.5,
+        "name": "tooltip-CTtpa-sV.js"
+      },
+      {
+        "bytes": 554,
+        "duration": 4.2000000001862645,
+        "name": "dist-BNvr1eIm.js"
+      },
+      {
+        "bytes": 34913,
+        "duration": 4.400000000372529,
+        "name": "dialog-CMJdAdyW.js"
+      },
+      {
+        "bytes": 19537,
+        "duration": 6.2000000001862645,
+        "name": "game_data-CiNY7NWW.js"
+      },
+      {
+        "bytes": 31672,
+        "duration": 6.7999999998137355,
+        "name": "useAuth-BTsjluNS.js"
+      },
+      {
+        "bytes": 124,
+        "duration": 7.2999999998137355,
+        "name": "check-DGb7Cj6i.js"
+      },
+      {
+        "bytes": 8098,
+        "duration": 7.5,
+        "name": "api-upvmHpi6.js"
+      },
+      {
+        "bytes": 1515,
+        "duration": 7.7000000001862645,
+        "name": "confirmation-dialog-XMC-oKe0.js"
+      },
+      {
+        "bytes": 231,
+        "duration": 8.600000000558794,
+        "name": "log-in-DCvjVtaM.js"
+      },
+      {
+        "bytes": 299,
+        "duration": 10.400000000372529,
+        "name": "feather-esCsmqIG.js"
+      },
+      {
+        "bytes": 32659,
+        "duration": 10.200000000186265,
+        "name": "chevron-left-BvvKT8w1.js"
+      },
+      {
+        "bytes": 306,
+        "duration": 9.299999999813735,
+        "name": "users-YBPzi0ES.js"
+      },
+      {
+        "bytes": 494,
+        "duration": 10.700000000186265,
+        "name": "textarea-DAdS7gOh.js"
+      },
+      {
+        "bytes": 349,
+        "duration": 10.899999999441206,
+        "name": "scroll-text-CCX_OCAo.js"
+      }
+    ],
+    "jsBytes": 621936,
+    "longTasks": [],
+    "paint": [
+      {
+        "name": "first-paint",
+        "start": 88
+      },
+      {
+        "name": "first-contentful-paint",
+        "start": 88
+      }
+    ],
+    "url": "http://localhost:5213/",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) T3Code(Alpha)/0.0.45 Chrome/152.0.7977.130 Electron/44.4.2 Safari/537.36",
+    "visibility": "visible"
+  },
+  {
+    "domNodes": 353,
+    "inputs": [
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter character name",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter character style",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter cozy activity",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter any conditions or notes...",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter your Maven moves...",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      }
+    ],
+    "js": [
+      {
+        "bytes": 293963,
+        "duration": 2.7999999998137355,
+        "name": "index-GJircZPr.js"
+      },
+      {
+        "bytes": 33820,
+        "duration": 1.2000000001862645,
+        "name": "messages-Gx8LV4Z6.js"
+      },
+      {
+        "bytes": 16629,
+        "duration": 3.7000000001862645,
+        "name": "App-Btr4Bquo.js"
+      },
+      {
+        "bytes": 8979,
+        "duration": 4.1000000005587935,
+        "name": "createLucideIcon-Dl62_azA.js"
+      },
+      {
+        "bytes": 554,
+        "duration": 2.2999999998137355,
+        "name": "dist-BNvr1eIm.js"
+      },
+      {
+        "bytes": 34913,
+        "duration": 2.5,
+        "name": "dialog-CMJdAdyW.js"
+      },
+      {
+        "bytes": 19537,
+        "duration": 4.7999999998137355,
+        "name": "game_data-CiNY7NWW.js"
+      },
+      {
+        "bytes": 37060,
+        "duration": 5.199999999254942,
+        "name": "tooltip-CTtpa-sV.js"
+      },
+      {
+        "bytes": 100734,
+        "duration": 3.7999999998137355,
+        "name": "CharacterSheet-vZ6VJXwb.js"
+      },
+      {
+        "bytes": 8098,
+        "duration": 6.5,
+        "name": "api-upvmHpi6.js"
+      },
+      {
+        "bytes": 31672,
+        "duration": 6.7999999998137355,
+        "name": "useAuth-BTsjluNS.js"
+      },
+      {
+        "bytes": 124,
+        "duration": 7.599999999627471,
+        "name": "check-DGb7Cj6i.js"
+      },
+      {
+        "bytes": 1515,
+        "duration": 7.2000000001862645,
+        "name": "confirmation-dialog-XMC-oKe0.js"
+      },
+      {
+        "bytes": 32659,
+        "duration": 7.099999999627471,
+        "name": "chevron-left-BvvKT8w1.js"
+      },
+      {
+        "bytes": 299,
+        "duration": 7.900000000372529,
+        "name": "feather-esCsmqIG.js"
+      },
+      {
+        "bytes": 231,
+        "duration": 8.299999999813735,
+        "name": "log-in-DCvjVtaM.js"
+      },
+      {
+        "bytes": 349,
+        "duration": 8.799999999813735,
+        "name": "scroll-text-CCX_OCAo.js"
+      },
+      {
+        "bytes": 306,
+        "duration": 9,
+        "name": "users-YBPzi0ES.js"
+      },
+      {
+        "bytes": 494,
+        "duration": 9.100000000558794,
+        "name": "textarea-DAdS7gOh.js"
+      }
+    ],
+    "jsBytes": 621936,
+    "longTasks": [],
+    "paint": [
+      {
+        "name": "first-paint",
+        "start": 56
+      },
+      {
+        "name": "first-contentful-paint",
+        "start": 56
+      }
+    ],
+    "url": "http://localhost:5213/",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) T3Code(Alpha)/0.0.45 Chrome/152.0.7977.130 Electron/44.4.2 Safari/537.36",
+    "visibility": "visible"
+  },
+  {
+    "domNodes": 353,
+    "inputs": [
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter character name",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter character style",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter cozy activity",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter any conditions or notes...",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "Enter your Maven moves...",
+        "tag": "TEXTAREA",
+        "type": "textarea",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      },
+      {
+        "ariaLabel": null,
+        "placeholder": "",
+        "tag": "INPUT",
+        "type": "text",
+        "value": ""
+      }
+    ],
+    "js": [
+      {
+        "bytes": 293963,
+        "duration": 2.599999999627471,
+        "name": "index-GJircZPr.js"
+      },
+      {
+        "bytes": 33820,
+        "duration": 1.2000000001862645,
+        "name": "messages-Gx8LV4Z6.js"
+      },
+      {
+        "bytes": 16629,
+        "duration": 5.099999999627471,
+        "name": "App-Btr4Bquo.js"
+      },
+      {
+        "bytes": 8979,
+        "duration": 4.2999999998137355,
+        "name": "createLucideIcon-Dl62_azA.js"
+      },
+      {
+        "bytes": 100734,
+        "duration": 5.2000000001862645,
+        "name": "CharacterSheet-vZ6VJXwb.js"
+      },
+      {
+        "bytes": 34913,
+        "duration": 3.6000000005587935,
+        "name": "dialog-CMJdAdyW.js"
+      },
+      {
+        "bytes": 554,
+        "duration": 4.7000000001862645,
+        "name": "dist-BNvr1eIm.js"
+      },
+      {
+        "bytes": 37060,
+        "duration": 4,
+        "name": "tooltip-CTtpa-sV.js"
+      },
+      {
+        "bytes": 8098,
+        "duration": 6.400000000372529,
+        "name": "api-upvmHpi6.js"
+      },
+      {
+        "bytes": 31672,
+        "duration": 6.800000000745058,
+        "name": "useAuth-BTsjluNS.js"
+      },
+      {
+        "bytes": 19537,
+        "duration": 7.1000000005587935,
+        "name": "game_data-CiNY7NWW.js"
+      },
+      {
+        "bytes": 124,
+        "duration": 6.5,
+        "name": "check-DGb7Cj6i.js"
+      },
+      {
+        "bytes": 1515,
+        "duration": 7.599999999627471,
+        "name": "confirmation-dialog-XMC-oKe0.js"
+      },
+      {
+        "bytes": 299,
+        "duration": 8.399999999441206,
+        "name": "feather-esCsmqIG.js"
+      },
+      {
+        "bytes": 32659,
+        "duration": 8.200000000186265,
+        "name": "chevron-left-BvvKT8w1.js"
+      },
+      {
+        "bytes": 231,
+        "duration": 9,
+        "name": "log-in-DCvjVtaM.js"
+      },
+      {
+        "bytes": 349,
+        "duration": 9.200000000186265,
+        "name": "scroll-text-CCX_OCAo.js"
+      },
+      {
+        "bytes": 306,
+        "duration": 9.799999999813735,
+        "name": "users-YBPzi0ES.js"
+      },
+      {
+        "bytes": 494,
+        "duration": 9.899999999441206,
+        "name": "textarea-DAdS7gOh.js"
+      }
+    ],
+    "jsBytes": 621936,
+    "longTasks": [],
+    "paint": [
+      {
+        "name": "first-paint",
+        "start": 80
+      },
+      {
+        "name": "first-contentful-paint",
+        "start": 80
+      }
+    ],
+    "url": "http://localhost:5213/",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) T3Code(Alpha)/0.0.45 Chrome/152.0.7977.130 Electron/44.4.2 Safari/537.36",
+    "visibility": "visible"
+  }
+]

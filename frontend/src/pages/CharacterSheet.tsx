@@ -36,39 +36,16 @@ type CharacterSheetProps = {
   onSwitchToDarkConspiracy?: () => void;
 };
 
-const CharacterSheet = ({
-  onBookClubsClick,
-  activeView = "character",
-  onSwitchToCharacter,
-  onSwitchToDarkConspiracy,
-}: CharacterSheetProps) => {
-  // useLingui() is Required to ensure component rerenders when locale changes
-  useLingui();
-  useBackendCharactersSync();
-  useBackendDarkConspiraciesSync();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [saveFailureOpen, setSaveFailureOpen] = useState(false);
-  const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
-  const isLargeScreen = useIsLargeScreen();
-  const {
-    deleteConfirmOpen,
-    deleteConfirmIndex,
-    handleDeleteCharacter,
-    confirmDelete,
-    cancelDelete,
-    setDeleteConfirmOpen,
-  } = useDeleteConfirmation();
-  const { saveCurrentCharacter } = useCharacterSave();
-  const { setCurrentCharacter } = useCharacterStore();
-  const currentCharacter = useCharacterStore(
-    (state) => state.selected(),
-  );
+// Keep per-edit subscriptions out of the sheet layout and its sibling sections.
+const CharacterAutoSave = () => {
+  const currentCharacter = useCharacterStore((state) => state.selected());
   const { isAuthenticated, user } = useAuth();
+  const { saveCurrentCharacter } = useCharacterSave();
   const lastAutoSaved = useRef<string | null>(null);
   const autoSaveSignature = useMemo(
     () =>
       JSON.stringify({
-          characterKey: currentCharacter.localId,
+        characterKey: currentCharacter.localId,
         data: currentCharacter && {
           name: currentCharacter.name,
           style: currentCharacter.style,
@@ -102,7 +79,42 @@ const CharacterSheet = ({
     }, 800);
 
     return () => window.clearTimeout(timer);
-  }, [autoSaveSignature, currentCharacter.id, currentCharacter.name, isAuthenticated, saveCurrentCharacter]);
+  }, [
+    autoSaveSignature,
+    currentCharacter.id,
+    currentCharacter.name,
+    isAuthenticated,
+    saveCurrentCharacter,
+  ]);
+
+  return null;
+};
+
+const CharacterSheet = ({
+  onBookClubsClick,
+  activeView = "character",
+  onSwitchToCharacter,
+  onSwitchToDarkConspiracy,
+}: CharacterSheetProps) => {
+  // useLingui() is Required to ensure component rerenders when locale changes
+  useLingui();
+  useBackendCharactersSync();
+  useBackendDarkConspiraciesSync();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [saveFailureOpen, setSaveFailureOpen] = useState(false);
+  const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
+  const isLargeScreen = useIsLargeScreen();
+  const {
+    deleteConfirmOpen,
+    deleteConfirmIndex,
+    handleDeleteCharacter,
+    confirmDelete,
+    cancelDelete,
+    setDeleteConfirmOpen,
+  } = useDeleteConfirmation();
+  const { saveCurrentCharacter } = useCharacterSave();
+  const setCurrentCharacter = useCharacterStore((state) => state.setCurrentCharacter);
+  const { isAuthenticated } = useAuth();
 
   const handleSwitchCharacter = async (index: number): Promise<boolean> => {
     const saveSuccess = await saveCurrentCharacter();
@@ -131,6 +143,7 @@ const CharacterSheet = ({
     <div
       className={`min-h-screen w-full from-gray-900 to-gray-800 p-3 sm:p-4 md:p-5 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
     >
+      <CharacterAutoSave />
       <div className="w-full max-w-none">
         <div className="mb-5 pt-3 text-center sm:mb-8 md:pt-0">
           <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>

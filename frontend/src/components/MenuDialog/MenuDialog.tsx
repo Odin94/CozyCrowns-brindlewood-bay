@@ -25,8 +25,8 @@ type MenuDialogProps = {
 };
 
 const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) => {
-  const characterStore = useCharacterStore();
-  const { setLocale } = useSettingsStore();
+  const characterStore = useCharacterStore.getState();
+  const setLocale = useSettingsStore((state) => state.setLocale);
   const { i18n } = useLingui();
   const { user, updateProfile, isUpdatingProfile, signOut, isAuthenticated } = useAuth();
   const { saveCurrentCharacter } = useCharacterSave();
@@ -216,7 +216,10 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   };
 
   const confirmReset = () => {
-    characterStore.updateSelected({ ...createDefaultCharacter(), abilities: getDefaultAbilities() });
+    characterStore.updateSelected({
+      ...createDefaultCharacter(),
+      abilities: getDefaultAbilities(),
+    });
 
     setShowResetConfirm(false);
     onOpenChange?.(false);

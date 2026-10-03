@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
   createDefaultCharacter,
+  applyCharacterChange,
   normalizeCharacter,
   type Ability,
   type CharacterData,
@@ -40,7 +41,10 @@ const newRecord = (): CharacterRecord => ({
   ...createDefaultCharacter(),
   abilities: getDefaultAbilities(),
 });
-const recordFrom = (input: unknown, metadata: Pick<CharacterRecord, "localId" | "id" | "version">) => ({
+const recordFrom = (
+  input: unknown,
+  metadata: Pick<CharacterRecord, "localId" | "id" | "version">,
+) => ({
   ...normalizeCharacter(input),
   ...metadata,
 });
@@ -97,7 +101,7 @@ export const useCharacterStore = create<CharacterState>()(
         set({
           characters: state.characters.map((character) =>
             character.localId === current.localId
-              ? { ...character, ...normalizeCharacter({ ...character, ...change }) }
+              ? Object.assign({}, character, applyCharacterChange(character, change))
               : character,
           ),
         });
@@ -164,7 +168,11 @@ export const useCharacterStore = create<CharacterState>()(
             const index = characters.findIndex((character) => character.id === remote.id);
             if (index === -1) {
               characters.push(
-                recordFrom(remote.data, { localId: newLocalId(), id: remote.id, version: remote.version }),
+                recordFrom(remote.data, {
+                  localId: newLocalId(),
+                  id: remote.id,
+                  version: remote.version,
+                }),
               );
             } else if (remote.version > (characters[index].version ?? 0)) {
               characters[index] = recordFrom(remote.data, {

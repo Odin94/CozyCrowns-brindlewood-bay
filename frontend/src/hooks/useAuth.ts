@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import posthog from "posthog-js";
+import { getAnalytics } from "@/lib/analytics";
 import { useEffect } from "react";
 import { consumeAuthReturnTo } from "@/lib/auth_return_to";
 import { api, API_URL, tokenStorage } from "../utils/api";
@@ -57,11 +57,15 @@ export const useAuth = () => {
     queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
 
     try {
-      posthog.identify(data.user.id, {
-        email: data.user.email,
-        firstName: data.user.firstName,
-        lastName: data.user.lastName,
-      });
+      void getAnalytics()
+        .then((posthog) =>
+          posthog?.identify(data.user.id, {
+            email: data.user.email,
+            firstName: data.user.firstName,
+            lastName: data.user.lastName,
+          }),
+        )
+        .catch((error) => console.warn("PostHog identify failed:", error));
     } catch (error) {
       console.warn("PostHog identify failed:", error);
     }
@@ -81,11 +85,15 @@ export const useAuth = () => {
   useEffect(() => {
     if (user) {
       try {
-        posthog.identify(user.id, {
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-        });
+        void getAnalytics()
+          .then((posthog) =>
+            posthog?.identify(user.id, {
+              email: user.email,
+              firstName: user.firstName,
+              lastName: user.lastName,
+            }),
+          )
+          .catch((error) => console.warn("PostHog identify failed:", error));
       } catch (error) {
         console.warn("PostHog identify failed:", error);
       }
@@ -104,7 +112,9 @@ export const useAuth = () => {
       queryClient.setQueryData(["auth", "me"], null);
 
       try {
-        posthog.reset();
+        void getAnalytics()
+          .then((posthog) => posthog?.reset())
+          .catch((error) => console.warn("PostHog reset failed:", error));
       } catch (error) {
         console.warn("PostHog reset failed:", error);
       }
@@ -120,7 +130,9 @@ export const useAuth = () => {
       queryClient.setQueryData(["auth", "me"], null);
 
       try {
-        posthog.reset();
+        void getAnalytics()
+          .then((posthog) => posthog?.reset())
+          .catch((error) => console.warn("PostHog reset failed:", error));
       } catch (error) {
         console.warn("PostHog reset failed:", error);
       }
