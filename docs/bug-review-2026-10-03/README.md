@@ -2,7 +2,7 @@
 
 **9 confirmed open findings: 5 high and 4 medium.** Each report includes reproduction, observed impact, cause, a suggested fix, and a regression check.
 
-Initial committed snapshot: `0cb664b`. Final revalidation: `7b88cb2` plus documentation-only review commits. The separate worktree is on `chore/odin/deep-bug-review`. The primary checkout's uncommitted architecture work was not reviewed or changed. Nothing was pushed and no PR was created.
+Initial committed snapshot: `0cb664b`. Final revalidation: `cd74477` plus documentation-only review commits. The separate worktree is on `chore/odin/deep-bug-review`. The primary checkout's uncommitted architecture work was not reviewed or changed. Nothing was pushed and no PR was created.
 
 ## Findings
 
@@ -20,7 +20,7 @@ Initial committed snapshot: `0cb664b`. Final revalidation: `7b88cb2` plus docume
 
 ## Verification and scope
 
-Backend: 12 tests. Frontend and backend production builds/typechecks pass. Actual Maven PDF output was checked for XP values 0–5. Mystery save-revision control returned 409 for a stale manual save.
+Backend: 15 tests. Frontend and backend production builds/typechecks pass. Actual Maven PDF output was checked for XP values 0–5. Mystery save-revision control returned 409 for a stale manual save.
 
 All three apps were launched locally against disposable SQLite databases. Browser/API probes cover anonymous persistence, cross-tab editing, import/export, authenticated sync, conflicts, reload/recovery, character switching, and the reported interaction bugs. Default sheets were inspected at 390 × 844 with no horizontal overflow or page errors. Passing existing tests did not prevent the reported bugs.
 

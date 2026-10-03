@@ -2,7 +2,7 @@
 
 Severity: **Medium**. Confirmed by calling the actual browser PDF generator at `0cb664b`.
 
-Revalidated on committed revision `7b88cb2` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
 
 ## Reproduction and evidence
 

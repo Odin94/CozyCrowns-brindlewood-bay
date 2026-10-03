@@ -1,6 +1,6 @@
 # C09 — Failed cloud deletion is presented as success and the Maven returns
 
-Severity: **Medium**. Confirmed through the actual delete controls at committed revision `7b88cb2`.
+Severity: **Medium**. Confirmed through the actual delete controls at committed revision `cd74477`.
 
 ## Reproduction and evidence
 
