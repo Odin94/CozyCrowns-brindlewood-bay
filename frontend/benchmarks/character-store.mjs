@@ -97,11 +97,22 @@ try {
     assert.equal(store.getState().selected().name, "Second Maven");
     const saved = JSON.parse(persisted.get("cozycrowns-character-storage"));
     assert.equal(saved.state.selectedCharacterId, secondId);
-    assert.equal(saved.state.characters.length, 2);
+    // No saved baseline was supplied above, so the divergent local sheet must
+    // survive as its own Maven when a newer cloud version arrives.
+    assert.equal(saved.state.characters.length, 3);
+    const preserved = saved.state.characters.find(
+      (record) => record.localId !== original.localId && record.localId !== secondId,
+    );
+    assert.equal(preserved.name, original.name);
+    assert.equal(preserved.style, "A cardigan");
+    assert.equal(preserved.id, undefined);
+    assert.equal(preserved.version, undefined);
     await store.persist.rehydrate();
     assert.equal(store.getState().selected().localId, secondId);
     assert.equal(store.getState().selected().name, "Second Maven");
     assert.equal(store.getState().record(original.localId).version, 4);
+    assert.equal(store.getState().record(preserved.localId).name, original.name);
+    assert.equal(store.getState().record(preserved.localId).style, "A cardigan");
   }
   const sorted = samples.slice(1).toSorted((a, b) => a - b);
   console.log(
