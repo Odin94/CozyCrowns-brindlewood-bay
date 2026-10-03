@@ -3,6 +3,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
   createDefaultCharacter,
+  applyCharacterChange,
   normalizeCharacter,
   type Ability,
   type CharacterData,
@@ -114,7 +115,7 @@ export const useCharacterStore = create<CharacterState>()(
         set({
           characters: state.characters.map((character) =>
             character.localId === current.localId
-              ? { ...character, ...normalizeCharacter({ ...character, ...change }) }
+              ? Object.assign({}, character, applyCharacterChange(character, change))
               : character,
           ),
         });

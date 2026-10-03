@@ -462,23 +462,48 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
     },
   );
 
-  fastify.get("/library", { preHandler: authenticateUser }, async () => {
-    const rows = db
-      .select()
-      .from(publishedMysteries)
-      .where(eq(publishedMysteries.status, "approved"))
-      .orderBy(desc(publishedMysteries.approvedAt))
-      .all();
-    return {
-      mysteries: rows.map((row) => ({
-        id: row.id,
-        title: row.title,
-        data: JSON.parse(row.data),
-        sourceVersion: row.sourceVersion,
-        approvedAt: row.approvedAt,
-      })),
-    };
-  });
+  fastify.get<{ Querystring: { summary?: string } }>(
+    "/library",
+    { preHandler: authenticateUser },
+    async (request) => {
+      if (request.query.summary === "true") {
+        const rows = db
+          .select({
+            id: publishedMysteries.id,
+            title: publishedMysteries.title,
+            intro: sql<string>`json_extract(${publishedMysteries.data}, '$.intro')`,
+            complexity: sql<number>`json_extract(${publishedMysteries.data}, '$.complexity')`,
+            locationCount: sql<number>`json_array_length(${publishedMysteries.data}, '$.locations')`,
+            suspectCount: sql<number>`json_array_length(${publishedMysteries.data}, '$.suspects')`,
+          })
+          .from(publishedMysteries)
+          .where(eq(publishedMysteries.status, "approved"))
+          .orderBy(desc(publishedMysteries.approvedAt))
+          .all();
+        return {
+          mysteries: rows.map(({ intro, complexity, ...row }) => ({
+            ...row,
+            data: { intro, complexity },
+          })),
+        };
+      }
+      const rows = db
+        .select()
+        .from(publishedMysteries)
+        .where(eq(publishedMysteries.status, "approved"))
+        .orderBy(desc(publishedMysteries.approvedAt))
+        .all();
+      return {
+        mysteries: rows.map((row) => ({
+          id: row.id,
+          title: row.title,
+          data: JSON.parse(row.data),
+          sourceVersion: row.sourceVersion,
+          approvedAt: row.approvedAt,
+        })),
+      };
+    },
+  );
 
   fastify.post<{ Params: PublishedMysteryParams }>(
     "/library/:id/copy",

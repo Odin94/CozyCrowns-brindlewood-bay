@@ -10,10 +10,11 @@ export function useLiveBookClub<T>(
   load: () => Promise<T>,
   failed: (error: unknown) => void,
   userId?: string,
+  reconcile?: (previous: T, incoming: T) => T,
 ) {
   const session = useSyncExternalStore(accountScope.subscribe, accountScope.current);
-  const callbacks = useRef({ key, initial, load, failed });
-  callbacks.current = { key, initial, load, failed };
+  const callbacks = useRef({ key, initial, load, failed, reconcile });
+  callbacks.current = { key, initial, load, failed, reconcile };
   const live = useMemo(
     () =>
       new LiveBookClub(
@@ -35,6 +36,7 @@ export function useLiveBookClub<T>(
         },
         (error) => callbacks.current.failed(error),
         userId,
+        (previous, incoming) => callbacks.current.reconcile?.(previous, incoming) ?? incoming,
       ),
     [key, userId],
   );

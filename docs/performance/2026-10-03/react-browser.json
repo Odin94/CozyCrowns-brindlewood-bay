@@ -1,0 +1,78 @@
+{
+  "baseline": [
+    {
+      "edits": 100,
+      "elapsedMs": 257,
+      "reactActualDurationMs": 173.5000000046566,
+      "sectionCommits": {
+        "Abilities": 200,
+        "Advancements": 100,
+        "CozyLittlePlace": 100,
+        "CrownOfTheQueen": 100,
+        "CrownOfTheVoid": 200,
+        "EndOfSession": 100,
+        "Name": 100
+      },
+      "totalSectionCommits": 900
+    },
+    {
+      "edits": 100,
+      "elapsedMs": 187.29999999981374,
+      "reactActualDurationMs": 119.50000000186265,
+      "sectionCommits": {
+        "Abilities": 200,
+        "Advancements": 100,
+        "CozyLittlePlace": 100,
+        "CrownOfTheQueen": 100,
+        "CrownOfTheVoid": 200,
+        "EndOfSession": 100,
+        "Name": 100
+      },
+      "totalSectionCommits": 900
+    },
+    {
+      "edits": 100,
+      "elapsedMs": 193.80000000074506,
+      "reactActualDurationMs": 124.80000000074506,
+      "sectionCommits": {
+        "Abilities": 200,
+        "Advancements": 100,
+        "CozyLittlePlace": 100,
+        "CrownOfTheQueen": 100,
+        "CrownOfTheVoid": 200,
+        "EndOfSession": 100,
+        "Name": 100
+      },
+      "totalSectionCommits": 900
+    }
+  ],
+  "after": [
+    {
+      "edits": 100,
+      "elapsedMs": 58.40000000037253,
+      "reactActualDurationMs": 49.600000004284084,
+      "sectionCommits": {
+        "Name": 100
+      },
+      "totalSectionCommits": 100
+    },
+    {
+      "edits": 100,
+      "elapsedMs": 16.799999999813735,
+      "reactActualDurationMs": 9.7000000057742,
+      "sectionCommits": {
+        "Name": 100
+      },
+      "totalSectionCommits": 100
+    },
+    {
+      "edits": 100,
+      "elapsedMs": 16.899999999441206,
+      "reactActualDurationMs": 9.999999998137355,
+      "sectionCommits": {
+        "Name": 100
+      },
+      "totalSectionCommits": 100
+    }
+  ]
+}

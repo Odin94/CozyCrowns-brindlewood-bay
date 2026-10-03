@@ -37,6 +37,7 @@ export class LiveBookClub<T> {
   private load: () => Promise<T>;
   private error: (error: unknown) => void;
   private userId?: string;
+  private reconcile: (previous: T, incoming: T) => T;
   private listener = (_state: LiveSnapshot<T>) => {};
   private active = false;
   private lifetime = 0;
@@ -57,12 +58,14 @@ export class LiveBookClub<T> {
     env: Environment,
     error: (error: unknown) => void,
     userId?: string,
+    reconcile: (previous: T, incoming: T) => T = (_previous, incoming) => incoming,
   ) {
     this.state = { data: initial, loading: true, cursors: [] };
     this.load = load;
     this.env = env;
     this.error = error;
     this.userId = userId;
+    this.reconcile = reconcile;
   }
   private emit() {
     if (this.active) this.listener(this.state);
@@ -163,7 +166,11 @@ export class LiveBookClub<T> {
           const data = await this.load();
           if (!this.active || lifetime !== this.lifetime) return;
           if (revision === this.revision && !this.holds)
-            this.state = { ...this.state, data, error: undefined };
+            this.state = {
+              ...this.state,
+              data: this.reconcile(this.state.data, data),
+              error: undefined,
+            };
           else this.queued = true;
         } catch (error) {
           if (this.active && lifetime === this.lifetime) {

@@ -3,14 +3,14 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
 import { accountScope } from "@/lib/account_scope";
 import { ownedMysteryLibrary } from "@/lib/library_mysteries";
-import { api, type Mystery, type PublishedMystery } from "@/utils/api";
+import { api, type Mystery, type PublishedMystery, type LibraryMysterySummary } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { Check, ChevronLeft, Feather, Library, Plus, ScrollText } from "lucide-react";
 import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 
-const copyMystery = async (mystery: PublishedMystery) => {
+const copyMystery = async (mystery: Pick<PublishedMystery, "id">) => {
   await api.copyLibraryMystery(mystery.id);
 };
 
@@ -28,7 +28,7 @@ const LibraryPage = () => {
   const [ownedFetching, setOwnedFetching] = useState(true);
   const [ownedLoadError, setOwnedLoadError] = useState("");
   const ownedRequest = useRef(0);
-  const [mysteries, setMysteries] = useState<PublishedMystery[]>([]);
+  const [mysteries, setMysteries] = useState<LibraryMysterySummary[]>([]);
   const [pending, setPending] = useState<PublishedMystery[]>([]);
   const [fetching, setFetching] = useState(true);
   const [loadError, setLoadError] = useState("");
@@ -71,7 +71,7 @@ const LibraryPage = () => {
     setFetching(true);
     setLoadError("");
     try {
-      const library = await api.getLibrary();
+      const library = await api.getLibrarySummaries();
       if (!current()) return;
       setMysteries(library.mysteries);
       setLibraryAccountId(user.id);
@@ -132,7 +132,7 @@ const LibraryPage = () => {
       </main>
     );
 
-  const copy = async (mystery: PublishedMystery) => {
+  const copy = async (mystery: Pick<PublishedMystery, "id">) => {
     try {
       await copyMystery(mystery);
       toast.success(t`Copied to your private mystery library.`);
@@ -141,7 +141,7 @@ const LibraryPage = () => {
       toast.error(error instanceof Error ? error.message : t`Could not copy mystery`);
     }
   };
-  const approve = async (mystery: PublishedMystery) => {
+  const approve = async (mystery: Pick<PublishedMystery, "id">) => {
     try {
       await api.approvePublishedMystery(mystery.id);
       toast.success(t`Mystery approved.`);
@@ -288,13 +288,13 @@ const LibraryPage = () => {
                       <dt>
                         <Trans>Locations</Trans>
                       </dt>
-                      <dd>{mystery.data.locations.length}</dd>
+                      <dd>{mystery.locationCount}</dd>
                     </div>
                     <div>
                       <dt>
                         <Trans>Suspects</Trans>
                       </dt>
-                      <dd>{mystery.data.suspects.length}</dd>
+                      <dd>{mystery.suspectCount}</dd>
                     </div>
                   </dl>
                   <Button onClick={() => void copy(mystery)}>

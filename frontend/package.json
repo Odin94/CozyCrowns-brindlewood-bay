@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node benchmarks/character-store.mjs --check",
+    "benchmark:store": "node benchmarks/character-store.mjs",
     "dev": "vite",
     "build": "pnpm compile && tsc -b && vite build",
     "lint": "oxlint --fix",

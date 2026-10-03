@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Trans } from "@lingui/react/macro";
 import { Cookie } from "lucide-react";
-import posthog from "posthog-js";
+import { getAnalytics } from "@/lib/analytics";
 import * as React from "react";
 
 type CookieConsentProps = {
@@ -69,7 +69,9 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
         setHide(true);
       }, 200);
       try {
-        posthog.opt_in_capturing();
+        void getAnalytics()
+          .then((posthog) => posthog?.opt_in_capturing())
+          .catch((error) => console.warn("PostHog opt_in_capturing failed:", error));
       } catch (error) {
         console.warn("PostHog opt_in_capturing failed:", error);
       }
@@ -82,7 +84,9 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
         setHide(true);
       }, 200);
       try {
-        posthog.opt_out_capturing();
+        void getAnalytics()
+          .then((posthog) => posthog?.opt_out_capturing())
+          .catch((error) => console.warn("PostHog opt_out_capturing failed:", error));
       } catch (error) {
         console.warn("PostHog opt_out_capturing failed:", error);
       }
@@ -90,24 +94,29 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
     }, [onDeclineCallback]);
 
     React.useEffect(() => {
-      try {
-        if (demo) {
-          setIsOpen(true);
-          return;
-        }
-
-        const consentStatus = posthog.get_explicit_consent_status();
-        if (consentStatus === "pending") {
-          setIsOpen(true);
-        } else {
-          setIsOpen(false);
-          setTimeout(() => {
-            setHide(true);
-          }, 200);
-        }
-      } catch (error) {
-        console.warn("Cookie consent error:", error);
+      if (demo) {
+        setIsOpen(true);
+        return;
       }
+      let cancelled = false;
+      let hideTimer: ReturnType<typeof setTimeout> | undefined;
+      void getAnalytics()
+        .then((posthog) => {
+          if (cancelled) return;
+          if (posthog?.get_explicit_consent_status() === "pending") {
+            setIsOpen(true);
+          } else {
+            setIsOpen(false);
+            hideTimer = setTimeout(() => {
+              setHide(true);
+            }, 200);
+          }
+        })
+        .catch((error) => console.warn("Cookie consent error:", error));
+      return () => {
+        cancelled = true;
+        clearTimeout(hideTimer);
+      };
     }, [demo]);
 
     if (hide) return null;

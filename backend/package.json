@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "benchmark:book-clubs": "tsx benchmarks/book-clubs.ts",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "test": "tsx --test tests/*.test.ts",

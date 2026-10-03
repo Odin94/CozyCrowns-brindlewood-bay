@@ -24,6 +24,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLiveBookClub } from "@/hooks/useLiveBookClub";
 import { reconcileClubSelection } from "@/lib/live_book_club";
 import { accountScope } from "@/lib/account_scope";
+import { preserveBookClubMembers } from "@/lib/book_club_members";
 import { useBookClubStore } from "@/lib/book_club_store";
 import { useCharacterStore } from "@/lib/character_store";
 import {
@@ -34,6 +35,7 @@ import {
   type BookClubNoteCursor,
 } from "@/utils/api";
 import { t } from "@lingui/core/macro";
+import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
 import {
   BookOpen,
@@ -57,6 +59,7 @@ import {
   Users,
 } from "lucide-react";
 import {
+  memo,
   type ComponentType,
   type FormEvent,
   useCallback,
@@ -168,6 +171,10 @@ const BookClubOverview = ({
     api.getBookClubs,
     (error) => toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`),
     user?.id,
+    (previous, incoming) => ({
+      ...incoming,
+      clubs: preserveBookClubMembers(previous.clubs, incoming.clubs),
+    }),
   );
   const { clubs, invitations } = data;
   const setClubs = (update: BookClub[] | ((current: BookClub[]) => BookClub[])) =>
@@ -189,7 +196,7 @@ const BookClubOverview = ({
   const [ornament, setOrnament] = useState<Ornament>(() =>
     readPreference("book-club-ornament", ornamentOptions, "tentacles"),
   );
-  const { characters: localCharacters } = useCharacterStore();
+  const localCharacters = useCharacterStore((state) => state.characters);
   const setActiveBookClub = useBookClubStore((state) => state.setActiveBookClub);
   const setShareRolls = useBookClubStore((state) => state.setShareRolls);
 
@@ -375,14 +382,24 @@ const BookClubOverview = ({
     }
   };
 
-  const characters: CharacterWithOwner[] =
-    club?.members.flatMap((member) =>
-      member.characters.map((character) => ({
-        ...character,
-        ownerId: member.id,
-        nickname: member.nickname,
-      })),
-    ) ?? [];
+  const characters = useMemo<CharacterWithOwner[]>(
+    () =>
+      club?.members.flatMap((member) =>
+        member.characters.map((character) => ({
+          ...character,
+          ownerId: member.id,
+          nickname: member.nickname,
+        })),
+      ) ?? [],
+    [club?.members],
+  );
+  const activeClubId = club?.id;
+  const openMaven = useCallback(
+    (characterId: string) => {
+      if (activeClubId) onOpenMaven(activeClubId, characterId);
+    },
+    [activeClubId, onOpenMaven],
+  );
   const activeScenery = sceneryOptions.find(({ id }) => id === scenery)!;
   const activeOrnament = ornamentOptions.find(({ id }) => id === ornament)!;
 
@@ -487,7 +504,7 @@ const BookClubOverview = ({
                   own={character.ownerId === user?.id}
                   ornament={ornament}
                   href={`/book-clubs/${encodeURIComponent(club.id)}/mavens/${encodeURIComponent(character.id)}`}
-                  onOpen={() => onOpenMaven(club.id, character.id)}
+                  onOpen={openMaven}
                 />
               ))}
               {characters.length === 0 && (
@@ -1814,7 +1831,7 @@ function EmptyClubState({
   );
 }
 
-function MavenCard({
+const MavenCard = memo(function MavenCard({
   href,
   character,
   own,
@@ -1825,8 +1842,9 @@ function MavenCard({
   character: CharacterWithOwner;
   own: boolean;
   ornament: Ornament;
-  onOpen: () => void;
+  onOpen: (characterId: string) => void;
 }) {
+  useLingui();
   const data = character.data;
   const activeCrownIndex = data.voidChecks?.lastIndexOf(true) ?? -1;
   const crown = activeCrownIndex >= 0 ? getCrownOfTheVoid()[activeCrownIndex] : null;
@@ -1842,7 +1860,7 @@ function MavenCard({
       onClick={(event) => {
         if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
         event.preventDefault();
-        onOpen();
+        onOpen(character.id);
       }}
     >
       <CardOrnament ornament={ornament} />
@@ -1878,7 +1896,7 @@ function MavenCard({
       />
     </a>
   );
-}
+});
 
 function CardSummary({
   title,

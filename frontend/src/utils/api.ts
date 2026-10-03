@@ -76,6 +76,12 @@ export type PublishedMystery = {
   submittedAt?: string;
 };
 
+export type LibraryMysterySummary = Pick<PublishedMystery, "id" | "title"> & {
+  data: Pick<MysteryData, "intro" | "complexity">;
+  locationCount: number;
+  suspectCount: number;
+};
+
 export type BookClubCharacter = {
   id: string;
   name: string;
@@ -549,6 +555,13 @@ export const api = {
   ): Promise<{ id: string; status: string; submittedAt: string }> => {
     const response = await scopedFetch(`${API_URL}/mysteries/${id}/publish`, {
       method: "POST",
+      headers: getAuthHeaders({ includeContentType: false }),
+    });
+    return handleResponse(response);
+  },
+
+  getLibrarySummaries: async (): Promise<{ mysteries: LibraryMysterySummary[] }> => {
+    const response = await fetch(`${API_URL}/library?summary=true`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import posthog from "posthog-js";
+import { getAnalytics } from "@/lib/analytics";
+import { identifyAnalyticsUser, resetAnalyticsAndNavigate } from "@/lib/analytics_session";
 import { useEffect, useSyncExternalStore } from "react";
 import { accountScope } from "@/lib/account_scope";
 import { consumeAuthReturnTo } from "@/lib/auth_return_to";
@@ -88,16 +89,6 @@ export const useAuth = () => {
     tokenStorage.set(data.token);
     queryClient.setQueryData(["auth", "me"], data.user);
     queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
-
-    try {
-      posthog.identify(data.user.id, {
-        email: data.user.email,
-        firstName: data.user.firstName,
-        lastName: data.user.lastName,
-      });
-    } catch (error) {
-      console.warn("PostHog identify failed:", error);
-    }
   };
 
   const localLoginMutation = useMutation({
@@ -113,15 +104,9 @@ export const useAuth = () => {
 
   useEffect(() => {
     if (user) {
-      try {
-        posthog.identify(user.id, {
-          email: user.email,
-          firstName: user.firstName,
-          lastName: user.lastName,
-        });
-      } catch (error) {
-        console.warn("PostHog identify failed:", error);
-      }
+      return identifyAnalyticsUser(getAnalytics, user, (error) =>
+        console.warn("PostHog identify failed:", error),
+      );
     }
   }, [user]);
 
@@ -133,35 +118,31 @@ export const useAuth = () => {
 
   const logoutMutation = useMutation({
     mutationFn: (generation: number) => api.logout().then((data) => ({ ...data, generation })),
-    onSuccess: (data) => {
+    onSuccess: async (data) => {
       if (data.generation !== accountScope.current().generation) return;
       tokenStorage.remove();
       queryClient.setQueryData(["auth", "me"], null);
 
-      try {
-        posthog.reset();
-      } catch (error) {
-        console.warn("PostHog reset failed:", error);
-      }
-
-      if (data.logoutUrl) {
-        window.location.href = data.logoutUrl;
-      } else {
-        window.location.href = "/";
-      }
+      await resetAnalyticsAndNavigate(
+        getAnalytics,
+        () => {
+          window.location.href = data.logoutUrl || "/";
+        },
+        (error) => console.warn("PostHog reset failed:", error),
+      );
     },
-    onError: (_error, generation) => {
+    onError: async (_error, generation) => {
       if (generation !== accountScope.current().generation) return;
       tokenStorage.remove();
       queryClient.setQueryData(["auth", "me"], null);
 
-      try {
-        posthog.reset();
-      } catch (error) {
-        console.warn("PostHog reset failed:", error);
-      }
-
-      window.location.href = "/";
+      await resetAnalyticsAndNavigate(
+        getAnalytics,
+        () => {
+          window.location.href = "/";
+        },
+        (error) => console.warn("PostHog reset failed:", error),
+      );
     },
   });
 

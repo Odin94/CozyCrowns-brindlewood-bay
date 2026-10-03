@@ -1,0 +1,948 @@
+{
+  "baselineRef": "7b88cb2512fac15c920723d81e0a9cec10962e81",
+  "method": "same native Chromium tab; development React Profiler; actual components with deterministic API fixtures;30flushSyncedits;3interleavedpairs; executed-fiber countsflags&1andactualStartTime>=root actualStartTime; Library80msfixture latency; panel lifecycle mock authenticated API/websocket",
+  "results": [
+    {
+      "variant": "baseline",
+      "pair": 0,
+      "library": {
+        "inputs": 0,
+        "requestStartSpreadMs": 87.5,
+        "requests": [
+          "library",
+          "pending"
+        ],
+        "view": "library"
+      },
+      "navigation": {
+        "initialRequests": 1,
+        "panels": 6,
+        "path": "/book-clubs/fixture-club?panel=clues",
+        "requests": [
+          "me",
+          "clubs",
+          "clubs",
+          "clubs",
+          "clubs",
+          "clubs",
+          "notes",
+          "clubs",
+          "clubs"
+        ],
+        "socketsOpened": 7,
+        "totalClubRequests": 7
+      },
+      "samples": [
+        {
+          "cards": 100,
+          "edits": 30,
+          "elapsedMs": 244.5,
+          "nodes": 0,
+          "reactActualDurationMs": 156.09999999031425,
+          "renderedComponents": {
+            "Field": 7320,
+            "MysteriesPage": 30,
+            "RemoveCard": 3000,
+            "RenderChildren": 7770,
+            "Section": 150,
+            "Trans": 7770,
+            "TransNoContext": 7770
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "mysteries",
+          "workload": "edit"
+        },
+        {
+          "cards": 24,
+          "edits": 30,
+          "elapsedMs": 97.70000000111759,
+          "nodes": 0,
+          "reactActualDurationMs": 56.60000000335276,
+          "renderedComponents": {
+            "BookClubOverview": 30,
+            "CardOrnament": 720,
+            "CardSummary": 2880,
+            "Dialog": 60,
+            "DialogContent": 30,
+            "DialogPortal": 60,
+            "DrawerRail": 30,
+            "InviteStation": 30,
+            "MavenCard": 720,
+            "Presence": 60,
+            "Provider": 60,
+            "QuickNavigator": 30,
+            "RenderChildren": 90,
+            "SceneryArtwork": 30,
+            "Trans": 90,
+            "TransNoContext": 90
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "clubs",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 818.5999999996275,
+          "nodes": 80,
+          "reactActualDurationMs": 484.29999998025596,
+          "renderedComponents": {
+            "DescriptionWarning": 30,
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogDescription": 30,
+            "DialogFooter": 30,
+            "DialogHeader": 30,
+            "DialogOverlay": 30,
+            "DialogPortal": 120,
+            "DialogTitle": 30,
+            "Popper": 2400,
+            "Presence": 2580,
+            "Provider": 9720,
+            "RemoveScrollBar": 30,
+            "RemoveScrollSideCar": 30,
+            "RenderChildren": 510,
+            "Sheet": 30,
+            "SideCar": 30,
+            "TagEditor": 30,
+            "TheorizeBoard": 30,
+            "TitleWarning": 30,
+            "Tooltip": 4800,
+            "TooltipContent": 2400,
+            "TooltipPortal": 2400,
+            "TooltipProvider": 4800,
+            "TooltipTrigger": 2400,
+            "Trans": 510,
+            "TransNoContext": 510
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 60,
+          "view": "theory",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 668.1000000014901,
+          "nodes": 80,
+          "reactActualDurationMs": 388.69999999925494,
+          "renderedComponents": {
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogPortal": 120,
+            "Popper": 2400,
+            "Presence": 2520,
+            "Provider": 9720,
+            "RenderChildren": 180,
+            "TheorizeBoard": 30,
+            "Tooltip": 4800,
+            "TooltipContent": 2400,
+            "TooltipPortal": 2400,
+            "TooltipProvider": 4800,
+            "TooltipTrigger": 2400,
+            "Trans": 180,
+            "TransNoContext": 180
+          },
+          "updates": 60,
+          "view": "theory",
+          "workload": "pan"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 16,
+          "nodes": 0,
+          "reactActualDurationMs": 9.400000017136335,
+          "renderedComponents": {
+            "Checkbox": 270,
+            "CheckboxProvider": 270,
+            "CheckedParagraph": 270,
+            "DarkConspiracySheet": 30,
+            "FieldLabel": 270,
+            "KeeperTextarea": 330,
+            "MysteryTracker": 30,
+            "Presence": 270,
+            "Provider": 270,
+            "RenderChildren": 30,
+            "Trans": 30,
+            "TransNoContext": 30
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "dark",
+          "workload": "edit"
+        }
+      ]
+    },
+    {
+      "variant": "after",
+      "pair": 0,
+      "library": {
+        "inputs": 0,
+        "requestStartSpreadMs": 0,
+        "requests": [
+          "library",
+          "pending"
+        ],
+        "view": "library"
+      },
+      "navigation": {
+        "initialRequests": 1,
+        "panels": 6,
+        "path": "/book-clubs/fixture-club?panel=clues",
+        "requests": [
+          "me",
+          "clubs",
+          "notes"
+        ],
+        "socketsOpened": 1,
+        "totalClubRequests": 1
+      },
+      "samples": [
+        {
+          "cards": 100,
+          "edits": 30,
+          "elapsedMs": 61,
+          "nodes": 0,
+          "reactActualDurationMs": 50.599999997764826,
+          "renderedComponents": {
+            "Field": 120,
+            "MysteriesPage": 30,
+            "RenderChildren": 420,
+            "Trans": 420,
+            "TransNoContext": 420
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "mysteries",
+          "workload": "edit"
+        },
+        {
+          "cards": 24,
+          "edits": 30,
+          "elapsedMs": 15.200000001117587,
+          "nodes": 0,
+          "reactActualDurationMs": 8.699999989941716,
+          "renderedComponents": {
+            "BookClubOverview": 30,
+            "Dialog": 60,
+            "DialogContent": 30,
+            "DialogPortal": 60,
+            "DrawerRail": 30,
+            "InviteStation": 30,
+            "Presence": 60,
+            "Provider": 60,
+            "QuickNavigator": 30,
+            "RenderChildren": 90,
+            "Trans": 90,
+            "TransNoContext": 90
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "clubs",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 35.59999999962747,
+          "nodes": 80,
+          "reactActualDurationMs": 13.799999997019768,
+          "renderedComponents": {
+            "DescriptionWarning": 30,
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogDescription": 30,
+            "DialogFooter": 30,
+            "DialogHeader": 30,
+            "DialogOverlay": 30,
+            "DialogPortal": 120,
+            "DialogTitle": 30,
+            "Presence": 180,
+            "Provider": 120,
+            "RemoveScrollBar": 30,
+            "RemoveScrollSideCar": 30,
+            "RenderChildren": 510,
+            "Sheet": 30,
+            "SideCar": 30,
+            "TagEditor": 30,
+            "TheorizeBoard": 30,
+            "TitleWarning": 30,
+            "Trans": 510,
+            "TransNoContext": 510
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 60,
+          "view": "theory",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 10.900000000372529,
+          "nodes": 80,
+          "reactActualDurationMs": 5.199999997392297,
+          "renderedComponents": {
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogPortal": 120,
+            "Presence": 120,
+            "Provider": 120,
+            "RenderChildren": 180,
+            "TheorizeBoard": 30,
+            "Trans": 180,
+            "TransNoContext": 180
+          },
+          "updates": 30,
+          "view": "theory",
+          "workload": "pan"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 1.700000001117587,
+          "nodes": 0,
+          "reactActualDurationMs": 0.2000000011175871,
+          "renderedComponents": {
+            "KeeperTextarea": 30,
+            "MysteryTracker": 1
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "dark",
+          "workload": "edit"
+        }
+      ]
+    },
+    {
+      "variant": "after",
+      "pair": 1,
+      "library": {
+        "inputs": 0,
+        "requestStartSpreadMs": 0,
+        "requests": [
+          "library",
+          "pending"
+        ],
+        "view": "library"
+      },
+      "navigation": {
+        "initialRequests": 1,
+        "panels": 6,
+        "path": "/book-clubs/fixture-club?panel=clues",
+        "requests": [
+          "me",
+          "clubs",
+          "notes"
+        ],
+        "socketsOpened": 1,
+        "totalClubRequests": 1
+      },
+      "samples": [
+        {
+          "cards": 100,
+          "edits": 30,
+          "elapsedMs": 60.09999999962747,
+          "nodes": 0,
+          "reactActualDurationMs": 50.80000000633299,
+          "renderedComponents": {
+            "Field": 120,
+            "MysteriesPage": 30,
+            "RenderChildren": 420,
+            "Trans": 420,
+            "TransNoContext": 420
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "mysteries",
+          "workload": "edit"
+        },
+        {
+          "cards": 24,
+          "edits": 30,
+          "elapsedMs": 13.800000000745058,
+          "nodes": 0,
+          "reactActualDurationMs": 8.300000008195639,
+          "renderedComponents": {
+            "BookClubOverview": 30,
+            "Dialog": 60,
+            "DialogContent": 30,
+            "DialogPortal": 60,
+            "DrawerRail": 30,
+            "InviteStation": 30,
+            "Presence": 60,
+            "Provider": 60,
+            "QuickNavigator": 30,
+            "RenderChildren": 90,
+            "Trans": 90,
+            "TransNoContext": 90
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "clubs",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 26.300000000745058,
+          "nodes": 80,
+          "reactActualDurationMs": 11.599999994039536,
+          "renderedComponents": {
+            "DescriptionWarning": 30,
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogDescription": 30,
+            "DialogFooter": 30,
+            "DialogHeader": 30,
+            "DialogOverlay": 30,
+            "DialogPortal": 120,
+            "DialogTitle": 30,
+            "Presence": 180,
+            "Provider": 120,
+            "RemoveScrollBar": 30,
+            "RemoveScrollSideCar": 30,
+            "RenderChildren": 510,
+            "Sheet": 30,
+            "SideCar": 30,
+            "TagEditor": 30,
+            "TheorizeBoard": 30,
+            "TitleWarning": 30,
+            "Trans": 510,
+            "TransNoContext": 510
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 60,
+          "view": "theory",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 11.099999999627471,
+          "nodes": 80,
+          "reactActualDurationMs": 5.099999997764826,
+          "renderedComponents": {
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogPortal": 120,
+            "Presence": 120,
+            "Provider": 120,
+            "RenderChildren": 180,
+            "TheorizeBoard": 30,
+            "Trans": 180,
+            "TransNoContext": 180
+          },
+          "updates": 30,
+          "view": "theory",
+          "workload": "pan"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 1.800000000745058,
+          "nodes": 0,
+          "reactActualDurationMs": 0.49999999813735485,
+          "renderedComponents": {
+            "KeeperTextarea": 30,
+            "MysteryTracker": 1
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "dark",
+          "workload": "edit"
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "pair": 1,
+      "library": {
+        "inputs": 0,
+        "requestStartSpreadMs": 88,
+        "requests": [
+          "library",
+          "pending"
+        ],
+        "view": "library"
+      },
+      "navigation": {
+        "initialRequests": 1,
+        "panels": 6,
+        "path": "/book-clubs/fixture-club?panel=clues",
+        "requests": [
+          "me",
+          "clubs",
+          "clubs",
+          "clubs",
+          "clubs",
+          "clubs",
+          "notes",
+          "clubs",
+          "clubs"
+        ],
+        "socketsOpened": 7,
+        "totalClubRequests": 7
+      },
+      "samples": [
+        {
+          "cards": 100,
+          "edits": 30,
+          "elapsedMs": 207.80000000074506,
+          "nodes": 0,
+          "reactActualDurationMs": 138.09999999590218,
+          "renderedComponents": {
+            "Field": 7320,
+            "MysteriesPage": 30,
+            "RemoveCard": 3000,
+            "RenderChildren": 7770,
+            "Section": 150,
+            "Trans": 7770,
+            "TransNoContext": 7770
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "mysteries",
+          "workload": "edit"
+        },
+        {
+          "cards": 24,
+          "edits": 30,
+          "elapsedMs": 82.80000000074506,
+          "nodes": 0,
+          "reactActualDurationMs": 48.6999999973923,
+          "renderedComponents": {
+            "BookClubOverview": 30,
+            "CardOrnament": 720,
+            "CardSummary": 2880,
+            "Dialog": 60,
+            "DialogContent": 30,
+            "DialogPortal": 60,
+            "DrawerRail": 30,
+            "InviteStation": 30,
+            "MavenCard": 720,
+            "Presence": 60,
+            "Provider": 60,
+            "QuickNavigator": 30,
+            "RenderChildren": 90,
+            "SceneryArtwork": 30,
+            "Trans": 90,
+            "TransNoContext": 90
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "clubs",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 631.6999999992549,
+          "nodes": 80,
+          "reactActualDurationMs": 379.80000000819564,
+          "renderedComponents": {
+            "DescriptionWarning": 30,
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogDescription": 30,
+            "DialogFooter": 30,
+            "DialogHeader": 30,
+            "DialogOverlay": 30,
+            "DialogPortal": 120,
+            "DialogTitle": 30,
+            "Popper": 2400,
+            "Presence": 2580,
+            "Provider": 9720,
+            "RemoveScrollBar": 30,
+            "RemoveScrollSideCar": 30,
+            "RenderChildren": 510,
+            "Sheet": 30,
+            "SideCar": 30,
+            "TagEditor": 30,
+            "TheorizeBoard": 30,
+            "TitleWarning": 30,
+            "Tooltip": 4800,
+            "TooltipContent": 2400,
+            "TooltipPortal": 2400,
+            "TooltipProvider": 4800,
+            "TooltipTrigger": 2400,
+            "Trans": 510,
+            "TransNoContext": 510
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 60,
+          "view": "theory",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 498,
+          "nodes": 80,
+          "reactActualDurationMs": 265.00000000558794,
+          "renderedComponents": {
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogPortal": 120,
+            "Popper": 2400,
+            "Presence": 2520,
+            "Provider": 9720,
+            "RenderChildren": 180,
+            "TheorizeBoard": 30,
+            "Tooltip": 4800,
+            "TooltipContent": 2400,
+            "TooltipPortal": 2400,
+            "TooltipProvider": 4800,
+            "TooltipTrigger": 2400,
+            "Trans": 180,
+            "TransNoContext": 180
+          },
+          "updates": 60,
+          "view": "theory",
+          "workload": "pan"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 14.5,
+          "nodes": 0,
+          "reactActualDurationMs": 9.199999999254942,
+          "renderedComponents": {
+            "Checkbox": 270,
+            "CheckboxProvider": 270,
+            "CheckedParagraph": 270,
+            "DarkConspiracySheet": 30,
+            "FieldLabel": 270,
+            "KeeperTextarea": 330,
+            "MysteryTracker": 30,
+            "Presence": 270,
+            "Provider": 270,
+            "RenderChildren": 30,
+            "Trans": 30,
+            "TransNoContext": 30
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "dark",
+          "workload": "edit"
+        }
+      ]
+    },
+    {
+      "variant": "baseline",
+      "pair": 2,
+      "library": {
+        "inputs": 0,
+        "requestStartSpreadMs": 87.90000000037253,
+        "requests": [
+          "library",
+          "pending"
+        ],
+        "view": "library"
+      },
+      "navigation": {
+        "initialRequests": 1,
+        "panels": 6,
+        "path": "/book-clubs/fixture-club?panel=clues",
+        "requests": [
+          "me",
+          "clubs",
+          "clubs",
+          "clubs",
+          "clubs",
+          "clubs",
+          "notes",
+          "clubs",
+          "clubs"
+        ],
+        "socketsOpened": 7,
+        "totalClubRequests": 7
+      },
+      "samples": [
+        {
+          "cards": 100,
+          "edits": 30,
+          "elapsedMs": 195.59999999962747,
+          "nodes": 0,
+          "reactActualDurationMs": 132.80000000074506,
+          "renderedComponents": {
+            "Field": 7320,
+            "MysteriesPage": 30,
+            "RemoveCard": 3000,
+            "RenderChildren": 7770,
+            "Section": 150,
+            "Trans": 7770,
+            "TransNoContext": 7770
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "mysteries",
+          "workload": "edit"
+        },
+        {
+          "cards": 24,
+          "edits": 30,
+          "elapsedMs": 76.29999999888241,
+          "nodes": 0,
+          "reactActualDurationMs": 45.600000005215406,
+          "renderedComponents": {
+            "BookClubOverview": 30,
+            "CardOrnament": 720,
+            "CardSummary": 2880,
+            "Dialog": 60,
+            "DialogContent": 30,
+            "DialogPortal": 60,
+            "DrawerRail": 30,
+            "InviteStation": 30,
+            "MavenCard": 720,
+            "Presence": 60,
+            "Provider": 60,
+            "QuickNavigator": 30,
+            "RenderChildren": 90,
+            "SceneryArtwork": 30,
+            "Trans": 90,
+            "TransNoContext": 90
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "clubs",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 610.0999999996275,
+          "nodes": 80,
+          "reactActualDurationMs": 373.9000000040978,
+          "renderedComponents": {
+            "DescriptionWarning": 30,
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogDescription": 30,
+            "DialogFooter": 30,
+            "DialogHeader": 30,
+            "DialogOverlay": 30,
+            "DialogPortal": 120,
+            "DialogTitle": 30,
+            "Popper": 2400,
+            "Presence": 2580,
+            "Provider": 9720,
+            "RemoveScrollBar": 30,
+            "RemoveScrollSideCar": 30,
+            "RenderChildren": 510,
+            "Sheet": 30,
+            "SideCar": 30,
+            "TagEditor": 30,
+            "TheorizeBoard": 30,
+            "TitleWarning": 30,
+            "Tooltip": 4800,
+            "TooltipContent": 2400,
+            "TooltipPortal": 2400,
+            "TooltipProvider": 4800,
+            "TooltipTrigger": 2400,
+            "Trans": 510,
+            "TransNoContext": 510
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 60,
+          "view": "theory",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 510.2999999988824,
+          "nodes": 80,
+          "reactActualDurationMs": 269.4000000040978,
+          "renderedComponents": {
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogPortal": 120,
+            "Popper": 2400,
+            "Presence": 2520,
+            "Provider": 9720,
+            "RenderChildren": 180,
+            "TheorizeBoard": 30,
+            "Tooltip": 4800,
+            "TooltipContent": 2400,
+            "TooltipPortal": 2400,
+            "TooltipProvider": 4800,
+            "TooltipTrigger": 2400,
+            "Trans": 180,
+            "TransNoContext": 180
+          },
+          "updates": 60,
+          "view": "theory",
+          "workload": "pan"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 14.400000000372529,
+          "nodes": 0,
+          "reactActualDurationMs": 8.699999997392297,
+          "renderedComponents": {
+            "Checkbox": 270,
+            "CheckboxProvider": 270,
+            "CheckedParagraph": 270,
+            "DarkConspiracySheet": 30,
+            "FieldLabel": 270,
+            "KeeperTextarea": 330,
+            "MysteryTracker": 30,
+            "Presence": 270,
+            "Provider": 270,
+            "RenderChildren": 30,
+            "Trans": 30,
+            "TransNoContext": 30
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "dark",
+          "workload": "edit"
+        }
+      ]
+    },
+    {
+      "variant": "after",
+      "pair": 2,
+      "library": {
+        "inputs": 0,
+        "requestStartSpreadMs": 0,
+        "requests": [
+          "library",
+          "pending"
+        ],
+        "view": "library"
+      },
+      "navigation": {
+        "initialRequests": 1,
+        "panels": 6,
+        "path": "/book-clubs/fixture-club?panel=clues",
+        "requests": [
+          "me",
+          "clubs",
+          "notes"
+        ],
+        "socketsOpened": 1,
+        "totalClubRequests": 1
+      },
+      "samples": [
+        {
+          "cards": 100,
+          "edits": 30,
+          "elapsedMs": 62.90000000037253,
+          "nodes": 0,
+          "reactActualDurationMs": 52.79999999701977,
+          "renderedComponents": {
+            "Field": 120,
+            "MysteriesPage": 30,
+            "RenderChildren": 420,
+            "Trans": 420,
+            "TransNoContext": 420
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "mysteries",
+          "workload": "edit"
+        },
+        {
+          "cards": 24,
+          "edits": 30,
+          "elapsedMs": 13.699999999254942,
+          "nodes": 0,
+          "reactActualDurationMs": 8.000000005587935,
+          "renderedComponents": {
+            "BookClubOverview": 30,
+            "Dialog": 60,
+            "DialogContent": 30,
+            "DialogPortal": 60,
+            "DrawerRail": 30,
+            "InviteStation": 30,
+            "Presence": 60,
+            "Provider": 60,
+            "QuickNavigator": 30,
+            "RenderChildren": 90,
+            "Trans": 90,
+            "TransNoContext": 90
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "clubs",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 24.5,
+          "nodes": 80,
+          "reactActualDurationMs": 10.199999997392297,
+          "renderedComponents": {
+            "DescriptionWarning": 30,
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogDescription": 30,
+            "DialogFooter": 30,
+            "DialogHeader": 30,
+            "DialogOverlay": 30,
+            "DialogPortal": 120,
+            "DialogTitle": 30,
+            "Presence": 180,
+            "Provider": 120,
+            "RemoveScrollBar": 30,
+            "RemoveScrollSideCar": 30,
+            "RenderChildren": 510,
+            "Sheet": 30,
+            "SideCar": 30,
+            "TagEditor": 30,
+            "TheorizeBoard": 30,
+            "TitleWarning": 30,
+            "Trans": 510,
+            "TransNoContext": 510
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 60,
+          "view": "theory",
+          "workload": "edit"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 10,
+          "nodes": 80,
+          "reactActualDurationMs": 4.699999997392297,
+          "renderedComponents": {
+            "Dialog": 120,
+            "DialogContent": 60,
+            "DialogPortal": 120,
+            "Presence": 120,
+            "Provider": 120,
+            "RenderChildren": 180,
+            "TheorizeBoard": 30,
+            "Trans": 180,
+            "TransNoContext": 180
+          },
+          "updates": 30,
+          "view": "theory",
+          "workload": "pan"
+        },
+        {
+          "cards": 0,
+          "edits": 30,
+          "elapsedMs": 1.599999999627471,
+          "nodes": 0,
+          "reactActualDurationMs": 0.2000000011175871,
+          "renderedComponents": {
+            "KeeperTextarea": 30,
+            "MysteryTracker": 1
+          },
+          "resultingValue": "Fixture edit 29",
+          "updates": 30,
+          "view": "dark",
+          "workload": "edit"
+        }
+      ]
+    }
+  ]
+}

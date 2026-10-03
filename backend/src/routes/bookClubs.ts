@@ -175,6 +175,55 @@ async function overview(bookClubId: string, viewerId: string) {
   return (await overviews([bookClubId], viewerId))[0];
 }
 
+function groupBy<T>(items: T[], keyFor: (item: T) => string) {
+  const groups = new Map<string, T[]>();
+  for (const item of items) {
+    const key = keyFor(item);
+    const group = groups.get(key);
+    if (group) group.push(item);
+    else groups.set(key, [item]);
+  }
+  return groups;
+}
+
+type OverviewRoll = {
+  id: string;
+  bookClubId: string;
+  userId: string;
+  characterId: string | null;
+  characterName: string;
+  label: string;
+  dice: string;
+  result: string;
+  createdAt: number;
+};
+
+// SQLite defaults to 500 terms per compound SELECT. Keep every account size valid.
+function recentRolls(bookClubIds: string[]): OverviewRoll[] {
+  const rolls: OverviewRoll[] = [];
+  for (let offset = 0; offset < bookClubIds.length; offset += 250) {
+    const batch = bookClubIds.slice(offset, offset + 250);
+    rolls.push(
+      ...db.all<OverviewRoll>(sql`
+      SELECT id, book_club_id AS bookClubId, user_id AS userId, character_id AS characterId,
+        character_name AS characterName, label, dice, result, created_at AS createdAt
+      FROM (${sql.join(
+        batch.map(
+          (id) => sql`SELECT * FROM (
+          SELECT id, book_club_id, user_id, character_id, character_name, label, dice, result, created_at
+          FROM book_club_roll_events WHERE book_club_id = ${id}
+          ORDER BY created_at DESC LIMIT 30
+        )`,
+        ),
+        sql` UNION ALL `,
+      )})
+      ORDER BY createdAt DESC
+    `),
+    );
+  }
+  return rolls.sort((a, b) => b.createdAt - a.createdAt);
+}
+
 async function overviews(bookClubIds: string[], viewerId: string) {
   if (!bookClubIds.length) return [];
   const [clubs, members, characterRows, mysteries, rollRows] = await Promise.all([
@@ -210,30 +259,7 @@ async function overviews(bookClubIds: string[], viewerId: string) {
       .from(schema.bookClubMysteries)
       .where(inArray(schema.bookClubMysteries.bookClubId, bookClubIds))
       .orderBy(desc(schema.bookClubMysteries.updatedAt)),
-    db.all<{
-      id: string;
-      bookClubId: string;
-      userId: string;
-      characterId: string | null;
-      characterName: string;
-      label: string;
-      dice: string;
-      result: string;
-      createdAt: number;
-    }>(sql`
-      SELECT id, book_club_id AS bookClubId, user_id AS userId, character_id AS characterId,
-        character_name AS characterName, label, dice, result, created_at AS createdAt
-      FROM (
-        SELECT *, ROW_NUMBER() OVER (PARTITION BY book_club_id ORDER BY created_at DESC) AS row_number
-        FROM book_club_roll_events
-        WHERE book_club_id IN (${sql.join(
-          bookClubIds.map((id) => sql`${id}`),
-          sql`, `,
-        )})
-      )
-      WHERE row_number <= 30
-      ORDER BY createdAt DESC
-    `),
+    recentRolls(bookClubIds),
   ]);
   const userIds = [...new Set(members.map((member) => member.userId))];
   const users = userIds.length
@@ -256,14 +282,21 @@ async function overviews(bookClubIds: string[], viewerId: string) {
         .orderBy(desc(schema.bookClubClues.checked), desc(schema.bookClubClues.updatedAt))
     : [];
   const usersById = new Map(users.map((user) => [user.id, user]));
+  const membersByClub = groupBy(members, (member) => member.bookClubId);
+  const mysteriesByClub = groupBy(mysteries, (mystery) => mystery.bookClubId);
+  const rollsByClub = groupBy(rollRows, (roll) => roll.bookClubId);
+  const cluesByMystery = groupBy(clues, (clue) => clue.mysteryId);
+  const charactersByClubAndUser = groupBy(
+    characterRows,
+    (row) => `${row.bookClubId}\0${row.character.userId}`,
+  );
 
   return clubs.map((club) => {
-    const clubMembers = members.filter((member) => member.bookClubId === club.id);
-    const clubMysteries = mysteries.filter((mystery) => mystery.bookClubId === club.id);
+    const clubMembers = membersByClub.get(club.id) ?? [];
+    const clubMysteries = mysteriesByClub.get(club.id) ?? [];
     const isGameMaster = clubMembers.some(
       (member) => member.userId === viewerId && member.isGameMaster,
     );
-    const visibleClues = clues.filter((clue) => isGameMaster || clue.checked);
     const activeMystery = clubMysteries.find((mystery) => mystery.isActive);
     return {
       id: club.id,
@@ -277,30 +310,35 @@ async function overviews(bookClubIds: string[], viewerId: string) {
         nickname: usersById.get(member.userId)?.nickname ?? null,
         joinedAt: member.joinedAt,
         isGameMaster: member.isGameMaster,
-        characters: characterRows
-          .filter((row) => row.bookClubId === club.id && row.character.userId === member.userId)
-          .map(({ character }) => ({
+        characters: (charactersByClubAndUser.get(`${club.id}\0${member.userId}`) ?? []).map(
+          ({ character }) => ({
             id: character.id,
             name: character.name,
             data: characterOverview(character.data),
             version: character.version,
             updatedAt: character.updatedAt,
-          })),
+          }),
+        ),
       })),
-      rolls: rollRows
-        .filter((roll) => roll.bookClubId === club.id)
-        .map((roll) => ({ ...roll, createdAt: new Date(roll.createdAt * 1000) })),
+      rolls: (rollsByClub.get(club.id) ?? []).map((roll) => ({
+        ...roll,
+        createdAt: new Date(roll.createdAt * 1000),
+      })),
       mysteries: clubMysteries.map((mystery) => ({
         id: mystery.id,
         title: mystery.title,
         isActive: mystery.isActive,
         createdAt: mystery.createdAt,
-        voidClues: visibleClues.filter((clue) => clue.mysteryId === mystery.id && clue.isVoid),
+        voidClues: (cluesByMystery.get(mystery.id) ?? []).filter(
+          (clue) => clue.isVoid && (isGameMaster || clue.checked),
+        ),
       })),
       activeMystery: activeMystery
         ? {
             ...activeMystery,
-            clues: visibleClues.filter((clue) => clue.mysteryId === activeMystery.id),
+            clues: (cluesByMystery.get(activeMystery.id) ?? []).filter(
+              (clue) => isGameMaster || clue.checked,
+            ),
           }
         : null,
     };

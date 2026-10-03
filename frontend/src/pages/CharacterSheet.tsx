@@ -36,30 +36,12 @@ type CharacterSheetProps = {
   onSwitchToDarkConspiracy?: () => void;
 };
 
-const CharacterSheet = ({
-  onBookClubsClick,
-  activeView = "character",
-  onSwitchToCharacter,
-  onSwitchToDarkConspiracy,
-}: CharacterSheetProps) => {
-  // useLingui() is Required to ensure component rerenders when locale changes
-  useLingui();
-  useBackendCharactersSync();
-  useBackendDarkConspiraciesSync();
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [saveFailureOpen, setSaveFailureOpen] = useState(false);
-  const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
-  const isLargeScreen = useIsLargeScreen();
-  const {
-    deleteConfirmOpen,
-    deleteConfirmIndex,
-    handleDeleteCharacter,
-    confirmDelete,
-    cancelDelete,
-    setDeleteConfirmOpen,
-  } = useDeleteConfirmation();
-  const { saveCurrentCharacter } = useCharacterSave();
-  const { setCurrentCharacter } = useCharacterStore();
+// Keep per-edit subscriptions out of the sheet layout and its sibling sections.
+const CharacterAutoSave = ({
+  saveCurrentCharacter,
+}: {
+  saveCurrentCharacter: () => Promise<boolean>;
+}) => {
   const currentCharacter = useCharacterStore((state) => state.selected());
   const { isAuthenticated, user } = useAuth();
   const lastAutoSaved = useRef<string | null>(null);
@@ -108,6 +90,35 @@ const CharacterSheet = ({
     saveCurrentCharacter,
   ]);
 
+  return null;
+};
+
+const CharacterSheet = ({
+  onBookClubsClick,
+  activeView = "character",
+  onSwitchToCharacter,
+  onSwitchToDarkConspiracy,
+}: CharacterSheetProps) => {
+  // useLingui() is Required to ensure component rerenders when locale changes
+  useLingui();
+  useBackendCharactersSync();
+  useBackendDarkConspiraciesSync();
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [saveFailureOpen, setSaveFailureOpen] = useState(false);
+  const [pendingSwitchIndex, setPendingSwitchIndex] = useState<number | null>(null);
+  const isLargeScreen = useIsLargeScreen();
+  const {
+    deleteConfirmOpen,
+    deleteConfirmIndex,
+    handleDeleteCharacter,
+    confirmDelete,
+    cancelDelete,
+    setDeleteConfirmOpen,
+  } = useDeleteConfirmation();
+  const { saveCurrentCharacter } = useCharacterSave();
+  const setCurrentCharacter = useCharacterStore((state) => state.setCurrentCharacter);
+  const { isAuthenticated } = useAuth();
+
   const handleSwitchCharacter = async (index: number): Promise<boolean> => {
     const saveSuccess = await saveCurrentCharacter();
     if (!saveSuccess) {
@@ -135,6 +146,7 @@ const CharacterSheet = ({
     <div
       className={`min-h-screen w-full from-gray-900 to-gray-800 p-3 sm:p-4 md:p-5 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
     >
+      <CharacterAutoSave saveCurrentCharacter={saveCurrentCharacter} />
       <div className="w-full max-w-none">
         <div className="mb-5 pt-3 text-center sm:mb-8 md:pt-0">
           <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>

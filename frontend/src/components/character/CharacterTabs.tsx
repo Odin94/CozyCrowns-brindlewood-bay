@@ -1,6 +1,7 @@
 import { useIsLargeScreen } from "@/hooks/useIsLargeScreen";
 import { Button } from "@/components/ui/button";
-import { type CharacterRecord, useCharacterStore } from "@/lib/character_store";
+import { useCharacterStore } from "@/lib/character_store";
+import { useShallow } from "zustand/react/shallow";
 import { ChevronDown, Eye, Plus, X } from "lucide-react";
 import { useState } from "react";
 
@@ -19,14 +20,20 @@ const CharacterTabs = ({
   onSwitchToCharacter,
   onSwitchToDarkConspiracy,
 }: CharacterTabsProps) => {
-  const { characters, selectedCharacterId, select, create } = useCharacterStore();
+  const characters = useCharacterStore(
+    useShallow((state) => state.characters.map(({ localId, name }) => `${localId}\0${name}`)),
+  );
+  const selectedCharacterId = useCharacterStore((state) => state.selectedCharacterId);
+  const select = useCharacterStore((state) => state.select);
+  const create = useCharacterStore((state) => state.create);
   const isLargeScreen = useIsLargeScreen();
   const [isMobileTabsVisible, setIsMobileTabsVisible] = useState(false);
 
   const handleCharacterSwitch = async (index: number) => {
     const character = characters[index];
     if (!character) return;
-    if (character.localId === selectedCharacterId) {
+    const localId = character.split("\0")[0];
+    if (localId === selectedCharacterId) {
       onSwitchToCharacter?.();
       return;
     }
@@ -36,7 +43,7 @@ const CharacterTabs = ({
       if (!canSwitch) return;
     }
 
-    select(character.localId);
+    select(localId);
     onSwitchToCharacter?.();
   };
 
@@ -52,16 +59,19 @@ const CharacterTabs = ({
     onSwitchToCharacter?.();
   };
 
-  const renderCharacterTab = (character: CharacterRecord, index: number) => {
-    const displayName = character.name.split(" ")[0] || `Character ${index + 1}`;
+  const renderCharacterTab = (character: string, index: number) => {
+    const separator = character.indexOf("\0");
+    const localId = character.slice(0, separator);
+    const name = character.slice(separator + 1);
+    const displayName = name.split(" ")[0] || `Character ${index + 1}`;
     const truncatedName =
       displayName.length > 13 ? displayName.substring(0, 11) + "..." : displayName;
 
     return (
       <div
-        key={index}
+        key={localId}
         className={`relative group flex items-center gap-2 pl-6 py-3 w-40 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in ${
-          activeView === "character" && selectedCharacterId === character.localId
+          activeView === "character" && selectedCharacterId === localId
             ? "bg-dark-secondary text-tertiary"
             : "bg-dark-secondary/40 hover:bg-dark-secondary/60 text-tertiary/80"
         }
