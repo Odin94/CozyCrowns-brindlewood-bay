@@ -21,3 +21,9 @@ The name becomes `REMOTE VERSION`. Only one character remains; the local draft i
 Store the last confirmed document alongside each local ID and remote revision. Adopt a newer remote version only when the local document is clean; otherwise merge disjoint changes or retain both versions and surface the conflict. Keep a durable recovery snapshot before replacements.
 
 Regression: edit offline, advance the cloud version elsewhere, then sign in or remount; both versions must remain recoverable.
+
+## Implementation
+
+Implemented durable confirmed-content baselines for Maven and Dark Conspiracy records. A newer cloud revision preserves divergent local content in a separate local record before adopting the remote document.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

@@ -1,3 +1,4 @@
+import { reconcileSourceClues, sourceClues } from "../lib/sourceClues.js";
 import type { FastifyInstance } from "fastify";
 import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -37,18 +38,6 @@ const keepVersionHistory = (mysteryId: string) => {
   if (discarded.length)
     db.delete(mysteryVersions).where(inArray(mysteryVersions.id, discarded)).run();
 };
-
-const bookClubClues = (data: UpdateMysteryInput["data"]) =>
-  [
-    ...data.clues.map((clue) => ({
-      text: [clue.title.trim(), clue.description.trim()].filter(Boolean).join(" — "),
-      isVoid: false,
-    })),
-    ...data.voidClues.map((clue) => ({
-      text: [clue.title.trim(), clue.description.trim()].filter(Boolean).join(" — "),
-      isVoid: true,
-    })),
-  ].filter((clue) => clue.text);
 
 const isSuperadmin = (userId: string) =>
   db.select({ isSuperadmin: users.isSuperadmin }).from(users).where(eq(users.id, userId)).get()
@@ -168,7 +157,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
           .from(schema.bookClubMysteries)
           .where(eq(schema.bookClubMysteries.sourceMysteryId, mystery.id))
           .all();
-        const clues = bookClubClues(request.body.data);
+        const clues = sourceClues(request.body.data);
         linkedMysteries.forEach((linkedMystery) => {
           db.update(schema.bookClubMysteries)
             .set({ title: mystery.title, updatedAt: now })
@@ -177,31 +166,34 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
           const unmatchedExistingClues = db
             .select({
               id: schema.bookClubClues.id,
+              sourceClueId: schema.bookClubClues.sourceClueId,
               text: schema.bookClubClues.text,
               isVoid: schema.bookClubClues.isVoid,
             })
             .from(schema.bookClubClues)
             .where(eq(schema.bookClubClues.mysteryId, linkedMystery.id))
+            .orderBy(schema.bookClubClues.createdAt, schema.bookClubClues.id)
             .all();
-          const newClues = clues.filter((clue) => {
-            const existingIndex = unmatchedExistingClues.findIndex(
-              (existingClue) =>
-                existingClue.text === clue.text && existingClue.isVoid === clue.isVoid,
-            );
-            if (existingIndex < 0) return true;
-            unmatchedExistingClues.splice(existingIndex, 1);
-            return false;
-          });
-          if (unmatchedExistingClues.length) {
-            db.delete(schema.bookClubClues)
-              .where(
-                inArray(
-                  schema.bookClubClues.id,
-                  unmatchedExistingClues.map((clue) => clue.id),
-                ),
-              )
+          const reconciled = reconcileSourceClues(
+            unmatchedExistingClues,
+            sourceClues(JSON.parse(existing.data)),
+            clues,
+          );
+          for (const clue of [...reconciled.updates, ...reconciled.retained]) {
+            db.update(schema.bookClubClues)
+              .set({ text: clue.text, sourceClueId: clue.sourceClueId, updatedAt: now })
+              .where(eq(schema.bookClubClues.id, clue.id))
+              .run();
+            db.update(schema.bookClubTheoryNodes)
+              .set({
+                title: clue.text,
+                updatedAt: now,
+                version: sql`${schema.bookClubTheoryNodes.version} + 1`,
+              })
+              .where(eq(schema.bookClubTheoryNodes.sourceClueId, clue.id))
               .run();
           }
+          const newClues = reconciled.inserts;
           if (newClues.length) {
             db.insert(schema.bookClubClues)
               .values(
@@ -209,6 +201,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
                   id: nanoid(),
                   mysteryId: linkedMystery.id,
                   text: clue.text,
+                  sourceClueId: clue.sourceClueId,
                   isVoid: clue.isVoid,
                 })),
               )

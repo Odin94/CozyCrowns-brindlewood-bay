@@ -17,3 +17,9 @@ Open one local Maven in two tabs. Add a condition in A; B remains stale. Change 
 Use stable local IDs with transactional per-record persistence and coordinate cross-tab changes. Reconcile incoming records against a confirmed local base and preserve dirty divergent versions. Apply the same protection to Dark Conspiracy storage.
 
 Regression: disjoint edits in two tabs, simultaneous character creation/import, and deletion; a stale tab must never overwrite newer records or the entire collection.
+
+## Implementation
+
+Implemented per-tab field journals with stable tab identity, cross-tab hydration, retained conflicting values, tombstone recovery, structural journal validation, storage-error warnings, and Web Locks checkpoint compaction.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

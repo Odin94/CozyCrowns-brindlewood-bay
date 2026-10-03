@@ -40,7 +40,12 @@ export const useCharacterSave = () => {
         const result = latestCharacter?.id
           ? await api.updateCharacter(latestCharacter.id, { ...characterPayload, version })
           : await api.createCharacter({ ...characterPayload, version });
-        characterStore.updateRemoteVersion(localId, result.id, result.version);
+        characterStore.updateRemoteVersion(
+          localId,
+          result.id,
+          result.version,
+          JSON.stringify(characterPayload.data),
+        );
         latestVersionByCharacter.current.set(characterKey, result.version);
 
         return true;

@@ -17,3 +17,9 @@ Export a Maven named `Maven 🧶` or `李华`. The generator throws `WinAnsi can
 Embed suitable Unicode fonts through the already-installed fontkit support and regenerate form appearances with them. Provide an explicit policy for unsupported emoji glyphs, such as replacing only those glyphs and informing the user, while preserving the rest of the export.
 
 Regression: CJK, combining marks, Latin extended text, and unsupported emoji across name, moves, and cozy items; an unsupported glyph should not discard the entire PDF.
+
+## Implementation
+
+Implemented lazy licensed Noto CJK font embedding using existing fontkit support, with valid TrueType PDF appearances. Unsupported symbols produce a visible warning; original form field Unicode remains intact.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

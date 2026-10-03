@@ -21,3 +21,9 @@ Evidence: `cozycrowns-linked-clue.js`, `cozycrowns-linked-clue-result.json`, and
 Persist the source entry ID on Book Club clues and reconcile by that identity. Update text in place, preserve discovery state, and update the existing theory node's title/version without replacing its ID or connections. Provide a conservative migration for existing text-matched clues. Destructive removal should happen only for a genuinely removed source entry, with a recovery policy for player-created board data.
 
 Regression: edit/reorder clues and void clues, including duplicate descriptions. Keep discovery flags, tags, node positions, and edges for entries whose identities survive.
+
+## Implementation
+
+Implemented nullable source_clue_id via generated migration 0011. New links use source entry identity; old links upgrade against the prior source text with duplicate entries consumed once. Edits retain checked flags and theory identities; removed clues remain Book Club history. Historic identical duplicate ordering cannot be reconstructed and is assigned deterministically once.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

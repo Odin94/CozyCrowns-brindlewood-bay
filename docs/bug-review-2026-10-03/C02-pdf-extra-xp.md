@@ -15,3 +15,9 @@ Export a default Maven with `xp: 0`. Its PDF XP fields are `[true, false, false,
 ## Suggested fix
 
 Use `character.xp > i` (or `>= i + 1`) and test all values 0–5 against the generated PDF checkbox fields.
+
+## Implementation
+
+Implemented XP checkbox comparison using xp > index, so zero XP checks no boxes and five XP checks all five.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

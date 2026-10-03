@@ -17,21 +17,27 @@ export const CozyItemSchema = z.object({
   text: z.string(),
 });
 
-export const CharacterDataSchema = z.object({
-  schemaVersion: z.number().optional(),
-  name: z.string().optional(),
-  style: z.string().optional(),
-  activity: z.string().optional(),
-  abilities: z.array(AbilitySchema).optional(),
-  xp: z.number().optional(),
-  conditions: z.string().optional(),
-  endOfSessionChecks: z.array(z.boolean()).optional(),
-  advancementChecks: z.array(z.boolean()).optional(),
-  mavenMoves: z.string().optional(),
-  crownChecks: z.array(z.boolean()).optional(),
-  voidChecks: z.array(z.boolean()).optional(),
-  cozyItems: z.array(CozyItemSchema).optional(),
-}).transform(normalizeCharacter);
+export const CharacterDataSchema = z
+  .object({
+    schemaVersion: z.number().optional(),
+    name: z.string().optional(),
+    style: z.string().optional(),
+    activity: z.string().optional(),
+    abilities: z.array(AbilitySchema).optional(),
+    xp: z.number().optional(),
+    conditions: z.string().optional(),
+    endOfSessionChecks: z.array(z.boolean()).optional(),
+    advancementChecks: z.array(z.boolean()).optional(),
+    mavenMoves: z.string().optional(),
+    crownChecks: z.array(z.boolean()).optional(),
+    voidChecks: z.array(z.boolean()).optional(),
+    cozyItems: z.array(CozyItemSchema).optional(),
+  })
+  .refine(
+    (value) => Object.keys(value).some((key) => key !== "schemaVersion"),
+    "No character fields found",
+  )
+  .transform(normalizeCharacter);
 
 export { createDefaultCharacter };
 export type { Ability, CharacterData, CozyItem };

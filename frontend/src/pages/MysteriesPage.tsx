@@ -225,9 +225,9 @@ const MysteriesPage = () => {
   const selectedRef = useRef<Mystery | null>(null);
   const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
 
-  const choose = useCallback((mystery: Mystery) => {
+  const choose = useCallback((mystery: Mystery, confirmed = true) => {
     const isAlreadySelected = selectedRef.current?.id === mystery.id;
-    lastSavedById.current.set(mystery.id, contentSnapshot(mystery));
+    if (confirmed) lastSavedById.current.set(mystery.id, contentSnapshot(mystery));
     latestVersionById.current.set(mystery.id, mystery.version);
     selectedRef.current = mystery;
     setFocusedEntryId(null);
@@ -252,16 +252,32 @@ const MysteriesPage = () => {
       const savedDraft = localStorage.getItem(draftKey);
       if (savedDraft) {
         try {
-          const draft = JSON.parse(savedDraft) as Mystery;
+          const persisted = JSON.parse(savedDraft) as
+            | Mystery
+            | { mystery: Mystery; baseContent?: string; baseVersion?: number };
+          const draft = "mystery" in persisted ? persisted.mystery : persisted;
           const canonical = result.mysteries.find((mystery) => mystery.id === draft.id);
-          if (
-            canonical &&
-            new Date(draft.updatedAt).getTime() >= new Date(canonical.updatedAt).getTime()
-          )
-            choose(draft);
-          else if (canonical) choose(canonical);
-        } catch {
-          localStorage.removeItem(draftKey);
+          const baseContent = "mystery" in persisted ? persisted.baseContent : undefined;
+          const dirty = baseContent
+            ? contentSnapshot(draft) !== baseContent
+            : !canonical || contentSnapshot(draft) !== contentSnapshot(canonical);
+          if (canonical && (!dirty || canonical.version === draft.version)) {
+            choose(canonical);
+            if (dirty) choose({ ...draft, version: canonical.version }, false);
+          } else if (dirty) {
+            // Preserve the only local copy before any network call or storage
+            // replacement. A newer remote document never absorbs this draft.
+            localStorage.setItem(`${draftKey}:recovery:${draft.id}`, JSON.stringify(persisted));
+            const recoveredName = draft.title.slice(0, 220);
+            const title = t`${recoveredName} (Recovered draft)`;
+            const recovered = await api.createMystery({ title, data: { ...draft.data, title } });
+            setMysteries((current) => [recovered, ...current]);
+            choose(recovered);
+            toast.success(t`Recovered your local mystery as a separate copy.`);
+          } else if (canonical) choose(canonical);
+        } catch (error) {
+          console.error("Could not recover mystery draft", error);
+          // Retain malformed or temporarily unavailable drafts for recovery.
         }
       }
       if (result.mysteries[0] && !selectedRef.current) {
@@ -285,7 +301,15 @@ const MysteriesPage = () => {
     if (isAuthenticated) void load();
   }, [isAuthenticated, load]);
   useEffect(() => {
-    if (selected) localStorage.setItem(draftKey, JSON.stringify(selected));
+    if (selected)
+      localStorage.setItem(
+        draftKey,
+        JSON.stringify({
+          mystery: selected,
+          baseContent: lastSavedById.current.get(selected.id),
+          baseVersion: latestVersionById.current.get(selected.id),
+        }),
+      );
     selectedRef.current = selected;
   }, [selected]);
   useEffect(() => {

@@ -21,3 +21,9 @@ The page becomes blank with `Cannot read properties of undefined (reading 'value
 Validate the full contract before replacing any record. Normalize legacy abilities by canonical ability name into five complete entries, with explicit rules for duplicates, unknown names, and ranges. Reject unrelated JSON or require an explicit legacy migration. Import into a new stable local identity, or retain a durable pre-import snapshot. Add a recovery screen so malformed stored data cannot permanently blank the app.
 
 Regression: missing, short, reordered, duplicate, and oversized ability lists; anonymous existing draft survives a rejected import; refresh remains usable.
+
+## Implementation
+
+Implemented five canonical ability slots, explicit localized legacy order handling, safe integer ranges, rejection of empty imports, persisted-document repair, and import into a new local Maven. Backend now requires the same five-slot shape.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

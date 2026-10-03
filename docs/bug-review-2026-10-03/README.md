@@ -32,3 +32,7 @@ Shared [browser results](../../../evidence/browser-results.json), [screenshots](
 
 - [Screenshot: primary reproduction](../../../evidence/cozycrowns-import-crash.png)
 - [Screenshot: second reproduction](../../../evidence/cozycrowns-clue-connections-lost.png)
+
+## Fix implementation
+
+All nine findings have local implementations and regression checks on `fix/odin/review-bug-fixes`. Independent review and browser validation are recorded in the final review-loop report.

@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const abilitySchema = z.object({
   name: z.string(),
-  value: z.number(),
+  value: z.number().int().min(-3).max(3),
 });
 
 export const cozyItemSchema = z.object({
@@ -25,14 +25,30 @@ export const characterDataSchema = z.object({
   name: z.string().optional().default(""),
   style: z.string().optional().default(""),
   activity: z.string().optional().default(""),
-  abilities: z.array(abilitySchema).min(1).optional().default(defaultAbilities),
-  xp: z.number().optional().default(0),
+  abilities: z.array(abilitySchema).length(5).optional().default(defaultAbilities),
+  xp: z.number().int().min(0).max(5).optional().default(0),
   conditions: z.string().optional().default(""),
-  endOfSessionChecks: z.array(z.boolean()).length(7).optional().default(() => defaultChecks(7)),
-  advancementChecks: z.array(z.boolean()).length(5).optional().default(() => defaultChecks(5)),
+  endOfSessionChecks: z
+    .array(z.boolean())
+    .length(7)
+    .optional()
+    .default(() => defaultChecks(7)),
+  advancementChecks: z
+    .array(z.boolean())
+    .length(5)
+    .optional()
+    .default(() => defaultChecks(5)),
   mavenMoves: z.string().optional().default(""),
-  crownChecks: z.array(z.boolean()).length(7).optional().default(() => defaultChecks(7)),
-  voidChecks: z.array(z.boolean()).length(5).optional().default(() => defaultChecks(5)),
+  crownChecks: z
+    .array(z.boolean())
+    .length(7)
+    .optional()
+    .default(() => defaultChecks(7)),
+  voidChecks: z
+    .array(z.boolean())
+    .length(5)
+    .optional()
+    .default(() => defaultChecks(5)),
   cozyItems: z.array(cozyItemSchema).length(12).optional().default(defaultCozyItems),
 });
 

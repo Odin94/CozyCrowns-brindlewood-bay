@@ -1,3 +1,4 @@
+import { sourceClues } from "../lib/sourceClues.js";
 import type { FastifyInstance } from "fastify";
 import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -1052,9 +1053,10 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(400).send({ error: "A mystery needs a title" });
       if (!(await gameMaster(params.data.id, request.userId!)))
         return reply.code(403).send({ error: "Only the GM can create a mystery" });
+      let linkedSourceData: Parameters<typeof sourceClues>[0] | undefined;
       if (parsed.data.sourceMysteryId) {
         const sourceMystery = await db
-          .select({ id: schema.mysteries.id })
+          .select({ id: schema.mysteries.id, data: schema.mysteries.data })
           .from(schema.mysteries)
           .where(
             and(
@@ -1065,6 +1067,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           )
           .get();
         if (!sourceMystery) return reply.code(404).send({ error: "Mystery not found" });
+        linkedSourceData = JSON.parse(sourceMystery.data);
       }
       const existingBySource = parsed.data.sourceMysteryId
         ? await db
@@ -1124,16 +1127,19 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
             })
             .run();
         }
-        const clues = [
-          ...parsed.data.clues.map((text) => ({ text, isVoid: false })),
-          ...parsed.data.voidClues.map((text) => ({ text, isVoid: true })),
-        ];
+        const clues = linkedSourceData
+          ? sourceClues(linkedSourceData)
+          : [
+              ...parsed.data.clues.map((text) => ({ text, isVoid: false, sourceClueId: null })),
+              ...parsed.data.voidClues.map((text) => ({ text, isVoid: true, sourceClueId: null })),
+            ];
         if (clues.length) {
           tx.insert(schema.bookClubClues)
             .values(
-              clues.map(({ text, isVoid }) => ({
+              clues.map(({ text, isVoid, sourceClueId }) => ({
                 id: nanoid(),
                 mysteryId: id,
+                sourceClueId,
                 text,
                 isVoid,
               })),

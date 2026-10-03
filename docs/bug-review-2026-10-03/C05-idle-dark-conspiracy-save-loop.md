@@ -17,3 +17,9 @@ Sign in and add one first Void Clue, then stop editing. In a 6.5-second window t
 Compare an editable-content-only signature against the last server-confirmed content, skip no-op metadata updates, and serialize outstanding saves. Prefer one app-level sync worker so remounting views cannot create independent save queues.
 
 Regression: one edit produces the required save and then zero writes during an idle period; metadata-only acknowledgements do not reschedule; genuine edits made during a request are saved once afterward.
+
+## Implementation
+
+Implemented content-only confirmed signatures, one in-flight save, stable document-specific acknowledgements, and explicit retry after transient failures. Metadata acknowledgements no longer trigger another idle save.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

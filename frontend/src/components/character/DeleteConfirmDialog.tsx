@@ -1,27 +1,22 @@
 import { ConfirmationDialogPanel } from "@/components/ui/confirmation-dialog";
 import { DialogContent } from "@/components/ui/dialog";
-import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 
 type DeleteConfirmDialogProps = {
-  characterIndex: number | null;
+  characterName: string;
+  isDeleting?: boolean;
   onConfirm: () => void;
   onCancel: () => void;
   isAuthenticated?: boolean;
 };
 
 const DeleteConfirmDialog = ({
-  characterIndex,
+  characterName,
+  isDeleting,
   onConfirm,
   onCancel,
   isAuthenticated,
 }: DeleteConfirmDialogProps) => {
-  const { characters } = useCharacterStore();
-
-  if (characterIndex === null) return null;
-
-  const characterName = characters[characterIndex]?.name || `Character ${characterIndex + 1}`;
-
   return (
     <DialogContent className="confirmation-dialog sm:max-w-md">
       <ConfirmationDialogPanel
@@ -33,10 +28,13 @@ const DeleteConfirmDialog = ({
           </Trans>
         }
         notice={
-          isAuthenticated ? <Trans>This will also delete the character from the backend.</Trans> : undefined
+          isAuthenticated ? (
+            <Trans>This will also delete the character from the backend.</Trans>
+          ) : undefined
         }
         confirmLabel={<Trans>Delete Character</Trans>}
         cancelLabel={<Trans>Cancel</Trans>}
+        disabled={isDeleting}
         onConfirm={onConfirm}
         onCancel={onCancel}
       />

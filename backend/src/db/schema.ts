@@ -341,6 +341,7 @@ export const bookClubClues = sqliteTable(
     mysteryId: text("mystery_id")
       .notNull()
       .references(() => bookClubMysteries.id, { onDelete: "cascade" }),
+    sourceClueId: text("source_clue_id"),
     text: text("text").notNull(),
     isVoid: integer("is_void", { mode: "boolean" }).notNull().default(false),
     checked: integer("checked", { mode: "boolean" }).notNull().default(false),

@@ -19,3 +19,9 @@ Evidence: `cozycrowns-failed-delete.js` and `browser-results.json:C09`, with `re
 Either keep the record and show a retryable deletion failure, or persist a local tombstone and retry the cloud deletion before marking it complete. Reconciliation must honor pending deletion intent while retaining a recovery copy. Do not close the dialog as though a rejected request completed successfully.
 
 Regression: 503, offline failure, and eventual success; a pending deletion must not silently resurrect after reload, and a failure must remain visible and retryable.
+
+## Implementation
+
+Implemented localId-bound deletion, a stable confirmation name, disabled pending buttons and double-submit protection, and visible retryable failure. Local removal happens only after successful cloud deletion.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

@@ -132,6 +132,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
 
               const characterData = validationResult.data;
 
+              characterStore.create();
               characterStore.updateSelected(characterData);
 
               characterStore.clearCurrentCharacterIdAndVersion();
@@ -182,6 +183,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
 
           const characterData = validationResult.data;
 
+          characterStore.create();
           characterStore.updateSelected(characterData);
 
           characterStore.clearCurrentCharacterIdAndVersion();

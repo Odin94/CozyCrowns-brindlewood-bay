@@ -21,3 +21,9 @@ Evidence: `cozycrowns-mystery-draft.js`, `cozycrowns-mystery-newer-server.js`, `
 Persist draft identity, dirty content, and the last server-confirmed content/revision separately. Recovering a dirty draft must keep it queued for save. If the server also changed, preserve both documents and offer a conflict decision. Never replace the only draft based solely on timestamps.
 
 Regression: crash/reload and offline/reconnect with unchanged and changed remote content. Verify eventual saving in the first case and durable recovery of both branches in the second.
+
+## Implementation
+
+Implemented confirmed baseline persistence for drafts, revision-based recovery, autosave of same-revision dirty drafts, and a separate recovered mystery when the cloud revision diverges. Draft recovery is persisted before network calls.
+
+Regression validation is recorded in the repository tests and the final review-loop report.

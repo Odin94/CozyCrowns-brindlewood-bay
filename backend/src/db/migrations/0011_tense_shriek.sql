@@ -1,0 +1,1 @@
+ALTER TABLE `book_club_clues` ADD `source_clue_id` text;

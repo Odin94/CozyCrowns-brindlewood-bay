@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
   createDefaultCharacter,
   applyCharacterChange,
@@ -8,6 +8,9 @@ import {
   type CharacterData,
   type CozyItem,
 } from "@/lib/character_document";
+import { createCharacterStorage } from "@/lib/character_storage";
+import { toPersistedCharacter } from "@/lib/character_document";
+import { toast } from "sonner";
 import { t } from "@lingui/core/macro";
 
 export type { Ability, CharacterData, CozyItem } from "@/lib/character_document";
@@ -17,6 +20,7 @@ export type CharacterRecord = CharacterData & {
   localId: string;
   id?: string;
   version?: number;
+  remoteContent?: string;
 };
 
 export type BackendCharacterData = Omit<CharacterData, "schemaVersion">;
@@ -43,7 +47,7 @@ const newRecord = (): CharacterRecord => ({
 });
 const recordFrom = (
   input: unknown,
-  metadata: Pick<CharacterRecord, "localId" | "id" | "version">,
+  metadata: Pick<CharacterRecord, "localId" | "id" | "version" | "remoteContent">,
 ) => ({
   ...normalizeCharacter(input),
   ...metadata,
@@ -59,7 +63,12 @@ export type CharacterState = {
   updateSelected: (change: Partial<CharacterData>) => void;
   selected: () => CharacterRecord;
   record: (localId: string) => CharacterRecord | undefined;
-  updateRemoteVersion: (localId: string, id: string, version: number) => void;
+  updateRemoteVersion: (
+    localId: string,
+    id: string,
+    version: number,
+    savedContent?: string,
+  ) => void;
   updateSelectedRemoteVersion: (id: string, version: number) => void;
   clearSelectedRemoteMetadata: () => void;
   mergeRemote: (backendCharacters: BackendCharacter[]) => void;
@@ -139,10 +148,17 @@ export const useCharacterStore = create<CharacterState>()(
         updateSelected,
         selected: () => selectedRecord(get()),
         record: (localId) => get().characters.find((character) => character.localId === localId),
-        updateRemoteVersion: (localId, id, version) => {
+        updateRemoteVersion: (localId, id, version, savedContent) => {
           set((state) => ({
             characters: state.characters.map((character) =>
-              character.localId === localId ? { ...character, id, version } : character,
+              character.localId === localId
+                ? {
+                    ...character,
+                    id,
+                    version,
+                    remoteContent: savedContent ?? JSON.stringify(toPersistedCharacter(character)),
+                  }
+                : character,
             ),
           }));
         },
@@ -157,6 +173,7 @@ export const useCharacterStore = create<CharacterState>()(
               const localCharacter = { ...character };
               delete localCharacter.id;
               delete localCharacter.version;
+              delete localCharacter.remoteContent;
               return localCharacter;
             }),
           }));
@@ -164,6 +181,7 @@ export const useCharacterStore = create<CharacterState>()(
         mergeRemote: (backendCharacters) => {
           const state = get();
           const characters = [...state.characters];
+          let selectedCharacterId = state.selectedCharacterId;
           for (const remote of backendCharacters) {
             const index = characters.findIndex((character) => character.id === remote.id);
             if (index === -1) {
@@ -172,17 +190,40 @@ export const useCharacterStore = create<CharacterState>()(
                   localId: newLocalId(),
                   id: remote.id,
                   version: remote.version,
+                  remoteContent: JSON.stringify(
+                    toPersistedCharacter(normalizeCharacter(remote.data)),
+                  ),
                 }),
               );
             } else if (remote.version > (characters[index].version ?? 0)) {
+              const local = characters[index];
+              const content = JSON.stringify(toPersistedCharacter(local));
+              const remoteContent = JSON.stringify(
+                toPersistedCharacter(normalizeCharacter(remote.data)),
+              );
+              if (
+                content !== remoteContent &&
+                (!local.remoteContent || content !== local.remoteContent)
+              ) {
+                const recovery = { ...local, localId: newLocalId() };
+                delete recovery.id;
+                delete recovery.version;
+                delete recovery.remoteContent;
+                characters.push(recovery);
+                if (state.selectedCharacterId === local.localId)
+                  selectedCharacterId = recovery.localId;
+              }
               characters[index] = recordFrom(remote.data, {
                 localId: characters[index].localId,
                 id: remote.id,
                 version: remote.version,
+                remoteContent: JSON.stringify(
+                  toPersistedCharacter(normalizeCharacter(remote.data)),
+                ),
               });
             }
           }
-          set({ characters });
+          set({ characters, selectedCharacterId });
         },
         setName: (name) => updateSelected({ name }),
         setStyle: (style) => updateSelected({ style }),
@@ -220,6 +261,13 @@ export const useCharacterStore = create<CharacterState>()(
     {
       name: "cozycrowns-character-storage",
       version: 2,
+      storage: createJSONStorage(() =>
+        createCharacterStorage(localStorage, () =>
+          toast.error(
+            t`Browser storage is full or unavailable. Keep this page open and export your Maven before reloading.`,
+          ),
+        ),
+      ),
       migrate: (persisted) => {
         const oldState = persisted as Partial<CharacterState> & {
           currentCharacterIndex?: number;
@@ -245,6 +293,7 @@ export const useCharacterStore = create<CharacterState>()(
                 localId: character.localId || newLocalId(),
                 id: character.id,
                 version: character.version,
+                remoteContent: character.remoteContent,
               }),
             )
           : current.characters;
@@ -258,3 +307,10 @@ export const useCharacterStore = create<CharacterState>()(
     },
   ),
 );
+
+if (typeof window !== "undefined" && window.addEventListener) {
+  window.addEventListener("storage", (event) => {
+    if (event.key?.startsWith("cozycrowns-character-storage"))
+      void useCharacterStore.persist.rehydrate();
+  });
+}
