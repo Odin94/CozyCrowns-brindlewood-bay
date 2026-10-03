@@ -267,7 +267,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
         event.preventDefault();
         void importFile(file);
       }}
-      className={`${isDraggingFile ? "ring-2 ring-primary" : ""} ${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : showRecovery ? "max-h-[calc(100dvh-2rem)] overflow-y-auto bg-secondary text-secondary-foreground border-border shadow-lg" : "bg-secondary/90 border-0 shadow-none"}`}
+      className={`${isDraggingFile ? "ring-2 ring-primary" : ""} ${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : showRecovery ? "max-w-[calc(100%_-_2rem)] max-h-[calc(100dvh_-_2rem)] overflow-y-auto bg-secondary text-secondary-foreground border-border shadow-lg" : "bg-secondary/90 border-0 shadow-none"}`}
       style={showResetConfirm || showRecovery ? undefined : { boxShadow: "none" }}
     >
       <VisuallyHidden.Root asChild>
