@@ -2,9 +2,10 @@ import { i18n } from "@lingui/core";
 import { I18nProvider } from "@lingui/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "sonner";
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { Fragment, lazy, Suspense, useCallback, useEffect, useState } from "react";
 import { useAuth } from "./hooks/useAuth";
 import CharacterSheet from "./pages/CharacterSheet";
+import { PageNavigator } from "./components/PageNavigator";
 import { CookieConsent } from "./components/cookie-consent";
 import { clearAuthReturnTo, isSafeAuthReturnTo } from "./lib/auth_return_to";
 
@@ -34,14 +35,14 @@ const ProtectedRoute = ({
   returnTo: string;
   onRequireSignIn: (returnTo: string) => void;
 }) => {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, loading, user } = useAuth();
 
   useEffect(() => {
     if (!loading && !isAuthenticated) onRequireSignIn(returnTo);
   }, [isAuthenticated, loading, onRequireSignIn, returnTo]);
 
   if (loading || !isAuthenticated) return null;
-  return children;
+  return <Fragment key={user?.id}>{children}</Fragment>;
 };
 
 function AppRoutes() {
@@ -163,6 +164,7 @@ function AppRoutes() {
           />
         )}
       </Suspense>
+      <PageNavigator onNavigate={navigate} />
       <CookieConsent variant="small" />
       <Toaster
         theme="light"

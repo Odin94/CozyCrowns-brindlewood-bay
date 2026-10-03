@@ -1,0 +1,41 @@
+.club-illustration {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background: #51405f;
+}
+
+.club-illustration svg {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 760px;
+}
+
+/* The meeting room has its own warm wall rather than the outdoor sky. */
+.club-illustration--midnightMeeting {
+  background: #49354f;
+}
+
+/* Keep the illustration anchored to the viewport for clubs with many Mavens. */
+@media (min-width: 761px) {
+  .club-illustration svg {
+    max-height: max(100svh, 860px);
+  }
+}
+
+@media (max-width: 760px) {
+  .club-illustration svg {
+    height: min(100%, 1100px);
+    min-height: 900px;
+  }
+
+  .club-illustration-lighthouse {
+    transform: translate(995px, 732px);
+  }
+}

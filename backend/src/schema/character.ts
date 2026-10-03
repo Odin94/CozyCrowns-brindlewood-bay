@@ -28,11 +28,27 @@ export const characterDataSchema = z.object({
   abilities: z.array(abilitySchema).min(1).optional().default(defaultAbilities),
   xp: z.number().optional().default(0),
   conditions: z.string().optional().default(""),
-  endOfSessionChecks: z.array(z.boolean()).length(7).optional().default(() => defaultChecks(7)),
-  advancementChecks: z.array(z.boolean()).length(5).optional().default(() => defaultChecks(5)),
+  endOfSessionChecks: z
+    .array(z.boolean())
+    .length(7)
+    .optional()
+    .default(() => defaultChecks(7)),
+  advancementChecks: z
+    .array(z.boolean())
+    .length(5)
+    .optional()
+    .default(() => defaultChecks(5)),
   mavenMoves: z.string().optional().default(""),
-  crownChecks: z.array(z.boolean()).length(7).optional().default(() => defaultChecks(7)),
-  voidChecks: z.array(z.boolean()).length(5).optional().default(() => defaultChecks(5)),
+  crownChecks: z
+    .array(z.boolean())
+    .length(7)
+    .optional()
+    .default(() => defaultChecks(7)),
+  voidChecks: z
+    .array(z.boolean())
+    .length(5)
+    .optional()
+    .default(() => defaultChecks(5)),
   cozyItems: z.array(cozyItemSchema).length(12).optional().default(defaultCozyItems),
 });
 

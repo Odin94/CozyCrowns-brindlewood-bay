@@ -38,17 +38,30 @@ export const AuthButton = ({ onMeClick }: AuthButtonProps) => {
       <Button
         size="sm"
         variant="secondary"
-        className="w-25 justify-center text-foreground"
+        className="h-auto min-h-9 min-w-0 max-w-64 flex-1 justify-center py-2 text-foreground"
         onClick={onMeClick}
+        title={nickname || undefined}
       >
-        <ChessQueen className="w-4 h-4 mr-2" />
-        {nickname || <Trans>Me</Trans>}
+        <ChessQueen className="h-4 w-4 shrink-0" />
+        <span
+          className="min-w-0 whitespace-normal break-words leading-tight [overflow-wrap:anywhere]"
+          style={{
+            fontSize:
+              nickname && nickname.length > 24
+                ? "0.75rem"
+                : nickname && nickname.length > 16
+                  ? "0.8125rem"
+                  : undefined,
+          }}
+        >
+          {nickname || <Trans>Me</Trans>}
+        </span>
       </Button>
     );
   }
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex min-w-0 flex-wrap items-center gap-2">
       <Button
         size="sm"
         onClick={signIn}

@@ -3,6 +3,7 @@ import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { db, schema } from "../db/index.js";
 import { mysteries, mysteryVersions, publishedMysteries, users } from "../db/schema.js";
+import { authoredMysteryClues, storedMysteryClues } from "../lib/mystery-clues.js";
 import { authenticateUser } from "../middleware/auth.js";
 import { notifyBookClub } from "../realtime/bookClubNotifications.js";
 import {
@@ -38,17 +39,10 @@ const keepVersionHistory = (mysteryId: string) => {
     db.delete(mysteryVersions).where(inArray(mysteryVersions.id, discarded)).run();
 };
 
-const bookClubClues = (data: UpdateMysteryInput["data"]) =>
-  [
-    ...data.clues.map((clue) => ({
-      text: [clue.title.trim(), clue.description.trim()].filter(Boolean).join(" — "),
-      isVoid: false,
-    })),
-    ...data.voidClues.map((clue) => ({
-      text: [clue.title.trim(), clue.description.trim()].filter(Boolean).join(" — "),
-      isVoid: true,
-    })),
-  ].filter((clue) => clue.text);
+const clueHeading = (text: string) => {
+  const separator = text.indexOf(" — ");
+  return separator < 0 ? null : text.slice(0, separator);
+};
 
 const isSuperadmin = (userId: string) =>
   db.select({ isSuperadmin: users.isSuperadmin }).from(users).where(eq(users.id, userId)).get()
@@ -168,7 +162,8 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
           .from(schema.bookClubMysteries)
           .where(eq(schema.bookClubMysteries.sourceMysteryId, mystery.id))
           .all();
-        const clues = bookClubClues(request.body.data);
+        const clues = authoredMysteryClues(request.body.data);
+        const previousClues = storedMysteryClues(existing.data);
         linkedMysteries.forEach((linkedMystery) => {
           db.update(schema.bookClubMysteries)
             .set({ title: mystery.title, updatedAt: now })
@@ -178,26 +173,97 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
             .select({
               id: schema.bookClubClues.id,
               text: schema.bookClubClues.text,
+              sourceText: schema.bookClubClues.sourceText,
+              sourceEntryId: schema.bookClubClues.sourceEntryId,
               isVoid: schema.bookClubClues.isVoid,
+              checked: schema.bookClubClues.checked,
             })
             .from(schema.bookClubClues)
             .where(eq(schema.bookClubClues.mysteryId, linkedMystery.id))
             .all();
-          const newClues = clues.filter((clue) => {
-            const existingIndex = unmatchedExistingClues.findIndex(
-              (existingClue) =>
-                existingClue.text === clue.text && existingClue.isVoid === clue.isVoid,
+          const boardClueIds = new Set(
+            db
+              .select({ sourceClueId: schema.bookClubTheoryNodes.sourceClueId })
+              .from(schema.bookClubTheoryNodes)
+              .where(eq(schema.bookClubTheoryNodes.mysteryId, linkedMystery.id))
+              .all()
+              .map((node) => node.sourceClueId),
+          );
+          // Adopt stable ids for pre-migration rows from their previous authored baseline.
+          for (const entry of unmatchedExistingClues) {
+            if (entry.sourceEntryId) continue;
+            const candidates = previousClues.filter(
+              (previous) =>
+                previous.sourceEntryId &&
+                previous.isVoid === entry.isVoid &&
+                previous.text === (entry.sourceText ?? entry.text),
             );
+            if (candidates.length === 1) entry.sourceEntryId = candidates[0].sourceEntryId;
+          }
+          const newClues = clues.filter((clue) => {
+            let existingIndex = clue.sourceEntryId
+              ? unmatchedExistingClues.findIndex(
+                  (entry) =>
+                    entry.sourceEntryId === clue.sourceEntryId && entry.isVoid === clue.isVoid,
+                )
+              : -1;
+            if (existingIndex < 0)
+              existingIndex = unmatchedExistingClues.findIndex(
+                (existingClue) =>
+                  (!clue.sourceEntryId || !existingClue.sourceEntryId) &&
+                  (existingClue.sourceText ?? existingClue.text) === clue.text &&
+                  existingClue.isVoid === clue.isVoid,
+              );
+            // Before source_text existed, custom descriptions retained their authored heading.
+            // Recover only an unambiguous heading; never guess when source headings repeat.
+            if (existingIndex < 0) {
+              const heading = clueHeading(clue.text);
+              const uniqueHeading =
+                heading &&
+                clues.filter(
+                  (entry) => entry.isVoid === clue.isVoid && clueHeading(entry.text) === heading,
+                ).length === 1;
+              if (uniqueHeading) {
+                const candidates = unmatchedExistingClues.filter(
+                  (entry) =>
+                    entry.sourceText === null &&
+                    (!clue.sourceEntryId || !entry.sourceEntryId) &&
+                    entry.checked &&
+                    entry.isVoid === clue.isVoid &&
+                    clueHeading(entry.text) === heading,
+                );
+                if (candidates.length === 1) {
+                  existingIndex = unmatchedExistingClues.indexOf(candidates[0]);
+                  db.update(schema.bookClubClues)
+                    .set({ sourceText: clue.text })
+                    .where(eq(schema.bookClubClues.id, candidates[0].id))
+                    .run();
+                }
+              }
+            }
             if (existingIndex < 0) return true;
-            unmatchedExistingClues.splice(existingIndex, 1);
+            const matched = unmatchedExistingClues.splice(existingIndex, 1)[0];
+            const hasCampaignHistory = matched.checked || boardClueIds.has(matched.id);
+            db.update(schema.bookClubClues)
+              .set({
+                sourceText: clue.text,
+                sourceEntryId: clue.sourceEntryId ?? matched.sourceEntryId,
+                ...(!hasCampaignHistory ? { text: clue.text, updatedAt: now } : {}),
+              })
+              .where(eq(schema.bookClubClues.id, matched.id))
+              .run();
             return false;
           });
-          if (unmatchedExistingClues.length) {
+          // Campaign history survives authoring, including notes on clues temporarily hidden again.
+          const discardedClues = unmatchedExistingClues.filter(
+            (clue) => !clue.checked && !boardClueIds.has(clue.id),
+          );
+          if (discardedClues.length) {
             db.delete(schema.bookClubClues)
               .where(
                 inArray(
                   schema.bookClubClues.id,
-                  unmatchedExistingClues.map((clue) => clue.id),
+                  discardedClues.map((clue) => clue.id),
                 ),
               )
               .run();
@@ -209,6 +275,8 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
                   id: nanoid(),
                   mysteryId: linkedMystery.id,
                   text: clue.text,
+                  sourceText: clue.text,
+                  sourceEntryId: clue.sourceEntryId,
                   isVoid: clue.isVoid,
                 })),
               )

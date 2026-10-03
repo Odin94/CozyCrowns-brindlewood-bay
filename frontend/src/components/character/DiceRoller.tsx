@@ -6,6 +6,8 @@ import { Trans } from "@lingui/react/macro";
 import { Dices } from "lucide-react";
 import { useEffect, useMemo, useState, type CSSProperties } from "react";
 
+export const DICE_ROLL_DURATION_MS = 1200;
+
 type DiceRollerProps = {
   roll: DiceRollRequest | null;
 };
@@ -103,6 +105,7 @@ const pipPatterns: Record<number, string[]> = {
 
 type DiceStyle = CSSProperties & {
   "--final-transform": string;
+  "--roll-duration": string;
   "--spin-x": string;
   "--spin-y": string;
   "--spin-z": string;
@@ -133,9 +136,10 @@ export const Die = ({
   const style = useMemo<DiceStyle>(
     () => ({
       "--final-transform": dieFaceTransforms[value],
-      "--spin-x": `${720 + ((rollId + index) % 3) * 360}deg`,
-      "--spin-y": `${1080 + ((rollId * 2 + index) % 3) * 360}deg`,
-      "--spin-z": `${360 + ((rollId + index * 3) % 3) * 360}deg`,
+      "--roll-duration": `${DICE_ROLL_DURATION_MS}ms`,
+      "--spin-x": `${360 + ((rollId + index) % 3) * 45}deg`,
+      "--spin-y": `${450 + ((rollId * 2 + index) % 3) * 45}deg`,
+      "--spin-z": `${45 + ((rollId + index * 3) % 3) * 15}deg`,
     }),
     [index, rollId, value],
   );
@@ -169,8 +173,11 @@ const DiceRoller = ({ roll }: DiceRollerProps) => {
 
     setIsRolling(true);
     setShowRemovedDie(false);
-    const rollingTimeout = window.setTimeout(() => setIsRolling(false), 900);
-    const removedDieTimeout = window.setTimeout(() => setShowRemovedDie(true), 900);
+    const rollingTimeout = window.setTimeout(() => setIsRolling(false), DICE_ROLL_DURATION_MS);
+    const removedDieTimeout = window.setTimeout(
+      () => setShowRemovedDie(true),
+      DICE_ROLL_DURATION_MS,
+    );
 
     return () => {
       window.clearTimeout(rollingTimeout);

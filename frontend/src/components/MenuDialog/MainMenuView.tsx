@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { AuthButton } from "@/components/AuthButton";
 import { Trans } from "@lingui/react/macro";
+import { t } from "@lingui/core/macro";
 import {
   CoffeeIcon,
   Download,
@@ -26,6 +27,7 @@ type MainMenuViewProps = {
   onResetClick: () => void;
   onCreditsClick: () => void;
   onMeClick: () => void;
+  onOpenNavigator: () => void;
   onLanguageChange: (locale: string) => void;
   isAuthenticated?: boolean;
   onBookClubsClick?: () => void;
@@ -38,6 +40,7 @@ export const MainMenuView = ({
   onResetClick,
   onCreditsClick,
   onMeClick,
+  onOpenNavigator,
   onLanguageChange,
   isAuthenticated,
   onBookClubsClick,
@@ -47,11 +50,16 @@ export const MainMenuView = ({
       <DialogDescription className="sr-only">
         <Trans>Manage your character and settings.</Trans>
       </DialogDescription>
-      <div className="flex justify-between items-center mb-4">
+      <div className="mb-4 flex min-w-0 items-center justify-between gap-3">
         <AuthButton onMeClick={onMeClick} />
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm" className="h-8 w-8 p-0">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-8 w-8 shrink-0 p-0"
+              aria-label={t`Language`}
+            >
               <Globe className="h-4 w-4" />
             </Button>
           </DropdownMenuTrigger>
@@ -65,35 +73,50 @@ export const MainMenuView = ({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="grid gap-4">
+      <div className="mb-3 -mt-2 flex justify-end">
+        <button
+          type="button"
+          className="navigation-shortcut-hint"
+          aria-label={t`Go to a page`}
+          title={t`Go to a page`}
+          aria-keyshortcuts="Meta+K Control+K"
+          onClick={onOpenNavigator}
+        >
+          <kbd>⌘ / Ctrl K</kbd>
+        </button>
+      </div>
+      <div className="character-menu-actions grid min-w-0 gap-4">
         <Button onClick={onDownloadPDF} variant="dark" className="w-full dark-ring">
-          <FileDown className="w-4 h-4 mr-2" />
+          <FileDown className="w-4 h-4 shrink-0" />
           <Trans>Download PDF</Trans>
         </Button>
         {isAuthenticated && onBookClubsClick ? (
           <Button onClick={onBookClubsClick} variant="dark" className="w-full dark-ring">
-            <Users className="w-4 h-4 mr-2" />
+            <Users className="w-4 h-4 shrink-0" />
             <Trans>Book Clubs</Trans>
           </Button>
         ) : null}
         {isAuthenticated ? (
           <Button asChild variant="dark" className="w-full dark-ring">
             <a href="/mysteries">
-              <Feather className="w-4 h-4 mr-2" />
+              <Feather className="w-4 h-4 shrink-0" />
               <Trans>Mysteries</Trans>
             </a>
           </Button>
         ) : null}
         <Button onClick={onDownloadJSON} variant="dark" className="w-full dark-ring">
-          <Download className="w-4 h-4 mr-2" />
+          <Download className="w-4 h-4 shrink-0" />
           <Trans>Download save file</Trans>
         </Button>
         <Button onClick={onLoadFromJSON} variant="dark" className="w-full dark-ring">
-          <Upload className="w-4 h-4 mr-2" />
+          <Upload className="w-4 h-4 shrink-0" />
           <Trans>Load from save file</Trans>
         </Button>
+        <p className="text-center text-xs text-muted-foreground">
+          <Trans>Drop a save file here, or paste a JSON file.</Trans>
+        </p>
         <Button onClick={onResetClick} variant="destructive" className="w-full dark-ring">
-          <Trash2 className="w-4 h-4 mr-2" />
+          <Trash2 className="w-4 h-4 shrink-0" />
           <Trans>Reset Character</Trans>
         </Button>
         <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">

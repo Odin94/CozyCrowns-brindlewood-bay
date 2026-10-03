@@ -1,4 +1,5 @@
-import { Die } from "@/components/character/DiceRoller";
+import { Die, DICE_ROLL_DURATION_MS } from "@/components/character/DiceRoller";
+import { SceneryArtwork } from "@/components/book-club/SceneryArtwork";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -9,13 +10,24 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { PressTooltip } from "@/components/ui/tooltip";
 import { getCrownOfTheVoid } from "@/game_data";
 import { useAuth } from "@/hooks/useAuth";
+import { useLiveBookClub } from "@/hooks/useLiveBookClub";
+import { reconcileClubSelection } from "@/lib/live_book_club";
+import { accountScope } from "@/lib/account_scope";
 import { useBookClubStore } from "@/lib/book_club_store";
 import { useCharacterStore } from "@/lib/character_store";
 import {
   api,
-  connectBookClubUpdates,
   type BookClub,
   type BookClubCharacter,
   type BookClubInvitation,
@@ -30,10 +42,13 @@ import {
   ChevronRight,
   Copy,
   Dices,
+  Eye,
+  EyeOff,
   Lightbulb,
   Lock,
   NotebookPen,
   Palette,
+  Pencil,
   Plus,
   Search,
   Settings,
@@ -49,6 +64,7 @@ import {
   useMemo,
   useRef,
   useState,
+  useSyncExternalStore,
 } from "react";
 import { toast } from "sonner";
 import "./book-club.css";
@@ -140,27 +156,39 @@ const BookClubOverview = ({
   }, [panel]);
   const displayedPanel = panel ?? retainedPanel;
   const { user } = useAuth();
-  const [clubs, setClubs] = useState<BookClub[]>([]);
-  const [invitations, setInvitations] = useState<BookClubInvitation[]>([]);
+  const {
+    data,
+    loading,
+    error: loadError,
+    cursors: noteCursors,
+    live,
+  } = useLiveBookClub(
+    "overview",
+    { clubs: [] as BookClub[], invitations: [] as BookClubInvitation[] },
+    api.getBookClubs,
+    (error) => toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`),
+    user?.id,
+  );
+  const { clubs, invitations } = data;
+  const setClubs = (update: BookClub[] | ((current: BookClub[]) => BookClub[])) =>
+    live.edit((current) => ({
+      ...current,
+      clubs: typeof update === "function" ? update(current.clubs) : update,
+    }));
+  const setInvitations = (update: (current: BookClubInvitation[]) => BookClubInvitation[]) =>
+    live.edit((current) => ({ ...current, invitations: update(current.invitations) }));
   const [selectedClubId, setSelectedClubId] = useState<string | null>(clubId);
   const selectedClubIdRef = useRef<string | null>(clubId);
   const [newClubName, setNewClubName] = useState("");
   const [inviteNickname, setInviteNickname] = useState("");
-  const [loading, setLoading] = useState(true);
   const [quickNavOpen, setQuickNavOpen] = useState(false);
   const [quickNavQuery, setQuickNavQuery] = useState("");
-  const [noteCursors, setNoteCursors] = useState<Array<BookClubNoteCursor & { seenAt: number }>>(
-    [],
-  );
   const [scenery, setScenery] = useState<Scenery>(() =>
     readPreference("book-club-scenery", sceneryOptions, "harbor"),
   );
   const [ornament, setOrnament] = useState<Ornament>(() =>
     readPreference("book-club-ornament", ornamentOptions, "tentacles"),
   );
-  const isRefreshing = useRef(false);
-  const refreshQueued = useRef(false);
-  const socketRef = useRef<WebSocket | null>(null);
   const { characters: localCharacters } = useCharacterStore();
   const setActiveBookClub = useBookClubStore((state) => state.setActiveBookClub);
   const setShareRolls = useBookClubStore((state) => state.setShareRolls);
@@ -181,106 +209,18 @@ const BookClubOverview = ({
     [onClubChange],
   );
 
-  const refresh = useCallback(
-    async (showError = true) => {
-      if (isRefreshing.current) {
-        refreshQueued.current = true;
-        return;
-      }
-      isRefreshing.current = true;
-      try {
-        const response = await api.getBookClubs();
-        setClubs(response.clubs);
-        setInvitations(response.invitations);
-        const previous = selectedClubIdRef.current;
-        const next =
-          (clubId && response.clubs.some((entry) => entry.id === clubId) ? clubId : null) ??
-          (response.clubs.some((entry) => entry.id === previous) ? previous : null) ??
-          response.clubs[0]?.id ??
-          null;
-        selectedClubIdRef.current = next;
-        setSelectedClubId(next);
-        if (next && next !== clubId) onClubChange(next);
-        else if (!next && clubId) onClubChange(null);
-      } catch (error) {
-        if (showError)
-          toast.error(error instanceof Error ? error.message : t`Could not load Book Clubs`);
-      } finally {
-        setLoading(false);
-        isRefreshing.current = false;
-        if (refreshQueued.current) {
-          refreshQueued.current = false;
-          void refresh(false);
-        }
-      }
-    },
-    [clubId, onClubChange],
-  );
-
+  const refresh = useCallback((showError = true) => live.refresh(!showError), [live]);
   useEffect(() => {
-    void refresh();
-    const interval = window.setInterval(
-      () => document.visibilityState === "visible" && void refresh(false),
-      120_000,
+    if (loading || loadError != null) return;
+    const next = reconcileClubSelection(
+      clubs.map((entry) => entry.id),
+      clubId,
+      selectedClubIdRef.current,
     );
-    const onVisible = () => document.visibilityState === "visible" && void refresh(false);
-    document.addEventListener("visibilitychange", onVisible);
-    return () => {
-      window.clearInterval(interval);
-      document.removeEventListener("visibilitychange", onVisible);
-    };
-  }, [refresh]);
-
-  useEffect(() => {
-    let initialTimer: number | undefined;
-    let reconnectTimer: number | undefined;
-    let attempts = 0;
-    let disposed = false;
-    const connect = () => {
-      if (disposed) return;
-      const socket = connectBookClubUpdates(
-        () => {
-          attempts = 0;
-          void refresh(false);
-        },
-        (cursor) => {
-          if (cursor.userId === user?.id) return;
-          setNoteCursors((current) => [
-            ...current.filter((entry) => entry.userId !== cursor.userId),
-            { ...cursor, seenAt: Date.now() },
-          ]);
-        },
-      );
-      socketRef.current = socket;
-      socket?.addEventListener(
-        "close",
-        () => {
-          if (disposed) return;
-          reconnectTimer = window.setTimeout(connect, Math.min(5_000 * 2 ** attempts++, 60_000));
-        },
-        { once: true },
-      );
-    };
-    initialTimer = window.setTimeout(connect, 0);
-    return () => {
-      disposed = true;
-      if (initialTimer) window.clearTimeout(initialTimer);
-      if (reconnectTimer) window.clearTimeout(reconnectTimer);
-      socketRef.current?.close();
-      socketRef.current = null;
-    };
-  }, [refresh, user?.id]);
-
-  useEffect(() => {
-    if (!noteCursors.length) return;
-    const nextExpiry = Math.min(...noteCursors.map((cursor) => cursor.seenAt + 8_000));
-    const timer = window.setTimeout(
-      () =>
-        setNoteCursors((current) => current.filter((cursor) => Date.now() - cursor.seenAt < 8_000)),
-      Math.max(0, nextExpiry - Date.now()) + 20,
-    );
-    return () => window.clearTimeout(timer);
-  }, [noteCursors]);
+    selectedClubIdRef.current = next;
+    setSelectedClubId(next);
+    if (next !== clubId) onClubChange(next);
+  }, [clubs, loading, loadError, clubId, onClubChange]);
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -455,17 +395,18 @@ const BookClubOverview = ({
           <ChevronLeft aria-hidden="true" />
         </Button>
         {clubs.length > 0 && (
-          <select
-            value={club?.id ?? ""}
-            onChange={(event) => event.target.value && selectClub(event.target.value)}
-            aria-label={t`Choose a Book Club`}
-          >
-            {clubs.map((entry) => (
-              <option key={entry.id} value={entry.id}>
-                {entry.name}
-              </option>
-            ))}
-          </select>
+          <Select value={club?.id ?? ""} onValueChange={selectClub}>
+            <SelectTrigger className="book-club-picker-field" aria-label={t`Choose a Book Club`}>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="book-club-picker-options">
+              {clubs.map((entry) => (
+                <SelectItem key={entry.id} value={entry.id}>
+                  {entry.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         )}
       </div>
       {club && (
@@ -514,6 +455,14 @@ const BookClubOverview = ({
         <InvitationTray invitations={invitations} onRespond={respondToInvitation} />
       )}
       <main className="book-club-stage">
+        {loadError != null && (
+          <section className="cozy-load-error" role="alert">
+            <p>{loadError instanceof Error ? loadError.message : t`Could not load Book Clubs`}</p>
+            <Button variant="dark" onClick={() => void live.refresh(false)}>
+              <Trans>Try again</Trans>
+            </Button>
+          </section>
+        )}
         {loading ? (
           <div className="book-club-loading">
             <Sparkles aria-hidden="true" />
@@ -559,63 +508,96 @@ const BookClubOverview = ({
               )}
             </section>
           </>
-        ) : (
+        ) : loadError == null ? (
           <EmptyClubState
             name={newClubName}
             onNameChange={setNewClubName}
             onCreate={() => void createClub()}
           />
-        )}
+        ) : null}
       </main>
       {club && (
-        <DrawerRail
-          activePage={panel}
-          onSelect={(page) => onPanelChange(panel === page ? null : page)}
-        />
-      )}
-      {club && displayedPanel && (
-        <ClubDrawer
-          closing={!panel}
-          title={drawerPages.find(({ id }) => id === displayedPanel)!.label}
-          onClose={() => onPanelChange(null)}
-        >
-          {displayedPanel === "mystery" && (
-            <MysteryPanel club={club} isGameMaster={isGameMaster} onActivate={activateMystery} />
-          )}
-          {displayedPanel === "rolls" && (
-            <RollsPanel club={club} onRefresh={() => void refresh(false)} />
-          )}
-          {displayedPanel === "characters" && (
-            <CharactersPanel
-              localCharacters={localCharacters}
-              assignedIds={assignedCharacterIds}
-              onAssign={assignCharacter}
-              onRemove={removeCharacter}
+        <>
+          <div className={`book-club-drawer-track ${panel ? "is-open" : ""}`}>
+            <DrawerRail
+              className="book-club-drawer-rail--desktop"
+              activePage={panel}
+              onSelect={(page) => onPanelChange(panel === page ? null : page)}
             />
-          )}
-          {displayedPanel === "settings" && (
-            <SettingsPanel
-              club={club}
-              isOwner={isOwner}
-              onUpdate={updateClub}
-              onMakeGameMaster={makeGameMaster}
-              onDelete={deleteClub}
-            />
-          )}
-          {displayedPanel === "notes" && (
-            <NotesPanel
-              key={club.id}
-              club={club}
-              socket={socketRef.current}
-              cursors={noteCursors.filter(
-                (cursor) => cursor.bookClubId === club.id && Date.now() - cursor.seenAt < 8_000,
-              )}
-            />
-          )}
-          {displayedPanel === "clues" && (
-            <CluesPanel club={club} onTheorize={(mysteryId) => onTheorize(club.id, mysteryId)} />
-          )}
-        </ClubDrawer>
+            {displayedPanel && (
+              <ClubDrawer
+                closing={!panel}
+                title={drawerPages.find(({ id }) => id === displayedPanel)!.label}
+                onClose={() => onPanelChange(null)}
+                headerAction={
+                  displayedPanel === "clues" && club.activeMystery ? (
+                    <Button
+                      variant="bare"
+                      size="bare"
+                      className="book-club-canvas-link"
+                      onClick={() => onTheorize(club.id, club.activeMystery!.id)}
+                    >
+                      <Lightbulb aria-hidden="true" /> <Trans>Clue canvas</Trans>{" "}
+                      <ChevronRight aria-hidden="true" />
+                    </Button>
+                  ) : undefined
+                }
+              >
+                {displayedPanel === "mystery" && (
+                  <MysteryPanel
+                    club={club}
+                    isGameMaster={isGameMaster}
+                    onActivate={activateMystery}
+                  />
+                )}
+                {displayedPanel === "rolls" && (
+                  <RollsPanel club={club} onRefresh={() => void refresh(false)} />
+                )}
+                {displayedPanel === "characters" && (
+                  <CharactersPanel
+                    localCharacters={localCharacters}
+                    assignedIds={assignedCharacterIds}
+                    onAssign={assignCharacter}
+                    onRemove={removeCharacter}
+                  />
+                )}
+                {displayedPanel === "settings" && (
+                  <SettingsPanel
+                    club={club}
+                    isOwner={isOwner}
+                    onUpdate={updateClub}
+                    onMakeGameMaster={makeGameMaster}
+                    onDelete={deleteClub}
+                  />
+                )}
+                {displayedPanel === "notes" && (
+                  <NotesPanel
+                    key={club.id}
+                    club={club}
+                    socket={live.socket}
+                    cursors={noteCursors.filter(
+                      (cursor) =>
+                        cursor.bookClubId === club.id && Date.now() - cursor.seenAt < 8_000,
+                    )}
+                  />
+                )}
+                {displayedPanel === "clues" && (
+                  <CluesPanel
+                    key={`${club.id}:${club.activeMystery?.id ?? "none"}`}
+                    club={club}
+                    isGameMaster={isGameMaster}
+                    onUpdate={updateClub}
+                  />
+                )}
+              </ClubDrawer>
+            )}
+          </div>
+          <DrawerRail
+            className="book-club-drawer-rail--mobile"
+            activePage={panel}
+            onSelect={(page) => onPanelChange(panel === page ? null : page)}
+          />
+        </>
       )}
       <QuickNavigator
         open={quickNavOpen}
@@ -709,14 +691,16 @@ function InvitationTray({
 }
 
 function DrawerRail({
+  className,
   activePage,
   onSelect,
 }: {
+  className: string;
   activePage: DrawerPage | null;
   onSelect: (page: DrawerPage) => void;
 }) {
   return (
-    <nav className="book-club-drawer-rail" aria-label={t`Book Club tools`}>
+    <nav className={`book-club-drawer-rail ${className}`} aria-label={t`Book Club tools`}>
       {drawerPages.map(({ id, label, icon: Icon }) => (
         <Button
           key={id}
@@ -740,10 +724,12 @@ function ClubDrawer({
   title,
   onClose,
   children,
+  headerAction,
 }: {
   title: string;
   onClose: () => void;
   children: React.ReactNode;
+  headerAction?: React.ReactNode;
   closing: boolean;
 }) {
   return (
@@ -759,6 +745,7 @@ function ClubDrawer({
           </span>
           <h2>{title}</h2>
         </div>
+        {headerAction}
         <Button variant="bare" size="icon" onClick={onClose} aria-label={t`Close drawer`}>
           <span aria-hidden="true" className="book-club-close-glyph">
             «
@@ -832,12 +819,12 @@ function MysteryPanel({
               </small>
             </span>
           </a>
-          <a href="/library">
+          <a href={`/library?bookClubId=${encodeURIComponent(club.id)}`}>
             <BookOpen aria-hidden="true" />
             <span>
               <Trans>Mystery library</Trans>
               <small>
-                <Trans>Browse published mysteries</Trans>
+                <Trans>Your cases and the public library</Trans>
               </small>
             </span>
           </a>
@@ -855,7 +842,7 @@ function RollsPanel({ club, onRefresh }: { club: BookClub; onRefresh: () => void
   useEffect(() => {
     if (!lastRoll) return;
     setAnimating(true);
-    const timer = window.setTimeout(() => setAnimating(false), 900);
+    const timer = window.setTimeout(() => setAnimating(false), DICE_ROLL_DURATION_MS);
     return () => window.clearTimeout(timer);
   }, [lastRoll]);
   const roll = async () => {
@@ -1110,9 +1097,17 @@ function SettingsPanel({
           <h3>
             <Trans>Close this chapter</Trans>
           </h3>
-          <Button variant="destructive" onClick={() => void onDelete()}>
-            <Trash2 aria-hidden="true" /> <Trans>Delete Book Club</Trans>
-          </Button>
+          <PressTooltip content={t`Delete Book Club`} side="bottom" align="end">
+            <Button
+              variant="bare"
+              size="icon"
+              className="book-club-delete"
+              aria-label={t`Delete Book Club`}
+              onClick={() => void onDelete()}
+            >
+              <Trash2 aria-hidden="true" />
+            </Button>
+          </PressTooltip>
         </section>
       )}
     </div>
@@ -1125,9 +1120,11 @@ function NotesPanel({
   cursors,
 }: {
   club: BookClub;
-  socket: WebSocket | null;
+  socket: import("@/lib/live_book_club").LiveConnection | null;
   cursors: Array<BookClubNoteCursor & { seenAt: number }>;
 }) {
+  const session = useSyncExternalStore(accountScope.subscribe, accountScope.current);
+  const ownerId = useRef(accountScope.current().accountId).current;
   const [shared, setShared] = useState({
     content: club.sharedNotes,
     version: club.sharedNotesVersion,
@@ -1155,7 +1152,16 @@ function NotesPanel({
 
   const persist = useCallback(
     async (kind: "shared" | "private") => {
-      if (saving.current[kind] || !dirty.current[kind]) return;
+      const scope = accountScope.current();
+      if (
+        !ownerId ||
+        scope.accountId !== ownerId ||
+        scope.revalidating ||
+        scope.signingOut ||
+        saving.current[kind] ||
+        !dirty.current[kind]
+      )
+        return;
       if (timers.current[kind]) window.clearTimeout(timers.current[kind]);
       timers.current[kind] = undefined;
       saving.current[kind] = true;
@@ -1167,9 +1173,19 @@ function NotesPanel({
           content,
           baseVersion: versions.current[kind],
         });
+        const current = accountScope.current();
+        if (current.accountId !== ownerId || current.generation !== scope.generation) {
+          continueWithNewerEdit =
+            mounted.current &&
+            current.accountId === ownerId &&
+            !current.revalidating &&
+            !current.signingOut;
+          return;
+        }
         versions.current[kind] = result.version;
         if (latest.current[kind] === content) {
           dirty.current[kind] = false;
+          localStorage.removeItem(`cozycrowns-book-club-notes:${ownerId}:${club.id}:${kind}`);
           latest.current[kind] = result.content;
           if (mounted.current) {
             if (kind === "shared") setShared(result);
@@ -1178,6 +1194,10 @@ function NotesPanel({
         } else {
           const reconciled = reconcilePendingNote(result.content, content, latest.current[kind]);
           latest.current[kind] = reconciled;
+          localStorage.setItem(
+            `cozycrowns-book-club-notes:${ownerId}:${club.id}:${kind}`,
+            JSON.stringify({ content: reconciled, version: result.version }),
+          );
           continueWithNewerEdit = true;
           if (mounted.current) {
             if (kind === "shared") setShared({ content: reconciled, version: result.version });
@@ -1192,17 +1212,43 @@ function NotesPanel({
         if (continueWithNewerEdit) void persistRef.current(kind);
       }
     },
-    [club.id],
+    [club.id, ownerId],
   );
   persistRef.current = persist;
 
   useEffect(() => {
+    const scope = accountScope.current();
+    if (scope.accountId !== ownerId || scope.revalidating || scope.signingOut) return;
     let cancelled = false;
     setLoadingNotes(true);
     void api
       .getBookClubNotes(club.id)
       .then((notes) => {
-        if (cancelled) return;
+        const current = accountScope.current();
+        if (cancelled || current.accountId !== ownerId || current.generation !== scope.generation)
+          return;
+        for (const kind of ["shared", "private"] as const) {
+          try {
+            const draft = JSON.parse(
+              localStorage.getItem(`cozycrowns-book-club-notes:${ownerId}:${club.id}:${kind}`) ??
+                "null",
+            );
+            if (
+              !dirty.current[kind] &&
+              draft &&
+              typeof draft.content === "string" &&
+              Number.isInteger(draft.version)
+            ) {
+              dirty.current[kind] = true;
+              latest.current[kind] = draft.content;
+              versions.current[kind] = draft.version;
+              if (kind === "shared") setShared(draft);
+              else setPrivateNotes(draft);
+            }
+          } catch {
+            /* Leave malformed recovery data intact. */
+          }
+        }
         if (notes.shared.version >= versions.current.shared && !dirty.current.shared) {
           setShared(notes.shared);
           latest.current.shared = notes.shared.content;
@@ -1213,6 +1259,8 @@ function NotesPanel({
           latest.current.private = notes.private.content;
           versions.current.private = notes.private.version;
         }
+        for (const kind of ["shared", "private"] as const)
+          if (dirty.current[kind]) void persistRef.current(kind);
       })
       .catch((error) =>
         toast.error(error instanceof Error ? error.message : t`Could not load notes`),
@@ -1223,7 +1271,7 @@ function NotesPanel({
     return () => {
       cancelled = true;
     };
-  }, [club.id]);
+  }, [club.id, ownerId, session.generation, session.revalidating, session.signingOut]);
 
   useEffect(() => {
     if (
@@ -1255,6 +1303,14 @@ function NotesPanel({
   const queueSave = (kind: "shared" | "private", content: string) => {
     latest.current[kind] = content;
     dirty.current[kind] = true;
+    try {
+      localStorage.setItem(
+        `cozycrowns-book-club-notes:${ownerId}:${club.id}:${kind}`,
+        JSON.stringify({ content, version: versions.current[kind] }),
+      );
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : t`Could not save notes`);
+    }
     setSaved(false);
     if (timers.current[kind]) window.clearTimeout(timers.current[kind]);
     timers.current[kind] = window.setTimeout(() => {
@@ -1345,36 +1401,177 @@ function NotesPanel({
   );
 }
 
+const clueTitle = (text: string) => text.split(" — ")[0];
+
 function CluesPanel({
   club,
-  onTheorize,
+  isGameMaster,
+  onUpdate,
 }: {
   club: BookClub;
-  onTheorize: (mysteryId: string) => void;
+  isGameMaster: boolean;
+  onUpdate: (club: BookClub) => void;
 }) {
   const active = club.activeMystery;
+  const [revealing, setRevealing] = useState<string | null>(null);
+  const [selectedClue, setSelectedClue] = useState<
+    NonNullable<BookClub["activeMystery"]>["clues"][number] | null
+  >(null);
+  const [description, setDescription] = useState("");
+  const [revealError, setRevealError] = useState("");
+  const mounted = useRef(true);
+  const revealPending = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const setClueVisibility = async (
+    clue: NonNullable<BookClub["activeMystery"]>["clues"][number],
+    checked: boolean,
+    text?: string,
+  ) => {
+    if (!active || revealPending.current || !isGameMaster) return;
+    revealPending.current = true;
+    const scope = accountScope.current();
+    setRevealing(clue.id);
+    setRevealError("");
+    try {
+      const updated = await api.updateBookClubClue(club.id, active.id, clue.id, {
+        checked,
+        ...(checked && text !== undefined && text !== clue.text ? { text } : {}),
+      });
+      if (
+        !mounted.current ||
+        !(
+          accountScope.current().generation === scope.generation &&
+          accountScope.current().accountId === scope.accountId
+        )
+      )
+        return;
+      onUpdate(updated);
+      setSelectedClue(null);
+      toast.success(
+        checked ? t`Clue revealed and added to the canvas.` : t`Clue hidden from players.`,
+      );
+    } catch (error) {
+      if (
+        mounted.current &&
+        accountScope.current().generation === scope.generation &&
+        accountScope.current().accountId === scope.accountId
+      )
+        setRevealError(error instanceof Error ? error.message : t`Could not update clue`);
+    } finally {
+      revealPending.current = false;
+      if (mounted.current) setRevealing(null);
+    }
+  };
   const otherVoidClues = club.mysteries
     .filter((mystery) => mystery.id !== active?.id)
-    .flatMap((mystery) => mystery.voidClues.map((clue) => ({ ...clue, mystery: mystery.title })));
+    .flatMap((mystery) =>
+      mystery.voidClues
+        .filter((clue) => clue.checked)
+        .map((clue) => Object.assign({}, clue, { mystery: mystery.title })),
+    );
   return (
     <div className="book-club-panel-stack">
       {active ? (
         <>
-          <section className="book-club-feature-card">
-            <span className="book-club-eyebrow">
-              <Trans>Current mystery</Trans>
-            </span>
-            <h3>{active.title}</h3>
-            <Button variant="dark" onClick={() => onTheorize(active.id)}>
-              <Sparkles aria-hidden="true" /> <Trans>Open clue canvas</Trans>
-            </Button>
-          </section>
-          <ClueGroup title={t`Clues`} clues={active.clues.filter((clue) => !clue.isVoid)} />
           <ClueGroup
-            title={t`Void Clues`}
-            clues={active.clues.filter((clue) => clue.isVoid)}
+            title={t`Found clues`}
+            clues={active.clues.filter((clue) => clue.checked && !clue.isVoid)}
+          />
+          <ClueGroup
+            title={t`Found Void Clues`}
+            clues={active.clues.filter((clue) => clue.checked && clue.isVoid)}
             voidClues
           />
+          {isGameMaster && (
+            <section className="book-club-prepared-clues">
+              <h3 className="book-club-section-title">
+                <Trans>Mystery clues</Trans>
+              </h3>
+              <p className="book-club-muted">
+                <Lock aria-hidden="true" />
+                <Trans>Only the GM can see unrevealed clues.</Trans>
+              </p>
+              {revealError && (
+                <p role="alert" className="book-club-reveal-error">
+                  {revealError}
+                </p>
+              )}
+              <ul className="book-club-clue-list">
+                {active.clues.map((clue) => (
+                  <li
+                    key={clue.id}
+                    className={`book-club-prepared-clue ${clue.isVoid ? "is-void" : ""} ${clue.checked ? "is-checked" : ""}`}
+                  >
+                    <PressTooltip content={clue.text} align="start">
+                      <span className="book-club-clue-text" tabIndex={0}>
+                        <strong>{clueTitle(clue.text)}</strong>
+                        {clue.text.includes(" — ") && (
+                          <> — {clue.text.split(" — ").slice(1).join(" — ")}</>
+                        )}
+                        <span className="sr-only">{clue.isVoid ? t`Void Clue` : ""}</span>
+                      </span>
+                    </PressTooltip>
+                    <div className="book-club-clue-actions">
+                      <PressTooltip
+                        content={
+                          revealing
+                            ? t`Updating clue…`
+                            : clue.checked
+                              ? t`Unreveal clue`
+                              : t`Reveal clue`
+                        }
+                      >
+                        <span>
+                          <Button
+                            size="icon"
+                            variant="bare"
+                            className="book-club-clue-icon"
+                            aria-label={`${clue.checked ? t`Unreveal clue` : t`Reveal clue`}: ${clueTitle(clue.text)}`}
+                            disabled={revealing !== null}
+                            onClick={() => void setClueVisibility(clue, !clue.checked)}
+                          >
+                            {clue.checked ? (
+                              <EyeOff aria-hidden="true" />
+                            ) : (
+                              <Eye aria-hidden="true" />
+                            )}
+                          </Button>
+                        </span>
+                      </PressTooltip>
+                      <PressTooltip content={revealing ? t`Updating clue…` : t`Customize`}>
+                        <span>
+                          <Button
+                            size="icon"
+                            variant="bare"
+                            className="book-club-clue-icon"
+                            aria-label={`${t`Customize`}: ${clueTitle(clue.text)}`}
+                            disabled={revealing !== null}
+                            onClick={() => {
+                              setSelectedClue(clue);
+                              setDescription(clue.text.split(" — ").slice(1).join(" — "));
+                              setRevealError("");
+                            }}
+                          >
+                            <Pencil aria-hidden="true" />
+                          </Button>
+                        </span>
+                      </PressTooltip>
+                    </div>
+                  </li>
+                ))}
+                {active.clues.length === 0 && (
+                  <p className="book-club-muted">
+                    <Trans>No clues yet.</Trans>
+                  </p>
+                )}
+              </ul>
+            </section>
+          )}
           <section>
             <h3 className="book-club-section-title">
               <Trans>Void Clues from other mysteries</Trans>
@@ -1382,7 +1579,11 @@ function CluesPanel({
             <ul className="book-club-clue-list is-void">
               {otherVoidClues.map((clue) => (
                 <li key={clue.id}>
-                  <span>{clue.text}</span>
+                  <PressTooltip content={clue.text} align="start">
+                    <span className="book-club-clue-text" tabIndex={0}>
+                      {clue.text}
+                    </span>
+                  </PressTooltip>
                   <small>{clue.mystery}</small>
                 </li>
               ))}
@@ -1393,6 +1594,77 @@ function CluesPanel({
               )}
             </ul>
           </section>
+          <Dialog
+            open={selectedClue !== null}
+            onOpenChange={(open) => {
+              if (!open && !revealing) setSelectedClue(null);
+            }}
+          >
+            <DialogContent
+              className="book-club-clue-dialog"
+              onInteractOutside={(event) => {
+                if (revealing) event.preventDefault();
+              }}
+              onEscapeKeyDown={(event) => {
+                if (revealing) event.preventDefault();
+              }}
+            >
+              <DialogHeader>
+                <DialogTitle>
+                  <Trans>Reveal a clue</Trans>
+                </DialogTitle>
+                <DialogDescription>
+                  <Trans>Players will see this description in found clues and on the canvas.</Trans>
+                </DialogDescription>
+              </DialogHeader>
+              <form
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  if (selectedClue)
+                    void setClueVisibility(
+                      selectedClue,
+                      true,
+                      [clueTitle(selectedClue.text), description.trim()]
+                        .filter(Boolean)
+                        .join(" — "),
+                    );
+                }}
+              >
+                <h3>{selectedClue ? clueTitle(selectedClue.text) : ""}</h3>
+                <label className="book-club-clue-description">
+                  <Trans>Description</Trans>
+                  <Textarea
+                    autoFocus
+                    value={description}
+                    maxLength={Math.max(
+                      0,
+                      20500 - (selectedClue ? clueTitle(selectedClue.text).length : 0) - 3,
+                    )}
+                    disabled={revealing !== null}
+                    onChange={(event) => setDescription(event.target.value)}
+                  />
+                </label>
+                {revealError && (
+                  <p role="alert" className="book-club-reveal-error">
+                    {revealError}
+                  </p>
+                )}
+                <div className="book-club-clue-actions">
+                  <Button
+                    type="button"
+                    variant="bare"
+                    disabled={revealing !== null}
+                    onClick={() => setSelectedClue(null)}
+                  >
+                    <Trans>Cancel</Trans>
+                  </Button>
+                  <Button type="submit" variant="dark" disabled={revealing !== null}>
+                    {revealing ? <Trans>Revealing…</Trans> : <Trans>Reveal clue</Trans>}
+                  </Button>
+                </div>
+              </form>
+            </DialogContent>
+          </Dialog>
         </>
       ) : (
         <p className="book-club-muted">
@@ -1419,7 +1691,11 @@ function ClueGroup({
         {clues.map((clue) => (
           <li key={clue.id} className={clue.checked ? "is-checked" : ""}>
             {clue.checked && <Check aria-hidden="true" />}
-            <span>{clue.text}</span>
+            <PressTooltip content={clue.text} align="start">
+              <span className="book-club-clue-text" tabIndex={0}>
+                {clue.text}
+              </span>
+            </PressTooltip>
           </li>
         ))}
         {clues.length === 0 && (
@@ -1484,6 +1760,16 @@ function QuickNavigator({
           <kbd>⌘</kbd>
           <kbd>K</kbd> <Trans>to toggle</Trans>
         </small>
+        <Button
+          variant="bare"
+          onClick={() => {
+            onOpenChange(false);
+            window.dispatchEvent(new Event("cozycrowns:open-navigation"));
+          }}
+        >
+          <Search aria-hidden="true" />
+          <Trans>Go to a page</Trans>
+        </Button>
       </DialogContent>
     </Dialog>
   );
@@ -1501,9 +1787,6 @@ function EmptyClubState({
   return (
     <section className="book-club-empty-state">
       <BookOpen aria-hidden="true" />
-      <p className="book-club-eyebrow">
-        <Trans>A table of your own</Trans>
-      </p>
       <h1>
         <Trans>Gather a Book Club</Trans>
       </h1>
@@ -1520,6 +1803,7 @@ function EmptyClubState({
           value={name}
           onChange={(event) => onNameChange(event.target.value)}
           placeholder={t`Book Club name`}
+          aria-label={t`Book Club name`}
         />
         <Button type="submit" variant="dark" disabled={name.trim().length < 2}>
           <Plus aria-hidden="true" />
@@ -1672,90 +1956,6 @@ function CardOrnament({ ornament }: { ornament: Ornament }) {
         </svg>
       ))}
     </div>
-  );
-}
-
-function SceneryArtwork({ scenery }: { scenery: Scenery }) {
-  return (
-    <svg
-      className="book-club-scenery"
-      viewBox="0 0 1600 600"
-      preserveAspectRatio="xMidYMax slice"
-      aria-hidden="true"
-    >
-      {scenery === "harbor" && (
-        <>
-          <circle className="sun" cx="1160" cy="185" r="75" />
-          <path
-            className="soft"
-            d="M0 390c170-35 286 20 430-3 155-25 251-75 424-38 190 41 269-23 440-2 120 15 205 54 306 38v215H0Z"
-          />
-          <path d="M0 461h106l24-97h105l23 97h76l11-148h98l13 148h81l34-105h88l16 105h119l31-176h67l23 176h139l19-127h104l19 127h145v139H0Z" />
-          <path
-            className="line"
-            d="M0 442c300-28 510 42 784 0s528 34 816-9M0 488c350-32 520 40 805 0s512 38 795-4"
-          />
-        </>
-      )}
-      {scenery === "teaGarden" && (
-        <>
-          <circle className="moon" cx="320" cy="130" r="60" />
-          <path
-            className="soft"
-            d="M0 448c133-78 269-51 386-1 138 59 296 16 423-23 188-58 288 60 449 26 116-24 206-20 342 30v120H0Z"
-          />
-          <path d="M0 494c132-43 261-20 382 19 98 31 201 23 302 2 134-28 230-19 337 10 174 47 329-60 579-12v87H0Z" />
-          <g>
-            <path d="M620 510h220l-27-65H648Z" />
-            <path d="M676 445v-54h104v54M643 505l-31 95M818 505l31 95" />
-            <circle cx="703" cy="412" r="19" />
-            <path d="M696 407h28v20h-28Zm28 4c20-5 21 17 2 16" />
-          </g>
-          <g>
-            <circle cx="545" cy="407" r="30" />
-            <path d="M513 448c4-44 62-44 66 0v82h-66Zm-10 82h88v18h-88Z" />
-            <circle cx="918" cy="407" r="30" />
-            <path d="M886 448c4-44 62-44 66 0v82h-66Zm-10 82h88v18h-88Z" />
-          </g>
-          <path className="line" d="M80 510c70-120 140-91 195 5M1280 523c45-146 150-137 222-10" />
-        </>
-      )}
-      {scenery === "midnightMeeting" && (
-        <>
-          <circle className="moon" cx="1190" cy="130" r="56" />
-          <path
-            className="soft"
-            d="M0 510c167-97 272-14 419-45 175-37 246 37 399-3 173-46 290 61 426 19 126-39 244-14 356 36v83H0Z"
-          />
-          <path d="M0 532c173-52 326 12 457-5 186-25 332 45 520 1 160-38 335 25 623 9v63H0Z" />
-          <g>
-            <path d="M593 538c-9-105 59-157 111-89 52-68 120-16 111 89Z" />
-            <circle cx="704" cy="413" r="27" />
-            <path d="M653 454c24-54 78-54 102 0" />
-          </g>
-          <g>
-            <path d="M883 553c-5-78 46-121 87-69 40-52 91-9 86 69Z" />
-            <circle cx="970" cy="455" r="21" />
-          </g>
-          <path
-            className="line"
-            d="M0 580c90-77 80-190 151-207 62-14 41 87 4 87-31 0-22-53 11-68M1600 576c-79-66-61-183-131-195-55-9-51 82-12 79 30-3 18-53-14-65"
-          />
-        </>
-      )}
-      {scenery === "moonlitPier" && (
-        <>
-          <circle className="moon" cx="380" cy="145" r="72" />
-          <path className="soft" d="M0 410c279-25 514 26 800 0s526 29 800 0v190H0Z" />
-          <path
-            className="line"
-            d="M0 431c299-27 504 30 805 0s510 34 795 0M0 470c313-25 518 35 812 0s502 31 788 0"
-          />
-          <path d="M910 396h560v35H910Zm80 35h28v169h-28Zm352 0h28v169h-28ZM1200 112h62l26 284h-114Zm-30 99h148l-26 23h-97Z" />
-          <path d="M770 600c9-143 27-241 57-293h22c-27 76-39 174-42 293Z" />
-        </>
-      )}
-    </svg>
   );
 }
 

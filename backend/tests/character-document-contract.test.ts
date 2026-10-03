@@ -10,7 +10,10 @@ test("character document normalization provides one complete current shape", () 
   const cases = [
     ["partial", { name: "Mavis" }],
     ["legacy empty collections", { crownChecks: [], voidChecks: [], cozyItems: [] }],
-    ["valid values", { crownChecks: [true], voidChecks: [true], cozyItems: [{ checked: true, text: "Tea" }] }],
+    [
+      "valid values",
+      { crownChecks: [true], voidChecks: [true], cozyItems: [{ checked: true, text: "Tea" }] },
+    ],
   ] as const;
 
   for (const [name, input] of cases) {

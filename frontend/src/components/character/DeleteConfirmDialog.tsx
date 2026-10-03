@@ -33,7 +33,9 @@ const DeleteConfirmDialog = ({
           </Trans>
         }
         notice={
-          isAuthenticated ? <Trans>This will also delete the character from the backend.</Trans> : undefined
+          isAuthenticated ? (
+            <Trans>This will also delete the character from the backend.</Trans>
+          ) : undefined
         }
         confirmLabel={<Trans>Delete Character</Trans>}
         cancelLabel={<Trans>Cancel</Trans>}

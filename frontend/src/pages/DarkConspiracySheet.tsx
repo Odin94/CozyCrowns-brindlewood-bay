@@ -10,6 +10,7 @@ import {
 } from "@/lib/dark_conspiracy_store";
 import { ChevronLeft, Download, Upload } from "lucide-react";
 import type React from "react";
+import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { toast } from "sonner";
 
@@ -132,7 +133,11 @@ const MysteryTracker = ({
   );
 };
 
-const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterSheet: () => void }) => {
+const DarkConspiracySheet = ({
+  onBackToCharacterSheet,
+}: {
+  onBackToCharacterSheet: () => void;
+}) => {
   const current = useDarkConspiracyStore((state) => state.current);
   const update = useDarkConspiracyStore((state) => state.updateCurrentDarkConspiracy);
   const replaceCurrentDarkConspiracy = useDarkConspiracyStore(
@@ -151,42 +156,66 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
     update({ layerThreeChecks });
   };
 
+  const importFile = async (file: File) => {
+    const original = JSON.stringify(useDarkConspiracyStore.getState().current);
+    try {
+      const rawData: unknown = JSON.parse(await file.text());
+      const result = DarkConspiracyDataSchema.safeParse(rawData);
+      if (!result.success) {
+        toast.error(t`Invalid dark conspiracy save file.`);
+        return;
+      }
+      if (JSON.stringify(useDarkConspiracyStore.getState().current) !== original) {
+        toast.error(t`Your sheet changed while the file was opening. Load the file again.`);
+        return;
+      }
+      replaceCurrentDarkConspiracy({
+        ...getDefaultDarkConspiracyData(),
+        ...result.data,
+        id: undefined,
+        version: undefined,
+      });
+      toast.success(t`Dark conspiracy loaded.`);
+    } catch {
+      toast.error(t`Invalid JSON file format.`);
+    }
+  };
   const handleUpload = () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ".json";
-    input.addEventListener("change", (event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.addEventListener("load", (readerEvent) => {
-        try {
-          const rawData = JSON.parse(readerEvent.target?.result as string);
-          const result = DarkConspiracyDataSchema.safeParse(rawData);
-          if (!result.success) {
-            toast.error("Invalid dark conspiracy save file.");
-            return;
-          }
-
-          replaceCurrentDarkConspiracy({
-            ...getDefaultDarkConspiracyData(),
-            ...result.data,
-            id: undefined,
-            version: undefined,
-          });
-          toast.success("Dark conspiracy loaded.");
-        } catch {
-          toast.error("Invalid JSON file format.");
-        }
-      });
-      reader.readAsText(file);
+    input.accept = ".json,application/json";
+    input.addEventListener("change", () => {
+      const file = input.files?.[0];
+      if (file) void importFile(file);
     });
     input.click();
   };
 
   return (
-    <div className="dark-conspiracy-sheet">
+    <div
+      className="dark-conspiracy-sheet"
+      onDragOver={(event) => {
+        if (event.dataTransfer.types.includes("Files")) {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "copy";
+        }
+      }}
+      onDrop={(event) => {
+        const file = event.dataTransfer.files[0];
+        if (file) {
+          event.preventDefault();
+          void importFile(file);
+        }
+      }}
+      onPaste={(event) => {
+        if ((event.target as HTMLElement).closest("input,textarea")) return;
+        const file = event.clipboardData.files[0];
+        if (file) {
+          event.preventDefault();
+          void importFile(file);
+        }
+      }}
+    >
       <div className="dark-conspiracy-actions">
         <Button onClick={onBackToCharacterSheet} variant="dark" className="h-8 dark-ring">
           <ChevronLeft className="size-4" />
@@ -199,15 +228,11 @@ const DarkConspiracySheet = ({ onBackToCharacterSheet }: { onBackToCharacterShee
             className="h-8 dark-ring"
           >
             <Download className="mr-2 size-4" />
-            Save JSON
+            <Trans>Save JSON</Trans>
           </Button>
-          <Button
-            onClick={handleUpload}
-            variant="dark"
-            className="h-8 dark-ring"
-          >
+          <Button onClick={handleUpload} variant="dark" className="h-8 dark-ring">
             <Upload className="mr-2 size-4" />
-            Load JSON
+            <Trans>Load JSON</Trans>
           </Button>
         </div>
       </div>

@@ -46,5 +46,8 @@ test("character data rejects malformed collection lengths", () => {
     cozyItems: [],
   };
 
-  assert.equal(createCharacterSchema.safeParse({ name: "Mavis", data: malformedData }).success, false);
+  assert.equal(
+    createCharacterSchema.safeParse({ name: "Mavis", data: malformedData }).success,
+    false,
+  );
 });

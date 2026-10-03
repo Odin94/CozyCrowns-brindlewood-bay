@@ -3,6 +3,7 @@ import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import { useAuth } from "@/hooks/useAuth";
 import { api, type BookClubCharacter } from "@/utils/api";
+import { mavenPersistence } from "@/lib/maven_runtime";
 import { useCharacterStore } from "@/lib/character_store";
 import { normalizeCharacter } from "@/lib/character_document";
 import {
@@ -51,11 +52,7 @@ export default function BookClubMaven({
         const own = member.id === user?.id;
         if (own) {
           if (!useCharacterStore.getState().characters.some((entry) => entry.id === characterId)) {
-            const response = await api.getCharacters();
-            if (cancelled) return;
-            useCharacterStore
-              .getState()
-              .mergeRemote(response.characters.filter((entry) => entry.owned));
+            await mavenPersistence.sync();
           }
           if (cancelled) return;
           const index = useCharacterStore
@@ -76,8 +73,8 @@ export default function BookClubMaven({
   }, [clubId, characterId, user?.id, attempt]);
   return (
     <>
-      <div className="flex flex-wrap items-center justify-between gap-3 bg-gray-800 px-5 py-3 text-secondary">
-        <p>
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-dark-secondary px-5 py-3 text-secondary">
+        <p className="min-w-0 break-words [overflow-wrap:anywhere]">
           {result
             ? result.own
               ? result.clubName
@@ -149,9 +146,9 @@ function ReadOnlySheet({ character }: { character: BookClubCharacter }) {
       <h1 className="mb-6 text-center text-3xl">{character.name || t`Unnamed Maven`}</h1>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
         {sections.map(({ title, text }) => (
-          <section key={title} className="rounded-lg bg-gray-800 p-5 text-gray-200">
+          <section key={title} className="min-w-0 rounded-lg bg-dark-secondary p-5 text-secondary">
             <h2 className="mb-3 text-xl text-secondary">{title}</h2>
-            <p className="whitespace-pre-wrap text-sm leading-relaxed">
+            <p className="whitespace-pre-wrap break-words text-sm leading-relaxed [overflow-wrap:anywhere]">
               {text || t`None recorded`}
             </p>
           </section>

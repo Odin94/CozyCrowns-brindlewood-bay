@@ -1,3 +1,8 @@
+import { accountScope } from "@/lib/account_scope";
+import { reconcileCreatedEntry } from "@/lib/live_book_club";
+import { theoryAlignmentUndoPositions } from "@/lib/theory_alignment_undo";
+import { useLiveBookClub } from "@/hooks/useLiveBookClub";
+import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -8,15 +13,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Textarea } from "@/components/ui/textarea";
+import { api, type TheoryEdge, type TheoryNode, type TheoryNodeKind } from "@/utils/api";
 import {
-  api,
-  connectBookClubUpdates,
-  type TheoryEdge,
-  type TheoryNode,
-  type TheoryNodeKind,
-} from "@/utils/api";
+  edgeGeometry as connectionGeometry,
+  pointOnNodeEdge as rectangleEdgePoint,
+} from "@/lib/theory_geometry";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import {
@@ -27,7 +37,6 @@ import {
   Lock,
   Maximize,
   Plus,
-  Pencil,
   Tag,
   Trash2,
   UserRound,
@@ -35,14 +44,22 @@ import {
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
+import {
+  findTheoryNotePlacement,
+  panToRevealTheoryNote,
+  theoryViewport,
+  theoryOverview,
+  THEORY_NOTE_WIDTH,
+  THEORY_NOTE_HEIGHT,
+} from "../../../backend/src/lib/theory-placement";
 import "./theorize-board.css";
 
 const BOARD_WIDTH = 6_000;
 const BOARD_HEIGHT = 4_000;
-const NODE_WIDTH = 286;
-const NODE_HEIGHT = 150;
+const NODE_WIDTH = THEORY_NOTE_WIDTH;
+const NODE_HEIGHT = THEORY_NOTE_HEIGHT;
 const DEFAULT_ZOOM = 1;
-const MIN_ZOOM = 0.35;
+const MIN_ZOOM = 0.005;
 const MAX_ZOOM = 1.8;
 
 const kindLabel = (kind: TheoryNodeKind) => {
@@ -73,31 +90,12 @@ type ConnectionDraft =
   | { sourceId: string; mode: "pointer"; pointer: Point }
   | { sourceId: string; mode: "keyboard" };
 
-const nodeCenter = (node: TheoryNode): Point => ({
-  x: node.x + NODE_WIDTH / 2,
-  y: node.y + NODE_HEIGHT / 2,
-});
+const nodeSize = { width: NODE_WIDTH, height: NODE_HEIGHT };
+const pointOnNodeEdge = (node: TheoryNode, toward: Point): Point =>
+  rectangleEdgePoint(node, toward, nodeSize);
 
-const pointOnNodeEdge = (node: TheoryNode, toward: Point): Point => {
-  const center = nodeCenter(node);
-  const deltaX = toward.x - center.x;
-  const deltaY = toward.y - center.y;
-  if (!deltaX && !deltaY) return center;
-  const scale =
-    1 / Math.max(Math.abs(deltaX) / (NODE_WIDTH / 2), Math.abs(deltaY) / (NODE_HEIGHT / 2));
-  return { x: center.x + deltaX * scale, y: center.y + deltaY * scale };
-};
-
-const edgeGeometry = (source: TheoryNode, target: TheoryNode) => {
-  const sourceCenter = nodeCenter(source);
-  const targetCenter = nodeCenter(target);
-  const start = pointOnNodeEdge(source, targetCenter);
-  const end = pointOnNodeEdge(target, sourceCenter);
-  return {
-    path: `M ${start.x} ${start.y} L ${end.x} ${end.y}`,
-    midpoint: { x: (start.x + end.x) / 2, y: (start.y + end.y) / 2 },
-  };
-};
+const edgeGeometry = (source: TheoryNode, target: TheoryNode, reciprocal = false) =>
+  connectionGeometry(source, target, nodeSize, reciprocal);
 
 const hash = (value: string) => {
   let result = 0;
@@ -276,11 +274,39 @@ export default function TheorizeBoard({
   onClose: () => void;
 }) {
   const canvasRef = useRef<HTMLElement>(null);
-  const bulkUpdateRef = useRef(false);
-  const [mysteryTitle, setMysteryTitle] = useState("");
-  const [nodes, setNodes] = useState<TheoryNode[]>([]);
-  const [edges, setEdges] = useState<TheoryEdge[]>([]);
-  const [loading, setLoading] = useState(true);
+  const newTitleRef = useRef<HTMLInputElement>(null);
+  const { user } = useAuth();
+  const {
+    data: board,
+    loading,
+    error: loadError,
+    live,
+  } = useLiveBookClub(
+    `${bookClubId}:${mysteryId}`,
+    { mystery: { id: mysteryId, title: "" }, nodes: [] as TheoryNode[], edges: [] as TheoryEdge[] },
+    () => api.getBookClubTheory(bookClubId, mysteryId),
+    (error) =>
+      toast.error(error instanceof Error ? error.message : t`Could not load the theory board`),
+    user?.id,
+  );
+  const mysteryTitle = board.mystery.title;
+  const { nodes, edges } = board;
+  const setNodes = useCallback(
+    (update: TheoryNode[] | ((current: TheoryNode[]) => TheoryNode[])) =>
+      live.edit((current) => ({
+        ...current,
+        nodes: typeof update === "function" ? update(current.nodes) : update,
+      })),
+    [live],
+  );
+  const setEdges = useCallback(
+    (update: TheoryEdge[] | ((current: TheoryEdge[]) => TheoryEdge[])) =>
+      live.edit((current) => ({
+        ...current,
+        edges: typeof update === "function" ? update(current.edges) : update,
+      })),
+    [live],
+  );
   const [filters, setFilters] = useState<Record<TheoryNodeKind, boolean>>({
     clue: true,
     voidClue: true,
@@ -298,42 +324,98 @@ export default function TheorizeBoard({
   const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
   const [descriptionNodeId, setDescriptionNodeId] = useState<string | null>(null);
   const [aligning, setAligning] = useState(false);
+  const aligningRef = useRef(false);
   const [creating, setCreating] = useState(false);
-  const [newKind, setNewKind] = useState<TheoryNodeKind>("other");
+  const [savingNote, setSavingNote] = useState(false);
+  const savingNoteRef = useRef(false);
+  const [newKind, setNewKind] = useState<TheoryNodeKind>("clue");
+  const [typeMenuOpen, setTypeMenuOpen] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newDescription, setNewDescription] = useState("");
   const [newTags, setNewTags] = useState<string[]>([]);
   const [editing, setEditing] = useState<EditNode | null>(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const cancelDeleteRef = useRef<HTMLButtonElement>(null);
   const [inlineEdge, setInlineEdge] = useState<TheoryEdge | null>(null);
+  const nodesRef = useRef(nodes);
+  nodesRef.current = nodes;
+  const contextRef = useRef({ live, bookClubId, mysteryId });
+  contextRef.current = { live, bookClubId, mysteryId };
+  const interactionRef = useRef({ drag, editing, creating });
+  interactionRef.current = { drag, editing, creating };
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
   const zoomRef = useRef(zoom);
   const panRef = useRef(pan);
+  const initialCameraRef = useRef<typeof live | null>(null);
   zoomRef.current = zoom;
   panRef.current = pan;
 
-  const refresh = useCallback(
-    async (quiet = false) => {
-      try {
-        const board = await api.getBookClubTheory(bookClubId, mysteryId);
-        setMysteryTitle(board.mystery.title);
-        setNodes(board.nodes);
-        setEdges(board.edges);
-      } catch (error) {
-        if (!quiet)
-          toast.error(error instanceof Error ? error.message : t`Could not load the theory board`);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [bookClubId, mysteryId],
-  );
+  useEffect(() => {
+    if (initialCameraRef.current === live || loading || loadError) return;
+    const bounds = canvasRef.current?.getBoundingClientRect();
+    if (!bounds?.width || !bounds.height) return;
+    const view = theoryOverview(nodes, bounds);
+    initialCameraRef.current = live;
+    zoomRef.current = view.zoom;
+    panRef.current = view.pan;
+    setZoom(view.zoom);
+    setPan(view.pan);
+    setFilters({ clue: true, voidClue: true, suspect: true, other: true });
+  }, [live, loading, loadError, nodes]);
+
+  const chooseNewKind = (kind: TheoryNodeKind) => {
+    setNewKind(kind);
+    setTypeMenuOpen(false);
+    newTitleRef.current?.focus();
+    newTitleRef.current?.select();
+  };
+
+  const openNewNote = useCallback(() => {
+    setNewKind("clue");
+    setCreating(true);
+  }, []);
 
   useEffect(() => {
-    void refresh();
-    const socket = connectBookClubUpdates(() => {
-      if (!bulkUpdateRef.current) void refresh(true);
-    });
-    return () => socket?.close();
-  }, [refresh]);
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (
+        event.defaultPrevented ||
+        event.isComposing ||
+        event.repeat ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.altKey ||
+        event.shiftKey ||
+        event.key.toLowerCase() !== "n" ||
+        aligningRef.current ||
+        creating ||
+        editing ||
+        inlineEdge ||
+        connecting ||
+        drag ||
+        document.querySelector('[role="dialog"], [role="alertdialog"]') ||
+        (event.target instanceof Element &&
+          event.target.closest(
+            'input, textarea, select, [contenteditable]:not([contenteditable="false"]), [role="textbox"]',
+          ))
+      )
+        return;
+      event.preventDefault();
+      openNewNote();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [creating, editing, inlineEdge, connecting, drag, openNewNote]);
+
+  const refresh = useCallback((quiet = false) => live.refresh(quiet), [live]);
+  useEffect(() => {
+    if (drag?.type === "node") return live.hold();
+  }, [live, drag?.type]);
 
   const clientToBoard = useCallback((clientX: number, clientY: number): Point => {
     const bounds = canvasRef.current?.getBoundingClientRect();
@@ -458,6 +540,7 @@ export default function TheorizeBoard({
       if (drag.type === "node") {
         const x = Math.round(drag.x + (event.clientX - drag.clientX) / zoom);
         const y = Math.round(drag.y + (event.clientY - drag.clientY) / zoom);
+        const releaseLive = live.hold();
         void (async () => {
           try {
             const updated = await api.updateBookClubTheoryNode(
@@ -474,6 +557,8 @@ export default function TheorizeBoard({
           } catch (error) {
             toast.error(error instanceof Error ? error.message : t`Could not move that note`);
             void refresh(true);
+          } finally {
+            releaseLive();
           }
         })();
       }
@@ -488,7 +573,7 @@ export default function TheorizeBoard({
       window.removeEventListener("pointerup", onUp);
       window.removeEventListener("pointercancel", onCancel);
     };
-  }, [bookClubId, drag, mysteryId, refresh, zoom]);
+  }, [bookClubId, drag, mysteryId, refresh, zoom, setNodes, live]);
 
   const editingNodeId = editing?.id;
 
@@ -506,40 +591,58 @@ export default function TheorizeBoard({
   const visibleNodes = useMemo(() => nodes.filter((node) => filters[node.kind]), [filters, nodes]);
   const visibleIds = useMemo(() => new Set(visibleNodes.map((node) => node.id)), [visibleNodes]);
   const nodeMap = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes]);
+  const edgeDirections = useMemo(
+    () => new Set(edges.map((edge) => JSON.stringify([edge.sourceNodeId, edge.targetNodeId]))),
+    [edges],
+  );
+  const isReciprocal = (edge: TheoryEdge) =>
+    edge.sourceNodeId !== edge.targetNodeId &&
+    edgeDirections.has(JSON.stringify([edge.targetNodeId, edge.sourceNodeId]));
   const existingTags = useMemo(() => [...new Set(nodes.flatMap((node) => node.tags))], [nodes]);
 
   const centerViewport = useCallback((candidates: TheoryNode[]) => {
     const bounds = canvasRef.current?.getBoundingClientRect();
     if (!bounds) return;
-    const nextZoom = DEFAULT_ZOOM;
-    if (!candidates.length) {
-      const nextPan = { x: 48, y: 48 };
-      zoomRef.current = nextZoom;
-      panRef.current = nextPan;
-      setZoom(nextZoom);
-      setPan(nextPan);
-      return;
-    }
-    const minX = Math.min(...candidates.map((node) => node.x));
-    const maxX = Math.max(...candidates.map((node) => node.x + NODE_WIDTH));
-    const minY = Math.min(...candidates.map((node) => node.y));
-    const maxY = Math.max(...candidates.map((node) => node.y + NODE_HEIGHT));
-    const nextPan = {
-      x: bounds.width / 2 - ((minX + maxX) / 2) * nextZoom,
-      y: bounds.height / 2 - ((minY + maxY) / 2) * nextZoom,
-    };
-    zoomRef.current = nextZoom;
-    panRef.current = nextPan;
-    setZoom(nextZoom);
-    setPan(nextPan);
+    const view = theoryOverview(candidates, bounds);
+    zoomRef.current = view.zoom;
+    panRef.current = view.pan;
+    setZoom(view.zoom);
+    setPan(view.pan);
   }, []);
 
-  const resetView = () => centerViewport(visibleNodes.length ? visibleNodes : nodes);
+  const overview = () => {
+    setFilters({ clue: true, voidClue: true, suspect: true, other: true });
+    centerViewport(nodes);
+  };
 
   const alignBoard = async () => {
-    if (nodes.length < 2 || aligning) return;
+    if (nodes.length < 2 || aligningRef.current) return;
+    const owner = accountScope.current();
+    const original = nodes.map((node) => ({ ...node }));
+    const originalView = { pan: { ...panRef.current }, zoom: zoomRef.current };
+    const currentContext = () =>
+      mountedRef.current &&
+      contextRef.current.live === live &&
+      contextRef.current.bookClubId === bookClubId &&
+      contextRef.current.mysteryId === mysteryId;
+    const sameAccount = () => {
+      const current = accountScope.current();
+      return (
+        current.accountId === owner.accountId &&
+        current.generation === owner.generation &&
+        !current.signingOut &&
+        !current.revalidating
+      );
+    };
+    const refreshAction = {
+      label: t`Refresh board`,
+      onClick: () => {
+        if (currentContext() && sameAccount()) void live.refresh(false);
+      },
+    };
+    aligningRef.current = true;
     setAligning(true);
-    bulkUpdateRef.current = true;
+    const releaseLive = live.hold();
     const layout = autoLayout(nodes, edges);
     const arranged = nodes.map((node) => ({ ...node, ...layout.get(node.id)! }));
     setNodes(arranged);
@@ -550,21 +653,98 @@ export default function TheorizeBoard({
         mysteryId,
         arranged.map(({ id, version, x, y }) => ({ id, version, x, y })),
       );
+      if (!currentContext() || !sameAccount()) return;
       const positions = new Map(result.nodes.map((node) => [node.id, node]));
-      const updated = arranged.map((node) => Object.assign(node, positions.get(node.id)!));
+      const updated = arranged.map((node) => Object.assign({}, node, positions.get(node.id)!));
+      nodesRef.current = updated;
       setNodes(updated);
       centerViewport(updated);
+      const arrangedView = { pan: { ...panRef.current }, zoom: zoomRef.current };
+      let undone = false;
+      toast.success(t`Notes aligned`, {
+        duration: 8_000,
+        action: {
+          label: t`Undo`,
+          onClick: () => {
+            if (undone || !currentContext()) return;
+            const interaction = interactionRef.current;
+            const plan = theoryAlignmentUndoPositions(
+              original,
+              updated,
+              nodesRef.current,
+              owner,
+              accountScope.current(),
+            );
+            if (
+              !plan ||
+              aligningRef.current ||
+              interaction.drag ||
+              interaction.editing ||
+              interaction.creating ||
+              savingNoteRef.current
+            ) {
+              toast.error(t`The board changed after auto-align. Your newer changes were kept.`, {
+                action: refreshAction,
+              });
+              return;
+            }
+            undone = true;
+            aligningRef.current = true;
+            setAligning(true);
+            const releaseUndo = live.hold();
+            void (async () => {
+              try {
+                const restored = await api.updateBookClubTheoryNodePositions(
+                  bookClubId,
+                  mysteryId,
+                  plan,
+                );
+                if (!currentContext() || !sameAccount()) return;
+                const restoredById = new Map(restored.nodes.map((node) => [node.id, node]));
+                setNodes((current) =>
+                  current.map((node) => ({ ...node, ...restoredById.get(node.id) })),
+                );
+                // Restore the camera only while it still shows the aligned arrangement.
+                if (
+                  panRef.current.x === arrangedView.pan.x &&
+                  panRef.current.y === arrangedView.pan.y &&
+                  zoomRef.current === arrangedView.zoom
+                ) {
+                  panRef.current = originalView.pan;
+                  zoomRef.current = originalView.zoom;
+                  setPan(originalView.pan);
+                  setZoom(originalView.zoom);
+                }
+                toast.success(t`Previous positions restored`);
+              } catch {
+                if (currentContext() && sameAccount())
+                  toast.error(t`Could not undo auto-align. Refresh the board and try again.`, {
+                    action: refreshAction,
+                  });
+              } finally {
+                releaseUndo();
+                aligningRef.current = false;
+                if (currentContext()) setAligning(false);
+              }
+            })();
+          },
+        },
+      });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not auto-align the board`);
-      await refresh(true);
+      if (currentContext() && sameAccount()) {
+        toast.error(error instanceof Error ? error.message : t`Could not auto-align the board`);
+        releaseLive();
+        await refresh(true);
+      }
     } finally {
-      bulkUpdateRef.current = false;
-      setAligning(false);
+      releaseLive();
+      aligningRef.current = false;
+      if (currentContext()) setAligning(false);
     }
   };
 
   const startConnection = (event: React.PointerEvent, sourceId: string) => {
-    if (event.button !== 0) return;
+    if (event.button !== 0 || aligningRef.current) return;
     event.preventDefault();
     event.stopPropagation();
     setConnecting({
@@ -582,13 +762,13 @@ export default function TheorizeBoard({
             sourceNodeId: sourceId,
             targetNodeId: targetId,
           });
-          setEdges((current) => [...current, edge]);
+          setEdges((current) => reconcileCreatedEntry(current, edge));
         } catch (error) {
           toast.error(error instanceof Error ? error.message : t`Could not connect those notes`);
         }
       })();
     },
-    [bookClubId, mysteryId],
+    [bookClubId, mysteryId, setEdges],
   );
 
   const connectingSourceId = connecting?.mode === "pointer" ? connecting.sourceId : null;
@@ -641,10 +821,16 @@ export default function TheorizeBoard({
     }
   };
 
-  const closeEdit = () => setEditing(null);
+  const closeEdit = () => {
+    setConfirmDelete(false);
+    setEditing(null);
+  };
 
   const saveEdit = async () => {
-    if (!editing || (!editing.sourceClueId && !editing.draftTitle.trim())) return;
+    if (!editing || (!editing.sourceClueId && !editing.draftTitle.trim()) || savingNoteRef.current)
+      return;
+    savingNoteRef.current = true;
+    setSavingNote(true);
     try {
       const updated = await api.updateBookClubTheoryNode(bookClubId, mysteryId, editing.id, {
         version: editing.version,
@@ -657,13 +843,26 @@ export default function TheorizeBoard({
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not save that note`);
       void refresh(true);
+    } finally {
+      savingNoteRef.current = false;
+      setSavingNote(false);
     }
   };
 
   const deleteNode = async () => {
-    if (!editing || editing.sourceClueId) return;
+    if (!editing || editing.sourceClueId || savingNoteRef.current) return;
+    savingNoteRef.current = true;
+    setSavingNote(true);
+    const scope = accountScope.current();
+    const context = contextRef.current;
+    const currentContext = () =>
+      mountedRef.current &&
+      contextRef.current.live === context.live &&
+      accountScope.current().generation === scope.generation;
+    const releaseLive = live.hold();
     try {
       await api.deleteBookClubTheoryNode(bookClubId, mysteryId, editing.id, editing.version);
+      if (!currentContext()) return;
       setNodes((current) => current.filter((node) => node.id !== editing.id));
       setEdges((current) =>
         current.filter(
@@ -672,30 +871,89 @@ export default function TheorizeBoard({
       );
       closeEdit();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not delete that note`);
+      if (currentContext())
+        toast.error(error instanceof Error ? error.message : t`Could not delete that note`);
+    } finally {
+      releaseLive();
+      savingNoteRef.current = false;
+      if (currentContext()) setSavingNote(false);
     }
   };
 
   const createNode = async () => {
-    if (!newTitle.trim()) return;
+    if (!newTitle.trim() || savingNoteRef.current) return;
+    savingNoteRef.current = true;
+    setSavingNote(true);
     try {
+      const bounds = canvasRef.current?.getBoundingClientRect();
+      const viewport = bounds ? theoryViewport(bounds, panRef.current, zoomRef.current) : undefined;
+      const preferred = viewport
+        ? {
+            x: viewport.x + (viewport.width - NODE_WIDTH) / 2,
+            y: viewport.y + (viewport.height - NODE_HEIGHT) / 2,
+          }
+        : { x: 220, y: 180 };
+      const position = findTheoryNotePlacement(nodes, preferred, viewport);
+      if (!position) throw new Error(t`The board is full. Move a note before adding another.`);
       const node = await api.createBookClubTheoryNode(bookClubId, mysteryId, {
         kind: newKind,
         title: newTitle.trim(),
         description: newDescription.trim(),
         tags: newTags,
-        x: Math.round((260 - pan.x) / zoom),
-        y: Math.round((180 - pan.y) / zoom),
+        ...position,
       });
-      setNodes((current) => [...current, node]);
+      setNodes((current) => reconcileCreatedEntry(current, node));
+      setFilters((current) => ({ ...current, [node.kind]: true }));
+      if (bounds) {
+        const nextPan = panToRevealTheoryNote(node, bounds, panRef.current, zoomRef.current);
+        panRef.current = nextPan;
+        setPan(nextPan);
+      }
       setNewTitle("");
       setNewDescription("");
       setNewTags([]);
-      setNewKind("other");
+      setNewKind("clue");
       setCreating(false);
     } catch (error) {
       toast.error(error instanceof Error ? error.message : t`Could not add that note`);
+    } finally {
+      savingNoteRef.current = false;
+      setSavingNote(false);
     }
+  };
+
+  const submitNoteShortcut = (event: React.KeyboardEvent) => {
+    if (
+      creating &&
+      !event.defaultPrevented &&
+      !event.nativeEvent.isComposing &&
+      !event.repeat &&
+      event.altKey &&
+      event.shiftKey &&
+      !event.ctrlKey &&
+      !event.metaKey
+    ) {
+      const kindIndex = ["Digit1", "Digit2", "Digit3", "Digit4"].indexOf(event.code);
+      if (kindIndex !== -1) {
+        event.preventDefault();
+        event.stopPropagation();
+        chooseNewKind((["clue", "voidClue", "suspect", "other"] as const)[kindIndex]);
+        return;
+      }
+    }
+    if (
+      event.defaultPrevented ||
+      event.nativeEvent.isComposing ||
+      event.repeat ||
+      event.key !== "Enter" ||
+      !(event.ctrlKey || event.metaKey) ||
+      event.altKey ||
+      event.shiftKey
+    )
+      return;
+    event.preventDefault();
+    if (creating) void createNode();
+    else if (editing) void saveEdit();
   };
 
   const saveEdgeLabel = async () => {
@@ -780,10 +1038,34 @@ export default function TheorizeBoard({
             <h1 className="truncate !text-2xl leading-none">{mysteryTitle}</h1>
           </div>
         </div>
-        <Button className="theory-board__primary-action" onClick={() => setCreating(true)}>
+        <Button
+          className="theory-button theory-button--primary"
+          onClick={openNewNote}
+          disabled={aligning}
+          aria-keyshortcuts="N"
+          title={t`Add note (N)`}
+        >
           <Plus className="size-4" /> <Trans>Add note</Trans>
+          <kbd className="theory-shortcut hidden sm:inline" aria-hidden="true">
+            N
+          </kbd>
         </Button>
       </header>
+
+      {loadError != null && (
+        <section className="cozy-load-error" role="alert">
+          <p>
+            {loadError instanceof Error ? loadError.message : t`Could not load the theory board`}
+          </p>
+          <Button
+            size="sm"
+            className="theory-button theory-button--secondary"
+            onClick={() => void live.refresh(false)}
+          >
+            <Trans>Try again</Trans>
+          </Button>
+        </section>
+      )}
 
       <div className="theory-board__toolbar flex flex-wrap items-center gap-2 px-4 py-2 text-sm">
         <span className="mr-1 flex items-center gap-1">
@@ -794,6 +1076,7 @@ export default function TheorizeBoard({
             key={kind}
             type="button"
             variant="bare"
+            aria-pressed={filters[kind]}
             onClick={() => setFilters((current) => ({ ...current, [kind]: !current[kind] }))}
             className={`theory-filter rounded-full border px-3 py-1 text-xs font-semibold transition ${filters[kind] ? "is-active" : ""}`}
           >
@@ -804,22 +1087,48 @@ export default function TheorizeBoard({
           <span className="hidden sm:inline">
             <Trans>Drag the board to move around. Drag a link handle to connect notes.</Trans>
           </span>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <span className="inline-flex" tabIndex={aligning || nodes.length < 2 ? 0 : undefined}>
+                <Button
+                  variant="ghost"
+                  className="theory-button theory-button--toolbar"
+                  size="sm"
+                  onClick={() => void alignBoard()}
+                  disabled={aligning || nodes.length < 2}
+                  aria-label={t`Auto-align notes`}
+                >
+                  <WandSparkles className="size-4" />
+                  <span className="hidden md:inline">
+                    {aligning ? <Trans>Aligning…</Trans> : <Trans>Auto-align</Trans>}
+                  </span>
+                </Button>
+              </span>
+            </TooltipTrigger>
+            <TooltipContent
+              className="theory-description-tooltip pointer-events-none"
+              side="bottom"
+              align="end"
+              collisionPadding={12}
+            >
+              {nodes.length < 2
+                ? t`Add at least two notes to auto-align.`
+                : aligning
+                  ? t`Aligning…`
+                  : t`Auto-align notes`}
+            </TooltipContent>
+          </Tooltip>
           <Button
             variant="ghost"
+            className="theory-button theory-button--toolbar"
             size="sm"
-            onClick={() => void alignBoard()}
-            disabled={aligning || nodes.length < 2}
-            title={t`Auto-align notes`}
+            onClick={overview}
+            title={t`Show all notes`}
+            aria-label={t`Overview`}
           >
-            <WandSparkles className="size-4" />
-            <span className="hidden md:inline">
-              {aligning ? <Trans>Aligning…</Trans> : <Trans>Auto-align</Trans>}
-            </span>
-          </Button>
-          <Button variant="ghost" size="sm" onClick={resetView} title={t`Recenter and reset zoom`}>
             <Maximize className="size-4" />
-            <span className="sr-only">
-              <Trans>Recenter and reset zoom</Trans>
+            <span className="hidden md:inline">
+              <Trans>Overview</Trans>
             </span>
           </Button>
         </div>
@@ -830,6 +1139,7 @@ export default function TheorizeBoard({
         className="theory-board__canvas relative min-h-0 flex-1 touch-none overflow-hidden"
         onPointerDown={(event) => {
           if (
+            aligningRef.current ||
             event.button !== 0 ||
             (event.pointerType === "touch" && !event.isPrimary) ||
             connecting ||
@@ -899,7 +1209,7 @@ export default function TheorizeBoard({
               return (
                 <path
                   key={edge.id}
-                  d={edgeGeometry(source, target).path}
+                  d={edgeGeometry(source, target, isReciprocal(edge)).path}
                   fill="none"
                   className={`theory-edge ${highlighted ? "is-highlighted" : ""}`}
                   markerEnd={`url(#theory-arrow-${highlighted ? "highlighted" : "subtle"})`}
@@ -920,7 +1230,7 @@ export default function TheorizeBoard({
             const target = nodeMap.get(edge.targetNodeId);
             if (!source || !target || !visibleIds.has(source.id) || !visibleIds.has(target.id))
               return null;
-            const point = edgeGeometry(source, target).midpoint;
+            const point = edgeGeometry(source, target, isReciprocal(edge)).midpoint;
             const highlighted =
               hoveredNodeId === edge.sourceNodeId || hoveredNodeId === edge.targetNodeId;
             if (inlineEdge?.id === edge.id) {
@@ -962,19 +1272,33 @@ export default function TheorizeBoard({
               );
             }
             return (
-              <Button
-                key={edge.id}
-                type="button"
-                variant="bare"
-                data-board-interactive
-                className={`theory-edge-label absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded px-2 py-0.5 text-xs ${highlighted ? "is-highlighted" : ""}`}
-                style={{ left: point.x, top: point.y }}
-                onPointerDown={(event) => event.stopPropagation()}
-                onClick={() => setInlineEdge({ ...edge })}
-                title={t`Click to name this connection`}
-              >
-                {edge.label || <Link2 className="size-3" />}
-              </Button>
+              <Tooltip key={edge.id}>
+                <TooltipTrigger asChild>
+                  <Button
+                    type="button"
+                    variant="bare"
+                    data-board-interactive
+                    className={`theory-edge-label absolute z-20 -translate-x-1/2 -translate-y-1/2 rounded px-2 py-0.5 text-xs ${highlighted ? "is-highlighted" : ""}`}
+                    style={{ left: point.x, top: point.y }}
+                    onPointerDown={(event) => event.stopPropagation()}
+                    onClick={() => setInlineEdge({ ...edge })}
+                    aria-label={edge.label || t`Click to name this connection`}
+                  >
+                    {edge.label ? (
+                      <span className="theory-edge-label__text">{edge.label}</span>
+                    ) : (
+                      <Link2 className="size-3" />
+                    )}
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent
+                  className="theory-description-tooltip pointer-events-none break-words"
+                  side="bottom"
+                  collisionPadding={12}
+                >
+                  {edge.label || <Trans>Click to name this connection</Trans>}
+                </TooltipContent>
+              </Tooltip>
             );
           })}
 
@@ -1015,7 +1339,11 @@ export default function TheorizeBoard({
                     setHoveredNodeId((current) => (current === node.id ? null : current))
                   }
                   onPointerDown={(event) => {
-                    if (event.button !== 0 || (event.pointerType === "touch" && !event.isPrimary))
+                    if (
+                      aligningRef.current ||
+                      event.button !== 0 ||
+                      (event.pointerType === "touch" && !event.isPrimary)
+                    )
                       return;
                     if (connecting?.mode === "keyboard") {
                       event.preventDefault();
@@ -1039,7 +1367,7 @@ export default function TheorizeBoard({
                   }}
                   onDoubleClick={(event) => {
                     event.stopPropagation();
-                    void openEdit(node);
+                    if (!aligningRef.current) void openEdit(node);
                   }}
                   onKeyDown={(event) => {
                     if (
@@ -1085,15 +1413,14 @@ export default function TheorizeBoard({
                     ) : (
                       <Crosshair className="theory-node__icon mt-0.5 size-4 shrink-0" />
                     )}
-                    <h2 className="line-clamp-4 text-sm font-semibold leading-snug">
+                    <h2 className="line-clamp-2 text-sm font-semibold leading-snug">
                       {node.title}
                     </h2>
                   </div>
                   {node.description?.trim() && (
-                    <Pencil
-                      className="theory-node__description ml-auto size-3.5 shrink-0"
-                      aria-label={t`Has a description`}
-                    />
+                    <p className="theory-node__description mt-1 line-clamp-2 text-xs leading-snug">
+                      {node.description}
+                    </p>
                   )}
                   <div className="theory-node__tags mt-auto flex max-h-11 flex-wrap gap-1 overflow-hidden pt-2">
                     <span className="theory-node__base-tag rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide">
@@ -1126,7 +1453,7 @@ export default function TheorizeBoard({
       </main>
 
       <Dialog open={creating} onOpenChange={setCreating}>
-        <DialogContent className="theory-dialog" showCloseButton>
+        <DialogContent className="theory-dialog" showCloseButton onKeyDown={submitNoteShortcut}>
           <DialogHeader>
             <DialogTitle>
               <Trans>Add to the theory board</Trans>
@@ -1138,21 +1465,42 @@ export default function TheorizeBoard({
           <div className="space-y-3">
             <label className="block text-sm font-medium">
               <Trans>Type</Trans>
-              <select
+              <Select
+                open={typeMenuOpen}
+                onOpenChange={setTypeMenuOpen}
                 value={newKind}
-                onChange={(event) => setNewKind(event.target.value as TheoryNodeKind)}
-                className="theory-dialog__select mt-1 h-10 w-full rounded-md border px-3 text-sm"
+                onValueChange={(kind) => chooseNewKind(kind as TheoryNodeKind)}
               >
-                {(Object.keys(filters) as TheoryNodeKind[]).map((kind) => (
-                  <option key={kind} value={kind}>
-                    {kindLabel(kind)}
-                  </option>
-                ))}
-              </select>
+                <SelectTrigger
+                  aria-label={t`Type`}
+                  aria-keyshortcuts="Alt+Shift+1 Alt+Shift+2 Alt+Shift+3 Alt+Shift+4"
+                  className="theory-dialog__select mt-1"
+                >
+                  <SelectValue>{kindLabel(newKind)}</SelectValue>
+                </SelectTrigger>
+                <SelectContent
+                  className="theory-type-options"
+                  onCloseAutoFocus={(event) => {
+                    event.preventDefault();
+                    newTitleRef.current?.focus();
+                    newTitleRef.current?.select();
+                  }}
+                >
+                  {(Object.keys(filters) as TheoryNodeKind[]).map((kind, index) => (
+                    <SelectItem key={kind} value={kind} textValue={kindLabel(kind)}>
+                      <span className="theory-type-option">
+                        <span>{kindLabel(kind)}</span>
+                        <kbd>Alt ⇧ {index + 1}</kbd>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </label>
             <label className="block text-sm font-medium">
               <Trans>Title</Trans>
               <Input
+                ref={newTitleRef}
                 autoFocus
                 value={newTitle}
                 onChange={(event) => setNewTitle(event.target.value)}
@@ -1173,19 +1521,24 @@ export default function TheorizeBoard({
             <TagEditor tags={newTags} setTags={setNewTags} existingTags={existingTags} />
           </div>
           <DialogFooter>
-            <Button variant="outline" onClick={() => setCreating(false)}>
-              <Trans>Cancel</Trans>
-            </Button>
-            <Button disabled={!newTitle.trim()} onClick={() => void createNode()}>
+            <Button
+              className="theory-button theory-button--primary"
+              disabled={!newTitle.trim() || savingNote}
+              aria-keyshortcuts="Control+Enter Meta+Enter"
+              onClick={() => void createNode()}
+            >
               <Plus className="size-4" />
               <Trans>Add note</Trans>
+              <kbd className="theory-shortcut" aria-hidden="true">
+                ⌘ / Ctrl ↵
+              </kbd>
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && closeEdit()}>
-        <DialogContent className="theory-dialog" showCloseButton>
+        <DialogContent className="theory-dialog" showCloseButton onKeyDown={submitNoteShortcut}>
           <DialogHeader>
             <DialogTitle>
               <Trans>Edit note</Trans>
@@ -1203,6 +1556,7 @@ export default function TheorizeBoard({
               <label className="block text-sm font-medium">
                 <Trans>Title</Trans>
                 <Input
+                  autoFocus
                   value={editing.draftTitle}
                   disabled={Boolean(editing.sourceClueId)}
                   onChange={(event) => setEditing({ ...editing, draftTitle: event.target.value })}
@@ -1217,7 +1571,10 @@ export default function TheorizeBoard({
                   onChange={(event) =>
                     setEditing({ ...editing, draftDescription: event.target.value })
                   }
-                  maxLength={3_000}
+                  maxLength={
+                    editing.sourceClueId ? 20_500 : Math.max(3_000, editing.description.length)
+                  }
+                  autoFocus={Boolean(editing.sourceClueId)}
                   className="mt-1 min-h-24"
                 />
               </label>
@@ -1232,20 +1589,81 @@ export default function TheorizeBoard({
           <DialogFooter className="sm:justify-between">
             <div>
               {editing && !editing.sourceClueId && (
-                <Button variant="destructive" onClick={() => void deleteNode()}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="theory-delete-note"
+                  aria-label={t`Delete note`}
+                  disabled={savingNote}
+                  onClick={() => setConfirmDelete(true)}
+                >
                   <Trash2 className="size-4" />
-                  <Trans>Delete</Trans>
                 </Button>
               )}
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={closeEdit}>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row">
+              <Button
+                variant="outline"
+                className="theory-button theory-button--secondary"
+                onClick={closeEdit}
+              >
                 <Trans>Cancel</Trans>
               </Button>
-              <Button onClick={() => void saveEdit()}>
+              <Button
+                className="theory-button theory-button--primary"
+                onClick={() => void saveEdit()}
+                disabled={
+                  savingNote ||
+                  Boolean(editing && !editing.sourceClueId && !editing.draftTitle.trim())
+                }
+                aria-keyshortcuts="Control+Enter Meta+Enter"
+              >
                 <Trans>Save note</Trans>
+                <kbd className="theory-shortcut hidden sm:inline" aria-hidden="true">
+                  ⌘ / Ctrl ↵
+                </kbd>
               </Button>
             </div>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={confirmDelete && Boolean(editing)}
+        onOpenChange={(open) => !savingNote && setConfirmDelete(open)}
+      >
+        <DialogContent
+          className="theory-dialog"
+          showCloseButton={!savingNote}
+          onOpenAutoFocus={(event) => {
+            event.preventDefault();
+            cancelDeleteRef.current?.focus();
+          }}
+        >
+          <DialogHeader>
+            <DialogTitle>
+              <Trans>Delete this note?</Trans>
+            </DialogTitle>
+            <DialogDescription>
+              <Trans>The note and its connections will be permanently removed.</Trans>
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button
+              ref={cancelDeleteRef}
+              variant="outline"
+              className="theory-button theory-button--secondary"
+              disabled={savingNote}
+              onClick={() => setConfirmDelete(false)}
+            >
+              <Trans>Keep note</Trans>
+            </Button>
+            <Button
+              className="theory-button theory-button--destructive"
+              disabled={savingNote}
+              onClick={() => void deleteNode()}
+            >
+              <Trans>Delete</Trans>
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
@@ -1293,7 +1711,7 @@ function TagEditor({
             type="button"
             variant="bare"
             onClick={() => setTags(tags.filter((entry) => entry !== tag))}
-            className="theory-tag-choice rounded-full border px-2 py-1 text-xs"
+            className="theory-tag-choice is-selected rounded-full border px-2 py-1 text-xs"
             title={t`Remove tag`}
           >
             {tag} ×
@@ -1325,7 +1743,13 @@ function TagEditor({
           value={draft}
           onChange={(event) => setDraft(event.target.value)}
           onKeyDown={(event) => {
-            if (event.key === "Enter") {
+            if (
+              event.key === "Enter" &&
+              !event.ctrlKey &&
+              !event.metaKey &&
+              !event.altKey &&
+              !event.nativeEvent.isComposing
+            ) {
               event.preventDefault();
               add();
             }
@@ -1333,7 +1757,14 @@ function TagEditor({
           placeholder={t`Create a tag`}
           maxLength={40}
         />
-        <Button type="button" variant="outline" size="sm" onClick={add} disabled={!draft.trim()}>
+        <Button
+          type="button"
+          variant="outline"
+          className="theory-button theory-button--secondary"
+          size="sm"
+          onClick={add}
+          disabled={!draft.trim()}
+        >
           <Trans>Add</Trans>
         </Button>
       </div>

@@ -1,8 +1,10 @@
 import type { FastifyInstance } from "fastify";
-import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
+import { and, desc, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { db, schema } from "../db/index.js";
+import { storedMysteryClues } from "../lib/mystery-clues.js";
+import { findTheoryNotePlacement } from "../lib/theory-placement.js";
 import { authenticateSealedSession, authenticateUser } from "../middleware/auth.js";
 import { notifyBookClub } from "../realtime/bookClubNotifications.js";
 import {
@@ -73,7 +75,7 @@ const theoryNodeInput = z.object({
 const theoryNodeUpdateInput = z.object({
   version: z.number().int().positive(),
   title: z.string().trim().min(1).max(400).optional(),
-  description: z.string().trim().max(3_000).optional(),
+  description: z.string().trim().max(maxClueLength).optional(),
   tags: theoryTags.optional(),
   x: z.number().int().min(-10_000).max(10_000).optional(),
   y: z.number().int().min(-10_000).max(10_000).optional(),
@@ -169,11 +171,11 @@ function characterOverview(rawData: string) {
   return { conditions: "", mavenMoves: "", voidChecks: [], cozyItems: [] };
 }
 
-async function overview(bookClubId: string) {
-  return (await overviews([bookClubId]))[0];
+async function overview(bookClubId: string, viewerId: string) {
+  return (await overviews([bookClubId], viewerId))[0];
 }
 
-async function overviews(bookClubIds: string[]) {
+async function overviews(bookClubIds: string[], viewerId: string) {
   if (!bookClubIds.length) return [];
   const [clubs, members, characterRows, mysteries, rollRows] = await Promise.all([
     db
@@ -240,7 +242,15 @@ async function overviews(bookClubIds: string[]) {
   const mysteryIds = mysteries.map((mystery) => mystery.id);
   const clues = mysteryIds.length
     ? await db
-        .select()
+        .select({
+          id: schema.bookClubClues.id,
+          mysteryId: schema.bookClubClues.mysteryId,
+          text: schema.bookClubClues.text,
+          isVoid: schema.bookClubClues.isVoid,
+          checked: schema.bookClubClues.checked,
+          createdAt: schema.bookClubClues.createdAt,
+          updatedAt: schema.bookClubClues.updatedAt,
+        })
         .from(schema.bookClubClues)
         .where(inArray(schema.bookClubClues.mysteryId, mysteryIds))
         .orderBy(desc(schema.bookClubClues.checked), desc(schema.bookClubClues.updatedAt))
@@ -250,6 +260,10 @@ async function overviews(bookClubIds: string[]) {
   return clubs.map((club) => {
     const clubMembers = members.filter((member) => member.bookClubId === club.id);
     const clubMysteries = mysteries.filter((mystery) => mystery.bookClubId === club.id);
+    const isGameMaster = clubMembers.some(
+      (member) => member.userId === viewerId && member.isGameMaster,
+    );
+    const visibleClues = clues.filter((clue) => isGameMaster || clue.checked);
     const activeMystery = clubMysteries.find((mystery) => mystery.isActive);
     return {
       id: club.id,
@@ -281,12 +295,12 @@ async function overviews(bookClubIds: string[]) {
         title: mystery.title,
         isActive: mystery.isActive,
         createdAt: mystery.createdAt,
-        voidClues: clues.filter((clue) => clue.mysteryId === mystery.id && clue.isVoid),
+        voidClues: visibleClues.filter((clue) => clue.mysteryId === mystery.id && clue.isVoid),
       })),
       activeMystery: activeMystery
         ? {
             ...activeMystery,
-            clues: clues.filter((clue) => clue.mysteryId === activeMystery.id),
+            clues: visibleClues.filter((clue) => clue.mysteryId === activeMystery.id),
           }
         : null,
     };
@@ -379,50 +393,102 @@ async function theoryMystery(bookClubId: string, mysteryId: string) {
     .get();
 }
 
-async function ensureTheoryClueNodes(mysteryId: string) {
-  const [clues, nodes] = await Promise.all([
-    db
-      .select()
-      .from(schema.bookClubClues)
-      .where(eq(schema.bookClubClues.mysteryId, mysteryId))
-      .orderBy(schema.bookClubClues.createdAt),
-    db
-      .select({ sourceClueId: schema.bookClubTheoryNodes.sourceClueId })
-      .from(schema.bookClubTheoryNodes)
-      .where(eq(schema.bookClubTheoryNodes.mysteryId, mysteryId)),
-  ]);
+function clueNodeContent(text: string) {
+  const separator = text.indexOf(" — ");
+  const titleEnd = separator >= 0 ? Math.min(separator, 400) : Math.min(text.length, 400);
+  return {
+    title: text.slice(0, titleEnd),
+    description: text.slice(separator === titleEnd ? titleEnd + 3 : titleEnd).trim(),
+  };
+}
+
+function visibleTheoryNodes(mysteryId: string, ids: string[]) {
+  if (!ids.length) return [];
+  return db
+    .select({ id: schema.bookClubTheoryNodes.id })
+    .from(schema.bookClubTheoryNodes)
+    .leftJoin(
+      schema.bookClubClues,
+      eq(schema.bookClubTheoryNodes.sourceClueId, schema.bookClubClues.id),
+    )
+    .where(
+      and(
+        eq(schema.bookClubTheoryNodes.mysteryId, mysteryId),
+        inArray(schema.bookClubTheoryNodes.id, ids),
+        or(isNull(schema.bookClubTheoryNodes.sourceClueId), eq(schema.bookClubClues.checked, true)),
+      ),
+    )
+    .all();
+}
+
+function visibleTheoryEdge(mysteryId: string, edgeId: string) {
+  const edge = db
+    .select()
+    .from(schema.bookClubTheoryEdges)
+    .where(
+      and(
+        eq(schema.bookClubTheoryEdges.id, edgeId),
+        eq(schema.bookClubTheoryEdges.mysteryId, mysteryId),
+      ),
+    )
+    .get();
+  return edge && visibleTheoryNodes(mysteryId, [edge.sourceNodeId, edge.targetNodeId]).length === 2;
+}
+
+function ensureTheoryClueNodes(mysteryId: string) {
+  const clues = db
+    .select()
+    .from(schema.bookClubClues)
+    .where(
+      and(eq(schema.bookClubClues.mysteryId, mysteryId), eq(schema.bookClubClues.checked, true)),
+    )
+    .orderBy(schema.bookClubClues.createdAt)
+    .all();
+  const nodes = db
+    .select({ sourceClueId: schema.bookClubTheoryNodes.sourceClueId })
+    .from(schema.bookClubTheoryNodes)
+    .where(eq(schema.bookClubTheoryNodes.mysteryId, mysteryId))
+    .all();
   const present = new Set(nodes.flatMap((node) => (node.sourceClueId ? [node.sourceClueId] : [])));
   const missing = clues.filter((clue) => !present.has(clue.id));
   if (!missing.length) return;
   db.transaction((tx) => {
-    missing.forEach((clue, index) => {
-      const position = clues.findIndex((entry) => entry.id === clue.id);
+    // Include hidden notes so revealing another clue never covers preserved campaign work.
+    const occupied = tx
+      .select({ x: schema.bookClubTheoryNodes.x, y: schema.bookClubTheoryNodes.y })
+      .from(schema.bookClubTheoryNodes)
+      .where(eq(schema.bookClubTheoryNodes.mysteryId, mysteryId))
+      .all();
+    const preferred = occupied[0] ?? { x: 160, y: 140 };
+    missing.forEach((clue) => {
+      const position = findTheoryNotePlacement(occupied, preferred);
+      if (!position) throw new Error("No space remains on the theory board");
       tx.insert(schema.bookClubTheoryNodes)
         .values({
           id: nanoid(),
           mysteryId,
           sourceClueId: clue.id,
           kind: clue.isVoid ? "voidClue" : "clue",
-          title: clue.text,
-          x: 160 + (position % 3) * 340,
-          y: 140 + Math.floor(position / 3) * 180 + index * 8,
+          ...clueNodeContent(clue.text),
+          ...position,
         })
         .onConflictDoNothing()
         .run();
+      occupied.push(position);
     });
   });
 }
 
-async function syncTheoryClueNode(clue: { id: string; text: string; isVoid: boolean }) {
-  await db
-    .update(schema.bookClubTheoryNodes)
+function syncTheoryClueNode(clue: { id: string; text: string; isVoid: boolean }) {
+  db.update(schema.bookClubTheoryNodes)
     .set({
-      title: clue.text,
+      ...clueNodeContent(clue.text),
       kind: clue.isVoid ? "voidClue" : "clue",
       version: sql`${schema.bookClubTheoryNodes.version} + 1`,
       updatedAt: new Date(),
     })
-    .where(eq(schema.bookClubTheoryNodes.sourceClueId, clue.id));
+    .where(eq(schema.bookClubTheoryNodes.sourceClueId, clue.id))
+    .run();
 }
 
 export async function bookClubRoutes(fastify: FastifyInstance) {
@@ -552,7 +618,10 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       .from(schema.bookClubMembers)
       .where(eq(schema.bookClubMembers.userId, request.userId!));
     const [clubs, invitations] = await Promise.all([
-      overviews(memberships.map(({ bookClubId }) => bookClubId)),
+      overviews(
+        memberships.map(({ bookClubId }) => bookClubId),
+        request.userId!,
+      ),
       invitationsFor(request.userId!),
     ]);
     return { clubs: clubs.filter(Boolean), invitations };
@@ -577,7 +646,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .values({ bookClubId: id, userId: request.userId!, isGameMaster: true })
         .run();
     });
-    const result = await overview(id);
+    const result = await overview(id, request.userId!);
     await notifyBookClub(id);
     return result;
   });
@@ -600,7 +669,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       .returning();
     if (!updated.length)
       return reply.code(403).send({ error: "Only the book club owner can rename it" });
-    const result = await overview(params.data.id);
+    const result = await overview(params.data.id, request.userId!);
     await notifyBookClub(params.data.id);
     return result;
   });
@@ -647,7 +716,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         )
         .returning();
       if (!restored.length) return reply.code(404).send({ error: "Deleted Book Club not found" });
-      const result = await overview(params.data.id);
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -789,10 +858,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
       const invitation = await db
         .select({ bookClubId: schema.bookClubInvitations.bookClubId })
         .from(schema.bookClubInvitations)
-        .innerJoin(
-          schema.bookClubs,
-          eq(schema.bookClubInvitations.bookClubId, schema.bookClubs.id),
-        )
+        .innerJoin(schema.bookClubs, eq(schema.bookClubInvitations.bookClubId, schema.bookClubs.id))
         .where(
           and(
             eq(schema.bookClubInvitations.bookClubId, params.data.id),
@@ -816,7 +882,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           )
           .run();
       });
-      const result = await overview(params.data.id);
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -882,7 +948,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           )
           .run();
       });
-      const result = await overview(params.data.id);
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -914,7 +980,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .insert(schema.bookClubCharacterAssignments)
         .values({ bookClubId: params.data.id, characterId: character.id })
         .onConflictDoNothing();
-      const result = await overview(params.data.id);
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -1020,9 +1086,10 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(400).send({ error: "A mystery needs a title" });
       if (!(await gameMaster(params.data.id, request.userId!)))
         return reply.code(403).send({ error: "Only the GM can create a mystery" });
+      let sourceClues: ReturnType<typeof storedMysteryClues> = [];
       if (parsed.data.sourceMysteryId) {
         const sourceMystery = await db
-          .select({ id: schema.mysteries.id })
+          .select({ id: schema.mysteries.id, data: schema.mysteries.data })
           .from(schema.mysteries)
           .where(
             and(
@@ -1033,6 +1100,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           )
           .get();
         if (!sourceMystery) return reply.code(404).send({ error: "Mystery not found" });
+        sourceClues = storedMysteryClues(sourceMystery.data);
       }
       const existingBySource = parsed.data.sourceMysteryId
         ? await db
@@ -1067,7 +1135,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .code(409)
           .send({ error: "A mystery with this title is already in the Book Club" });
       }
-      if (existingBySource) return overview(params.data.id);
+      if (existingBySource) return overview(params.data.id, request.userId!);
       const existing = existingBySource ?? existingByTitle;
       const id = existing?.id ?? nanoid();
       db.transaction((tx) => {
@@ -1080,7 +1148,27 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
             })
             .where(eq(schema.bookClubMysteries.id, id))
             .run();
-          tx.delete(schema.bookClubClues).where(eq(schema.bookClubClues.mysteryId, id)).run();
+          const boardClueIds = new Set(
+            tx
+              .select({ sourceClueId: schema.bookClubTheoryNodes.sourceClueId })
+              .from(schema.bookClubTheoryNodes)
+              .where(eq(schema.bookClubTheoryNodes.mysteryId, id))
+              .all()
+              .map((node) => node.sourceClueId),
+          );
+          const discardedClueIds = tx
+            .select()
+            .from(schema.bookClubClues)
+            .where(
+              and(eq(schema.bookClubClues.mysteryId, id), eq(schema.bookClubClues.checked, false)),
+            )
+            .all()
+            .filter((clue) => !boardClueIds.has(clue.id))
+            .map((clue) => clue.id);
+          if (discardedClueIds.length)
+            tx.delete(schema.bookClubClues)
+              .where(inArray(schema.bookClubClues.id, discardedClueIds))
+              .run();
         } else {
           tx.insert(schema.bookClubMysteries)
             .values({
@@ -1099,18 +1187,26 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         if (clues.length) {
           tx.insert(schema.bookClubClues)
             .values(
-              clues.map(({ text, isVoid }) => ({
-                id: nanoid(),
-                mysteryId: id,
-                text,
-                isVoid,
-              })),
+              clues.map(({ text, isVoid }) => {
+                const sourceIndex = sourceClues.findIndex(
+                  (clue) => clue.text === text && clue.isVoid === isVoid,
+                );
+                const source = sourceIndex >= 0 ? sourceClues.splice(sourceIndex, 1)[0] : null;
+                return {
+                  id: nanoid(),
+                  mysteryId: id,
+                  text,
+                  isVoid,
+                  sourceText: parsed.data.sourceMysteryId ? text : null,
+                  sourceEntryId: source?.sourceEntryId ?? null,
+                };
+              }),
             )
             .run();
         }
       });
       await ensureTheoryClueNodes(id);
-      const result = await overview(params.data.id);
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -1145,7 +1241,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .where(eq(schema.bookClubMysteries.id, params.data.mysteryId))
           .run();
       });
-      const result = await overview(params.data.id);
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -1172,14 +1268,19 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         )
         .get();
       if (!mystery) return reply.code(404).send({ error: "Mystery not found" });
-      await db.insert(schema.bookClubClues).values({
-        id: nanoid(),
-        mysteryId: mystery.id,
-        text: parsed.data.text,
-        isVoid: parsed.data.isVoid,
+      db.transaction((tx) => {
+        tx.insert(schema.bookClubClues)
+          .values({
+            id: nanoid(),
+            mysteryId: mystery.id,
+            text: parsed.data.text,
+            isVoid: parsed.data.isVoid,
+            checked: true,
+          })
+          .run();
+        ensureTheoryClueNodes(mystery.id);
       });
-      await ensureTheoryClueNodes(mystery.id);
-      const result = await overview(params.data.id);
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -1203,6 +1304,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         .select({
           id: schema.bookClubClues.id,
           text: schema.bookClubClues.text,
+          sourceText: schema.bookClubClues.sourceText,
           isVoid: schema.bookClubClues.isVoid,
         })
         .from(schema.bookClubClues)
@@ -1219,14 +1321,20 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         )
         .get();
       if (!clue) return reply.code(404).send({ error: "Clue not found" });
-      await db
-        .update(schema.bookClubClues)
-        .set({ ...parsed.data, updatedAt: new Date() })
-        .where(eq(schema.bookClubClues.id, clue.id));
-      if (parsed.data.text !== undefined) {
-        await syncTheoryClueNode({ ...clue, text: parsed.data.text });
-      }
-      const result = await overview(params.data.id);
+      db.transaction((tx) => {
+        const textChanged = parsed.data.text !== undefined && parsed.data.text !== clue.text;
+        tx.update(schema.bookClubClues)
+          .set({
+            ...parsed.data,
+            ...(textChanged ? { sourceText: clue.sourceText ?? clue.text } : {}),
+            updatedAt: new Date(),
+          })
+          .where(eq(schema.bookClubClues.id, clue.id))
+          .run();
+        ensureTheoryClueNodes(params.data.mysteryId);
+        if (textChanged) syncTheoryClueNode({ ...clue, text: parsed.data.text! });
+      });
+      const result = await overview(params.data.id, request.userId!);
       await notifyBookClub(params.data.id);
       return result;
     },
@@ -1248,12 +1356,25 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
           .select({ node: schema.bookClubTheoryNodes, nickname: schema.users.nickname })
           .from(schema.bookClubTheoryNodes)
           .leftJoin(schema.users, eq(schema.bookClubTheoryNodes.editingByUserId, schema.users.id))
-          .where(eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId)),
+          .leftJoin(
+            schema.bookClubClues,
+            eq(schema.bookClubTheoryNodes.sourceClueId, schema.bookClubClues.id),
+          )
+          .where(
+            and(
+              eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId),
+              or(
+                isNull(schema.bookClubTheoryNodes.sourceClueId),
+                eq(schema.bookClubClues.checked, true),
+              ),
+            ),
+          ),
         db
           .select()
           .from(schema.bookClubTheoryEdges)
           .where(eq(schema.bookClubTheoryEdges.mysteryId, params.data.mysteryId)),
       ]);
+      const visibleIds = new Set(nodes.map(({ node }) => node.id));
       return {
         mystery,
         nodes: nodes.map(({ node, nickname }) => ({
@@ -1269,7 +1390,9 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
               ? node.editingByUserId
               : null,
         })),
-        edges,
+        edges: edges.filter(
+          (edge) => visibleIds.has(edge.sourceNodeId) && visibleIds.has(edge.targetNodeId),
+        ),
       };
     },
   );
@@ -1286,15 +1409,27 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
-      const [node] = await db
-        .insert(schema.bookClubTheoryNodes)
-        .values({
-          id: nanoid(),
-          mysteryId: params.data.mysteryId,
-          ...parsed.data,
-          tags: JSON.stringify(normalizedTags(parsed.data.tags)),
-        })
-        .returning();
+      const node = db.transaction((tx) => {
+        const occupied = tx
+          .select({ x: schema.bookClubTheoryNodes.x, y: schema.bookClubTheoryNodes.y })
+          .from(schema.bookClubTheoryNodes)
+          .where(eq(schema.bookClubTheoryNodes.mysteryId, params.data.mysteryId))
+          .all();
+        const position = findTheoryNotePlacement(occupied, { x: parsed.data.x, y: parsed.data.y });
+        if (!position) return null;
+        return tx
+          .insert(schema.bookClubTheoryNodes)
+          .values({
+            id: nanoid(),
+            mysteryId: params.data.mysteryId,
+            ...parsed.data,
+            ...position,
+            tags: JSON.stringify(normalizedTags(parsed.data.tags)),
+          })
+          .returning()
+          .get();
+      });
+      if (!node) return reply.code(409).send({ error: "No space remains on the theory board" });
       await notifyBookClub(params.data.id);
       return { ...node, tags: parsedTags(node.tags), baseTag: baseTagForKind(node.kind) };
     },
@@ -1312,6 +1447,13 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (
+        visibleTheoryNodes(
+          params.data.mysteryId,
+          parsed.data.nodes.map((node) => node.id),
+        ).length !== parsed.data.nodes.length
+      )
+        return reply.code(404).send({ error: "Board note not found" });
 
       const result = db.transaction((tx) => {
         const requestedById = new Map(parsed.data.nodes.map((node) => [node.id, node]));
@@ -1381,6 +1523,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (!visibleTheoryNodes(params.data.mysteryId, [params.data.nodeId]).length)
+        return reply.code(404).send({ error: "Board note not found" });
       const result = db.transaction((tx) => {
         const node = tx
           .select()
@@ -1428,6 +1572,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (!visibleTheoryNodes(params.data.mysteryId, [params.data.nodeId]).length)
+        return reply.code(404).send({ error: "Board note not found" });
       await db
         .update(schema.bookClubTheoryNodes)
         .set({ editingByUserId: null, editLockExpiresAt: null })
@@ -1458,6 +1604,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (!visibleTheoryNodes(params.data.mysteryId, [params.data.nodeId]).length)
+        return reply.code(404).send({ error: "Board note not found" });
       const contentChanged = ["title", "description", "tags"].some((key) =>
         Object.hasOwn(parsed.data, key),
       );
@@ -1532,6 +1680,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (!visibleTheoryNodes(params.data.mysteryId, [params.data.nodeId]).length)
+        return reply.code(404).send({ error: "Board note not found" });
       const node = await db
         .select()
         .from(schema.bookClubTheoryNodes)
@@ -1575,6 +1725,13 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (
+        visibleTheoryNodes(params.data.mysteryId, [
+          parsed.data.sourceNodeId,
+          parsed.data.targetNodeId,
+        ]).length !== 2
+      )
+        return reply.code(404).send({ error: "Board note not found" });
       const [source, target] = await Promise.all(
         [parsed.data.sourceNodeId, parsed.data.targetNodeId].map((nodeId) =>
           db
@@ -1632,6 +1789,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (!visibleTheoryEdge(params.data.mysteryId, params.data.edgeId))
+        return reply.code(404).send({ error: "Connection not found" });
       const [edge] = await db
         .update(schema.bookClubTheoryEdges)
         .set({
@@ -1668,6 +1827,8 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
         return reply.code(403).send({ error: "You are not in this book club" });
       if (!(await theoryMystery(params.data.id, params.data.mysteryId)))
         return reply.code(404).send({ error: "Mystery not found" });
+      if (!visibleTheoryEdge(params.data.mysteryId, params.data.edgeId))
+        return reply.code(404).send({ error: "Connection not found" });
       const deleted = await db
         .delete(schema.bookClubTheoryEdges)
         .where(

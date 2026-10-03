@@ -342,6 +342,9 @@ export const bookClubClues = sqliteTable(
       .notNull()
       .references(() => bookClubMysteries.id, { onDelete: "cascade" }),
     text: text("text").notNull(),
+    // Private authoring identity; never include the original wording in campaign responses.
+    sourceText: text("source_text"),
+    sourceEntryId: text("source_entry_id"),
     isVoid: integer("is_void", { mode: "boolean" }).notNull().default(false),
     checked: integer("checked", { mode: "boolean" }).notNull().default(false),
     createdAt: integer("created_at", { mode: "timestamp" })

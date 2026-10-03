@@ -60,7 +60,8 @@ const cozyItems = (value: unknown): CozyItem[] => {
 };
 
 const abilities = (value: unknown): Ability[] => {
-  if (!Array.isArray(value) || value.length === 0) return DEFAULT_ABILITIES.map((ability) => ({ ...ability }));
+  if (!Array.isArray(value) || value.length === 0)
+    return DEFAULT_ABILITIES.map((ability) => ({ ...ability }));
 
   return value.flatMap((ability) =>
     isRecord(ability) && typeof ability.name === "string" && typeof ability.value === "number"

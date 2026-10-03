@@ -9,6 +9,10 @@
   --club-sea: #94beb7;
   --club-gold: #edc17d;
   --drawer-width: clamp(380px, 34vw, 540px);
+  --field-background: #fffaf3;
+  --field-ink: var(--club-deep);
+  --field-placeholder: #756477;
+  --field-border: #bbaabb;
   position: relative;
   min-height: 100svh;
   overflow: hidden;
@@ -128,16 +132,15 @@
   backdrop-filter: blur(10px);
 }
 
-.book-club-club-picker select {
+.book-club-club-picker .book-club-picker-field {
   width: min(260px, 31vw);
   height: 38px;
   padding: 0 34px 0 12px;
-  color: var(--club-paper);
-  border: 1px solid rgb(247 239 231 / 0.2);
+  color: var(--field-ink);
+  border: 1px solid var(--field-border);
   border-radius: 7px;
   outline: none;
-  background: rgb(36 24 45 / 0.56);
-  backdrop-filter: blur(10px);
+  background: var(--field-background);
 }
 
 .book-club-invite-station {
@@ -172,21 +175,24 @@
 }
 .book-club-invite-station form {
   display: flex;
+  color: var(--field-ink);
+  border-color: var(--field-border);
+  background: var(--field-background);
 }
 .book-club-invite-station input {
   height: 36px;
-  color: var(--club-paper);
+  color: var(--field-ink);
   border: 0;
-  background: transparent;
+  background: var(--field-background);
   box-shadow: none;
 }
 .book-club-invite-station input::placeholder {
-  color: rgb(247 239 231 / 0.62);
+  color: var(--field-placeholder);
 }
 .book-club-invite-station form button {
   width: 38px;
   min-width: 38px;
-  color: var(--club-lilac);
+  color: var(--club-plum);
 }
 
 .book-club-style-switchers {
@@ -311,9 +317,7 @@
     0 6px 0 rgb(35 23 44 / 0.2),
     0 16px 34px rgb(25 15 31 / 0.22);
   transform-origin: center bottom;
-  transition:
-    transform 190ms ease-out,
-    box-shadow 190ms ease-out;
+  transition: transform 190ms var(--ease-out);
 }
 .book-club-maven-card:hover {
   z-index: 2;
@@ -501,20 +505,31 @@
   }
 }
 
-.book-club-drawer-rail {
+.book-club-drawer-track {
   position: fixed;
+  z-index: 4;
+  inset: 0 auto 0 0;
+  width: var(--drawer-width);
+  pointer-events: none;
+  transform: translateX(-100%);
+  transition: transform 240ms var(--ease-drawer);
+}
+.book-club-drawer-track.is-open {
+  transform: translateX(0);
+}
+.book-club-drawer-rail {
+  position: absolute;
   z-index: 5;
   top: 50%;
-  left: 0;
+  left: 100%;
+  pointer-events: auto;
   display: flex;
   flex-direction: column;
   gap: 5px;
   transform: translateY(-50%);
-  transition: left 240ms ease-in;
 }
-.book-club-shell.has-drawer .book-club-drawer-rail {
-  left: var(--drawer-width);
-  transition-timing-function: ease-out;
+.book-club-drawer-rail--mobile {
+  display: none;
 }
 
 .book-club-shell.has-drawer .book-club-club-picker {
@@ -533,10 +548,7 @@
   background: rgb(36 24 45 / 0.82);
   box-shadow: 0 7px 17px rgb(22 13 27 / 0.18);
   backdrop-filter: blur(12px);
-  transition:
-    width 170ms ease-out,
-    background-color 170ms ease-out,
-    color 170ms ease-out;
+  transition: transform 170ms var(--ease-out);
 }
 .book-club-drawer-rail button svg {
   position: absolute;
@@ -568,7 +580,8 @@
 }
 
 .book-club-drawer {
-  position: fixed;
+  position: absolute;
+  pointer-events: auto;
   z-index: 4;
   inset: 0 auto 0 0;
   width: var(--drawer-width);
@@ -577,20 +590,6 @@
   background: var(--club-paper);
   box-shadow: 18px 0 45px rgb(25 15 31 / 0.24);
   transform-origin: left center;
-  animation: book-club-drawer-in 240ms ease-out;
-}
-@keyframes book-club-drawer-in {
-  from {
-    transform: translateX(-100%);
-  }
-}
-.book-club-drawer.is-closing {
-  animation: book-club-drawer-out 240ms ease-in forwards;
-}
-@keyframes book-club-drawer-out {
-  to {
-    transform: translateX(-100%);
-  }
 }
 .book-club-drawer > header {
   display: flex;
@@ -847,9 +846,29 @@
   cursor: pointer;
 }
 .book-club-danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
   padding: 18px;
   border-left: 4px solid #a74956;
   background: rgb(167 73 86 / 0.08);
+}
+.book-club-danger-zone .book-club-delete {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  color: #923d4c;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.book-club-danger-zone .book-club-delete:hover {
+  background: rgb(167 73 86 / 0.1);
+}
+.book-club-delete svg {
+  width: 18px;
+  height: 18px;
 }
 .book-club-danger-zone h3 {
   margin: 0;
@@ -931,7 +950,7 @@
 }
 .book-club-note-field.is-private textarea {
   min-height: 170px;
-  background: rgb(217 200 226 / 0.18);
+  background: var(--field-background);
 }
 .book-club-live-cursor {
   position: absolute;
@@ -948,37 +967,55 @@
 
 .book-club-clue-list {
   display: grid;
-  gap: 6px;
+  gap: 4px;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 .book-club-clue-list li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 7px;
-  padding: 10px 11px;
-  border-left: 3px solid var(--club-sea);
-  background: rgb(148 190 183 / 0.12);
+  min-height: 32px;
+  padding: 5px 8px;
+  border-left: 2px solid var(--club-sea);
+  border-radius: 3px;
+  background: #eef2e8;
   font-size: 12px;
   line-height: 1.4;
+}
+.book-club-clue-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.book-club-clue-text:focus-visible {
+  outline: 1px solid var(--club-sea);
+  outline-offset: 0;
 }
 .book-club-clue-list li > svg {
   width: 13px;
   height: 13px;
-  margin-top: 2px;
   flex: 0 0 auto;
 }
 .book-club-clue-list li.is-checked {
-  background: rgb(148 190 183 / 0.25);
+  background: #e2eee7;
 }
-.book-club-clue-list.is-void li {
-  border-color: var(--club-rose);
-  background: rgb(217 154 170 / 0.11);
+.book-club-clue-list.is-void li,
+.book-club-clue-list li.is-void {
+  border-color: #b29bbd;
+  background: #eee7f1;
 }
 .book-club-clue-list li small {
   display: block;
   margin-left: auto;
+  max-width: 28%;
+  flex: 0 0 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: rgb(53 33 63 / 0.48);
   font-size: 9px;
   text-align: right;
@@ -1076,7 +1113,7 @@
     top: 10px;
     left: 10px;
   }
-  .book-club-club-picker select {
+  .book-club-club-picker .book-club-picker-field {
     width: 42vw;
   }
   .book-club-invite-station {
@@ -1123,7 +1160,19 @@
     overflow: hidden;
     text-overflow: ellipsis;
   }
-  .book-club-drawer-rail {
+  .book-club-drawer-track {
+    inset: 0 0 calc(67px + env(safe-area-inset-bottom)) 0;
+    width: 100%;
+    transform: translateY(calc(100% + 67px + env(safe-area-inset-bottom)));
+  }
+  .book-club-drawer-track.is-open {
+    transform: translateY(0);
+  }
+  .book-club-drawer-rail--desktop {
+    display: none;
+  }
+  .book-club-drawer-rail--mobile {
+    position: fixed;
     z-index: 6;
     inset: auto 0 0 0;
     display: grid;
@@ -1136,6 +1185,7 @@
   }
   .book-club-shell.has-drawer .book-club-drawer-rail {
     left: 0;
+    transform: none;
   }
   .book-club-drawer-rail button,
   .book-club-drawer-rail button:hover {
@@ -1163,27 +1213,14 @@
     transform: none;
   }
   .book-club-drawer {
+    position: absolute;
     z-index: 5;
-    inset: 0 0 calc(67px + env(safe-area-inset-bottom)) 0;
+    inset: 0;
     width: 100%;
     height: auto;
     border: 0;
     box-shadow: 0 -18px 50px rgb(25 15 31 / 0.25);
     transform-origin: center bottom;
-    animation: book-club-mobile-drawer-in 240ms ease-out;
-  }
-  .book-club-drawer.is-closing {
-    animation: book-club-mobile-drawer-out 240ms ease-in forwards;
-  }
-  @keyframes book-club-mobile-drawer-out {
-    to {
-      transform: translateY(calc(100% + 67px + env(safe-area-inset-bottom)));
-    }
-  }
-  @keyframes book-club-mobile-drawer-in {
-    from {
-      transform: translateY(calc(100% + 67px + env(safe-area-inset-bottom)));
-    }
   }
   .book-club-drawer > header {
     height: 72px;
@@ -1193,11 +1230,11 @@
     height: calc(100% - 72px);
     padding: 20px 20px 42px;
   }
-  .book-club-shell.has-drawer .book-club-drawer > header {
+  .book-club-drawer > header {
     height: 145px;
     padding-top: 88px;
   }
-  .book-club-shell.has-drawer .book-club-drawer-scroll {
+  .book-club-drawer-scroll {
     height: calc(100% - 145px);
   }
   .book-club-invitations {
@@ -1225,6 +1262,7 @@
 
 @media (prefers-reduced-motion: reduce) {
   .book-club-stage,
+  .book-club-drawer-track,
   .book-club-drawer-rail,
   .book-club-maven-card,
   .book-club-drawer,
@@ -1241,4 +1279,185 @@
 }
 .book-club-maven-card:hover {
   color: var(--club-deep);
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .book-club-maven-card:hover,
+  .book-club-maven-card:nth-child(even):hover {
+    transform: none;
+  }
+  .book-club-drawer-rail button:hover {
+    width: 46px;
+  }
+}
+@media (max-width: 760px) {
+  .book-club-drawer-rail button:hover {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .book-club-drawer {
+    animation: cozy-reduced-fade 150ms ease-out;
+  }
+  .book-club-drawer.is-closing {
+    animation: cozy-reduced-fade-out 120ms ease-in forwards;
+  }
+}
+
+/* Gold marks the edge of paper; brown ink keeps the small labels readable. */
+.book-club-drawer .book-club-eyebrow,
+.book-club-empty-state .book-club-eyebrow {
+  color: #795229;
+}
+.book-club-drawer .book-club-muted,
+.book-club-note-field > span small {
+  color: #756477;
+}
+.book-club-drawer .book-club-note-field textarea::placeholder {
+  color: #756477;
+  opacity: 1;
+}
+.book-club-club-picker option {
+  color: var(--club-deep);
+  background: var(--club-paper);
+}
+
+.book-club-canvas-link {
+  min-height: 32px;
+  margin: 0;
+  gap: 6px;
+  color: var(--club-plum);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.book-club-canvas-link svg {
+  width: 15px;
+  height: 15px;
+}
+.book-club-canvas-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.book-club-clue-list li.is-checked {
+  text-decoration: none;
+  opacity: 1;
+}
+.book-club-clue-list .book-club-prepared-clue {
+  gap: 8px;
+  padding: 2px 5px 2px 8px;
+  background: #f5f1e7;
+}
+.book-club-clue-list .book-club-prepared-clue.is-checked {
+  background: #e2eee7;
+}
+.book-club-clue-list .book-club-prepared-clue.is-void {
+  background: #eee7f1;
+}
+.book-club-prepared-clue strong {
+  color: var(--club-deep);
+}
+.book-club-clue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.book-club-prepared-clue .book-club-clue-actions {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  gap: 2px;
+}
+.book-club-prepared-clue .book-club-clue-actions > span {
+  display: inline-flex;
+}
+.book-club-prepared-clue .book-club-clue-icon {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 6px;
+  color: var(--club-plum);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.book-club-clue-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.book-club-clue-icon:active {
+  transform: scale(0.97);
+}
+.book-club-clue-icon:focus-visible {
+  outline: 1px solid #bbaabb;
+  outline-offset: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .book-club-clue-icon:hover {
+    background: rgb(53 33 63 / 0.08);
+  }
+}
+@media (max-width: 480px) {
+  .book-club-clue-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .book-club-clue-icon:active {
+    transform: none;
+  }
+}
+.book-club-clue-dialog {
+  --field-background: #fffaf3;
+  --field-ink: #35213f;
+  --field-placeholder: #756477;
+  --field-border: #bbaabb;
+  background: #f7efe7;
+  color: #35213f;
+}
+.book-club-clue-dialog h3 {
+  margin: 0 0 12px;
+  font:
+    500 26px/1.2 "Patrick Hand",
+    serif;
+}
+.book-club-clue-description {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+.book-club-reveal-error {
+  color: #923d4c;
+  font-size: 13px;
+}
+
+.book-club-drawer > header {
+  gap: 12px;
+}
+.book-club-drawer > header > div:first-child {
+  min-width: 0;
+  flex: 1;
+}
+.book-club-drawer > header > button {
+  flex: 0 0 auto;
+}
+
+.book-club-picker-options {
+  --accent: 280 20% 85%;
+  --accent-foreground: 280 30% 25%;
+  --ring: 280 25% 60%;
+  border-color: #bbaabb;
+  background: #fffaf3;
+  color: #35213f;
+}
+.book-club-picker-options [role="option"][data-highlighted],
+.book-club-picker-options [role="option"][data-state="checked"] {
+  background: #e2d4e8;
+  color: #35213f;
 }

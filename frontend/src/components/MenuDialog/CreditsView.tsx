@@ -73,11 +73,7 @@ export const CreditsView = ({ onBack }: CreditsViewProps) => {
           </ul>
         </div>
         <div className="flex gap-2 pt-2">
-          <Button
-            onClick={onBack}
-            variant="dark"
-            className="flex-1 dark-ring"
-          >
+          <Button onClick={onBack} variant="dark" className="flex-1 dark-ring">
             <Trans>Back</Trans>
           </Button>
         </div>

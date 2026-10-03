@@ -60,15 +60,13 @@ const CharacterSheet = ({
   } = useDeleteConfirmation();
   const { saveCurrentCharacter } = useCharacterSave();
   const { setCurrentCharacter } = useCharacterStore();
-  const currentCharacter = useCharacterStore(
-    (state) => state.selected(),
-  );
+  const currentCharacter = useCharacterStore((state) => state.selected());
   const { isAuthenticated, user } = useAuth();
   const lastAutoSaved = useRef<string | null>(null);
   const autoSaveSignature = useMemo(
     () =>
       JSON.stringify({
-          characterKey: currentCharacter.localId,
+        characterKey: currentCharacter.localId,
         data: currentCharacter && {
           name: currentCharacter.name,
           style: currentCharacter.style,
@@ -102,7 +100,13 @@ const CharacterSheet = ({
     }, 800);
 
     return () => window.clearTimeout(timer);
-  }, [autoSaveSignature, currentCharacter.id, currentCharacter.name, isAuthenticated, saveCurrentCharacter]);
+  }, [
+    autoSaveSignature,
+    currentCharacter.id,
+    currentCharacter.name,
+    isAuthenticated,
+    saveCurrentCharacter,
+  ]);
 
   const handleSwitchCharacter = async (index: number): Promise<boolean> => {
     const saveSuccess = await saveCurrentCharacter();
@@ -143,7 +147,7 @@ const CharacterSheet = ({
         </div>
 
         {activeView === "character" ? (
-          <div className="conspiracy-view-enter relative mx-auto grid max-w-7xl grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
+          <div className="character-sheet conspiracy-view-enter relative mx-auto grid max-w-7xl grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {/* Column 1 */}
             <div className="relative col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <div className="absolute top-0 left-0 w-full -mt-8">

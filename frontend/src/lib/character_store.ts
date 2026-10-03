@@ -1,3 +1,4 @@
+import { reconcileMavenRecords } from "./maven_persistence";
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import {
@@ -16,6 +17,8 @@ export type CharacterRecord = CharacterData & {
   localId: string;
   id?: string;
   version?: number;
+  ownerId?: string;
+  syncedContent?: string;
 };
 
 export type BackendCharacterData = Omit<CharacterData, "schemaVersion">;
@@ -40,7 +43,10 @@ const newRecord = (): CharacterRecord => ({
   ...createDefaultCharacter(),
   abilities: getDefaultAbilities(),
 });
-const recordFrom = (input: unknown, metadata: Pick<CharacterRecord, "localId" | "id" | "version">) => ({
+const recordFrom = (
+  input: unknown,
+  metadata: Pick<CharacterRecord, "localId" | "id" | "version" | "ownerId" | "syncedContent">,
+) => ({
   ...normalizeCharacter(input),
   ...metadata,
 });
@@ -55,10 +61,21 @@ export type CharacterState = {
   updateSelected: (change: Partial<CharacterData>) => void;
   selected: () => CharacterRecord;
   record: (localId: string) => CharacterRecord | undefined;
-  updateRemoteVersion: (localId: string, id: string, version: number) => void;
+  claimOwner: (localId: string, ownerId: string) => void;
+  updateRemoteVersion: (
+    localId: string,
+    id: string,
+    version: number,
+    ownerId?: string,
+    syncedContent?: string,
+  ) => void;
   updateSelectedRemoteVersion: (id: string, version: number) => void;
   clearSelectedRemoteMetadata: () => void;
-  mergeRemote: (backendCharacters: BackendCharacter[]) => void;
+  mergeRemote: (
+    backendCharacters: BackendCharacter[],
+    ownerId?: string,
+    canReplace?: (record: CharacterRecord) => boolean,
+  ) => void;
 
   // Compatibility helpers keep existing UI modules small while all document
   // state remains in `characters` instead of mirrored top-level fields.
@@ -135,10 +152,24 @@ export const useCharacterStore = create<CharacterState>()(
         updateSelected,
         selected: () => selectedRecord(get()),
         record: (localId) => get().characters.find((character) => character.localId === localId),
-        updateRemoteVersion: (localId, id, version) => {
+        claimOwner: (localId, ownerId) =>
           set((state) => ({
             characters: state.characters.map((character) =>
-              character.localId === localId ? { ...character, id, version } : character,
+              character.localId === localId ? { ...character, ownerId } : character,
+            ),
+          })),
+        updateRemoteVersion: (localId, id, version, ownerId, syncedContent) => {
+          set((state) => ({
+            characters: state.characters.map((character) =>
+              character.localId === localId
+                ? {
+                    ...character,
+                    id,
+                    version,
+                    ownerId: ownerId ?? character.ownerId,
+                    syncedContent: syncedContent ?? character.syncedContent,
+                  }
+                : character,
             ),
           }));
         },
@@ -147,34 +178,31 @@ export const useCharacterStore = create<CharacterState>()(
         },
         clearSelectedRemoteMetadata: () => {
           const current = selectedRecord(get());
+          const localId = newLocalId();
           set((state) => ({
+            selectedCharacterId: localId,
             characters: state.characters.map((character) => {
               if (character.localId !== current.localId) return character;
               const localCharacter = { ...character };
               delete localCharacter.id;
               delete localCharacter.version;
+              delete localCharacter.ownerId;
+              delete localCharacter.syncedContent;
+              localCharacter.localId = localId;
               return localCharacter;
             }),
           }));
         },
-        mergeRemote: (backendCharacters) => {
-          const state = get();
-          const characters = [...state.characters];
-          for (const remote of backendCharacters) {
-            const index = characters.findIndex((character) => character.id === remote.id);
-            if (index === -1) {
-              characters.push(
-                recordFrom(remote.data, { localId: newLocalId(), id: remote.id, version: remote.version }),
-              );
-            } else if (remote.version > (characters[index].version ?? 0)) {
-              characters[index] = recordFrom(remote.data, {
-                localId: characters[index].localId,
-                id: remote.id,
-                version: remote.version,
-              });
-            }
-          }
-          set({ characters });
+        mergeRemote: (backendCharacters, ownerId, canReplace = () => true) => {
+          set({
+            characters: reconcileMavenRecords(
+              get().characters,
+              backendCharacters,
+              ownerId,
+              canReplace,
+              newLocalId,
+            ),
+          });
         },
         setName: (name) => updateSelected({ name }),
         setStyle: (style) => updateSelected({ style }),
@@ -237,6 +265,8 @@ export const useCharacterStore = create<CharacterState>()(
                 localId: character.localId || newLocalId(),
                 id: character.id,
                 version: character.version,
+                ownerId: character.ownerId,
+                syncedContent: character.syncedContent,
               }),
             )
           : current.characters;

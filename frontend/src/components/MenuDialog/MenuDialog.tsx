@@ -1,11 +1,12 @@
 import { getDefaultAbilities, useCharacterStore } from "@/lib/character_store";
 import { createDefaultCharacter, normalizeCharacter } from "@/lib/character_document";
 import { useSettingsStore } from "@/lib/settings_store";
+import { accountScope } from "@/lib/account_scope";
 import { loadTranslations } from "@/lib/utils";
 import { CharacterDataSchema } from "@/types/characterSchema";
 import { msg } from "@lingui/core/macro";
 import { useLingui } from "@lingui/react/macro";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/hooks/useAuth";
 import { useCharacterSave } from "@/hooks/useCharacterSave";
@@ -30,6 +31,16 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   const { i18n } = useLingui();
   const { user, updateProfile, isUpdatingProfile, signOut, isAuthenticated } = useAuth();
   const { saveCurrentCharacter } = useCharacterSave();
+  const importing = useRef(false);
+  const mounted = useRef(true);
+  const [isImporting, setIsImporting] = useState(false);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+  const [isDraggingFile, setIsDraggingFile] = useState(false);
   const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [showCredits, setShowCredits] = useState(false);
   const [showMe, setShowMe] = useState(false);
@@ -61,7 +72,8 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await saveCurrentCharacter();
     signOut();
   };
 
@@ -102,103 +114,72 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
     }
   };
 
-  const handleLoadFromJSON = async () => {
-    const saveSuccess = await saveCurrentCharacter();
-    if (!saveSuccess) {
-      const loadAction = () => {
-        const input = document.createElement("input");
-        input.type = "file";
-        input.accept = ".json";
-
-        input.addEventListener("change", (event) => {
-          const file = (event.target as HTMLInputElement).files?.[0];
-          if (!file) return;
-
-          const reader = new FileReader();
-          reader.addEventListener("load", (e) => {
-            try {
-              const rawData = JSON.parse(e.target?.result as string);
-
-              const validationResult = CharacterDataSchema.safeParse(rawData);
-
-              if (!validationResult.success) {
-                const errorMessages = validationResult.error.issues
-                  .map((err) => `${err.path.join(".")}: ${err.message}`)
-                  .join(", ");
-                console.error(errorMessages);
-                toast.error(i18n._(msg`Invalid character data format: ${errorMessages}`));
-                return;
-              }
-
-              const characterData = validationResult.data;
-
-              characterStore.updateSelected(characterData);
-
-              characterStore.clearCurrentCharacterIdAndVersion();
-
-              onOpenChange?.(false);
-              toast.success(i18n._("Character data loaded successfully!"));
-            } catch (error) {
-              if (error instanceof SyntaxError) {
-                toast.error(i18n._("Invalid JSON file format."));
-              } else {
-                toast.error(i18n._("Error loading character data. Please check the file format."));
-              }
-            }
-          });
-          reader.readAsText(file);
-        });
-
-        input.click();
+  const importFile = async (file: File) => {
+    if (importing.current) return;
+    importing.current = true;
+    setIsImporting(true);
+    const scope = accountScope.current();
+    const selectedId = characterStore.selectedCharacterId;
+    const originalContent = JSON.stringify(characterStore.getCharacterData());
+    const isCurrent = () =>
+      mounted.current &&
+      accountScope.current().accountId === scope.accountId &&
+      accountScope.current().generation === scope.generation &&
+      useCharacterStore.getState().selectedCharacterId === selectedId &&
+      JSON.stringify(useCharacterStore.getState().getCharacterData()) === originalContent;
+    try {
+      const rawData: unknown = JSON.parse(await file.text());
+      const validation = CharacterDataSchema.safeParse(rawData);
+      if (!validation.success) {
+        const errorMessages = validation.error.issues
+          .map((error) => `${error.path.join(".")}: ${error.message}`)
+          .join(", ");
+        toast.error(i18n._(msg`Invalid character data format: ${errorMessages}`));
+        return;
+      }
+      const apply = () => {
+        if (!isCurrent()) {
+          toast.error(
+            i18n._(msg`Your sheet changed while the file was opening. Load the file again.`),
+          );
+          return;
+        }
+        characterStore.updateSelected(validation.data);
+        characterStore.clearCurrentCharacterIdAndVersion();
+        onOpenChange?.(false);
+        toast.success(i18n._("Character data loaded successfully!"));
       };
-      setPendingLoadAction(() => loadAction);
-      setSaveFailureOpen(true);
-      return;
+      if (!isCurrent()) {
+        apply();
+        return;
+      }
+      if (await saveCurrentCharacter()) apply();
+      else {
+        setPendingLoadAction(() => apply);
+        setSaveFailureOpen(true);
+      }
+    } catch (error) {
+      toast.error(
+        i18n._(
+          error instanceof SyntaxError
+            ? "Invalid JSON file format."
+            : "Error loading character data. Please check the file format.",
+        ),
+      );
+    } finally {
+      importing.current = false;
+      if (mounted.current) setIsImporting(false);
     }
+  };
 
+  const handleLoadFromJSON = () => {
     const input = document.createElement("input");
     input.type = "file";
-    input.accept = ".json";
-
-    input.addEventListener("change", (event) => {
-      const file = (event.target as HTMLInputElement).files?.[0];
-      if (!file) return;
-
-      const reader = new FileReader();
-      reader.addEventListener("load", (e) => {
-        try {
-          const rawData = JSON.parse(e.target?.result as string);
-
-          const validationResult = CharacterDataSchema.safeParse(rawData);
-
-          if (!validationResult.success) {
-            const errorMessages = validationResult.error.issues
-              .map((err) => `${err.path.join(".")}: ${err.message}`)
-              .join(", ");
-            console.error(errorMessages);
-            toast.error(i18n._(msg`Invalid character data format: ${errorMessages}`));
-            return;
-          }
-
-          const characterData = validationResult.data;
-
-          characterStore.updateSelected(characterData);
-
-          characterStore.clearCurrentCharacterIdAndVersion();
-
-          onOpenChange?.(false);
-          toast.success(i18n._("Character data loaded successfully!"));
-        } catch (error) {
-          if (error instanceof SyntaxError) {
-            toast.error(i18n._("Invalid JSON file format."));
-          } else {
-            toast.error(i18n._("Error loading character data. Please check the file format."));
-          }
-        }
-      });
-      reader.readAsText(file);
+    input.accept = ".json,application/json";
+    input.addEventListener("change", () => {
+      const file = input.files?.[0];
+      if (file) void importFile(file);
     });
-
     input.click();
   };
 
@@ -216,7 +197,10 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   };
 
   const confirmReset = () => {
-    characterStore.updateSelected({ ...createDefaultCharacter(), abilities: getDefaultAbilities() });
+    characterStore.updateSelected({
+      ...createDefaultCharacter(),
+      abilities: getDefaultAbilities(),
+    });
 
     setShowResetConfirm(false);
     onOpenChange?.(false);
@@ -235,12 +219,57 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
 
   return (
     <DialogContent
-      className={`${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : "bg-secondary/90 border-0 shadow-none"}`}
+      aria-busy={isImporting}
+      onDragOver={(event) => {
+        if (
+          showMe ||
+          showCredits ||
+          showResetConfirm ||
+          saveFailureOpen ||
+          !event.dataTransfer.types.includes("Files")
+        )
+          return;
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "copy";
+        setIsDraggingFile(true);
+      }}
+      onDragLeave={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget as Node | null))
+          setIsDraggingFile(false);
+      }}
+      onDrop={(event) => {
+        if (!event.dataTransfer.files.length) return;
+        event.preventDefault();
+        setIsDraggingFile(false);
+        if (showMe || showCredits || showResetConfirm || saveFailureOpen) return;
+        const file = event.dataTransfer.files[0];
+        void importFile(file);
+      }}
+      onPaste={(event) => {
+        if (
+          showMe ||
+          showCredits ||
+          showResetConfirm ||
+          saveFailureOpen ||
+          (event.target as HTMLElement).closest("input, textarea")
+        )
+          return;
+        const file = event.clipboardData.files[0];
+        if (!file) return;
+        event.preventDefault();
+        void importFile(file);
+      }}
+      className={`${isDraggingFile ? "ring-2 ring-primary" : ""} ${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : "bg-secondary/90 border-0 shadow-none"}`}
       style={showResetConfirm ? undefined : { boxShadow: "none" }}
     >
       <VisuallyHidden.Root asChild>
         <DialogTitle>Menu</DialogTitle>
       </VisuallyHidden.Root>
+      {isImporting && (
+        <p role="status" className="text-center text-sm text-foreground">
+          {i18n._(msg`Opening save file…`)}
+        </p>
+      )}
       {showResetConfirm ? (
         <ResetConfirmView onConfirm={confirmReset} onCancel={cancelReset} />
       ) : showMe ? (
@@ -261,6 +290,10 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
           onResetClick={() => setShowResetConfirm(true)}
           onCreditsClick={() => setShowCredits(true)}
           onMeClick={() => setShowMe(true)}
+          onOpenNavigator={() => {
+            onOpenChange?.(false);
+            window.dispatchEvent(new Event("cozycrowns:open-navigation"));
+          }}
           onLanguageChange={handleLanguageChange}
           isAuthenticated={isAuthenticated}
           onBookClubsClick={onBookClubsClick}

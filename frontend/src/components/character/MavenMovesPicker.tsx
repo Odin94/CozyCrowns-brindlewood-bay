@@ -55,7 +55,7 @@ const MavenMovesPicker = () => {
       <Button
         onClick={() => setIsOpen(true)}
         variant="bare"
-        className="w-8 h-8 mb-3 cursor-pointer flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+        className="w-8 h-8 mb-3 cursor-pointer flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-ring/60 transition-colors duration-200"
       >
         <ScrollText className="w-4 h-4" />
       </Button>

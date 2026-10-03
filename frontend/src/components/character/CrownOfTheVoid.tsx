@@ -38,10 +38,7 @@ const CrownOfTheVoid = () => {
                 aria-label={`Mark Crown of the Void: ${crown.title}`}
               />
               <PressTooltip content={crown.description} side="left">
-                <Label
-                  htmlFor={`void-${index}`}
-                  className="cursor-pointer text-xs leading-relaxed"
-                >
+                <Label htmlFor={`void-${index}`} className="cursor-pointer text-xs leading-relaxed">
                   <span className="font-semibold text-secondary">{crown.title}</span>
                 </Label>
               </PressTooltip>

@@ -1,57 +1,16 @@
-import { useEffect, useRef } from "react";
-import { api } from "@/utils/api";
+import { useEffect, useSyncExternalStore } from "react";
 import { useAuth } from "./useAuth";
-import { useCharacterStore, type BackendCharacter } from "@/lib/character_store";
+import { mavenPersistence } from "@/lib/maven_runtime";
+import { accountScope } from "@/lib/account_scope";
 
 export const useBackendCharactersSync = () => {
   const { isAuthenticated, user } = useAuth();
-  const mergeRemote = useCharacterStore((state) => state.mergeRemote);
   const userId = user?.id;
-  const hasSyncedRef = useRef(false);
-  const syncedUserIdRef = useRef<string | null>(null);
-
+  const session = useSyncExternalStore(accountScope.subscribe, accountScope.current);
   useEffect(() => {
-    let cancelled = false;
-    if (!isAuthenticated || !userId) {
-      hasSyncedRef.current = false;
-      syncedUserIdRef.current = null;
-      return;
-    }
-
-    if (hasSyncedRef.current && syncedUserIdRef.current === userId) {
-      return;
-    }
-
-    const syncCharacters = async () => {
-      try {
-        const response = await api.getCharacters();
-
-        const backendCharacters: BackendCharacter[] = response.characters
-          .filter((character) => character.owned)
-          .map((character) => ({
-            id: character.id,
-            version: character.version,
-            data: character.data,
-          }));
-
-        if (cancelled) {
-          return;
-        }
-
-        if (backendCharacters.length > 0) {
-          mergeRemote(backendCharacters);
-        }
-
-        hasSyncedRef.current = true;
-        syncedUserIdRef.current = userId;
-      } catch (error) {
-        console.error("Failed to sync characters from backend:", error);
-      }
-    };
-
-    void syncCharacters();
-    return () => {
-      cancelled = true;
-    };
-  }, [isAuthenticated, mergeRemote, userId]);
+    if (isAuthenticated && userId && !session.revalidating && !session.signingOut)
+      void mavenPersistence
+        .sync()
+        .catch((error) => console.error("Failed to sync characters from backend:", error));
+  }, [isAuthenticated, userId, session]);
 };

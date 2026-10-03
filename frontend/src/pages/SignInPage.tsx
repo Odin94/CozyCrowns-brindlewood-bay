@@ -12,14 +12,8 @@ type SignInPageProps = {
 };
 
 const SignInPage = ({ returnTo, onContinue, onGoToSheet }: SignInPageProps) => {
-  const {
-    isAuthenticated,
-    loading,
-    signIn,
-    signInLocally,
-    canSignInLocally,
-    isSigningInLocally,
-  } = useAuth();
+  const { isAuthenticated, loading, signIn, signInLocally, canSignInLocally, isSigningInLocally } =
+    useAuth();
 
   useEffect(() => {
     if (!loading && isAuthenticated) onContinue(returnTo);

@@ -10,7 +10,7 @@ const LineInput = React.forwardRef<HTMLInputElement, LineInputProps>(
       <input
         type={type}
         className={cn(
-          "flex w-full bg-transparent border-0 border-b border-border rounded-none px-0 py-1 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none no-ring",
+          "cozy-field cozy-line-field flex w-full border-0 border-b border-border rounded-none px-2 py-1 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 focus:outline-none no-ring",
           className,
         )}
         ref={ref}

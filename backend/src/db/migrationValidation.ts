@@ -3,16 +3,15 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const statementBreakpoint = "--> statement-breakpoint";
-const migrationsDirectory = join(
-  dirname(fileURLToPath(import.meta.url)),
-  "migrations",
-);
+const migrationsDirectory = join(dirname(fileURLToPath(import.meta.url)), "migrations");
 
 function hasSqlStatement(statement: string) {
-  return statement
-    .replace(/--.*$/gm, "")
-    .replace(/\/\*[\s\S]*?\*\//g, "")
-    .trim().length > 0;
+  return (
+    statement
+      .replace(/--.*$/gm, "")
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .trim().length > 0
+  );
 }
 
 /**
@@ -26,9 +25,7 @@ export function validateMigrations(directory = migrationsDirectory) {
   const emptyStatements: string[] = [];
 
   for (const file of migrationFiles) {
-    const statements = readFileSync(join(directory, file), "utf8").split(
-      statementBreakpoint,
-    );
+    const statements = readFileSync(join(directory, file), "utf8").split(statementBreakpoint);
 
     for (const [index, statement] of statements.entries()) {
       if (!hasSqlStatement(statement)) {
@@ -38,8 +35,6 @@ export function validateMigrations(directory = migrationsDirectory) {
   }
 
   if (emptyStatements.length > 0) {
-    throw new Error(
-      `Migration files contain empty SQL statements: ${emptyStatements.join("; ")}`,
-    );
+    throw new Error(`Migration files contain empty SQL statements: ${emptyStatements.join("; ")}`);
   }
 }

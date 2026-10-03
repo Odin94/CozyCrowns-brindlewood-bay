@@ -1,9 +1,11 @@
+import { ContextActions } from "@/components/ContextActions";
 import { Button } from "@/components/ui/button";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { useMysteryPreservation } from "@/hooks/useMysteryPreservation";
 import { useAuth } from "@/hooks/useAuth";
-import { api, type Mystery, type MysteryData, type MysteryVersion } from "@/utils/api";
+import { api, type MysteryData, type MysteryVersion } from "@/utils/api";
 import { t } from "@lingui/core/macro";
 import { Trans } from "@lingui/react/macro";
 import {
@@ -21,10 +23,9 @@ import {
   Users,
 } from "lucide-react";
 import type React from "react";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
-const draftKey = "cozycrowns-mystery-draft";
 const defaultMystery = (): MysteryData => ({
   schemaVersion: 1,
   title: t`Untitled Mystery`,
@@ -43,9 +44,6 @@ const blankLocation = () => ({ id: newEntryId(), title: "", description: "", pro
 const blankSuspect = () => ({ id: newEntryId(), name: "", title: "", description: "", quote: "" });
 const blankClue = () => ({ id: newEntryId(), title: "", description: "" });
 const blankMoment = () => ({ id: newEntryId(), description: "" });
-const autoSaveDelay = 2_500;
-const contentSnapshot = (mystery: Pick<Mystery, "title" | "data">) =>
-  JSON.stringify({ title: mystery.title, data: mystery.data });
 const hasEnteredInformation = (entry: object) =>
   Object.entries(entry).some(
     ([key, value]) => key !== "id" && typeof value === "string" && value.trim().length > 0,
@@ -194,13 +192,18 @@ const RemoveCard = ({ onClick }: { onClick: () => void }) => (
 );
 
 const MysteriesPage = () => {
-  const { isAuthenticated, loading } = useAuth();
-  const bookClubId = new URLSearchParams(window.location.search).get("bookClubId");
-  const bookClubPath = bookClubId ? `/book-clubs/${encodeURIComponent(bookClubId)}` : null;
-  const [mysteries, setMysteries] = useState<Mystery[]>([]);
-  const [selected, setSelected] = useState<Mystery | null>(null);
-  const [versions, setVersions] = useState<MysteryVersion[]>([]);
-  const [loaded, setLoaded] = useState(false);
+  const { isAuthenticated, loading, user } = useAuth();
+  const searchParams = new URLSearchParams(window.location.search);
+  const bookClubId = searchParams.get("bookClubId");
+  const requestedMysteryId = searchParams.get("mysteryId");
+  const bookClubPath = bookClubId
+    ? `/book-clubs/${encodeURIComponent(bookClubId)}?panel=mystery`
+    : null;
+  const libraryPath = bookClubId
+    ? `/library?bookClubId=${encodeURIComponent(bookClubId)}`
+    : "/library";
+  const { mysteries, selected, versions, loaded, owner } = useMysteryPreservation(user?.id);
+  const requestedSelection = useRef<{ owner: typeof owner; id: string } | null>(null);
   const [bringingToBookClub, setBringingToBookClub] = useState(false);
   const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
   const [complexityInput, setComplexityInput] = useState("");
@@ -211,88 +214,37 @@ const MysteriesPage = () => {
     | { kind: "remove-entry"; title?: string; onConfirm: () => void }
     | null
   >(null);
-  const lastSavedById = useRef(new Map<string, string>());
-  const latestVersionById = useRef(new Map<string, number>());
-  const selectedRef = useRef<Mystery | null>(null);
-  const saveQueue = useRef<Promise<boolean>>(Promise.resolve(true));
-
-  const choose = useCallback((mystery: Mystery) => {
-    const isAlreadySelected = selectedRef.current?.id === mystery.id;
-    lastSavedById.current.set(mystery.id, contentSnapshot(mystery));
-    latestVersionById.current.set(mystery.id, mystery.version);
-    selectedRef.current = mystery;
+  const choose = (mystery: (typeof mysteries)[number]) => {
+    owner.choose(mystery);
     setFocusedEntryId(null);
-    setComplexityInput(String(mystery.data.complexity));
-    if (!isAlreadySelected) setVersions([]);
-    setSelected(mystery);
-  }, []);
-
-  const refreshVersions = useCallback(async (id: string) => {
-    try {
-      const result = await api.getMysteryVersions(id);
-      if (selectedRef.current?.id === id) setVersions(result.versions);
-    } catch {
-      if (selectedRef.current?.id === id) setVersions([]);
-    }
-  }, []);
-
-  const load = useCallback(async () => {
-    try {
-      const result = await api.getMysteries();
-      setMysteries(result.mysteries);
-      const savedDraft = localStorage.getItem(draftKey);
-      if (savedDraft) {
-        try {
-          const draft = JSON.parse(savedDraft) as Mystery;
-          const canonical = result.mysteries.find((mystery) => mystery.id === draft.id);
-          if (
-            canonical &&
-            new Date(draft.updatedAt).getTime() >= new Date(canonical.updatedAt).getTime()
-          )
-            choose(draft);
-          else if (canonical) choose(canonical);
-        } catch {
-          localStorage.removeItem(draftKey);
-        }
-      }
-      if (result.mysteries[0] && !selectedRef.current) {
-        setComplexityInput(String(result.mysteries[0].data.complexity));
-        setSelected((current) => {
-          if (current) return current;
-          lastSavedById.current.set(result.mysteries[0].id, contentSnapshot(result.mysteries[0]));
-          latestVersionById.current.set(result.mysteries[0].id, result.mysteries[0].version);
-          selectedRef.current = result.mysteries[0];
-          return result.mysteries[0];
-        });
-      }
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not load mysteries`);
-    } finally {
-      setLoaded(true);
-    }
-  }, [choose]);
-
+  };
+  const selectedId = selected?.id;
+  const selectedComplexity = selected?.data.complexity;
   useEffect(() => {
-    if (isAuthenticated) void load();
-  }, [isAuthenticated, load]);
+    if (
+      !isAuthenticated ||
+      !loaded ||
+      !requestedMysteryId ||
+      (requestedSelection.current?.owner === owner &&
+        requestedSelection.current.id === requestedMysteryId)
+    )
+      return;
+    // Resolve query ids only against the current account's owned mysteries.
+    const mystery = mysteries.find((entry) => entry.id === requestedMysteryId);
+    if (!mystery) return;
+    requestedSelection.current = { owner, id: requestedMysteryId };
+    owner.choose(mystery);
+    setFocusedEntryId(null);
+  }, [isAuthenticated, loaded, mysteries, owner, requestedMysteryId]);
   useEffect(() => {
-    if (selected) localStorage.setItem(draftKey, JSON.stringify(selected));
-    selectedRef.current = selected;
-  }, [selected]);
-  useEffect(() => {
-    if (selected?.id) void refreshVersions(selected.id);
-  }, [refreshVersions, selected?.id]);
-
-  const updateSelected = (updates: Partial<MysteryData> & { title?: string }) => {
-    setSelected((current) =>
-      current
-        ? {
-            ...current,
-            title: updates.title ?? current.title,
-            data: { ...current.data, ...updates, title: updates.title ?? current.data.title },
-          }
-        : current,
-    );
+    setComplexityInput(selectedId ? String(selectedComplexity) : "");
+  }, [selectedId, selectedComplexity]);
+  const updateSelected = (updates: Partial<MysteryData> & { title?: string }) =>
+    owner.edit(updates);
+  const save = async (kind: "auto" | "manual") => {
+    const saved = await owner.save(kind);
+    if (saved && kind === "manual") toast.success(t`Manual version saved.`);
+    return saved;
   };
 
   const removeEntry = (entry: object, remove: () => void) => {
@@ -305,167 +257,51 @@ const MysteriesPage = () => {
     setConfirmation({ kind: "remove-entry", title: title || undefined, onConfirm: remove });
   };
 
-  const save = useCallback(
-    (kind: "auto" | "manual"): Promise<boolean> => {
-      const submitted = selectedRef.current;
-      if (!submitted) return Promise.resolve(false);
-      const submittedContent = contentSnapshot(submitted);
-      if (kind === "auto" && lastSavedById.current.get(submitted.id) === submittedContent) {
-        return Promise.resolve(true);
-      }
-
-      const task = async (): Promise<boolean> => {
-        try {
-          const saved = await api.updateMystery(submitted.id, {
-            title: submitted.title || t`Untitled Mystery`,
-            data: submitted.data,
-            version: latestVersionById.current.get(submitted.id) ?? submitted.version,
-            saveKind: kind,
-          });
-          latestVersionById.current.set(saved.id, saved.version);
-          lastSavedById.current.set(saved.id, contentSnapshot(saved));
-          setMysteries((current) =>
-            current.map((mystery) => (mystery.id === saved.id ? saved : mystery)),
-          );
-          setSelected((current) => {
-            if (!current || current.id !== saved.id) return current;
-            return contentSnapshot(current) === submittedContent
-              ? saved
-              : { ...current, version: saved.version };
-          });
-          void refreshVersions(saved.id);
-          if (kind === "manual") toast.success(t`Manual version saved.`);
-          return true;
-        } catch (error) {
-          toast.error(error instanceof Error ? error.message : t`Could not save mystery`);
-          return false;
-        }
-      };
-      saveQueue.current = saveQueue.current.catch(() => false).then(task);
-      return saveQueue.current;
-    },
-    [refreshVersions],
-  );
-
-  const saveSignature = useMemo(() => (selected ? contentSnapshot(selected) : ""), [selected]);
-  useEffect(() => {
-    if (!selected || saveSignature === lastSavedById.current.get(selected.id)) return;
-    const timer = window.setTimeout(() => void save("auto"), autoSaveDelay);
-    return () => window.clearTimeout(timer);
-  }, [save, saveSignature, selected]);
-
   const createMystery = async () => {
-    try {
-      const data = defaultMystery();
-      const created = await api.createMystery({ title: data.title, data });
-      setMysteries((current) => [created, ...current]);
-      choose(created);
+    if (await owner.create(defaultMystery())) {
+      setFocusedEntryId(null);
       toast.success(t`A fresh parchment awaits.`);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not create mystery`);
     }
   };
-
   const deleteMystery = async () => {
-    const deletedMystery = selectedRef.current;
-    if (!deletedMystery) return;
-    try {
-      await api.deleteMystery(deletedMystery.id);
-      const remaining = mysteries.filter((mystery) => mystery.id !== deletedMystery.id);
-      selectedRef.current = remaining[0] ?? null;
-      setMysteries(remaining);
-      setSelected(remaining[0] ?? null);
-      setVersions([]);
-      lastSavedById.current.delete(deletedMystery.id);
-      latestVersionById.current.delete(deletedMystery.id);
-      localStorage.removeItem(draftKey);
-      setConfirmation(null);
-      toast.success(t`Mystery deleted.`, {
-        action: {
-          label: t`Undo`,
-          onClick: () =>
-            void api
-              .restoreMystery(deletedMystery.id)
-              .then((restored) => {
-                setMysteries((current) => [
-                  restored,
-                  ...current.filter((mystery) => mystery.id !== restored.id),
-                ]);
-                choose(restored);
-                toast.success(t`Mystery restored.`);
-              })
-              .catch((error) =>
-                toast.error(error instanceof Error ? error.message : t`Could not restore mystery`),
-              ),
-        },
-      });
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not remove mystery`);
-    }
-  };
-
-  const restoreVersion = async (version: MysteryVersion) => {
-    const previous = selectedRef.current;
-    if (!previous) return;
-    const restored = { ...previous, title: version.title, data: version.data };
-    selectedRef.current = restored;
-    setSelected(restored);
-    setComplexityInput(String(version.data.complexity));
-    if (!(await save("auto"))) {
-      selectedRef.current = previous;
-      setSelected(previous);
-      setComplexityInput(String(previous.data.complexity));
-      return;
-    }
-    toast.success(t`Version restored.`, {
+    const deleted = await owner.delete();
+    if (!deleted) return;
+    setConfirmation(null);
+    toast.success(t`Mystery deleted.`, {
       action: {
         label: t`Undo`,
-        onClick: () => {
-          selectedRef.current = previous;
-          setSelected(previous);
-          setComplexityInput(String(previous.data.complexity));
-          void save("auto");
-        },
+        onClick: () =>
+          void owner.undelete(deleted.id).then((restored) => {
+            if (restored) toast.success(t`Mystery restored.`);
+          }),
       },
     });
   };
-
-  const publish = async () => {
-    if (!selected) return;
-    if (!(await save("manual"))) return;
-    const savedMystery = selectedRef.current;
-    if (!savedMystery) return;
-    try {
-      await api.publishMystery(savedMystery.id);
-      toast.success(t`Submitted for superadmin approval.`);
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : t`Could not submit mystery`);
-    }
+  const restoreVersion = async (version: MysteryVersion) => {
+    const undo = await owner.restore(version);
+    if (undo)
+      toast.success(t`Version restored.`, {
+        action: { label: t`Undo`, onClick: () => void undo() },
+      });
   };
-
+  const publish = async () => {
+    if (await owner.publish()) toast.success(t`Submitted for superadmin approval.`);
+  };
   const bringToBookClub = async () => {
-    const mystery = selectedRef.current;
-    if (!bookClubId || !bookClubPath || !mystery || bringingToBookClub) return;
+    if (!bookClubId || !bookClubPath || !selected || bringingToBookClub) return;
     setBringingToBookClub(true);
-    if (!(await save("manual"))) {
-      setBringingToBookClub(false);
-      return;
-    }
-    try {
+    const brought = await owner.preserve(async (saved) => {
       await api.createBookClubMystery(
         bookClubId,
-        mystery.id,
-        mystery.title || t`Untitled Mystery`,
-        clueLabels(mystery.data.clues),
-        clueLabels(mystery.data.voidClues),
+        saved.id,
+        saved.title || t`Untitled Mystery`,
+        clueLabels(saved.data.clues),
+        clueLabels(saved.data.voidClues),
       );
-      window.location.assign(bookClubPath);
-    } catch (error) {
-      toast.error(
-        error instanceof Error ? error.message : t`Could not bring mystery to the Book Club`,
-      );
-      setBringingToBookClub(false);
-    }
+      return true;
+    });
+    if (brought) window.location.assign(bookClubPath);
+    else setBringingToBookClub(false);
   };
 
   if (loading) return null;
@@ -486,24 +322,38 @@ const MysteriesPage = () => {
               <Feather className="mystery-quill size-7" aria-hidden="true" />
               <Trans>Mysteries</Trans>
             </h1>
-            <Button size="sm" variant="dark" onClick={createMystery}>
+            <Button size="sm" variant="dark" onClick={createMystery} aria-label={t`Create mystery`}>
               <Plus className="size-4" />
             </Button>
           </div>
-          <a href="/library" className="mystery-library-link">
+          <a href={libraryPath} className="mystery-library-link">
             <Library className="size-4" />
             <Trans>Public Library</Trans>
           </a>
           <div className="mystery-list">
             {mysteries.map((mystery) => (
-              <Button
+              <ContextActions
                 key={mystery.id}
-                variant="bare"
-                onClick={() => choose(mystery)}
-                className={selected?.id === mystery.id ? "active" : ""}
+                actions={[
+                  { label: t`Open mystery`, run: () => choose(mystery) },
+                  {
+                    label: t`Delete mystery`,
+                    destructive: true,
+                    run: () => {
+                      choose(mystery);
+                      setConfirmation({ kind: "delete", title: mystery.title });
+                    },
+                  },
+                ]}
               >
-                {mystery.title || <Trans>Untitled Mystery</Trans>}
-              </Button>
+                <Button
+                  variant="bare"
+                  onClick={() => choose(mystery)}
+                  className={selected?.id === mystery.id ? "active" : ""}
+                >
+                  {mystery.title || <Trans>Untitled Mystery</Trans>}
+                </Button>
+              </ContextActions>
             ))}
             {loaded && !mysteries.length && (
               <p>

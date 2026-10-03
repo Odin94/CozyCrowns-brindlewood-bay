@@ -78,6 +78,20 @@
       "when": 1788728149992,
       "tag": "0010_omniscient_ken_ellis",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1791022912045,
+      "tag": "0011_wandering_wilson_fisk",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1791023256653,
+      "tag": "0012_classy_misty_knight",
+      "breakpoints": true
     }
   ]
 }

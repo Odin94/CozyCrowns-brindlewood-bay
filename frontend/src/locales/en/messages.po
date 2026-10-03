@@ -29,52 +29,66 @@ msgid "Enter character name"
 msgstr "Enter character name"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MeView.tsx:102
+#: src/components/MenuDialog/MeView.tsx:111
 msgid "Enter your nickname"
 msgstr "Enter your nickname"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:57
+#: src/components/MenuDialog/MeView.tsx:123
+msgid "Save nickname"
+msgstr "Save nickname"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MeView.tsx:134
+msgid "Cancel editing nickname"
+msgstr "Cancel editing nickname"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MeView.tsx:147
+msgid "Edit nickname"
+msgstr "Edit nickname"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:68
 msgid "Profile updated successfully!"
 msgstr "Profile updated successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:60
+#: src/components/MenuDialog/MenuDialog.tsx:71
 msgid "Failed to update profile. Please try again."
 msgstr "Failed to update profile. Please try again."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:98
+#: src/components/MenuDialog/MenuDialog.tsx:110
 msgid "PDF downloaded successfully!"
 msgstr "PDF downloaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:101
+#: src/components/MenuDialog/MenuDialog.tsx:113
 msgid "Failed to download PDF. Please try again."
 msgstr "Failed to download PDF. Please try again."
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:140
-#: src/components/MenuDialog/MenuDialog.tsx:190
+#: src/components/MenuDialog/MenuDialog.tsx:150
 msgid "Character data loaded successfully!"
 msgstr "Character data loaded successfully!"
 
 #. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:143
-#: src/components/MenuDialog/MenuDialog.tsx:193
-msgid "Invalid JSON file format."
-msgstr "Invalid JSON file format."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:145
-#: src/components/MenuDialog/MenuDialog.tsx:195
-msgid "Error loading character data. Please check the file format."
-msgstr "Error loading character data. Please check the file format."
-
-#. js-lingui-explicit-id
-#: src/components/MenuDialog/MenuDialog.tsx:223
+#: src/components/MenuDialog/MenuDialog.tsx:207
 msgid "Character reset successfully!"
 msgstr "Character reset successfully!"
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:144
+#: src/components/MenuDialog/MenuDialog.tsx:194
+#~ msgid "Invalid JSON file format."
+#~ msgstr "Invalid JSON file format."
+
+#. js-lingui-explicit-id
+#: src/components/MenuDialog/MenuDialog.tsx:146
+#: src/components/MenuDialog/MenuDialog.tsx:196
+#~ msgid "Error loading character data. Please check the file format."
+#~ msgstr "Error loading character data. Please check the file format."
 
 #. js-lingui-explicit-id
 #: src/components/MenuDialog/MenuDialog.tsx:280
@@ -100,7 +114,7 @@ msgstr "Character reset successfully!"
 #~ msgid "(owner)"
 #~ msgstr "(owner)"
 
-#: src/pages/MysteriesPage.tsx:729
+#: src/pages/MysteriesPage.tsx:579
 msgid "{label}"
 msgstr "{label}"
 
@@ -144,13 +158,14 @@ msgstr "12+ on wild physical feats once per mystery"
 #~ msgid "7-9"
 #~ msgstr "7-9"
 
-#: src/pages/LibraryPage.tsx:102
+#: src/pages/LibraryPage.tsx:216
+#: src/pages/LibraryPage.tsx:279
 msgid "A carefully guarded case file."
 msgstr "A carefully guarded case file."
 
 #: src/components/character/CozyLittlePlace.tsx:26
-#: src/pages/BookClubMaven.tsx:140
-#: src/pages/BookClubOverview.tsx:1588
+#: src/pages/BookClubMaven.tsx:137
+#: src/pages/BookClubOverview.tsx:1872
 msgid "A Cozy Little Place"
 msgstr "A Cozy Little Place"
 
@@ -170,11 +185,11 @@ msgstr "A flashback showing how you were an imperfect mother."
 msgid "A flashback showing how you were an imperfect sister or daughter."
 msgstr "A flashback showing how you were an imperfect sister or daughter."
 
-#: src/pages/MysteriesPage.tsx:363
+#: src/pages/MysteriesPage.tsx:263
 msgid "A fresh parchment awaits."
 msgstr "A fresh parchment awaits."
 
-#: src/pages/BookClubOverview.tsx:694
+#: src/pages/BookClubOverview.tsx:676
 msgid "A player"
 msgstr "A player"
 
@@ -194,23 +209,23 @@ msgstr "A scene in the present day showing how you satisfy your physical desires
 msgid "A Shadow in the Garden."
 msgstr "A Shadow in the Garden."
 
-#: src/pages/BookClubOverview.tsx:1505
-msgid "A table of your own"
-msgstr "A table of your own"
+#: src/pages/BookClubOverview.tsx:1511
+#~ msgid "A table of your own"
+#~ msgstr "A table of your own"
 
-#: src/pages/BookClubOverview.tsx:1341
+#: src/pages/BookClubOverview.tsx:1397
 msgid "A thought to keep under your hat…"
 msgstr "A thought to keep under your hat…"
 
 #: src/components/character/Abilities.tsx:179
-#: src/pages/BookClubMaven.tsx:121
+#: src/pages/BookClubMaven.tsx:118
 msgid "Abilities"
 msgstr "Abilities"
 
 #: src/components/cookie-consent.tsx:164
 #: src/components/cookie-consent.tsx:200
 #: src/components/cookie-consent.tsx:202
-#: src/pages/BookClubOverview.tsx:699
+#: src/pages/BookClubOverview.tsx:681
 msgid "Accept"
 msgstr "Accept"
 
@@ -218,19 +233,23 @@ msgstr "Accept"
 msgid "Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits"
 msgstr "Access to Robin's resources outside Brindlewood Bay and get both Gold Crown benefits"
 
+#: src/components/ContextActions.tsx:49
+msgid "Actions"
+msgstr "Actions"
+
 #: src/pages/BookClubOverview.tsx:638
 #~ msgid "Activate"
 #~ msgstr "Activate"
 
-#: src/pages/BookClubOverview.tsx:806
+#: src/pages/BookClubOverview.tsx:793
 msgid "Active"
 msgstr "Active"
 
-#: src/pages/BookClubOverview.tsx:533
+#: src/pages/BookClubOverview.tsx:482
 msgid "Active characters"
 msgstr "Active characters"
 
-#: src/pages/BookClubOverview.tsx:1570
+#: src/pages/BookClubOverview.tsx:1854
 msgid "Active conditions"
 msgstr "Active conditions"
 
@@ -238,8 +257,8 @@ msgstr "Active conditions"
 #~ msgid "Active mystery"
 #~ msgstr "Active mystery"
 
-#: src/pages/BookClubOverview.tsx:1015
-#: src/pages/TheorizeBoard.tsx:1337
+#: src/pages/BookClubOverview.tsx:1002
+#: src/pages/TheorizeBoard.tsx:1768
 msgid "Add"
 msgstr "Add"
 
@@ -251,11 +270,11 @@ msgstr "Add 1 to your Sensitivity (max 3). At the beginning of each session, the
 #~ msgid "Add a clue..."
 #~ msgstr "Add a clue..."
 
-#: src/pages/BookClubOverview.tsx:556
+#: src/pages/BookClubOverview.tsx:505
 msgid "Add a Maven"
 msgstr "Add a Maven"
 
-#: src/pages/BookClubOverview.tsx:551
+#: src/pages/BookClubOverview.tsx:500
 msgid "Add a Maven from the Characters drawer to bring her into the scene."
 msgstr "Add a Maven from the Characters drawer to bring her into the scene."
 
@@ -271,29 +290,37 @@ msgstr "Add a Maven from the Characters drawer to bring her into the scene."
 #~ msgid "Add any opening clues, one per line..."
 #~ msgstr "Add any opening clues, one per line..."
 
+#: src/pages/TheorizeBoard.tsx:1115
+msgid "Add at least two notes to auto-align."
+msgstr "Add at least two notes to auto-align."
+
 #: src/pages/BookClubOverview.tsx:886
 #~ msgid "Add clue"
 #~ msgstr "Add clue"
 
-#: src/pages/TheorizeBoard.tsx:784
-#: src/pages/TheorizeBoard.tsx:1181
+#: src/pages/TheorizeBoard.tsx:1048
+#: src/pages/TheorizeBoard.tsx:1531
 msgid "Add note"
 msgstr "Add note"
 
-#: src/pages/BookClubOverview.tsx:909
+#: src/pages/TheorizeBoard.tsx:1046
+msgid "Add note (N)"
+msgstr "Add note (N)"
+
+#: src/pages/BookClubOverview.tsx:896
 msgid "Add one die"
 msgstr "Add one die"
 
-#: src/pages/TheorizeBoard.tsx:1132
+#: src/pages/TheorizeBoard.tsx:1459
 msgid "Add to the theory board"
 msgstr "Add to the theory board"
 
 #: src/components/character/Advancements.tsx:25
-#: src/pages/BookClubMaven.tsx:130
+#: src/pages/BookClubMaven.tsx:127
 msgid "Advancements"
 msgstr "Advancements"
 
-#: src/components/character/DiceRoller.tsx:51
+#: src/components/character/DiceRoller.tsx:53
 msgid "advantage"
 msgstr "advantage"
 
@@ -309,11 +336,16 @@ msgstr "Advantage"
 msgid "Alexis Carrington Colby"
 msgstr "Alexis Carrington Colby"
 
-#: src/pages/TheorizeBoard.tsx:816
+#: src/pages/TheorizeBoard.tsx:1103
+#: src/pages/TheorizeBoard.tsx:1117
 msgid "Aligning…"
 msgstr "Aligning…"
 
-#: src/pages/BookClubOverview.tsx:1278
+#: src/pages/BookClubOverview.tsx:1530
+#~ msgid "All mystery clues have been revealed."
+#~ msgstr "All mystery clues have been revealed."
+
+#: src/pages/BookClubOverview.tsx:1334
 msgid "All notes saved"
 msgstr "All notes saved"
 
@@ -321,15 +353,19 @@ msgstr "All notes saved"
 msgid "All the Cardigans"
 msgstr "All the Cardigans"
 
+#: src/pages/TheorizeBoard.tsx:1448
+#~ msgid "Alt + Shift + 1–4"
+#~ msgstr "Alt + Shift + 1–4"
+
 #: src/components/character/MavenMovesPicker.tsx:99
 msgid "Alternate"
 msgstr "Alternate"
 
-#: src/pages/MysteriesPage.tsx:900
+#: src/pages/MysteriesPage.tsx:750
 msgid "An admin must check and approve this mystery before it appears in the public library. Review can take up to a week."
 msgstr "An admin must check and approve this mystery before it appears in the public library. Review can take up to a week."
 
-#: src/pages/BookClubOverview.tsx:1281
+#: src/pages/BookClubOverview.tsx:1337
 msgid "Another player"
 msgstr "Another player"
 
@@ -337,15 +373,15 @@ msgstr "Another player"
 msgid "Antiques & Furniture"
 msgstr "Antiques & Furniture"
 
-#: src/pages/LibraryPage.tsx:147
+#: src/pages/LibraryPage.tsx:325
 msgid "Approve publication"
 msgstr "Approve publication"
 
-#: src/pages/LibraryPage.tsx:89
-msgid "Approved cases, copied as snapshots into your own casebook."
-msgstr "Approved cases, copied as snapshots into your own casebook."
+#: src/pages/LibraryPage.tsx:105
+#~ msgid "Approved cases, copied as snapshots into your own casebook."
+#~ msgstr "Approved cases, copied as snapshots into your own casebook."
 
-#: src/pages/BookClubOverview.tsx:1282
+#: src/pages/BookClubOverview.tsx:1338
 msgid "are writing"
 msgstr "are writing"
 
@@ -373,15 +409,16 @@ msgstr "At the beginning of each session, a stranger presses something into your
 msgid "At the beginning of each session, the Keeper will narrate an answering machine message you received. The message is always from the same unknown person, and they will ask you to do some particular task, seemingly unrelated to the mystery. If you complete the task in the same session it was assigned, mark XP. The messages and tasks will get increasingly strange and disturbing the more marks you have on The Crown of the Void. No two Mavens can ever have this move at the same time."
 msgstr "At the beginning of each session, the Keeper will narrate an answering machine message you received. The message is always from the same unknown person, and they will ask you to do some particular task, seemingly unrelated to the mystery. If you complete the task in the same session it was assigned, mark XP. The messages and tasks will get increasingly strange and disturbing the more marks you have on The Crown of the Void. No two Mavens can ever have this move at the same time."
 
-#: src/pages/BookClubOverview.tsx:1007
+#: src/pages/BookClubOverview.tsx:994
 msgid "At the table"
 msgstr "At the table"
 
-#: src/pages/TheorizeBoard.tsx:816
+#: src/pages/TheorizeBoard.tsx:1103
 msgid "Auto-align"
 msgstr "Auto-align"
 
-#: src/pages/TheorizeBoard.tsx:812
+#: src/pages/TheorizeBoard.tsx:1099
+#: src/pages/TheorizeBoard.tsx:1118
 msgid "Auto-align notes"
 msgstr "Auto-align notes"
 
@@ -397,7 +434,7 @@ msgstr "Auto-align notes"
 #~ msgid "Available Maven Moves"
 #~ msgstr "Available Maven Moves"
 
-#: src/pages/LibraryPage.tsx:95
+#: src/pages/LibraryPage.tsx:268
 msgid "Available to copy"
 msgstr "Available to copy"
 
@@ -413,25 +450,26 @@ msgstr "Avoid grave harm; wake up rattled in the perfect place once per mystery"
 msgid "Avoid physical harm once per mystery"
 msgstr "Avoid physical harm once per mystery"
 
-#: src/pages/LibraryPage.tsx:138
+#: src/pages/LibraryPage.tsx:316
 msgid "Awaiting your approval"
 msgstr "Awaiting your approval"
 
 #: src/components/MenuDialog/CreditsView.tsx:81
-#: src/components/MenuDialog/MeView.tsx:151
-#: src/components/MenuDialog/MeView.tsx:165
+#: src/components/MenuDialog/MeView.tsx:159
+#: src/components/MenuDialog/MeView.tsx:169
 msgid "Back"
 msgstr "Back"
 
-#: src/pages/BookClubMaven.tsx:88
-#: src/pages/MysteriesPage.tsx:479
+#: src/pages/BookClubMaven.tsx:85
+#: src/pages/LibraryPage.tsx:159
+#: src/pages/MysteriesPage.tsx:315
 msgid "Back to Book Club"
 msgstr "Back to Book Club"
 
-#: src/pages/BookClubOverview.tsx:454
-#: src/pages/DarkConspiracySheet.tsx:193
-#: src/pages/MysteriesPage.tsx:66
-#: src/pages/MysteriesPage.tsx:479
+#: src/pages/BookClubOverview.tsx:394
+#: src/pages/DarkConspiracySheet.tsx:222
+#: src/pages/MysteriesPage.tsx:64
+#: src/pages/MysteriesPage.tsx:315
 msgid "Back to sheet"
 msgstr "Back to sheet"
 
@@ -447,18 +485,18 @@ msgstr "Birding"
 msgid "Blouse Barn"
 msgstr "Blouse Barn"
 
-#: src/pages/BookClubMaven.tsx:85
-#: src/pages/BookClubOverview.tsx:525
-#: src/pages/BookClubOverview.tsx:758
-#: src/pages/TheorizeBoard.tsx:772
+#: src/pages/BookClubMaven.tsx:82
+#: src/pages/BookClubOverview.tsx:474
+#: src/pages/BookClubOverview.tsx:744
+#: src/pages/TheorizeBoard.tsx:1030
 msgid "Book Club"
 msgstr "Book Club"
 
-#: src/pages/BookClubOverview.tsx:324
+#: src/pages/BookClubOverview.tsx:264
 msgid "Book Club created"
 msgstr "Book Club created"
 
-#: src/pages/BookClubOverview.tsx:414
+#: src/pages/BookClubOverview.tsx:354
 msgid "Book Club deleted"
 msgstr "Book Club deleted"
 
@@ -466,20 +504,22 @@ msgstr "Book Club deleted"
 #~ msgid "Book Club invitations"
 #~ msgstr "Book Club invitations"
 
-#: src/pages/BookClubOverview.tsx:1065
-#: src/pages/BookClubOverview.tsx:1522
+#: src/pages/BookClubOverview.tsx:1052
+#: src/pages/BookClubOverview.tsx:1805
+#: src/pages/BookClubOverview.tsx:1806
 msgid "Book Club name"
 msgstr "Book Club name"
 
-#: src/pages/BookClubOverview.tsx:1056
+#: src/pages/BookClubOverview.tsx:1043
 msgid "Book Club renamed"
 msgstr "Book Club renamed"
 
-#: src/pages/BookClubOverview.tsx:719
+#: src/pages/BookClubOverview.tsx:703
 msgid "Book Club tools"
 msgstr "Book Club tools"
 
-#: src/components/MenuDialog/MainMenuView.tsx:76
+#: src/components/MenuDialog/MainMenuView.tsx:96
+#: src/components/PageNavigator.tsx:16
 msgid "Book Clubs"
 msgstr "Book Clubs"
 
@@ -487,19 +527,19 @@ msgstr "Book Clubs"
 msgid "Brindlewood Bay is published by <0>The Gauntlet</0>."
 msgstr "Brindlewood Bay is published by <0>The Gauntlet</0>."
 
-#: src/pages/BookClubOverview.tsx:85
+#: src/pages/BookClubOverview.tsx:101
 msgid "Bring Mavens to the table"
 msgstr "Bring Mavens to the table"
 
-#: src/pages/BookClubOverview.tsx:1511
+#: src/pages/BookClubOverview.tsx:1794
 msgid "Bring Mavens together, share rolls, and solve a mystery in one cozy place."
 msgstr "Bring Mavens together, share rolls, and solve a mystery in one cozy place."
 
-#: src/pages/MysteriesPage.tsx:544
+#: src/pages/MysteriesPage.tsx:394
 msgid "Bring to Book Club"
 msgstr "Bring to Book Club"
 
-#: src/pages/BookClubOverview.tsx:1029
+#: src/pages/BookClubOverview.tsx:1016
 msgid "Bring to table"
 msgstr "Bring to table"
 
@@ -507,20 +547,20 @@ msgstr "Bring to table"
 #~ msgid "Bring your Mavens"
 #~ msgstr "Bring your Mavens"
 
-#: src/pages/BookClubOverview.tsx:840
-msgid "Browse published mysteries"
-msgstr "Browse published mysteries"
+#: src/pages/BookClubOverview.tsx:775
+#~ msgid "Browse published mysteries"
+#~ msgstr "Browse published mysteries"
 
-#: src/pages/CharacterSheet.tsx:141
+#: src/pages/CharacterSheet.tsx:145
 msgid "by Odin"
 msgstr "by Odin"
 
 #: src/components/character/DeleteConfirmDialog.tsx:39
 #: src/components/MenuDialog/ResetConfirmView.tsx:21
 #: src/components/MenuDialog/SaveFailureDialog.tsx:22
-#: src/pages/MysteriesPage.tsx:929
-#: src/pages/TheorizeBoard.tsx:1177
-#: src/pages/TheorizeBoard.tsx:1243
+#: src/pages/BookClubOverview.tsx:1659
+#: src/pages/MysteriesPage.tsx:779
+#: src/pages/TheorizeBoard.tsx:1610
 msgid "Cancel"
 msgstr "Cancel"
 
@@ -532,7 +572,7 @@ msgstr "Canine companion that gains the power of speech when Layer 5 is unlocked
 #~ msgid "Character sheets"
 #~ msgstr "Character sheets"
 
-#: src/pages/BookClubOverview.tsx:84
+#: src/pages/BookClubOverview.tsx:100
 msgid "Characters"
 msgstr "Characters"
 
@@ -544,19 +584,19 @@ msgstr "Charity Events"
 msgid "Charm, confidence, intimidation, and holding the room."
 msgstr "Charm, confidence, intimidation, and holding the room."
 
-#: src/pages/BookClubOverview.tsx:461
+#: src/pages/BookClubOverview.tsx:399
 msgid "Choose a Book Club"
 msgstr "Choose a Book Club"
 
-#: src/pages/BookClubOverview.tsx:792
+#: src/pages/BookClubOverview.tsx:779
 msgid "Choose a mystery below to begin the evening."
 msgstr "Choose a mystery below to begin the evening."
 
-#: src/pages/MysteriesPage.tsx:839
+#: src/pages/MysteriesPage.tsx:689
 msgid "Choose a mystery or create a new one."
 msgstr "Choose a mystery or create a new one."
 
-#: src/pages/BookClubOverview.tsx:1399
+#: src/pages/BookClubOverview.tsx:1671
 msgid "Choose an active mystery to reveal its clues."
 msgstr "Choose an active mystery to reveal its clues."
 
@@ -573,11 +613,11 @@ msgstr "Choose Maven Moves"
 #~ msgid "Choose the GM"
 #~ msgstr "Choose the GM"
 
-#: src/pages/BookClubOverview.tsx:80
+#: src/pages/BookClubOverview.tsx:96
 msgid "Choose tonight's mystery"
 msgstr "Choose tonight's mystery"
 
-#: src/pages/BookClubOverview.tsx:990
+#: src/pages/BookClubOverview.tsx:977
 msgid "Choose which of your saved Mavens are sitting in on this Book Club."
 msgstr "Choose which of your saved Mavens are sitting in on this Book Club."
 
@@ -585,11 +625,12 @@ msgstr "Choose which of your saved Mavens are sitting in on this Book Club."
 msgid "Classic"
 msgstr "Classic"
 
-#: src/components/character/DiceRoller.tsx:249
+#: src/components/character/DiceRoller.tsx:256
 msgid "Click an ability score to roll 2d6."
 msgstr "Click an ability score to roll 2d6."
 
-#: src/pages/TheorizeBoard.tsx:974
+#: src/pages/TheorizeBoard.tsx:1285
+#: src/pages/TheorizeBoard.tsx:1299
 msgid "Click to name this connection"
 msgstr "Click to name this connection"
 
@@ -597,28 +638,39 @@ msgstr "Click to name this connection"
 msgid "Close"
 msgstr "Close"
 
-#: src/pages/BookClubOverview.tsx:762
+#: src/pages/BookClubOverview.tsx:749
 msgid "Close drawer"
 msgstr "Close drawer"
 
-#: src/pages/BookClubOverview.tsx:1111
+#: src/pages/BookClubOverview.tsx:1098
 msgid "Close this chapter"
 msgstr "Close this chapter"
 
-#: src/pages/BookClubOverview.tsx:797
+#: src/pages/BookClubOverview.tsx:784
 msgid "Club mysteries"
 msgstr "Club mysteries"
 
-#: src/pages/BookClubOverview.tsx:1102
+#: src/pages/BookClubOverview.tsx:1089
 msgid "Club owner"
 msgstr "Club owner"
 
-#: src/pages/TheorizeBoard.tsx:51
+#: src/pages/TheorizeBoard.tsx:68
 msgid "Clue"
 msgstr "Clue"
 
-#: src/pages/BookClubOverview.tsx:89
-#: src/pages/BookClubOverview.tsx:1372
+#: src/pages/BookClubOverview.tsx:540
+msgid "Clue canvas"
+msgstr "Clue canvas"
+
+#: src/pages/BookClubOverview.tsx:1456
+msgid "Clue hidden from players."
+msgstr "Clue hidden from players."
+
+#: src/pages/BookClubOverview.tsx:1456
+msgid "Clue revealed and added to the canvas."
+msgstr "Clue revealed and added to the canvas."
+
+#: src/pages/BookClubOverview.tsx:105
 msgid "Clues"
 msgstr "Clues"
 
@@ -626,17 +678,18 @@ msgstr "Clues"
 msgid "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
 msgstr "Collecting (Stamps, Buttons, Pressed Flowers, ...)"
 
-#: src/pages/LibraryPage.tsx:106
-#: src/pages/MysteriesPage.tsx:558
+#: src/pages/LibraryPage.tsx:220
+#: src/pages/LibraryPage.tsx:283
+#: src/pages/MysteriesPage.tsx:408
 msgid "Complexity"
 msgstr "Complexity"
 
-#: src/lib/character_store.ts:31
+#: src/lib/character_store.ts:34
 msgid "Composure"
 msgstr "Composure"
 
 #: src/components/character/Conditions.tsx:14
-#: src/pages/BookClubMaven.tsx:127
+#: src/pages/BookClubMaven.tsx:124
 msgid "Conditions"
 msgstr "Conditions"
 
@@ -644,11 +697,11 @@ msgstr "Conditions"
 msgid "Confirm Reset"
 msgstr "Confirm Reset"
 
-#: src/pages/TheorizeBoard.tsx:1006
+#: src/pages/TheorizeBoard.tsx:1330
 msgid "Connect to this note"
 msgstr "Connect to this note"
 
-#: src/pages/TheorizeBoard.tsx:728
+#: src/pages/TheorizeBoard.tsx:986
 msgid "Connection removed"
 msgstr "Connection removed"
 
@@ -664,19 +717,20 @@ msgstr "Convert a Clue to a Void Clue once per mystery; reduces Dark Conspiracy 
 msgid "Cooking"
 msgstr "Cooking"
 
-#: src/pages/LibraryPage.tsx:58
+#: src/pages/LibraryPage.tsx:138
 msgid "Copied to your private mystery library."
 msgstr "Copied to your private mystery library."
 
-#: src/pages/BookClubOverview.tsx:657
+#: src/pages/BookClubOverview.tsx:639
 msgid "Copy invite link"
 msgstr "Copy invite link"
 
-#: src/pages/LibraryPage.tsx:124
+#: src/pages/LibraryPage.tsx:274
+#: src/pages/LibraryPage.tsx:301
 msgid "Copy to my library"
 msgstr "Copy to my library"
 
-#: src/pages/BookClubOverview.tsx:397
+#: src/pages/BookClubOverview.tsx:337
 msgid "Could not activate the mystery"
 msgstr "Could not activate the mystery"
 
@@ -684,129 +738,140 @@ msgstr "Could not activate the mystery"
 #~ msgid "Could not add clue"
 #~ msgstr "Could not add clue"
 
-#: src/pages/TheorizeBoard.tsx:697
+#: src/pages/TheorizeBoard.tsx:918
 msgid "Could not add that note"
 msgstr "Could not add that note"
 
-#: src/pages/LibraryPage.tsx:69
+#: src/pages/LibraryPage.tsx:150
 msgid "Could not approve mystery"
 msgstr "Could not approve mystery"
 
-#: src/pages/TheorizeBoard.tsx:558
+#: src/pages/TheorizeBoard.tsx:735
 msgid "Could not auto-align the board"
 msgstr "Could not auto-align the board"
 
 #: src/pages/MysteriesPage.tsx:465
-msgid "Could not bring mystery to the Book Club"
-msgstr "Could not bring mystery to the Book Club"
+#~ msgid "Could not bring mystery to the Book Club"
+#~ msgstr "Could not bring mystery to the Book Club"
 
-#: src/pages/BookClubOverview.tsx:369
+#: src/pages/BookClubOverview.tsx:309
 msgid "Could not bring that Maven to the club"
 msgstr "Could not bring that Maven to the club"
 
-#: src/pages/TheorizeBoard.tsx:587
+#: src/pages/TheorizeBoard.tsx:767
 msgid "Could not connect those notes"
 msgstr "Could not connect those notes"
 
-#: src/pages/LibraryPage.tsx:60
+#: src/pages/LibraryPage.tsx:141
 msgid "Could not copy mystery"
 msgstr "Could not copy mystery"
 
-#: src/pages/BookClubOverview.tsx:347
+#: src/pages/BookClubOverview.tsx:287
 msgid "Could not copy the invite link"
 msgstr "Could not copy the invite link"
 
-#: src/pages/BookClubOverview.tsx:326
+#: src/pages/BookClubOverview.tsx:266
 msgid "Could not create Book Club"
 msgstr "Could not create Book Club"
 
 #: src/pages/MysteriesPage.tsx:365
-msgid "Could not create mystery"
-msgstr "Could not create mystery"
+#~ msgid "Could not create mystery"
+#~ msgstr "Could not create mystery"
 
 #: src/pages/BookClubOverview.tsx:258
 #~ msgid "Could not create the mystery"
 #~ msgstr "Could not create the mystery"
 
-#: src/pages/TheorizeBoard.tsx:753
+#: src/pages/TheorizeBoard.tsx:1011
 msgid "Could not delete that connection"
 msgstr "Could not delete that connection"
 
-#: src/pages/TheorizeBoard.tsx:675
+#: src/pages/TheorizeBoard.tsx:875
 msgid "Could not delete that note"
 msgstr "Could not delete that note"
 
-#: src/pages/BookClubOverview.tsx:434
+#: src/pages/BookClubOverview.tsx:374
 msgid "Could not delete the Book Club"
 msgstr "Could not delete the Book Club"
 
-#: src/pages/BookClubMaven.tsx:71
-#: src/pages/BookClubOverview.tsx:207
-#: src/pages/BookClubOverview.tsx:429
+#: src/pages/BookClubMaven.tsx:68
+#: src/pages/BookClubOverview.tsx:169
+#: src/pages/BookClubOverview.tsx:369
+#: src/pages/BookClubOverview.tsx:460
 msgid "Could not load Book Clubs"
 msgstr "Could not load Book Clubs"
 
-#: src/pages/LibraryPage.tsx:28
+#: src/pages/LibraryPage.tsx:85
 msgid "Could not load library"
 msgstr "Could not load library"
 
 #: src/pages/MysteriesPage.tsx:269
-msgid "Could not load mysteries"
-msgstr "Could not load mysteries"
+#~ msgid "Could not load mysteries"
+#~ msgstr "Could not load mysteries"
 
-#: src/pages/BookClubOverview.tsx:1218
+#: src/pages/BookClubOverview.tsx:1266
 msgid "Could not load notes"
 msgstr "Could not load notes"
 
-#: src/pages/TheorizeBoard.tsx:322
+#: src/pages/TheorizeBoard.tsx:289
+#: src/pages/TheorizeBoard.tsx:1058
 msgid "Could not load the theory board"
 msgstr "Could not load the theory board"
 
-#: src/pages/TheorizeBoard.tsx:475
+#: src/pages/LibraryPage.tsx:56
+msgid "Could not load your mysteries"
+msgstr "Could not load your mysteries"
+
+#: src/pages/TheorizeBoard.tsx:558
 msgid "Could not move that note"
 msgstr "Could not move that note"
 
 #: src/pages/MysteriesPage.tsx:403
-msgid "Could not remove mystery"
-msgstr "Could not remove mystery"
+#~ msgid "Could not remove mystery"
+#~ msgstr "Could not remove mystery"
 
-#: src/pages/BookClubOverview.tsx:379
+#: src/pages/BookClubOverview.tsx:319
 msgid "Could not remove that Maven"
 msgstr "Could not remove that Maven"
 
-#: src/pages/TheorizeBoard.tsx:711
+#: src/pages/TheorizeBoard.tsx:969
 msgid "Could not rename that connection"
 msgstr "Could not rename that connection"
 
-#: src/pages/BookClubOverview.tsx:1058
+#: src/pages/BookClubOverview.tsx:1045
 msgid "Could not rename the Book Club"
 msgstr "Could not rename the Book Club"
 
 #: src/pages/MysteriesPage.tsx:398
-msgid "Could not restore mystery"
-msgstr "Could not restore mystery"
+#~ msgid "Could not restore mystery"
+#~ msgstr "Could not restore mystery"
 
-#: src/pages/TheorizeBoard.tsx:747
+#: src/pages/TheorizeBoard.tsx:1005
 msgid "Could not restore that connection"
 msgstr "Could not restore that connection"
 
-#: src/pages/MysteriesPage.tsx:340
+#: src/pages/BookClubOverview.tsx:1450
+#~ msgid "Could not reveal clue"
+#~ msgstr "Could not reveal clue"
+
+#: src/hooks/useMysteryPreservation.ts:21
 msgid "Could not save mystery"
 msgstr "Could not save mystery"
 
-#: src/pages/BookClubOverview.tsx:1188
+#: src/pages/BookClubOverview.tsx:1208
+#: src/pages/BookClubOverview.tsx:1312
 msgid "Could not save notes"
 msgstr "Could not save notes"
 
-#: src/pages/TheorizeBoard.tsx:658
+#: src/pages/TheorizeBoard.tsx:844
 msgid "Could not save that note"
 msgstr "Could not save that note"
 
-#: src/pages/BookClubOverview.tsx:336
+#: src/pages/BookClubOverview.tsx:276
 msgid "Could not send invitation"
 msgstr "Could not send invitation"
 
-#: src/pages/BookClubOverview.tsx:876
+#: src/pages/BookClubOverview.tsx:863
 msgid "Could not share that roll"
 msgstr "Could not share that roll"
 
@@ -815,23 +880,27 @@ msgid "Could not share this roll with your Book Club"
 msgstr "Could not share this roll with your Book Club"
 
 #: src/pages/MysteriesPage.tsx:442
-msgid "Could not submit mystery"
-msgstr "Could not submit mystery"
+#~ msgid "Could not submit mystery"
+#~ msgstr "Could not submit mystery"
 
-#: src/pages/BookClubOverview.tsx:286
-#~ msgid "Could not update clue"
-#~ msgstr "Could not update clue"
+#: src/pages/TheorizeBoard.tsx:721
+msgid "Could not undo auto-align. Refresh the board and try again."
+msgstr "Could not undo auto-align. Refresh the board and try again."
 
-#: src/pages/BookClubOverview.tsx:360
+#: src/pages/BookClubOverview.tsx:1464
+msgid "Could not update clue"
+msgstr "Could not update clue"
+
+#: src/pages/BookClubOverview.tsx:300
 msgid "Could not update invitation"
 msgstr "Could not update invitation"
 
-#: src/pages/BookClubOverview.tsx:388
+#: src/pages/BookClubOverview.tsx:328
 msgid "Could not update the GM"
 msgstr "Could not update the GM"
 
 #: src/components/character/CozyActivity.tsx:24
-#: src/pages/BookClubMaven.tsx:119
+#: src/pages/BookClubMaven.tsx:116
 msgid "Cozy Activity"
 msgstr "Cozy Activity"
 
@@ -855,15 +924,15 @@ msgstr "CozyCrowns is an independent production by Odin and is not affiliated wi
 #~ msgid "Create a mystery"
 #~ msgstr "Create a mystery"
 
-#: src/pages/TheorizeBoard.tsx:1333
+#: src/pages/TheorizeBoard.tsx:1757
 msgid "Create a tag"
 msgstr "Create a tag"
 
-#: src/pages/BookClubOverview.tsx:1526
+#: src/pages/BookClubOverview.tsx:1810
 msgid "Create Book Club"
 msgstr "Create Book Club"
 
-#: src/pages/TheorizeBoard.tsx:1062
+#: src/pages/TheorizeBoard.tsx:1390
 msgid "Create connection from this note"
 msgstr "Create connection from this note"
 
@@ -871,49 +940,63 @@ msgstr "Create connection from this note"
 #~ msgid "Create it here, then select it when you are ready to play."
 #~ msgstr "Create it here, then select it when you are ready to play."
 
-#: src/pages/BookClubOverview.tsx:829
+#: src/pages/BookClubOverview.tsx:816
+#: src/pages/MysteriesPage.tsx:325
 msgid "Create mystery"
 msgstr "Create mystery"
 
 #: src/components/MenuDialog/CreditsView.tsx:14
-#: src/components/MenuDialog/MainMenuView.tsx:115
+#: src/components/MenuDialog/MainMenuView.tsx:138
 msgid "Credits"
 msgstr "Credits"
 
 #: src/components/character/CrownOfTheQueen.tsx:22
-#: src/pages/BookClubMaven.tsx:131
+#: src/pages/BookClubMaven.tsx:128
 msgid "Crown of the Queen"
 msgstr "Crown of the Queen"
 
 #: src/components/character/CrownOfTheVoid.tsx:24
-#: src/pages/BookClubMaven.tsx:133
-#: src/pages/BookClubOverview.tsx:1580
+#: src/pages/BookClubMaven.tsx:130
+#: src/pages/BookClubOverview.tsx:1864
 msgid "Crown of the Void"
 msgstr "Crown of the Void"
 
-#: src/pages/BookClubOverview.tsx:68
+#: src/pages/BookClubOverview.tsx:84
 msgid "Curling tentacles"
 msgstr "Curling tentacles"
 
-#: src/pages/BookClubOverview.tsx:1365
-msgid "Current mystery"
-msgstr "Current mystery"
+#: src/pages/BookClubOverview.tsx:1405
+#~ msgid "Current mystery"
+#~ msgstr "Current mystery"
 
-#: src/pages/BookClubOverview.tsx:886
+#: src/pages/BookClubOverview.tsx:873
 msgid "Custom D6 roll"
 msgstr "Custom D6 roll"
 
-#: src/pages/BookClubOverview.tsx:490
+#: src/pages/BookClubOverview.tsx:1546
+#: src/pages/BookClubOverview.tsx:1552
+msgid "Customize"
+msgstr "Customize"
+
+#: src/pages/BookClubOverview.tsx:431
 msgid "Cycle background"
 msgstr "Cycle background"
 
-#: src/pages/BookClubOverview.tsx:506
+#: src/pages/BookClubOverview.tsx:447
 msgid "Cycle card corners"
 msgstr "Cycle card corners"
+
+#: src/components/PageNavigator.tsx:15
+msgid "Dark Conspiracy"
+msgstr "Dark Conspiracy"
 
 #: src/game_data.ts:162
 msgid "Dark conspiracy informant helps with Void Clues"
 msgstr "Dark conspiracy informant helps with Void Clues"
+
+#: src/pages/DarkConspiracySheet.tsx:178
+msgid "Dark conspiracy loaded."
+msgstr "Dark conspiracy loaded."
 
 #: src/game_data.ts:245
 msgid "Declare an absolute truth about a Suspect from their appearance"
@@ -922,19 +1005,19 @@ msgstr "Declare an absolute truth about a Suspect from their appearance"
 #: src/components/cookie-consent.tsx:157
 #: src/components/cookie-consent.tsx:190
 #: src/components/cookie-consent.tsx:192
-#: src/pages/BookClubOverview.tsx:702
+#: src/pages/BookClubOverview.tsx:684
 msgid "Decline"
 msgstr "Decline"
 
-#: src/pages/MysteriesPage.tsx:142
-#: src/pages/MysteriesPage.tsx:143
+#: src/pages/MysteriesPage.tsx:140
+#: src/pages/MysteriesPage.tsx:141
 msgid "Decrease complexity"
 msgstr "Decrease complexity"
 
-#: src/pages/MysteriesPage.tsx:830
-#: src/pages/MysteriesPage.tsx:883
-#: src/pages/MysteriesPage.tsx:920
-#: src/pages/TheorizeBoard.tsx:1237
+#: src/pages/MysteriesPage.tsx:680
+#: src/pages/MysteriesPage.tsx:733
+#: src/pages/MysteriesPage.tsx:770
+#: src/pages/TheorizeBoard.tsx:1665
 msgid "Delete"
 msgstr "Delete"
 
@@ -946,7 +1029,8 @@ msgstr "Delete"
 msgid "Delete \"{characterName}\""
 msgstr "Delete \"{characterName}\""
 
-#: src/pages/BookClubOverview.tsx:1114
+#: src/pages/BookClubOverview.tsx:1100
+#: src/pages/BookClubOverview.tsx:1105
 msgid "Delete Book Club"
 msgstr "Delete Book Club"
 
@@ -954,7 +1038,7 @@ msgstr "Delete Book Club"
 msgid "Delete Character"
 msgstr "Delete Character"
 
-#: src/pages/TheorizeBoard.tsx:954
+#: src/pages/TheorizeBoard.tsx:1264
 msgid "Delete connection"
 msgstr "Delete connection"
 
@@ -962,23 +1046,36 @@ msgstr "Delete connection"
 #~ msgid "Delete forever"
 #~ msgstr "Delete forever"
 
+#: src/pages/MysteriesPage.tsx:340
+msgid "Delete mystery"
+msgstr "Delete mystery"
+
+#: src/pages/TheorizeBoard.tsx:1596
+msgid "Delete note"
+msgstr "Delete note"
+
+#: src/pages/TheorizeBoard.tsx:1644
+msgid "Delete this note?"
+msgstr "Delete this note?"
+
 #: src/pages/BookClubOverview.tsx:1045
 #~ msgid "Deleting a Book Club removes its shared mysteries, clues, rolls, and notes for everyone."
 #~ msgstr "Deleting a Book Club removes its shared mysteries, clues, rolls, and notes for everyone."
 
-#: src/pages/MysteriesPage.tsx:619
-#: src/pages/MysteriesPage.tsx:695
-#: src/pages/MysteriesPage.tsx:767
-#: src/pages/MysteriesPage.tsx:809
+#: src/pages/BookClubOverview.tsx:1635
+#: src/pages/MysteriesPage.tsx:469
+#: src/pages/MysteriesPage.tsx:545
+#: src/pages/MysteriesPage.tsx:617
+#: src/pages/MysteriesPage.tsx:659
 msgid "Description"
 msgstr "Description"
 
-#: src/pages/TheorizeBoard.tsx:1165
-#: src/pages/TheorizeBoard.tsx:1214
+#: src/pages/TheorizeBoard.tsx:1513
+#: src/pages/TheorizeBoard.tsx:1568
 msgid "Description (optional)"
 msgstr "Description (optional)"
 
-#: src/components/MenuDialog/MainMenuView.tsx:63
+#: src/components/MenuDialog/MainMenuView.tsx:71
 msgid "Deutsch"
 msgstr "Deutsch"
 
@@ -986,7 +1083,7 @@ msgstr "Deutsch"
 #~ msgid "Dice"
 #~ msgstr "Dice"
 
-#: src/components/character/DiceRoller.tsx:191
+#: src/components/character/DiceRoller.tsx:198
 msgid "Dice Roller"
 msgstr "Dice Roller"
 
@@ -1018,7 +1115,7 @@ msgstr "Did you share your wisdom with a young person?"
 msgid "Did you show someone that you've \"still got it?\""
 msgstr "Did you show someone that you've \"still got it?\""
 
-#: src/components/character/DiceRoller.tsx:51
+#: src/components/character/DiceRoller.tsx:53
 msgid "disadvantage"
 msgstr "disadvantage"
 
@@ -1034,11 +1131,11 @@ msgstr "Dorothy Zbornak"
 #~ msgid "Double click to name this connection"
 #~ msgstr "Double click to name this connection"
 
-#: src/components/MenuDialog/MainMenuView.tsx:71
+#: src/components/MenuDialog/MainMenuView.tsx:91
 msgid "Download PDF"
 msgstr "Download PDF"
 
-#: src/components/MenuDialog/MainMenuView.tsx:89
+#: src/components/MenuDialog/MainMenuView.tsx:109
 msgid "Download save file"
 msgstr "Download save file"
 
@@ -1046,7 +1143,7 @@ msgstr "Download save file"
 #~ msgid "Drag a note to move it. Drag a dot to connect it."
 #~ msgstr "Drag a note to move it. Drag a dot to connect it."
 
-#: src/pages/TheorizeBoard.tsx:805
+#: src/pages/TheorizeBoard.tsx:1088
 msgid "Drag the board to move around. Drag a link handle to connect notes."
 msgstr "Drag the board to move around. Drag a link handle to connect notes."
 
@@ -1054,24 +1151,28 @@ msgstr "Drag the board to move around. Drag a link handle to connect notes."
 #~ msgid "Drag the board to move around. Drag a pin to connect notes."
 #~ msgstr "Drag the board to move around. Drag a pin to connect notes."
 
-#: src/pages/TheorizeBoard.tsx:1061
+#: src/pages/TheorizeBoard.tsx:1389
 msgid "Drag to connect notes"
 msgstr "Drag to connect notes"
+
+#: src/components/MenuDialog/MainMenuView.tsx:116
+msgid "Drop a save file here, or paste a JSON file."
+msgstr "Drop a save file here, or paste a JSON file."
 
 #: src/game_data.ts:261
 msgid "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 
-#: src/pages/TheorizeBoard.tsx:1191
+#: src/pages/TheorizeBoard.tsx:1544
 msgid "Edit note"
 msgstr "Edit note"
 
-#: src/components/MenuDialog/MeView.tsx:89
+#: src/components/MenuDialog/MeView.tsx:97
 msgid "Email"
 msgstr "Email"
 
 #: src/components/character/EndOfSession.tsx:21
-#: src/pages/BookClubMaven.tsx:129
+#: src/pages/BookClubMaven.tsx:126
 msgid "End of Session"
 msgstr "End of Session"
 
@@ -1079,7 +1180,7 @@ msgstr "End of Session"
 msgid "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 msgstr "End of Session: \"Did you inflict extrajudicial punishment on a wrongdoer?\""
 
-#: src/components/MenuDialog/MainMenuView.tsx:60
+#: src/components/MenuDialog/MainMenuView.tsx:68
 msgid "English"
 msgstr "English"
 
@@ -1091,15 +1192,15 @@ msgstr "Enter any place freely at night"
 msgid "Enter any place freely during the day"
 msgstr "Enter any place freely during the day"
 
-#: src/pages/MysteriesPage.tsx:572
+#: src/pages/MysteriesPage.tsx:422
 msgid "Establishing questions (one per line)"
 msgstr "Establishing questions (one per line)"
 
-#: src/pages/BookClubOverview.tsx:1293
+#: src/pages/BookClubOverview.tsx:1349
 msgid "Everyone in the club can read and edit this."
 msgstr "Everyone in the club can read and edit this."
 
-#: src/pages/TheorizeBoard.tsx:1306
+#: src/pages/TheorizeBoard.tsx:1724
 msgid "Existing tags"
 msgstr "Existing tags"
 
@@ -1107,19 +1208,31 @@ msgstr "Existing tags"
 msgid "Extraordinary cat companion for advantage that never gets marked"
 msgstr "Extraordinary cat companion for advantage that never gets marked"
 
-#: src/components/character/DiceRoller.tsx:21
+#: src/components/character/DiceRoller.tsx:23
 msgid "Failure"
 msgstr "Failure"
+
+#: src/components/PageNavigator.tsx:61
+msgid "Find a page. Use the arrow keys and Enter to open it."
+msgstr "Find a page. Use the arrow keys and Enter to open it."
 
 #: src/game_data.ts:117
 msgid "Find an additional Clue when Meddling among the rich and famous once per mystery"
 msgstr "Find an additional Clue when Meddling among the rich and famous once per mystery"
 
-#: src/pages/BookClubOverview.tsx:1090
+#: src/pages/BookClubOverview.tsx:1482
+msgid "Found clues"
+msgstr "Found clues"
+
+#: src/pages/BookClubOverview.tsx:1486
+msgid "Found Void Clues"
+msgstr "Found Void Clues"
+
+#: src/pages/BookClubOverview.tsx:1077
 msgid "Game Master"
 msgstr "Game Master"
 
-#: src/pages/BookClubOverview.tsx:386
+#: src/pages/BookClubOverview.tsx:326
 msgid "Game Master updated"
 msgstr "Game Master updated"
 
@@ -1127,7 +1240,7 @@ msgstr "Game Master updated"
 msgid "Gardening"
 msgstr "Gardening"
 
-#: src/pages/BookClubOverview.tsx:1508
+#: src/pages/BookClubOverview.tsx:1791
 msgid "Gather a Book Club"
 msgstr "Gather a Book Club"
 
@@ -1139,9 +1252,15 @@ msgstr "Gather a Book Club"
 #~ msgid "GM"
 #~ msgstr "GM"
 
-#: src/pages/BookClubOverview.tsx:1456
+#: src/pages/BookClubOverview.tsx:1732
 msgid "Go to a Book Club tool"
 msgstr "Go to a Book Club tool"
+
+#: src/components/MenuDialog/MainMenuView.tsx:80
+#: src/components/MenuDialog/MainMenuView.tsx:81
+#: src/pages/BookClubOverview.tsx:1771
+msgid "Go to a page"
+msgstr "Go to a page"
 
 #: src/pages/SignInPage.tsx:54
 msgid "Go to my sheet"
@@ -1151,13 +1270,13 @@ msgstr "Go to my sheet"
 msgid "Goin' Fishin'"
 msgstr "Goin' Fishin'"
 
-#: src/pages/BookClubOverview.tsx:62
+#: src/pages/BookClubOverview.tsx:78
 msgid "Harbor sunset"
 msgstr "Harbor sunset"
 
-#: src/pages/TheorizeBoard.tsx:1095
-msgid "Has a description"
-msgstr "Has a description"
+#: src/pages/TheorizeBoard.tsx:1400
+#~ msgid "Has a description"
+#~ msgstr "Has a description"
 
 #: src/components/cookie-consent.tsx:28
 msgid "Have some cookies from grandma's jar!"
@@ -1179,11 +1298,11 @@ msgstr "Hereafter, during cozy vignettes focused on you or Cozy Move scenes invo
 msgid "Hippy Dippy"
 msgstr "Hippy Dippy"
 
-#: src/pages/TheorizeBoard.tsx:1197
+#: src/pages/TheorizeBoard.tsx:1550
 msgid "Hover over a note to read its description."
 msgstr "Hover over a note to read its description."
 
-#: src/pages/BookClubOverview.tsx:889
+#: src/pages/BookClubOverview.tsx:876
 msgid "How many dice?"
 msgstr "How many dice?"
 
@@ -1200,8 +1319,8 @@ msgstr "Improvise with objects for automatic 12+"
 msgid "Increase an ability modifier by 1 (max +3)."
 msgstr "Increase an ability modifier by 1 (max +3)."
 
-#: src/pages/MysteriesPage.tsx:131
-#: src/pages/MysteriesPage.tsx:132
+#: src/pages/MysteriesPage.tsx:129
+#: src/pages/MysteriesPage.tsx:130
 msgid "Increase complexity"
 msgstr "Increase complexity"
 
@@ -1229,24 +1348,31 @@ msgstr "Instincts for the strange, spiritual, and occult forces at work."
 msgid "Introduce trivia as a Clue once per mystery"
 msgstr "Introduce trivia as a Clue once per mystery"
 
-#: src/pages/MysteriesPage.tsx:550
+#: src/pages/MysteriesPage.tsx:400
 msgid "Introduction"
 msgstr "Introduction"
 
-#: src/components/MenuDialog/MenuDialog.tsx:129
-#: src/components/MenuDialog/MenuDialog.tsx:179
+#: src/components/MenuDialog/MenuDialog.tsx:137
 msgid "Invalid character data format: {errorMessages}"
 msgstr "Invalid character data format: {errorMessages}"
 
-#: src/pages/BookClubOverview.tsx:358
+#: src/pages/DarkConspiracySheet.tsx:165
+msgid "Invalid dark conspiracy save file."
+msgstr "Invalid dark conspiracy save file."
+
+#: src/pages/DarkConspiracySheet.tsx:180
+msgid "Invalid JSON file format."
+msgstr "Invalid JSON file format."
+
+#: src/pages/BookClubOverview.tsx:298
 msgid "Invitation declined"
 msgstr "Invitation declined"
 
-#: src/pages/BookClubOverview.tsx:334
+#: src/pages/BookClubOverview.tsx:274
 msgid "Invitation sent"
 msgstr "Invitation sent"
 
-#: src/pages/BookClubOverview.tsx:674
+#: src/pages/BookClubOverview.tsx:656
 msgid "Invite"
 msgstr "Invite"
 
@@ -1258,23 +1384,23 @@ msgstr "Invite"
 #~ msgid "Invite by their unique profile nickname."
 #~ msgstr "Invite by their unique profile nickname."
 
-#: src/pages/BookClubOverview.tsx:345
+#: src/pages/BookClubOverview.tsx:285
 msgid "Invite link copied"
 msgstr "Invite link copied"
 
-#: src/pages/BookClubOverview.tsx:655
+#: src/pages/BookClubOverview.tsx:637
 msgid "Invite players"
 msgstr "Invite players"
 
-#: src/pages/BookClubOverview.tsx:668
+#: src/pages/BookClubOverview.tsx:650
 msgid "Invite with nickname"
 msgstr "Invite with nickname"
 
-#: src/pages/BookClubOverview.tsx:695
+#: src/pages/BookClubOverview.tsx:677
 msgid "invited you to"
 msgstr "invited you to"
 
-#: src/pages/BookClubOverview.tsx:1282
+#: src/pages/BookClubOverview.tsx:1338
 msgid "is writing"
 msgstr "is writing"
 
@@ -1282,11 +1408,11 @@ msgstr "is writing"
 msgid "Jackie O"
 msgstr "Jackie O"
 
-#: src/pages/BookClubOverview.tsx:358
+#: src/pages/BookClubOverview.tsx:298
 msgid "Joined Book Club"
 msgstr "Joined Book Club"
 
-#: src/pages/BookClubOverview.tsx:97
+#: src/pages/BookClubOverview.tsx:113
 msgid "just now"
 msgstr "just now"
 
@@ -1294,7 +1420,11 @@ msgstr "just now"
 #~ msgid "Keep Book Club"
 #~ msgstr "Keep Book Club"
 
-#: src/pages/MysteriesPage.tsx:520
+#: src/pages/TheorizeBoard.tsx:1658
+msgid "Keep note"
+msgstr "Keep note"
+
+#: src/pages/MysteriesPage.tsx:370
 msgid "Keeper's private casebook"
 msgstr "Keeper's private casebook"
 
@@ -1302,15 +1432,19 @@ msgstr "Keeper's private casebook"
 msgid "Knitting"
 msgstr "Knitting"
 
+#: src/components/MenuDialog/MainMenuView.tsx:61
+msgid "Language"
+msgstr "Language"
+
 #: src/pages/MysteriesPage.tsx:716
 #~ msgid "Last 10 auto-saves and 10 manual saves are preserved."
 #~ msgstr "Last 10 auto-saves and 10 manual saves are preserved."
 
-#: src/pages/MysteriesPage.tsx:850
+#: src/pages/MysteriesPage.tsx:700
 msgid "Last 10 versions preserved."
 msgstr "Last 10 versions preserved."
 
-#: src/pages/MysteriesPage.tsx:852
+#: src/pages/MysteriesPage.tsx:702
 msgid "Latest version is updated with auto-save."
 msgstr "Latest version is updated with auto-save."
 
@@ -1318,41 +1452,46 @@ msgstr "Latest version is updated with auto-save."
 msgid "Lavish Cozy Little Place: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, and House Boy"
 msgstr "Lavish Cozy Little Place: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, and House Boy"
 
-#: src/pages/BookClubOverview.tsx:71
+#: src/pages/BookClubOverview.tsx:87
 msgid "Little biscuits"
 msgstr "Little biscuits"
 
-#: src/components/MenuDialog/MainMenuView.tsx:93
+#: src/components/MenuDialog/MainMenuView.tsx:113
 msgid "Load from save file"
 msgstr "Load from save file"
+
+#: src/pages/DarkConspiracySheet.tsx:235
+msgid "Load JSON"
+msgstr "Load JSON"
 
 #: src/components/AuthButton.tsx:29
 msgid "Loading..."
 msgstr "Loading..."
 
-#: src/pages/BookClubMaven.tsx:100
+#: src/pages/BookClubMaven.tsx:97
 msgid "Loading…"
 msgstr "Loading…"
 
-#: src/components/AuthButton.tsx:70
+#: src/components/AuthButton.tsx:83
 #: src/pages/SignInPage.tsx:58
 msgid "Local Sign In"
 msgstr "Local Sign In"
 
-#: src/pages/LibraryPage.tsx:112
-#: src/pages/MysteriesPage.tsx:581
+#: src/pages/LibraryPage.tsx:226
+#: src/pages/LibraryPage.tsx:289
+#: src/pages/MysteriesPage.tsx:431
 msgid "Locations"
 msgstr "Locations"
 
-#: src/components/MenuDialog/MeView.tsx:76
+#: src/components/MenuDialog/MeView.tsx:84
 msgid "Logout"
 msgstr "Logout"
 
-#: src/pages/BookClubOverview.tsx:812
+#: src/pages/BookClubOverview.tsx:799
 msgid "Make active"
 msgstr "Make active"
 
-#: src/pages/BookClubOverview.tsx:90
+#: src/pages/BookClubOverview.tsx:106
 msgid "Manage this Book Club"
 msgstr "Manage this Book Club"
 
@@ -1360,19 +1499,19 @@ msgstr "Manage this Book Club"
 #~ msgid "Manage your character and game settings."
 #~ msgstr "Manage your character and game settings."
 
-#: src/components/MenuDialog/MainMenuView.tsx:48
+#: src/components/MenuDialog/MainMenuView.tsx:51
 msgid "Manage your character and settings."
 msgstr "Manage your character and settings."
 
-#: src/components/MenuDialog/MeView.tsx:81
+#: src/components/MenuDialog/MeView.tsx:89
 msgid "Manage your profile settings."
 msgstr "Manage your profile settings."
 
-#: src/pages/MysteriesPage.tsx:865
+#: src/pages/MysteriesPage.tsx:715
 msgid "Manual save"
 msgstr "Manual save"
 
-#: src/pages/MysteriesPage.tsx:337
+#: src/pages/MysteriesPage.tsx:246
 msgid "Manual version saved."
 msgstr "Manual version saved."
 
@@ -1393,12 +1532,12 @@ msgstr "Master of disguise with any needed ID"
 #~ msgstr "Maven"
 
 #: src/components/character/MavenMoves.tsx:16
-#: src/pages/BookClubMaven.tsx:128
-#: src/pages/BookClubOverview.tsx:1575
+#: src/pages/BookClubMaven.tsx:125
+#: src/pages/BookClubOverview.tsx:1859
 msgid "Maven Moves"
 msgstr "Maven Moves"
 
-#: src/components/AuthButton.tsx:45
+#: src/components/AuthButton.tsx:57
 msgid "Me"
 msgstr "Me"
 
@@ -1406,33 +1545,39 @@ msgstr "Me"
 msgid "Medical background and Medical Bag that never gets marked"
 msgstr "Medical background and Medical Bag that never gets marked"
 
-#: src/pages/BookClubOverview.tsx:1102
+#: src/pages/BookClubOverview.tsx:1089
 msgid "Member"
 msgstr "Member"
 
-#: src/pages/CharacterSheet.tsx:181
-#: src/pages/CharacterSheet.tsx:195
+#: src/pages/CharacterSheet.tsx:185
+#: src/pages/CharacterSheet.tsx:199
 msgid "Menu"
 msgstr "Menu"
 
-#: src/pages/BookClubOverview.tsx:64
+#: src/pages/BookClubOverview.tsx:80
 msgid "Midnight meeting"
 msgstr "Midnight meeting"
 
-#: src/pages/MysteriesPage.tsx:783
+#: src/pages/MysteriesPage.tsx:633
 msgid "Moments"
 msgstr "Moments"
 
-#: src/pages/BookClubOverview.tsx:65
+#: src/pages/BookClubOverview.tsx:81
 msgid "Moonlit pier"
 msgstr "Moonlit pier"
 
-#: src/pages/LibraryPage.tsx:75
+#: src/components/PageNavigator.tsx:14
+msgid "My Maven"
+msgstr "My Maven"
+
+#: src/components/PageNavigator.tsx:17
+#: src/pages/LibraryPage.tsx:159
+#: src/pages/LibraryPage.tsx:181
 msgid "My mysteries"
 msgstr "My mysteries"
 
-#: src/components/MenuDialog/MainMenuView.tsx:83
-#: src/pages/MysteriesPage.tsx:487
+#: src/components/MenuDialog/MainMenuView.tsx:103
+#: src/pages/MysteriesPage.tsx:323
 msgid "Mysteries"
 msgstr "Mysteries"
 
@@ -1440,40 +1585,49 @@ msgstr "Mysteries"
 msgid "Mysterious answering machine messages give tasks for XP"
 msgstr "Mysterious answering machine messages give tasks for XP"
 
-#: src/pages/BookClubOverview.tsx:80
+#: src/pages/BookClubOverview.tsx:96
 msgid "Mystery"
 msgstr "Mystery"
 
-#: src/pages/LibraryPage.tsx:66
+#: src/pages/LibraryPage.tsx:147
 msgid "Mystery approved."
 msgstr "Mystery approved."
+
+#: src/pages/BookClubOverview.tsx:1493
+msgid "Mystery clues"
+msgstr "Mystery clues"
 
 #: src/pages/BookClubOverview.tsx:255
 #~ msgid "Mystery created"
 #~ msgstr "Mystery created"
 
-#: src/pages/MysteriesPage.tsx:383
+#: src/pages/MysteriesPage.tsx:270
 msgid "Mystery deleted."
 msgstr "Mystery deleted."
 
-#: src/pages/BookClubOverview.tsx:395
+#: src/pages/BookClubOverview.tsx:335
 msgid "Mystery is now active"
 msgstr "Mystery is now active"
 
-#: src/pages/BookClubOverview.tsx:838
+#: src/pages/BookClubOverview.tsx:825
 msgid "Mystery library"
 msgstr "Mystery library"
 
-#: src/pages/MysteriesPage.tsx:395
+#: src/components/PageNavigator.tsx:18
+msgid "Mystery Library"
+msgstr "Mystery Library"
+
+#: src/hooks/useMysteryPreservation.ts:29
+#: src/pages/MysteriesPage.tsx:275
 msgid "Mystery restored."
 msgstr "Mystery restored."
 
-#: src/pages/MysteriesPage.tsx:523
+#: src/pages/MysteriesPage.tsx:373
 msgid "Mystery title"
 msgstr "Mystery title"
 
 #: src/components/character/Name.tsx:21
-#: src/pages/MysteriesPage.tsx:672
+#: src/pages/MysteriesPage.tsx:522
 msgid "Name"
 msgstr "Name"
 
@@ -1494,44 +1648,50 @@ msgstr "Narrate the killer's flashback to define a Clue once per mystery"
 #~ msgid "New Book Club name"
 #~ msgstr "New Book Club name"
 
-#: src/components/MenuDialog/MeView.tsx:94
-#: src/pages/BookClubOverview.tsx:669
+#: src/components/MenuDialog/MeView.tsx:102
+#: src/pages/BookClubOverview.tsx:651
 msgid "Nickname"
 msgstr "Nickname"
 
-#: src/pages/BookClubOverview.tsx:788
+#: src/pages/BookClubOverview.tsx:775
 msgid "No active mystery"
 msgstr "No active mystery"
 
-#: src/pages/LibraryPage.tsx:130
+#: src/pages/LibraryPage.tsx:308
 msgid "No approved mysteries have reached the shelves yet."
 msgstr "No approved mysteries have reached the shelves yet."
 
-#: src/pages/BookClubOverview.tsx:1593
+#: src/pages/BookClubOverview.tsx:1877
 msgid "No available items"
 msgstr "No available items"
 
-#: src/pages/BookClubOverview.tsx:1427
+#: src/pages/BookClubOverview.tsx:1569
+#: src/pages/BookClubOverview.tsx:1703
 msgid "No clues yet."
 msgstr "No clues yet."
 
-#: src/pages/LibraryPage.tsx:144
+#: src/pages/LibraryPage.tsx:322
 msgid "No introduction has been written."
 msgstr "No introduction has been written."
+
+#: src/components/PageNavigator.tsx:108
+msgid "No matching pages. Try another name."
+msgstr "No matching pages. Try another name."
 
 #: src/pages/BookClubOverview.tsx:499
 #~ msgid "No Mavens have been brought to this Book Club yet."
 #~ msgstr "No Mavens have been brought to this Book Club yet."
 
-#: src/pages/LibraryPage.tsx:153
+#: src/pages/LibraryPage.tsx:331
 msgid "No mysteries await approval."
 msgstr "No mysteries await approval."
 
-#: src/pages/BookClubOverview.tsx:819
+#: src/pages/BookClubOverview.tsx:806
 msgid "No mysteries have been added yet."
 msgstr "No mysteries have been added yet."
 
-#: src/pages/MysteriesPage.tsx:510
+#: src/pages/LibraryPage.tsx:248
+#: src/pages/MysteriesPage.tsx:360
 msgid "No mysteries yet. Start with a fresh sheet."
 msgstr "No mysteries yet. Start with a fresh sheet."
 
@@ -1539,7 +1699,7 @@ msgstr "No mysteries yet. Start with a fresh sheet."
 #~ msgid "No mystery is active."
 #~ msgstr "No mystery is active."
 
-#: src/pages/BookClubOverview.tsx:1391
+#: src/pages/BookClubOverview.tsx:1592
 msgid "No other Void Clues yet."
 msgstr "No other Void Clues yet."
 
@@ -1547,7 +1707,7 @@ msgstr "No other Void Clues yet."
 #~ msgid "No rolls yet"
 #~ msgstr "No rolls yet"
 
-#: src/pages/BookClubOverview.tsx:958
+#: src/pages/BookClubOverview.tsx:945
 msgid "No rolls yet. Be the first to tempt fate."
 msgstr "No rolls yet. Be the first to tempt fate."
 
@@ -1555,29 +1715,33 @@ msgstr "No rolls yet. Be the first to tempt fate."
 #~ msgid "No rolls yet. Share a roll from a Maven’s sheet to add it here."
 #~ msgstr "No rolls yet. Share a roll from a Maven’s sheet to add it here."
 
-#: src/pages/BookClubOverview.tsx:1584
+#: src/pages/BookClubOverview.tsx:1868
 msgid "None active"
 msgstr "None active"
 
-#: src/pages/BookClubMaven.tsx:155
-#: src/pages/BookClubOverview.tsx:1572
-#: src/pages/BookClubOverview.tsx:1577
+#: src/pages/BookClubMaven.tsx:152
+#: src/pages/BookClubOverview.tsx:1856
+#: src/pages/BookClubOverview.tsx:1861
 msgid "None recorded"
 msgstr "None recorded"
 
-#: src/pages/BookClubOverview.tsx:1007
+#: src/pages/BookClubOverview.tsx:994
 msgid "Not in this club"
 msgstr "Not in this club"
 
-#: src/pages/BookClubOverview.tsx:88
+#: src/pages/BookClubOverview.tsx:104
 msgid "Notes"
 msgstr "Notes"
 
-#: src/pages/TheorizeBoard.tsx:1135
+#: src/pages/TheorizeBoard.tsx:664
+msgid "Notes aligned"
+msgstr "Notes aligned"
+
+#: src/pages/TheorizeBoard.tsx:1462
 msgid "Notes are shared with everyone in this Book Club."
 msgstr "Notes are shared with everyone in this Book Club."
 
-#: src/components/MenuDialog/MainMenuView.tsx:102
+#: src/components/MenuDialog/MainMenuView.tsx:125
 msgid "Odin's Blog"
 msgstr "Odin's Blog"
 
@@ -1617,20 +1781,24 @@ msgstr "Once per mystery, you can take a 12+ on a single roll related to a wild 
 #~ msgid "Only Mavens at this Book Club can share their rolls with the table."
 #~ msgstr "Only Mavens at this Book Club can share their rolls with the table."
 
-#: src/pages/BookClubOverview.tsx:1084
+#: src/pages/BookClubOverview.tsx:1071
 msgid "Only the club owner can change this."
 msgstr "Only the club owner can change this."
+
+#: src/pages/BookClubOverview.tsx:1497
+msgid "Only the GM can see unrevealed clues."
+msgstr "Only the GM can see unrevealed clues."
 
 #: src/pages/TheorizeBoard.tsx:1136
 #~ msgid "Only the title and tags appear on the canvas."
 #~ msgstr "Only the title and tags appear on the canvas."
 
-#: src/pages/BookClubOverview.tsx:1331
+#: src/pages/BookClubOverview.tsx:1387
 msgid "Only you can see these notes."
 msgstr "Only you can see these notes."
 
 #. placeholder {0}: characterName(character)
-#: src/pages/BookClubOverview.tsx:1557
+#: src/pages/BookClubOverview.tsx:1841
 msgid "Open {0}’s character sheet"
 msgstr "Open {0}’s character sheet"
 
@@ -1642,25 +1810,52 @@ msgstr "Open {0}’s character sheet"
 #~ msgid "Open another board…"
 #~ msgstr "Open another board…"
 
-#: src/pages/BookClubOverview.tsx:1369
-msgid "Open clue canvas"
-msgstr "Open clue canvas"
+#: src/pages/BookClubOverview.tsx:1365
+#~ msgid "Open clue canvas"
+#~ msgstr "Open clue canvas"
 
 #: src/pages/BookClubOverview.tsx:1551
 #~ msgid "Open my sheet"
 #~ msgstr "Open my sheet"
 
-#: src/pages/TheorizeBoard.tsx:851
+#: src/pages/LibraryPage.tsx:211
+#: src/pages/LibraryPage.tsx:239
+#: src/pages/MysteriesPage.tsx:338
+msgid "Open mystery"
+msgstr "Open mystery"
+
+#: src/components/MenuDialog/MenuDialog.tsx:270
+msgid "Opening save file…"
+msgstr "Opening save file…"
+
+#: src/pages/TheorizeBoard.tsx:1161
 msgid "Opening the case files…"
 msgstr "Opening the case files…"
+
+#: src/pages/LibraryPage.tsx:263
+msgid "Opening the library…"
+msgstr "Opening the library…"
+
+#: src/pages/LibraryPage.tsx:200
+msgid "Opening your casebook…"
+msgstr "Opening your casebook…"
 
 #: src/game_data.ts:172
 msgid "Opposite sibling for help, gives advantage (but helps at a cost)"
 msgstr "Opposite sibling for help, gives advantage (but helps at a cost)"
 
-#: src/pages/TheorizeBoard.tsx:57
+#: src/pages/TheorizeBoard.tsx:74
 msgid "Other"
 msgstr "Other"
+
+#: src/pages/TheorizeBoard.tsx:1127
+#: src/pages/TheorizeBoard.tsx:1131
+msgid "Overview"
+msgstr "Overview"
+
+#: src/components/PageNavigator.tsx:89
+msgid "Pages"
+msgstr "Pages"
 
 #: src/game_data.ts:103
 msgid "Painting"
@@ -1678,25 +1873,29 @@ msgstr "Pass for younger with advantage on rolls"
 msgid "Physical grit, stamina, athletic feats, and raw strength."
 msgstr "Physical grit, stamina, athletic feats, and raw strength."
 
-#: src/components/character/DiceRoller.tsx:35
+#: src/components/character/DiceRoller.tsx:37
 msgid "Plain success"
 msgstr "Plain success"
 
-#: src/pages/BookClubOverview.tsx:529
+#: src/pages/BookClubOverview.tsx:478
 msgid "player"
 msgstr "player"
 
-#: src/pages/BookClubOverview.tsx:1101
-#: src/pages/BookClubOverview.tsx:1320
-#: src/pages/BookClubOverview.tsx:1566
+#: src/pages/BookClubOverview.tsx:1088
+#: src/pages/BookClubOverview.tsx:1376
+#: src/pages/BookClubOverview.tsx:1850
 msgid "Player"
 msgstr "Player"
 
-#: src/pages/BookClubOverview.tsx:529
+#: src/pages/BookClubOverview.tsx:478
 msgid "players"
 msgstr "players"
 
-#: src/components/MenuDialog/MeView.tsx:158
+#: src/pages/BookClubOverview.tsx:1617
+msgid "Players will see this description in found clues and on the canvas."
+msgstr "Players will see this description in found clues and on the canvas."
+
+#: src/components/MenuDialog/MeView.tsx:166
 msgid "Please sign in to view your profile."
 msgstr "Please sign in to view your profile."
 
@@ -1704,7 +1903,7 @@ msgstr "Please sign in to view your profile."
 msgid "Pottery"
 msgstr "Pottery"
 
-#: src/lib/character_store.ts:33
+#: src/lib/character_store.ts:36
 msgid "Presence"
 msgstr "Presence"
 
@@ -1712,27 +1911,31 @@ msgstr "Presence"
 #~ msgid "Previous mysteries:"
 #~ msgstr "Previous mysteries:"
 
-#: src/pages/BookClubOverview.tsx:1328
+#: src/pages/TheorizeBoard.tsx:718
+msgid "Previous positions restored"
+msgstr "Previous positions restored"
+
+#: src/pages/BookClubOverview.tsx:1384
 msgid "Private notebook"
 msgstr "Private notebook"
 
-#: src/components/MenuDialog/MeView.tsx:66
+#: src/components/MenuDialog/MeView.tsx:74
 msgid "Profile"
 msgstr "Profile"
 
-#: src/pages/MysteriesPage.tsx:631
+#: src/pages/MysteriesPage.tsx:481
 msgid "Prompt"
 msgstr "Prompt"
 
-#: src/pages/MysteriesPage.tsx:495
+#: src/pages/MysteriesPage.tsx:331
 msgid "Public Library"
 msgstr "Public Library"
 
-#: src/pages/MysteriesPage.tsx:535
+#: src/pages/MysteriesPage.tsx:385
 msgid "Publish"
 msgstr "Publish"
 
-#: src/pages/MysteriesPage.tsx:885
+#: src/pages/MysteriesPage.tsx:735
 msgid "Publish mystery"
 msgstr "Publish mystery"
 
@@ -1744,11 +1947,11 @@ msgstr "Queen SVG by <0>Darius Dan on svgrepo</0>."
 msgid "Quilting"
 msgstr "Quilting"
 
-#: src/pages/MysteriesPage.tsx:707
+#: src/pages/MysteriesPage.tsx:557
 msgid "Quote"
 msgstr "Quote"
 
-#: src/lib/character_store.ts:32
+#: src/lib/character_store.ts:35
 msgid "Reason"
 msgstr "Reason"
 
@@ -1756,7 +1959,7 @@ msgstr "Reason"
 msgid "Receive mysterious Clues each session"
 msgstr "Receive mysterious Clues each session"
 
-#: src/pages/BookClubOverview.tsx:939
+#: src/pages/BookClubOverview.tsx:926
 msgid "Recent rolls"
 msgstr "Recent rolls"
 
@@ -1764,58 +1967,63 @@ msgstr "Recent rolls"
 #~ msgid "Recent table rolls"
 #~ msgstr "Recent table rolls"
 
-#: src/pages/TheorizeBoard.tsx:819
-#: src/pages/TheorizeBoard.tsx:822
-msgid "Recenter and reset zoom"
-msgstr "Recenter and reset zoom"
+#: src/pages/TheorizeBoard.tsx:933
+#: src/pages/TheorizeBoard.tsx:937
+#~ msgid "Recenter and reset zoom"
+#~ msgstr "Recenter and reset zoom"
 
 #: src/pages/BookClubOverview.tsx:290
 #~ msgid "Refresh"
 #~ msgstr "Refresh"
 
+#: src/pages/TheorizeBoard.tsx:638
+msgid "Refresh board"
+msgstr "Refresh board"
+
 #: src/hooks/useBackendDarkConspiraciesSync.ts:112
-#: src/hooks/useCharacterSave.ts:52
+#: src/hooks/useMysteryPreservation.ts:25
+#: src/lib/maven_runtime.ts:28
 msgid "Reload"
 msgstr "Reload"
 
-#: src/pages/BookClubOverview.tsx:1015
-#: src/pages/MysteriesPage.tsx:924
+#: src/pages/BookClubOverview.tsx:1002
+#: src/pages/MysteriesPage.tsx:774
 msgid "Remove"
 msgstr "Remove"
 
 #. placeholder {0}: confirmation.title
-#: src/pages/MysteriesPage.tsx:895
+#: src/pages/MysteriesPage.tsx:745
 msgid "Remove \"{0}\" from your private library?"
 msgstr "Remove \"{0}\" from your private library?"
 
 #. placeholder {0}: confirmation.title
-#: src/pages/MysteriesPage.tsx:906
+#: src/pages/MysteriesPage.tsx:756
 msgid "Remove \"{0}\"? Any information entered here will be lost."
 msgstr "Remove \"{0}\"? Any information entered here will be lost."
 
-#: src/pages/MysteriesPage.tsx:189
-#: src/pages/MysteriesPage.tsx:190
-#: src/pages/MysteriesPage.tsx:887
+#: src/pages/MysteriesPage.tsx:187
+#: src/pages/MysteriesPage.tsx:188
+#: src/pages/MysteriesPage.tsx:737
 msgid "Remove entry"
 msgstr "Remove entry"
 
-#: src/pages/BookClubOverview.tsx:1029
+#: src/pages/BookClubOverview.tsx:1016
 msgid "Remove from table"
 msgstr "Remove from table"
 
-#: src/pages/BookClubOverview.tsx:897
+#: src/pages/BookClubOverview.tsx:884
 msgid "Remove one die"
 msgstr "Remove one die"
 
-#: src/pages/TheorizeBoard.tsx:1297
+#: src/pages/TheorizeBoard.tsx:1715
 msgid "Remove tag"
 msgstr "Remove tag"
 
-#: src/pages/MysteriesPage.tsx:910
+#: src/pages/MysteriesPage.tsx:760
 msgid "Remove this entry? Any information entered here will be lost."
 msgstr "Remove this entry? Any information entered here will be lost."
 
-#: src/pages/MysteriesPage.tsx:897
+#: src/pages/MysteriesPage.tsx:747
 msgid "Remove this mystery from your private library?"
 msgstr "Remove this mystery from your private library?"
 
@@ -1823,7 +2031,7 @@ msgstr "Remove this mystery from your private library?"
 msgid "Research, deduction, observation, and putting clues together."
 msgstr "Research, deduction, observation, and putting clues together."
 
-#: src/components/MenuDialog/MainMenuView.tsx:97
+#: src/components/MenuDialog/MainMenuView.tsx:120
 #: src/components/MenuDialog/ResetConfirmView.tsx:20
 msgid "Reset Character"
 msgstr "Reset Character"
@@ -1832,13 +2040,13 @@ msgstr "Reset Character"
 #~ msgid "Reset view"
 #~ msgstr "Reset view"
 
-#: src/pages/MysteriesPage.tsx:913
+#: src/pages/MysteriesPage.tsx:763
 msgid "Restore this saved version? Your current unsaved changes will be replaced."
 msgstr "Restore this saved version? Your current unsaved changes will be replaced."
 
-#: src/pages/MysteriesPage.tsx:869
-#: src/pages/MysteriesPage.tsx:889
-#: src/pages/MysteriesPage.tsx:926
+#: src/pages/MysteriesPage.tsx:719
+#: src/pages/MysteriesPage.tsx:739
+#: src/pages/MysteriesPage.tsx:776
 msgid "Restore this version"
 msgstr "Restore this version"
 
@@ -1850,7 +2058,25 @@ msgstr "Restore this version"
 msgid "Retire your character in a way that shows how they are lost to the Void."
 msgstr "Retire your character in a way that shows how they are lost to the Void."
 
-#: src/pages/BookClubOverview.tsx:89
+#: src/pages/BookClubOverview.tsx:1511
+#~ msgid "Reveal"
+#~ msgstr "Reveal"
+
+#: src/pages/BookClubOverview.tsx:1614
+msgid "Reveal a clue"
+msgstr "Reveal a clue"
+
+#: src/pages/BookClubOverview.tsx:1526
+#: src/pages/BookClubOverview.tsx:1534
+#: src/pages/BookClubOverview.tsx:1662
+msgid "Reveal clue"
+msgstr "Reveal clue"
+
+#: src/pages/BookClubOverview.tsx:1662
+msgid "Revealing…"
+msgstr "Revealing…"
+
+#: src/pages/BookClubOverview.tsx:105
 msgid "Review every clue"
 msgstr "Review every clue"
 
@@ -1858,36 +2084,40 @@ msgstr "Review every clue"
 msgid "Roll"
 msgstr "Roll"
 
-#: src/pages/BookClubOverview.tsx:934
+#: src/pages/BookClubOverview.tsx:921
 msgid "Roll at the table"
 msgstr "Roll at the table"
 
-#: src/pages/BookClubOverview.tsx:81
+#: src/pages/BookClubOverview.tsx:97
 msgid "Roll dice and see the table"
 msgstr "Roll dice and see the table"
 
-#: src/components/character/DiceRoller.tsx:232
+#: src/components/character/DiceRoller.tsx:239
 msgid "Rolling..."
 msgstr "Rolling..."
 
-#: src/pages/BookClubOverview.tsx:927
-#: src/pages/BookClubOverview.tsx:934
+#: src/pages/BookClubOverview.tsx:914
+#: src/pages/BookClubOverview.tsx:921
 msgid "Rolling…"
 msgstr "Rolling…"
 
-#: src/pages/BookClubOverview.tsx:81
+#: src/pages/BookClubOverview.tsx:97
 msgid "Rolls"
 msgstr "Rolls"
 
-#: src/pages/BookClubOverview.tsx:1079
+#: src/pages/BookClubOverview.tsx:1066
 msgid "Save"
 msgstr "Save"
 
-#: src/pages/TheorizeBoard.tsx:1246
+#: src/pages/DarkConspiracySheet.tsx:231
+msgid "Save JSON"
+msgstr "Save JSON"
+
+#: src/pages/TheorizeBoard.tsx:1621
 msgid "Save note"
 msgstr "Save note"
 
-#: src/pages/BookClubOverview.tsx:1019
+#: src/pages/BookClubOverview.tsx:1006
 msgid "Save sheet first"
 msgstr "Save sheet first"
 
@@ -1895,7 +2125,7 @@ msgstr "Save sheet first"
 #~ msgid "Save to Backend"
 #~ msgstr "Save to Backend"
 
-#: src/pages/MysteriesPage.tsx:531
+#: src/pages/MysteriesPage.tsx:381
 msgid "Save version"
 msgstr "Save version"
 
@@ -1907,7 +2137,7 @@ msgstr "Saving current character failed. If you continue loading/switching, you 
 msgid "Saving Failed"
 msgstr "Saving Failed"
 
-#: src/pages/BookClubOverview.tsx:1278
+#: src/pages/BookClubOverview.tsx:1334
 msgid "Saving…"
 msgstr "Saving…"
 
@@ -1915,11 +2145,16 @@ msgstr "Saving…"
 msgid "Scrapbooking"
 msgstr "Scrapbooking"
 
-#: src/pages/BookClubOverview.tsx:1459
+#: src/pages/BookClubOverview.tsx:1735
 msgid "Search Mystery, Rolls, Characters, Settings, Notes, or Clues."
 msgstr "Search Mystery, Rolls, Characters, Settings, Notes, or Clues."
 
-#: src/pages/BookClubOverview.tsx:1467
+#: src/components/PageNavigator.tsx:68
+#: src/components/PageNavigator.tsx:69
+msgid "Search pages"
+msgstr "Search pages"
+
+#: src/pages/BookClubOverview.tsx:1743
 msgid "Search tools…"
 msgstr "Search tools…"
 
@@ -1936,27 +2171,27 @@ msgstr "Secret ghost writer; both Gold Crown benefits while secret is kept"
 msgid "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 msgstr "Select one Maven move at the start. No two Mavens can pick the same move at the start."
 
-#: src/lib/character_store.ts:34
+#: src/lib/character_store.ts:37
 msgid "Sensitivity"
 msgstr "Sensitivity"
 
-#: src/pages/MysteriesPage.tsx:554
+#: src/pages/MysteriesPage.tsx:404
 msgid "Set the scene, the victim, and the peculiar trouble..."
 msgstr "Set the scene, the victim, and the peculiar trouble..."
 
-#: src/pages/BookClubOverview.tsx:90
+#: src/pages/BookClubOverview.tsx:106
 msgid "Settings"
 msgstr "Settings"
 
-#: src/components/character/DiceRoller.tsx:260
+#: src/components/character/DiceRoller.tsx:267
 msgid "Share rolls with"
 msgstr "Share rolls with"
 
-#: src/pages/BookClubOverview.tsx:88
+#: src/pages/BookClubOverview.tsx:104
 msgid "Shared and private notes"
 msgstr "Shared and private notes"
 
-#: src/pages/BookClubOverview.tsx:1290
+#: src/pages/BookClubOverview.tsx:1346
 msgid "Shared notebook"
 msgstr "Shared notebook"
 
@@ -1972,29 +2207,33 @@ msgstr "Shared notebook"
 #~ msgid "Sheets"
 #~ msgstr "Sheets"
 
-#: src/pages/TheorizeBoard.tsx:790
+#: src/pages/TheorizeBoard.tsx:1072
 msgid "Show"
 msgstr "Show"
 
-#: src/pages/LibraryPage.tsx:49
+#: src/pages/TheorizeBoard.tsx:1126
+msgid "Show all notes"
+msgstr "Show all notes"
+
+#: src/pages/LibraryPage.tsx:129
 #: src/pages/SignInPage.tsx:51
 msgid "Sign in"
 msgstr "Sign in"
 
-#: src/components/AuthButton.tsx:59
+#: src/components/AuthButton.tsx:72
 msgid "Sign In"
 msgstr "Sign In"
 
-#: src/pages/MysteriesPage.tsx:78
+#: src/pages/MysteriesPage.tsx:76
 #: src/pages/SignInPage.tsx:43
 msgid "Sign in to continue"
 msgstr "Sign in to continue"
 
-#: src/pages/LibraryPage.tsx:46
+#: src/pages/LibraryPage.tsx:126
 msgid "Sign in to explore approved mysteries."
 msgstr "Sign in to explore approved mysteries."
 
-#: src/pages/MysteriesPage.tsx:75
+#: src/pages/MysteriesPage.tsx:73
 msgid "Sign in to write, preserve, and share your mysteries."
 msgstr "Sign in to write, preserve, and share your mysteries."
 
@@ -2010,7 +2249,7 @@ msgstr "Something about you causes the elite of society to not take you too seri
 msgid "Something about you makes you seem like you have a bit of an edge. What is it? During the night, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "Something about you makes you seem like you have a bit of an edge. What is it? During the night, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 
-#: src/components/MenuDialog/MainMenuView.tsx:111
+#: src/components/MenuDialog/MainMenuView.tsx:134
 msgid "Source Code"
 msgstr "Source Code"
 
@@ -2023,7 +2262,7 @@ msgid "Steady nerves, fine control, focus, and keeping fear at bay."
 msgstr "Steady nerves, fine control, focus, and keeping fear at bay."
 
 #: src/components/character/Style.tsx:24
-#: src/pages/BookClubMaven.tsx:118
+#: src/pages/BookClubMaven.tsx:115
 msgid "Style"
 msgstr "Style"
 
@@ -2031,52 +2270,53 @@ msgstr "Style"
 msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
 msgstr "Stylish Wardrobe for advantage on rolls that never gets marked"
 
-#: src/pages/MysteriesPage.tsx:922
+#: src/pages/MysteriesPage.tsx:772
 msgid "Submit for approval"
 msgstr "Submit for approval"
 
-#: src/pages/MysteriesPage.tsx:440
+#: src/pages/MysteriesPage.tsx:288
 msgid "Submitted for superadmin approval."
 msgstr "Submitted for superadmin approval."
 
-#: src/components/character/DiceRoller.tsx:41
+#: src/components/character/DiceRoller.tsx:43
 msgid "Success with a bonus"
 msgstr "Success with a bonus"
 
-#: src/components/character/DiceRoller.tsx:28
+#: src/components/character/DiceRoller.tsx:30
 msgid "Success with cost"
 msgstr "Success with cost"
 
-#: src/components/MenuDialog/MainMenuView.tsx:120
+#: src/components/MenuDialog/MainMenuView.tsx:143
 msgid "Support Me"
 msgstr "Support Me"
 
-#: src/pages/TheorizeBoard.tsx:55
+#: src/pages/TheorizeBoard.tsx:72
 msgid "Suspect"
 msgstr "Suspect"
 
-#: src/pages/LibraryPage.tsx:118
-#: src/pages/MysteriesPage.tsx:646
+#: src/pages/LibraryPage.tsx:232
+#: src/pages/LibraryPage.tsx:295
+#: src/pages/MysteriesPage.tsx:496
 msgid "Suspects"
 msgstr "Suspects"
 
-#: src/pages/BookClubOverview.tsx:870
+#: src/pages/BookClubOverview.tsx:857
 msgid "Table roll"
 msgstr "Table roll"
 
-#: src/pages/TheorizeBoard.tsx:1286
+#: src/pages/TheorizeBoard.tsx:1704
 msgid "tag is automatic."
 msgstr "tag is automatic."
 
-#: src/pages/TheorizeBoard.tsx:1282
+#: src/pages/TheorizeBoard.tsx:1700
 msgid "Tags"
 msgstr "Tags"
 
-#: src/pages/BookClubOverview.tsx:63
+#: src/pages/BookClubOverview.tsx:79
 msgid "Tea garden"
 msgstr "Tea garden"
 
-#: src/pages/BookClubOverview.tsx:70
+#: src/pages/BookClubOverview.tsx:86
 msgid "Tea leaves"
 msgstr "Tea leaves"
 
@@ -2084,9 +2324,17 @@ msgstr "Tea leaves"
 msgid "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 msgstr "Tentacles icon by <0>Teewara soontorn on Noun Project</0>."
 
-#: src/pages/TheorizeBoard.tsx:1286
+#: src/pages/TheorizeBoard.tsx:1704
 msgid "The"
 msgstr "The"
+
+#: src/pages/TheorizeBoard.tsx:686
+msgid "The board changed after auto-align. Your newer changes were kept."
+msgstr "The board changed after auto-align. Your newer changes were kept."
+
+#: src/pages/TheorizeBoard.tsx:897
+msgid "The board is full. Move a note before adding another."
+msgstr "The board is full. Move a note before adding another."
 
 #: src/game_data.ts:37
 msgid "The Chariot."
@@ -2104,7 +2352,7 @@ msgstr "The first time you encounter a Suspect, you can declare something about 
 msgid "The first time you enter a Location, you can ask the Keeper, \"What is about to happen?\" They will answer truthfully, though not necessarily completely. If your Reason is 2 or higher, you can also ask, \"Why is it about to happen?\" The Keeper will answer truthfully, though not necessarily completely."
 msgstr "The first time you enter a Location, you can ask the Keeper, \"What is about to happen?\" They will answer truthfully, though not necessarily completely. If your Reason is 2 or higher, you can also ask, \"Why is it about to happen?\" The Keeper will answer truthfully, though not necessarily completely."
 
-#: src/pages/BookClubOverview.tsx:1305
+#: src/pages/BookClubOverview.tsx:1361
 msgid "The fog rolled in just after tea…"
 msgstr "The fog rolled in just after tea…"
 
@@ -2112,18 +2360,22 @@ msgstr "The fog rolled in just after tea…"
 #~ msgid "The GM manages mysteries and clues. A Book Club has one GM at a time."
 #~ msgstr "The GM manages mysteries and clues. A Book Club has one GM at a time."
 
-#: src/pages/MysteriesPage.tsx:72
+#: src/pages/MysteriesPage.tsx:70
 msgid "The Keeper's Desk"
 msgstr "The Keeper's Desk"
 
-#: src/pages/BookClubOverview.tsx:791
+#: src/pages/BookClubOverview.tsx:778
 msgid "The Mavens are on the case."
 msgstr "The Mavens are on the case."
 
-#: src/pages/LibraryPage.tsx:43
-#: src/pages/LibraryPage.tsx:86
+#: src/pages/LibraryPage.tsx:123
+#: src/pages/LibraryPage.tsx:171
 msgid "The Mystery Library"
 msgstr "The Mystery Library"
+
+#: src/pages/TheorizeBoard.tsx:1647
+msgid "The note and its connections will be permanently removed."
+msgstr "The note and its connections will be permanently removed."
 
 #: src/game_data.ts:41
 msgid "The Pallid Mask."
@@ -2133,7 +2385,7 @@ msgstr "The Pallid Mask."
 msgid "The Pomegranate Kernel."
 msgstr "The Pomegranate Kernel."
 
-#: src/pages/BookClubOverview.tsx:548
+#: src/pages/BookClubOverview.tsx:497
 msgid "The table is waiting"
 msgstr "The table is waiting"
 
@@ -2141,7 +2393,7 @@ msgstr "The table is waiting"
 msgid "The Void."
 msgstr "The Void."
 
-#: src/pages/TheorizeBoard.tsx:778
+#: src/pages/TheorizeBoard.tsx:1036
 msgid "Theorize"
 msgstr "Theorize"
 
@@ -2157,11 +2409,11 @@ msgstr "This action will permanently delete all your character data."
 msgid "This conspiracy changed elsewhere. Your edits are still here."
 msgstr "This conspiracy changed elsewhere. Your edits are still here."
 
-#: src/hooks/useCharacterSave.ts:50
+#: src/lib/maven_runtime.ts:27
 msgid "This Maven changed elsewhere. Your edits are still here."
 msgstr "This Maven changed elsewhere. Your edits are still here."
 
-#: src/pages/BookClubMaven.tsx:50
+#: src/pages/BookClubMaven.tsx:51
 msgid "This Maven is no longer available in this Book Club."
 msgstr "This Maven is no longer available in this Book Club."
 
@@ -2169,11 +2421,11 @@ msgstr "This Maven is no longer available in this Book Club."
 msgid "This move has no function until you solve a mystery and put a Suspect behind bars as a result. Thereafter, you can name an imprisoned Suspect your Consultant. Once per mystery, you can go to the prison the Consultant is being held in and ask them about that mystery. This triggers the Meddling Move as it would when questioning any other character, but the Consultant's answers and behavior are affected by your most recent mark on the Crown of the Void: No marks — the Consultant is mocking or insulting. A Shadow in the Garden — the Consultant claims to see malevolent spirits all around you. The Chariot — the Consultant reveals a Void Clue, even on a miss (but no extra effect on a 12+). The Pallid Mask — the Consultant also reveals the name of a character who will be killed if you don't do something to help them. The Pomegranate Kernel — the Consultant will also profess their love for you; reciprocate to clear Obsessed with the Void and lose this move, or reject to take Condition: Marked by [Consultant] and lose this move. No two Mavens can have this move at the same time. This move and the Robert Langdon move cannot be in the same game."
 msgstr "This move has no function until you solve a mystery and put a Suspect behind bars as a result. Thereafter, you can name an imprisoned Suspect your Consultant. Once per mystery, you can go to the prison the Consultant is being held in and ask them about that mystery. This triggers the Meddling Move as it would when questioning any other character, but the Consultant's answers and behavior are affected by your most recent mark on the Crown of the Void: No marks — the Consultant is mocking or insulting. A Shadow in the Garden — the Consultant claims to see malevolent spirits all around you. The Chariot — the Consultant reveals a Void Clue, even on a miss (but no extra effect on a 12+). The Pallid Mask — the Consultant also reveals the name of a character who will be killed if you don't do something to help them. The Pomegranate Kernel — the Consultant will also profess their love for you; reciprocate to clear Obsessed with the Void and lose this move, or reject to take Condition: Marked by [Consultant] and lose this move. No two Mavens can have this move at the same time. This move and the Robert Langdon move cannot be in the same game."
 
-#: src/pages/TheorizeBoard.tsx:639
+#: src/pages/TheorizeBoard.tsx:819
 msgid "This note is currently locked"
 msgstr "This note is currently locked"
 
-#: src/pages/TheorizeBoard.tsx:1195
+#: src/pages/TheorizeBoard.tsx:1548
 msgid "This title stays in sync with the mystery clue list."
 msgstr "This title stays in sync with the mystery clue list."
 
@@ -2181,19 +2433,19 @@ msgstr "This title stays in sync with the mystery clue list."
 msgid "This will also delete the character from the backend."
 msgstr "This will also delete the character from the backend."
 
-#: src/pages/MysteriesPage.tsx:607
-#: src/pages/MysteriesPage.tsx:684
-#: src/pages/MysteriesPage.tsx:755
-#: src/pages/TheorizeBoard.tsx:1154
-#: src/pages/TheorizeBoard.tsx:1204
+#: src/pages/MysteriesPage.tsx:457
+#: src/pages/MysteriesPage.tsx:534
+#: src/pages/MysteriesPage.tsx:605
+#: src/pages/TheorizeBoard.tsx:1501
+#: src/pages/TheorizeBoard.tsx:1557
 msgid "Title"
 msgstr "Title"
 
-#: src/pages/BookClubOverview.tsx:1485
+#: src/pages/BookClubOverview.tsx:1761
 msgid "to toggle"
 msgstr "to toggle"
 
-#: src/pages/BookClubOverview.tsx:786
+#: src/pages/BookClubOverview.tsx:773
 msgid "Tonight's mystery"
 msgstr "Tonight's mystery"
 
@@ -2201,7 +2453,11 @@ msgstr "Tonight's mystery"
 msgid "Trusty vehicle for advantage on rolls"
 msgstr "Trusty vehicle for advantage on rolls"
 
-#: src/pages/BookClubMaven.tsx:95
+#: src/pages/BookClubMaven.tsx:92
+#: src/pages/BookClubOverview.tsx:462
+#: src/pages/LibraryPage.tsx:194
+#: src/pages/LibraryPage.tsx:257
+#: src/pages/TheorizeBoard.tsx:1065
 msgid "Try again"
 msgstr "Try again"
 
@@ -2209,7 +2465,8 @@ msgstr "Try again"
 msgid "Two extra Cozy Activities; trigger Cozy Move with non-Mavens; stumble on Clue or clear Condition during Cozy Moves"
 msgstr "Two extra Cozy Activities; trigger Cozy Move with non-Mavens; stumble on Clue or clear Condition during Cozy Moves"
 
-#: src/pages/TheorizeBoard.tsx:1140
+#: src/pages/TheorizeBoard.tsx:1467
+#: src/pages/TheorizeBoard.tsx:1475
 msgid "Type"
 msgstr "Type"
 
@@ -2217,10 +2474,12 @@ msgstr "Type"
 msgid "Uncover a hidden secret from object Clues"
 msgstr "Uncover a hidden secret from object Clues"
 
-#: src/pages/BookClubOverview.tsx:417
-#: src/pages/MysteriesPage.tsx:385
-#: src/pages/MysteriesPage.tsx:422
-#: src/pages/TheorizeBoard.tsx:731
+#: src/hooks/useMysteryPreservation.ts:30
+#: src/pages/BookClubOverview.tsx:357
+#: src/pages/MysteriesPage.tsx:272
+#: src/pages/MysteriesPage.tsx:284
+#: src/pages/TheorizeBoard.tsx:667
+#: src/pages/TheorizeBoard.tsx:989
 msgid "Undo"
 msgstr "Undo"
 
@@ -2232,17 +2491,23 @@ msgstr "Unmark all the items in your Cozy Little Place."
 msgid "Unmark every Crown of the Void box once"
 msgstr "Unmark every Crown of the Void box once"
 
-#: src/pages/BookClubMaven.tsx:84
-#: src/pages/BookClubMaven.tsx:149
-#: src/pages/BookClubOverview.tsx:94
-#: src/pages/BookClubOverview.tsx:1006
+#: src/pages/BookClubMaven.tsx:81
+#: src/pages/BookClubMaven.tsx:146
+#: src/pages/BookClubOverview.tsx:110
+#: src/pages/BookClubOverview.tsx:993
 msgid "Unnamed Maven"
 msgstr "Unnamed Maven"
 
-#: src/pages/MysteriesPage.tsx:30
-#: src/pages/MysteriesPage.tsx:320
-#: src/pages/MysteriesPage.tsx:458
-#: src/pages/MysteriesPage.tsx:505
+#: src/pages/BookClubOverview.tsx:1525
+#: src/pages/BookClubOverview.tsx:1534
+msgid "Unreveal clue"
+msgstr "Unreveal clue"
+
+#: src/hooks/useMysteryPreservation.ts:18
+#: src/pages/LibraryPage.tsx:215
+#: src/pages/MysteriesPage.tsx:31
+#: src/pages/MysteriesPage.tsx:297
+#: src/pages/MysteriesPage.tsx:354
 msgid "Untitled Mystery"
 msgstr "Untitled Mystery"
 
@@ -2250,36 +2515,42 @@ msgstr "Untitled Mystery"
 msgid "Up in Pumps"
 msgstr "Up in Pumps"
 
-#: src/pages/MysteriesPage.tsx:847
+#: src/pages/BookClubOverview.tsx:1523
+#: src/pages/BookClubOverview.tsx:1546
+msgid "Updating clue…"
+msgstr "Updating clue…"
+
+#: src/pages/MysteriesPage.tsx:697
 msgid "Version drawer"
 msgstr "Version drawer"
 
-#: src/pages/MysteriesPage.tsx:420
+#: src/pages/MysteriesPage.tsx:283
 msgid "Version restored."
 msgstr "Version restored."
 
 #. placeholder {0}: result.character.name || t`Unnamed Maven`
-#: src/pages/BookClubMaven.tsx:84
+#: src/pages/BookClubMaven.tsx:81
 msgid "Viewing {0} · Read only"
 msgstr "Viewing {0} · Read only"
 
-#: src/lib/character_store.ts:30
+#: src/lib/character_store.ts:33
 msgid "Vitality"
 msgstr "Vitality"
 
-#: src/pages/TheorizeBoard.tsx:53
+#: src/pages/BookClubOverview.tsx:1516
+#: src/pages/TheorizeBoard.tsx:70
 msgid "Void Clue"
 msgstr "Void Clue"
 
-#: src/pages/BookClubOverview.tsx:1374
-msgid "Void Clues"
-msgstr "Void Clues"
+#: src/pages/BookClubOverview.tsx:1370
+#~ msgid "Void Clues"
+#~ msgstr "Void Clues"
 
-#: src/pages/BookClubOverview.tsx:1380
+#: src/pages/BookClubOverview.tsx:1577
 msgid "Void Clues from other mysteries"
 msgstr "Void Clues from other mysteries"
 
-#: src/pages/TheorizeBoard.tsx:1160
+#: src/pages/TheorizeBoard.tsx:1508
 msgid "What do you know?"
 msgstr "What do you know?"
 
@@ -2303,11 +2574,19 @@ msgstr "When you put on this Crown, mark the first empty box."
 msgid "Whenever you find a Clue that is an object, you can physically manipulate the object to uncover a further secret about it—a hidden detail, a secret compartment, a scrawled message, etc. This extra detail is added to the Clue; it cannot cause the Clue to conclusively solve the mystery by itself."
 msgstr "Whenever you find a Clue that is an object, you can physically manipulate the object to uncover a further secret about it—a hidden detail, a secret compartment, a scrawled message, etc. This extra detail is added to the Clue; it cannot cause the Clue to conclusively solve the mystery by itself."
 
-#: src/pages/BookClubOverview.tsx:831
+#: src/components/PageNavigator.tsx:58
+msgid "Where would you like to go?"
+msgstr "Where would you like to go?"
+
+#: src/pages/BookClubOverview.tsx:818
 msgid "Write a case for this club"
 msgstr "Write a case for this club"
 
-#: src/pages/BookClubMaven.tsx:126
+#: src/pages/LibraryPage.tsx:186
+msgid "Write a mystery"
+msgstr "Write a mystery"
+
+#: src/pages/BookClubMaven.tsx:123
 msgid "XP"
 msgstr "XP"
 
@@ -2315,7 +2594,7 @@ msgstr "XP"
 msgid "XP Track"
 msgstr "XP Track"
 
-#: src/pages/BookClubOverview.tsx:69
+#: src/pages/BookClubOverview.tsx:85
 msgid "Yarn and needles"
 msgstr "Yarn and needles"
 
@@ -2387,18 +2666,31 @@ msgstr "You used to live a globetrotting, jet set life, and you still have a tou
 msgid "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 msgstr "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 
+#: src/pages/BookClubOverview.tsx:827
+msgid "Your cases and the public library"
+msgstr "Your cases and the public library"
+
 #: src/game_data.ts:291
 msgid "Your Cozy Little Place is anything but. Add the following to it: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, House Boy (name him). No two Mavens can have this move at the same time."
 msgstr "Your Cozy Little Place is anything but. Add the following to it: Gourmet Pantry, Orchidarium, Full Bar, Private Elevator, House Boy (name him). No two Mavens can have this move at the same time."
 
-#: src/pages/BookClubOverview.tsx:1566
+#: src/pages/BookClubOverview.tsx:1850
 msgid "Your Maven"
 msgstr "Your Maven"
 
-#: src/pages/BookClubMaven.tsx:64
+#: src/pages/BookClubMaven.tsx:61
 msgid "Your Maven is still syncing. Try again in a moment."
 msgstr "Your Maven is still syncing. Try again in a moment."
+
+#: src/pages/LibraryPage.tsx:174
+msgid "Your private casebook and approved mysteries from the community."
+msgstr "Your private casebook and approved mysteries from the community."
 
 #: src/game_data.ts:38
 msgid "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
 msgstr "Your Reason modifier is reduced by 1 and your Sensitivity modifier is increased by 1."
+
+#: src/components/MenuDialog/MenuDialog.tsx:143
+#: src/pages/DarkConspiracySheet.tsx:169
+msgid "Your sheet changed while the file was opening. Load the file again."
+msgstr "Your sheet changed while the file was opening. Load the file again."

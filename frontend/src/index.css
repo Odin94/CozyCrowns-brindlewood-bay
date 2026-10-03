@@ -30,6 +30,10 @@ medium pinkish red from computecuter: #FFBBD5
   --destructive-foreground: 280 20% 95%;
   --border: 280 25% 60%; /* Medium purple border */
   --input: 280 20% 85%;
+  --field-background: hsl(280 24% 93%);
+  --field-ink: hsl(280 30% 25%);
+  --field-placeholder: hsl(280 16% 42%);
+  --field-border: hsl(280 18% 65%);
   --ring: 280 40% 60%;
   --radius: 0.5rem;
   --dark-secondary: 280 30% 25%; /* Dark purple for buttons */
@@ -53,7 +57,7 @@ medium pinkish red from computecuter: #FFBBD5
   font-weight: 400;
   font-size: 1.3rem;
 
-  color-scheme: light dark;
+  color-scheme: light;
   color: rgba(255, 255, 255, 0.87);
   background-color: #b8a2ce;
 
@@ -63,6 +67,9 @@ medium pinkish red from computecuter: #FFBBD5
   -moz-osx-font-smoothing: grayscale;
 
   @theme {
+    --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+    --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+    --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);
     --color-background: hsl(280 20% 70%);
     --color-foreground: hsl(280 30% 25%); /* Dark purple text */
     --color-card: hsl(280 15% 75%);
@@ -77,7 +84,7 @@ medium pinkish red from computecuter: #FFBBD5
     --color-muted-foreground: hsl(280 25% 40%);
     --color-accent: hsl(150 40% 75%);
     --color-accent-foreground: hsl(280 30% 25%);
-    --color-destructive: hsl(0 70% 70%);
+    --color-destructive: hsl(0 65% 42%);
     --color-destructive-foreground: hsl(280 20% 95%);
     --color-border: hsl(280 25% 60%);
     --color-input: hsl(280 20% 85%);
@@ -345,7 +352,7 @@ body {
 }
 .mystery-cards {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(14rem, 100%), 1fr));
   gap: 0.7rem;
   margin-top: 0.7rem;
 }
@@ -511,7 +518,7 @@ body {
 }
 .library-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(15rem, 100%), 1fr));
   gap: 1rem;
 }
 .library-book {
@@ -576,7 +583,7 @@ h6 {
 }
 
 h1 {
-  font-size: 3.2em;
+  font-size: clamp(2.3rem, 4vw, 3.2rem);
   font-family: "Fuggles", "Brush Script MT", cursive;
 }
 
@@ -591,16 +598,16 @@ button:focus-visible {
 
 /* Keep focus feedback for keyboard navigation without ringing mouse clicks. */
 *:focus-visible {
-  box-shadow: 0 0 0 2px hsl(var(--ring)) !important;
-  --tw-ring-shadow: 0 0 0 2px hsl(var(--ring)) !important;
+  box-shadow: 0 0 0 2px hsl(var(--ring) / 0.65) !important;
+  --tw-ring-shadow: 0 0 0 2px hsl(var(--ring) / 0.65) !important;
   --tw-inset-shadow: none !important;
   --tw-inset-ring-shadow: none !important;
   --tw-ring-offset-shadow: none !important;
 }
 
 *:focus-visible.dark-ring {
-  box-shadow: 0 0 0 2px hsl(var(--dark-secondary)) !important;
-  --tw-ring-shadow: 0 0 0 2px hsl(var(--dark-secondary)) !important;
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.8) !important;
+  --tw-ring-shadow: 0 0 0 2px hsl(var(--primary) / 0.8) !important;
   --tw-inset-shadow: none !important;
   --tw-inset-ring-shadow: none !important;
   --tw-ring-offset-shadow: none !important;
@@ -623,18 +630,55 @@ button:focus-visible {
 
 /* Fix selection/highlight background */
 ::selection {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background-color: var(--selection-background, hsl(var(--accent)));
+  color: var(--selection-ink, hsl(var(--accent-foreground)));
 }
 
 ::-moz-selection {
-  background-color: hsl(var(--accent));
-  color: hsl(var(--accent-foreground));
+  background-color: var(--selection-background, hsl(var(--accent)));
+  color: var(--selection-ink, hsl(var(--accent-foreground)));
 }
 
-/* Ensure bg-background class has proper non-transparent background */
+/* Theme surfaces and fields must not inherit the character sheet's navy panels. */
 .bg-background {
+  background-color: hsl(var(--background));
+}
+.cozy-field {
+  color: var(--field-ink);
+  background-color: var(--field-background);
+  border-color: var(--field-border);
+  caret-color: var(--field-ink);
+}
+.cozy-field::placeholder {
+  color: var(--field-placeholder);
+  opacity: 1;
+}
+.cozy-field:disabled {
+  opacity: 1;
+  color: var(--field-placeholder);
+}
+.cozy-field:focus-visible {
+  border-color: hsl(var(--ring));
+}
+
+/* The character sheet keeps its original fields within the navy panels. */
+.character-sheet .cozy-field {
   background-color: var(--color-gray-800);
+  color: inherit;
+  border-color: hsl(var(--input));
+  caret-color: currentColor;
+}
+.character-sheet .cozy-field::placeholder {
+  color: var(--color-gray-400);
+}
+.character-sheet .cozy-field:disabled {
+  color: inherit;
+  opacity: 0.5;
+}
+.character-sheet .cozy-line-field {
+  background-color: transparent;
+  border-color: hsl(var(--border));
+  padding-inline: 0;
 }
 
 /* Ensure bg-popover class has proper non-transparent background */
@@ -771,7 +815,7 @@ button:focus-visible {
 .keeper-inline-input:focus-visible {
   border-color: hsl(var(--dark-secondary) / 0.72);
   outline: 2px solid hsl(var(--primary) / 0.42);
-  outline-offset: 1px;
+  outline-offset: 0;
 }
 
 .conspiracy-view-enter {
@@ -809,7 +853,7 @@ button:focus-visible {
 }
 
 .dice-cube.is-rolling {
-  animation: dice-tumble 900ms cubic-bezier(0.16, 0.84, 0.26, 1) both;
+  animation: dice-tumble var(--roll-duration, 1200ms) cubic-bezier(0.25, 0.4, 0.5, 1) both;
 }
 
 .dice-face {
@@ -889,7 +933,7 @@ button:focus-visible {
 @keyframes dice-tumble {
   0% {
     transform: var(--final-transform) rotateX(var(--spin-x)) rotateY(var(--spin-y))
-      rotateZ(var(--spin-z)) translate3d(-0.25rem, -0.9rem, 0.4rem);
+      rotateZ(var(--spin-z)) translate3d(-0.1rem, -0.25rem, 0.1rem);
   }
   100% {
     transform: var(--final-transform) rotateX(0deg) rotateY(0deg) rotateZ(0deg) translate3d(0, 0, 0);
@@ -975,18 +1019,15 @@ button:focus-visible {
 @keyframes cozy-book-flutter {
   0%,
   100% {
-    filter: drop-shadow(0 0 0 rgb(227 204 240 / 0));
     transform: translateY(0) rotate(0deg) scale(1);
   }
   20% {
-    filter: drop-shadow(0 0.25rem 0.3rem rgb(227 204 240 / 0.2));
     transform: translateY(-0.18rem) rotate(-3deg) scale(1.04);
   }
   35% {
     transform: translateY(-0.05rem) rotate(2deg) scale(1.02);
   }
   55% {
-    filter: drop-shadow(0 0.18rem 0.2rem rgb(227 204 240 / 0.14));
     transform: translateY(-0.1rem) rotate(-1.5deg) scale(1.025);
   }
   72% {
@@ -1019,5 +1060,270 @@ button:focus-visible {
     min-height: 46rem;
     aspect-ratio: auto;
     overflow: visible;
+  }
+}
+
+/* Navigation and responsive content use the existing lavender, mint and ink. */
+::selection {
+  background: var(--selection-background, hsl(var(--primary) / 0.65));
+  color: var(--selection-ink, hsl(var(--foreground)));
+}
+.page-navigator {
+  background: hsl(var(--popover));
+  color: hsl(var(--foreground));
+  gap: 0.8rem;
+  border-color: hsl(var(--border) / 0.6);
+}
+
+.navigation-shortcut-hint {
+  flex-shrink: 0;
+  padding: 0.15rem 0.25rem;
+  border: 0;
+  background: transparent;
+  color: hsl(var(--muted-foreground));
+  font-size: 0.6rem;
+  box-shadow: none;
+  white-space: nowrap;
+}
+.navigation-shortcut-hint:hover {
+  background: transparent;
+  color: hsl(var(--foreground));
+  box-shadow: none;
+}
+.page-navigator [data-slot="dialog-title"] {
+  font-family: "Fuggles", cursive;
+  font-size: 2.5rem;
+  line-height: 1.1;
+}
+.page-navigator [data-slot="dialog-description"] {
+  color: hsl(var(--muted-foreground));
+  font-size: 0.78rem;
+}
+.page-navigator__search {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.page-navigator__search input {
+  min-width: 0;
+}
+.page-navigator__pages {
+  display: grid;
+  gap: 0.2rem;
+}
+.page-navigator__pages a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.45rem;
+  color: inherit;
+  text-decoration: none;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+.page-navigator__pages a.is-active {
+  background: hsl(var(--secondary));
+}
+.page-navigator__pages a:active {
+  transform: scale(0.97);
+}
+.page-navigator__pages p {
+  padding: 1rem 0;
+  font-size: 0.8rem;
+}
+.mystery-list button,
+.mystery-versions button {
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  justify-content: flex-start;
+}
+.mystery-list button {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 3rem;
+}
+.library-book {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  content-visibility: auto;
+  contain-intrinsic-size: auto 20rem;
+}
+.mystery-sidebar h1 {
+  min-width: 0;
+  font-size: clamp(1.8rem, 2.3vw, 2.2rem);
+}
+.mystery-editor-header > div,
+.library-header > div {
+  min-width: 0;
+}
+.library-header h1 {
+  overflow-wrap: anywhere;
+}
+.mystery-actions {
+  flex-wrap: wrap;
+}
+@media (max-width: 480px) {
+  .book-club-empty-state {
+    width: calc(100vw - 2rem);
+    padding: 1.2rem;
+  }
+  .book-club-empty-state form {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.6rem;
+  }
+  .book-club-empty-state form input {
+    width: 100%;
+    min-width: 0;
+  }
+  .page-navigator {
+    padding: 1rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-content"],
+  [data-slot="popover-content"],
+  [data-slot="dropdown-menu-content"],
+  [data-slot="tooltip-content"] {
+    animation: cozy-reduced-fade 150ms ease-out;
+  }
+  [data-state="closed"]:is(
+    [data-slot="dialog-content"],
+    [data-slot="popover-content"],
+    [data-slot="dropdown-menu-content"],
+    [data-slot="tooltip-content"]
+  ) {
+    animation: cozy-reduced-fade-out 120ms ease-in;
+  }
+  .page-navigator__pages a:active {
+    transform: none;
+  }
+}
+@keyframes cozy-reduced-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes cozy-reduced-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.cozy-load-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  background: hsl(var(--popover));
+  color: hsl(var(--foreground));
+  max-width: min(100%, 42rem);
+  margin: 1rem auto;
+  position: relative;
+  z-index: 1;
+}
+.cozy-load-error p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-size: 0.85rem;
+}
+
+.character-menu-actions > :is(button, a) {
+  height: auto;
+  min-height: 2.5rem;
+  min-width: 0;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+}
+.mystery-list button,
+.mystery-versions button {
+  height: auto;
+  min-height: 2.5rem;
+}
+.library-book button {
+  height: auto;
+  min-height: 2.5rem;
+  white-space: normal;
+}
+.library-book dl {
+  flex-wrap: wrap;
+}
+[data-slot="dialog-content"] > * {
+  min-width: 0;
+}
+@media (max-width: 480px) {
+  .character-menu-actions > :is(button, a) {
+    font-size: 0.8rem;
+    padding-inline: 0.7rem;
+  }
+}
+
+.dark-conspiracy-actions > div {
+  display: flex;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+@media (max-width: 640px) {
+  .dark-conspiracy-page {
+    min-height: 0;
+  }
+  .dark-conspiracy-page > .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .dark-conspiracy-page > .grid > * {
+    min-width: 0;
+    grid-column: auto;
+  }
+  .dark-conspiracy-copy,
+  .dark-conspiracy-page textarea {
+    font-size: 0.75rem;
+    line-height: 1.4;
+  }
+  .dark-conspiracy-actions button {
+    height: auto;
+    min-height: 2.25rem;
+    font-size: 0.8rem;
+  }
+}
+@media (max-width: 480px) {
+  .dark-conspiracy-page .grid .grid:not([class*="grid-cols-[1rem"]) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .dark-conspiracy-page .grid .grid:not([class*="grid-cols-[1rem"]) > * {
+    grid-column: auto;
+  }
+}
+
+[data-state="open"]:is(
+  [data-slot="dialog-content"],
+  [data-slot="popover-content"],
+  [data-slot="select-content"],
+  [data-slot="dropdown-menu-content"]
+) {
+  animation-timing-function: var(--ease-out);
+}
+[data-slot="tooltip-content"][data-state="instant-open"] {
+  animation-duration: 0ms;
+}
+@media (prefers-reduced-motion: reduce) {
+  .conspiracy-view-enter,
+  .mystery-workspace > * {
+    animation: cozy-reduced-fade 150ms ease-out both;
+    animation-delay: 0ms;
   }
 }
