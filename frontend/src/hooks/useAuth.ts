@@ -91,11 +91,13 @@ export const useAuth = () => {
           window.location.href = data.logoutUrl || "/";
         },
         (error) => console.warn("PostHog reset failed:", error),
+        () => tokenStorage.sessionKey() === data.sessionEpoch,
       );
     },
     onError: async (_error, epoch) => {
       if (tokenStorage.sessionKey() !== epoch) return;
       tokenStorage.remove();
+      const completedEpoch = tokenStorage.sessionKey();
       queryClient.setQueryData(["auth", "me"], null);
 
       await resetAnalyticsAndNavigate(
@@ -104,6 +106,7 @@ export const useAuth = () => {
           window.location.href = "/";
         },
         (error) => console.warn("PostHog reset failed:", error),
+        () => tokenStorage.sessionKey() === completedEpoch,
       );
     },
   });

@@ -39,3 +39,6 @@ expose their stable identities before the first text correction.
 Logged-out deletion now archives/removes only the browser's cached Maven and
 retains its cloud row. An obsolete logout response and its hook cleanup cannot
 clear another login's token, user cache or navigation.
+
+Logout's delayed analytics initialization also rechecks the completed session
+epoch before resetting identity and before navigation, preserving a later login.
