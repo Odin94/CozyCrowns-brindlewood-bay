@@ -37,10 +37,13 @@ type CharacterSheetProps = {
 };
 
 // Keep per-edit subscriptions out of the sheet layout and its sibling sections.
-const CharacterAutoSave = () => {
+const CharacterAutoSave = ({
+  saveCurrentCharacter,
+}: {
+  saveCurrentCharacter: () => Promise<boolean>;
+}) => {
   const currentCharacter = useCharacterStore((state) => state.selected());
   const { isAuthenticated, user } = useAuth();
-  const { saveCurrentCharacter } = useCharacterSave();
   const lastAutoSaved = useRef<string | null>(null);
   const autoSaveSignature = useMemo(
     () =>
@@ -143,7 +146,7 @@ const CharacterSheet = ({
     <div
       className={`min-h-screen w-full from-gray-900 to-gray-800 p-3 sm:p-4 md:p-5 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
     >
-      <CharacterAutoSave />
+      <CharacterAutoSave saveCurrentCharacter={saveCurrentCharacter} />
       <div className="w-full max-w-none">
         <div className="mb-5 pt-3 text-center sm:mb-8 md:pt-0">
           <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>

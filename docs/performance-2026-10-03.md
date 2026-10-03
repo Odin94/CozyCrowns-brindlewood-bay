@@ -4,6 +4,8 @@ Baseline: `0cb664be6f1bb835c82119b5a199ab161ba00fc7`.
 Implementation: `bcc0b419d3ce0c591f52cfb2c3b11b86e446a727`.
 Raw samples: [performance/2026-10-03](performance/2026-10-03).
 
+Follow-up review preserves the shared save queue between autosave and character switching. Delayed analytics identification is cancelled when the auth effect changes, and logout resets the initialized client before navigating. The final bundle snapshot includes these corrections; the mounted/production interaction measurements describe the initial implementation above.
+
 The Vercel React best practices were applied with rendering and rerendering treated as critical. Measurements ran on macOS arm64, Node 24.15.0, pnpm 10.33.0, React 19.2.6 and Chrome 152 in the shared T3 browser. Both sources use the same locked dependencies. No production database or service was accessed.
 
 ## Results
@@ -66,10 +68,10 @@ For the mounted React benchmark, run `pnpm dev --host 127.0.0.1 --port 5193 --st
 
 For production resource measurements, build and serve each dist on separate origins, clear browser storage, reload, and sum the `.js` resource `decodedBodySize` values after the anonymous sheet settles. No analytics key was configured. With an analytics key the SDK remains an eventual download; it no longer blocks rendering. `node benchmarks/bundle.mjs dist` records entry and chunk bytes/gzip sizes, and accepts a historical dist path as its argument.
 
-The production typing samples use real keyboard events and a MutationObserver. Timing starts at `beforeinput` and ends when the displayed name changes; mutation count is measured to the next animation frame. The committed JSON stores all 13 samples for each build. These are local DOM commit measurements. Neither they nor the development `flushSync`/Profiler harness measure paint, INP or real-user latency. Cold network/FCP timing was not used as an improvement claim.
+The supplementary production typing samples use real keyboard events and a MutationObserver over the application root. Timing starts at `beforeinput` and ends at the first observer delivery containing a mutation to the name input; mutation records are counted in that observer batch. The committed JSON stores all 13 samples for each build. These are local smoke measurements without interleaved baseline/after trials. Neither they nor the development `flushSync`/Profiler harness measure paint, INP or real-user latency. Cold network/FCP timing was not used as an improvement claim.
 
 ## Verification and remaining costs
 
-Repository formatting, frontend/backend lint, both TypeScript builds and the test suite passed. Tests cover structural sharing, normalized partial edits, full imports, omitted local metadata, selected-Maven identity through remote updates, immediate persisted snapshots and rehydration. The production browser smoke test confirmed anonymous name and ability edits survive reload. No user-facing strings or styles changed.
+Repository formatting, frontend/backend lint, both TypeScript builds and the test suite passed. Tests cover structural sharing, normalized partial edits, full imports, omitted local metadata, selected-Maven identity through remote updates, immediate persisted snapshots and rehydration. Delayed-initializer tests cover stale analytics identities during user transitions, cancellation on logout, reset-before-navigation ordering and failed/disabled analytics. The production browser smoke test confirmed anonymous name and ability edits survive reload. No user-facing strings or styles changed.
 
 The sheet still synchronously serializes local characters on every edit. That protects the local-first save contract; changing persistence scheduling would require separate durability design. Large Book Club responses still include full notes and clue lists; response reduction would need a compatible API/UI loading change. The 696 kB PDF chunk is already deferred to export. Measurements here establish reductions in actual work and local timings, not deployment-wide percentiles.
