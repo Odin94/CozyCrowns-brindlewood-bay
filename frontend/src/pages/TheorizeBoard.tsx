@@ -1236,7 +1236,7 @@ export default function TheorizeBoard({
                 <Link2 className="size-3.5" aria-hidden="true" />
               </button>
             ))}
-            <div className="flex items-start gap-2 pr-2">
+            <div className="flex shrink-0 items-start gap-2 pr-2">
               {node.kind === "suspect" ? (
                 <UserRound className="theory-node__icon mt-0.5 size-4 shrink-0" />
               ) : (

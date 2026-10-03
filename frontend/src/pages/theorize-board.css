@@ -144,6 +144,7 @@
 }
 
 .theory-node {
+  padding: 12px;
   overflow: visible;
   border: 1px solid rgb(84 68 48 / 40%);
   border-radius: 0.18rem 0.28rem 0.2rem 0.3rem;
@@ -216,7 +217,8 @@
 .theory-node h2 {
   color: #3d3329;
   font-family: "Patrick Hand", cursive;
-  font-size: 1rem;
+  font-size: 18px;
+  line-height: 20px;
   font-weight: 400;
 }
 
@@ -308,13 +310,11 @@
 }
 
 .theory-node__description {
-  color: #74614b;
-}
-.theory-node__tags {
   flex-shrink: 0;
-  flex-wrap: nowrap;
-  max-height: 23px;
-  padding-top: 4px;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #74614b;
 }
 .theory-description-tooltip {
   max-height: min(24rem, 60vh);
@@ -326,15 +326,35 @@
   --ring: 32 24% 43%;
 }
 
+.theory-node__tags {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  max-height: 30px;
+  padding-top: 0;
+  gap: 2px;
+}
+
 .theory-node__base-tag,
 .theory-node__tag {
+  padding: 1px 6px;
+  font-size: 9px;
+  line-height: 10px;
   border: 1px solid rgb(72 61 48 / 24%);
   background: rgb(255 252 233 / 36%);
   color: #5f5142;
 }
 
 .theory-node__lock {
+  flex-shrink: 0;
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 12px;
   color: #735b3f;
+}
+
+.theory-node__lock svg {
+  width: 12px;
+  height: 12px;
 }
 
 .theory-dialog {

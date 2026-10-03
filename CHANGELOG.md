@@ -2,7 +2,7 @@
 
 ## Unreleased
 
-- Show theory-note descriptions on the cards without duplicate hover tooltips.
+- Show theory-note descriptions on the cards without duplicate hover tooltips; keep descriptions readable alongside longer titles, tags and edit indicators.
 - Improve deleted-Maven recovery dialog contrast, spacing and mobile layout.
 
 - Preserve unsaved Mavens and Dark Conspiracies when newer cloud copies arrive.
