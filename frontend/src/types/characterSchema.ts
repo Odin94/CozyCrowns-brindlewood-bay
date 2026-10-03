@@ -33,6 +33,10 @@ export const CharacterDataSchema = z
     voidChecks: z.array(z.boolean()).optional(),
     cozyItems: z.array(CozyItemSchema).optional(),
   })
+  .refine(
+    (value) => Object.keys(value).some((key) => key !== "schemaVersion"),
+    "No character fields found",
+  )
   .transform(normalizeCharacter);
 
 export { createDefaultCharacter };

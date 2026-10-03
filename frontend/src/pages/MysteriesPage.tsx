@@ -211,7 +211,9 @@ const MysteriesPage = () => {
   const libraryPath = bookClubId
     ? `/library?bookClubId=${encodeURIComponent(bookClubId)}`
     : "/library";
-  const { mysteries, selected, versions, loaded, owner } = useMysteryPreservation(user?.id);
+  const { mysteries, selected, versions, loaded, owner, recoveryDrafts } = useMysteryPreservation(
+    user?.id,
+  );
   const requestedSelection = useRef<{ owner: typeof owner; id: string } | null>(null);
   const [bringingToBookClub, setBringingToBookClub] = useState(false);
   const [focusedEntryId, setFocusedEntryId] = useState<string | null>(null);
@@ -375,6 +377,18 @@ const MysteriesPage = () => {
         </aside>
         {selected ? (
           <article className="mystery-parchment mystery-editor">
+            {recoveryDrafts?.map((draft) => (
+              <div
+                key={draft.mystery.id}
+                role="status"
+                className="m-4 rounded border border-current p-3"
+              >
+                <p>{draft.mystery.title}</p>
+                <Button onClick={() => void owner.retryRecovery(draft)}>
+                  <Trans>Retry draft recovery</Trans>
+                </Button>
+              </div>
+            ))}
             <header className="mystery-editor-header">
               <div>
                 <p className="mystery-kicker">

@@ -1,3 +1,4 @@
+import { normalizeSourceClueIds, readSourceClueIds } from "../lib/sourceClues.js";
 import type { FastifyInstance } from "fastify";
 import { and, desc, eq, inArray, isNotNull, isNull, sql } from "drizzle-orm";
 import { nanoid } from "nanoid";
@@ -21,7 +22,7 @@ import { zodToFastifySchema } from "../utils/zodToFastifySchema.js";
 const serializeMystery = (mystery: typeof mysteries.$inferSelect) => ({
   id: mystery.id,
   title: mystery.title,
-  data: JSON.parse(mystery.data),
+  data: readSourceClueIds(JSON.parse(mystery.data)),
   version: mystery.version,
   createdAt: mystery.createdAt,
   updatedAt: mystery.updatedAt,
@@ -76,32 +77,41 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
   fastify.post<{ Body: CreateMysteryInput }>(
     "/mysteries",
     { preHandler: authenticateUser, schema: { body: zodToFastifySchema(createMysterySchema) } },
-    async (request) => {
-      const now = new Date();
-      const [mystery] = await db
-        .insert(mysteries)
-        .values({
-          id: nanoid(),
-          userId: request.userId!,
-          title: request.body.title,
-          data: JSON.stringify(request.body.data),
-          version: 1,
-          createdAt: now,
-          updatedAt: now,
-        })
-        .returning();
-      db.insert(mysteryVersions)
-        .values({
-          id: nanoid(),
-          mysteryId: mystery.id,
-          title: mystery.title,
-          data: mystery.data,
-          sourceVersion: mystery.version,
-          kind: "manual",
-          createdAt: now,
-        })
-        .run();
-      return serializeMystery(mystery);
+    async (request, reply) => {
+      const id = request.body.recoveryId ? `recovered-${request.body.recoveryId}` : nanoid();
+      const result = db.transaction(() => {
+        const previous = db.select().from(mysteries).where(eq(mysteries.id, id)).get();
+        if (previous)
+          return previous.userId === request.userId && !previous.deletedAt ? previous : undefined;
+        const now = new Date();
+        const mystery = db
+          .insert(mysteries)
+          .values({
+            id,
+            userId: request.userId!,
+            title: request.body.title,
+            data: JSON.stringify(normalizeSourceClueIds(request.body.data)),
+            version: 1,
+            createdAt: now,
+            updatedAt: now,
+          })
+          .returning()
+          .get();
+        db.insert(mysteryVersions)
+          .values({
+            id: nanoid(),
+            mysteryId: mystery.id,
+            title: mystery.title,
+            data: mystery.data,
+            sourceVersion: mystery.version,
+            kind: "manual",
+            createdAt: now,
+          })
+          .run();
+        return mystery;
+      });
+      if (!result) return reply.code(409).send({ error: "Recovery request is unavailable" });
+      return serializeMystery(result);
     },
   );
 
@@ -131,6 +141,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
 
       const now = new Date();
       const nextVersion = existing.version + 1;
+      request.body.data = normalizeSourceClueIds(request.body.data, JSON.parse(existing.data));
       const data = JSON.stringify(request.body.data);
       const saved = db.transaction(() => {
         const mystery = db
@@ -172,6 +183,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
           const unmatchedExistingClues = db
             .select({
               id: schema.bookClubClues.id,
+              sourceClueId: schema.bookClubClues.sourceClueId,
               text: schema.bookClubClues.text,
               sourceText: schema.bookClubClues.sourceText,
               sourceEntryId: schema.bookClubClues.sourceEntryId,
@@ -180,6 +192,7 @@ export const mysteryRoutes = async (fastify: FastifyInstance) => {
             })
             .from(schema.bookClubClues)
             .where(eq(schema.bookClubClues.mysteryId, linkedMystery.id))
+            .orderBy(schema.bookClubClues.createdAt, schema.bookClubClues.id)
             .all();
           const boardClueIds = new Set(
             db

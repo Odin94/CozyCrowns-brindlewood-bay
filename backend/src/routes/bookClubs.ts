@@ -1218,10 +1218,12 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
             })
             .run();
         }
-        const clues = [
-          ...parsed.data.clues.map((text) => ({ text, isVoid: false })),
-          ...parsed.data.voidClues.map((text) => ({ text, isVoid: true })),
-        ];
+        const clues = parsed.data.sourceMysteryId
+          ? sourceClues.map(({ text, isVoid }) => ({ text, isVoid }))
+          : [
+              ...parsed.data.clues.map((text) => ({ text, isVoid: false, sourceClueId: null })),
+              ...parsed.data.voidClues.map((text) => ({ text, isVoid: true, sourceClueId: null })),
+            ];
         if (clues.length) {
           tx.insert(schema.bookClubClues)
             .values(
@@ -1235,6 +1237,7 @@ export async function bookClubRoutes(fastify: FastifyInstance) {
                   mysteryId: id,
                   text,
                   isVoid,
+                  sourceClueId: source?.sourceEntryId ?? null,
                   sourceText: parsed.data.sourceMysteryId ? text : null,
                   sourceEntryId: source?.sourceEntryId ?? null,
                 };

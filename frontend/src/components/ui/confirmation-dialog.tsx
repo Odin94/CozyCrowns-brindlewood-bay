@@ -22,6 +22,7 @@ type ConfirmationDialogPanelProps = {
   onCancel: () => void;
   tone?: ConfirmationTone;
   notice?: React.ReactNode;
+  disabled?: boolean;
 };
 
 export const ConfirmationDialogPanel = ({
@@ -33,6 +34,7 @@ export const ConfirmationDialogPanel = ({
   onCancel,
   tone = "danger",
   notice,
+  disabled,
 }: ConfirmationDialogPanelProps) => {
   const Icon = tone === "warning" ? AlertTriangle : Trash2;
 
@@ -51,10 +53,14 @@ export const ConfirmationDialogPanel = ({
         </div>
       </DialogHeader>
       <DialogFooter className="confirmation-dialog__actions">
-        <Button onClick={onCancel} variant="outline" autoFocus>
+        <Button disabled={disabled} onClick={onCancel} variant="outline" autoFocus>
           {cancelLabel}
         </Button>
-        <Button onClick={onConfirm} variant={tone === "danger" ? "destructive" : "dark"}>
+        <Button
+          disabled={disabled}
+          onClick={onConfirm}
+          variant={tone === "danger" ? "destructive" : "dark"}
+        >
           {confirmLabel}
         </Button>
       </DialogFooter>

@@ -1,3 +1,4 @@
+import { characterCoordinator } from "./character_sync_runtime";
 import { MavenPersistence } from "./maven_persistence";
 import { accountScope } from "./account_scope";
 import { useCharacterStore } from "./character_store";
@@ -18,7 +19,29 @@ export const mavenPersistence = new MavenPersistence({
     useCharacterStore
       .getState()
       .mergeRemote(records, ownerId, (record) => mavenPersistence.canReplace(record)),
-  list: api.getCharacters,
+  list: async () => {
+    const owner = accountScope.current().accountId;
+    if (!owner) return { characters: [] };
+    characterCoordinator.setOwner(owner);
+    const pendingBefore = characterCoordinator.pending(owner);
+    await characterCoordinator.retryPending(owner);
+    const response = await api.getCharacters();
+    const pending = [...pendingBefore, ...characterCoordinator.pending(owner)];
+    return {
+      characters: response.characters.filter(
+        (record) => !pending.some((deletion) => deletion.remoteId === record.id),
+      ),
+    };
+  },
+  write: async (localId, payload, isCurrent) => {
+    const owner = accountScope.current().accountId;
+    if (!owner) throw new Error("Session changed");
+    characterCoordinator.setOwner(owner);
+    const saved = await characterCoordinator.save(owner, localId, payload, isCurrent);
+    const record = useCharacterStore.getState().record(localId);
+    if (!saved || !record?.id) throw new Error("Session changed");
+    return { id: record.id, version: record.version ?? 1 };
+  },
   create: api.createCharacter,
   update: api.updateCharacter,
   failed: (error) => {

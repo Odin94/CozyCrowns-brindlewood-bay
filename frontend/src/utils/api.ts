@@ -1,8 +1,8 @@
 import { accountScope } from "../lib/account_scope";
 import { env } from "../config/env.ts";
+import { createTokenStorage } from "../lib/auth_token";
 
 const API_URL = env.VITE_API_URL;
-const TOKEN_STORAGE_KEY = "auth_token";
 
 type User = {
   id: string;
@@ -196,21 +196,25 @@ export type TheoryBoard = {
   edges: TheoryEdge[];
 };
 
+const TOKEN_STORAGE_KEY = "auth_token";
+const rawTokenStorage = createTokenStorage(localStorage);
 export const tokenStorage = {
+  ...rawTokenStorage,
   key: TOKEN_STORAGE_KEY,
-  get: (): string | null => {
-    if (typeof window === "undefined") return null;
-    return localStorage.getItem(TOKEN_STORAGE_KEY);
-  },
-  set: (token: string): void => {
-    if (typeof window === "undefined") return;
-    localStorage.setItem(TOKEN_STORAGE_KEY, token);
-  },
-  remove: (): void => {
-    if (typeof window === "undefined") return;
+  remove: () => {
+    rawTokenStorage.remove();
     accountScope.invalidate();
-    localStorage.removeItem(TOKEN_STORAGE_KEY);
   },
+};
+
+const fetchWithSession = async (input: RequestInfo | URL, init?: RequestInit) => {
+  const epoch = tokenStorage.sessionKey();
+  const authorization = new Headers(init?.headers).get("Authorization");
+  const requestToken = authorization?.startsWith("Bearer ") ? authorization.slice(7) : null;
+  const response = await fetch(input, init);
+  const renewed = response.headers.get("X-New-Token");
+  if (renewed) tokenStorage.rotate(renewed, requestToken, epoch);
+  return response;
 };
 
 if (typeof window !== "undefined") {
@@ -251,6 +255,7 @@ export const connectBookClubUpdates = (
   if (!token) return null;
 
   const generation = accountScope.current().generation;
+  const epoch = tokenStorage.sessionKey();
   const socket = new WebSocket(getBookClubWebSocketUrl());
   const heartbeat = window.setInterval(() => {
     if (socket.readyState === WebSocket.OPEN) socket.send(JSON.stringify({ type: "heartbeat" }));
@@ -264,7 +269,7 @@ export const connectBookClubUpdates = (
       const message = JSON.parse(String(event.data));
       if (generation !== accountScope.current().generation) return;
       if (message.type === "ready" && typeof message.token === "string") {
-        tokenStorage.set(message.token);
+        tokenStorage.rotate(message.token, token, epoch);
       }
       if (message.type === "ready" || message.type === "book-clubs-updated") onUpdate();
       if (message.type === "book-club-note-cursor") onMessage?.(message);
@@ -289,21 +294,12 @@ const scopedFetch: typeof fetch = async (...args) => {
   )
     throw new Error("Session changed");
   const generation = accountScope.current().generation;
-  const response = await fetch(...args);
+  const response = await fetchWithSession(...args);
   responseScopes.set(response, generation);
   return response;
 };
 
 const handleResponse = async <T>(response: Response): Promise<T> => {
-  const newToken = response.headers.get("X-New-Token");
-  if (
-    newToken &&
-    responseScopes.get(response) === accountScope.current().generation &&
-    !accountScope.current().signingOut
-  ) {
-    tokenStorage.set(newToken);
-  }
-
   if (!response.ok) {
     let message = `Request failed (${response.status})`;
     try {
@@ -340,10 +336,19 @@ export const api = {
   },
 
   getCurrentUser: async (): Promise<User & { token?: string }> => {
+    const epoch = tokenStorage.sessionKey();
+    const token = tokenStorage.get();
     const response = await scopedFetch(`${API_URL}/auth/me`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
-    return handleResponse<User & { token?: string }>(response);
+    // An obsolete response must not replace the new login's token or user.
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
+    const data = await handleResponse<User & { token?: string }>(response);
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
+    if (data.token) tokenStorage.rotate(data.token, token, epoch);
+    return data;
   },
 
   handleAuthCallback: async (code: string, state?: string): Promise<AuthCallbackResponse> => {
@@ -361,11 +366,21 @@ export const api = {
     return data;
   },
 
-  logout: async (): Promise<LogoutResponse> => {
+  logout: async (
+    epoch = tokenStorage.sessionKey(),
+  ): Promise<LogoutResponse & { sessionEpoch: string }> => {
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
     const response = await scopedFetch(`${API_URL}/auth/logout`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
-    return handleResponse<LogoutResponse>(response);
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
+    const data = await handleResponse<LogoutResponse>(response);
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
+    tokenStorage.remove();
+    return { ...data, sessionEpoch: tokenStorage.sessionKey() };
   },
 
   updateUserProfile: async (data: UpdateUserInput): Promise<User> => {
@@ -396,6 +411,7 @@ export const api = {
   },
 
   createCharacter: async (data: {
+    creationId?: string;
     name: string;
     data: any;
     version?: number;
@@ -506,7 +522,11 @@ export const api = {
     return handleResponse(response);
   },
 
-  createMystery: async (data: { title: string; data: MysteryData }): Promise<Mystery> => {
+  createMystery: async (data: {
+    title: string;
+    data: MysteryData;
+    recoveryId?: string;
+  }): Promise<Mystery> => {
     const response = await scopedFetch(`${API_URL}/mysteries`, {
       method: "POST",
       headers: getAuthHeaders(),
@@ -561,7 +581,7 @@ export const api = {
   },
 
   getLibrarySummaries: async (): Promise<{ mysteries: LibraryMysterySummary[] }> => {
-    const response = await fetch(`${API_URL}/library?summary=true`, {
+    const response = await fetchWithSession(`${API_URL}/library?summary=true`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
     return handleResponse(response);

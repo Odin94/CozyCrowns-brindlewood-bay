@@ -131,6 +131,15 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
     async (request, reply) => {
       const userId = request.userId!;
       const body = request.body;
+      const id = body.creationId ? `created-${body.creationId}` : nanoid();
+      const previous = body.creationId
+        ? db.select().from(characters).where(eq(characters.id, id)).get()
+        : undefined;
+      if (previous) {
+        if (previous.userId !== userId || previous.deletedAt)
+          return reply.code(409).send({ error: "Creation request is unavailable" });
+        return { ...previous, data: JSON.parse(previous.data) };
+      }
 
       const characterCount = await db
         .select({ count: sql<number>`count(*)` })
@@ -164,10 +173,9 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
         return;
       }
 
-      const id = nanoid();
       const now = new Date();
 
-      const [character] = await db
+      const [inserted] = await db
         .insert(characters)
         .values({
           id,
@@ -179,7 +187,11 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
           createdAt: now,
           updatedAt: now,
         })
+        .onConflictDoNothing()
         .returning();
+      const character = inserted ?? db.select().from(characters).where(eq(characters.id, id)).get();
+      if (!character || character.userId !== userId || character.deletedAt)
+        return reply.code(409).send({ error: "Creation request is unavailable" });
 
       return {
         id: character.id,

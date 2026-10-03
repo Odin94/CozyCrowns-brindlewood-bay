@@ -79,3 +79,47 @@ test("logout still navigates when analytics fails or is disabled", async () => {
   );
   assert.deepEqual(events, ["navigate"]);
 });
+
+test("a newer login cancels old logout reset and navigation while analytics is loading", async () => {
+  const events: string[] = [];
+  const client = {
+    identify: () => {},
+    reset: () => {
+      events.push("reset");
+    },
+  };
+  const loading = deferred<typeof client>();
+  let epoch = "old-logout";
+  const logout = resetAnalyticsAndNavigate(
+    () => loading.promise,
+    () => {
+      events.push("navigate");
+    },
+    unexpectedError,
+    () => epoch === "old-logout",
+  );
+  epoch = "new-login";
+  loading.resolve(client);
+  await logout;
+  assert.deepEqual(events, []);
+});
+
+test("navigation rechecks the session after analytics reset", async () => {
+  let active = true;
+  const events: string[] = [];
+  await resetAnalyticsAndNavigate(
+    async () => ({
+      identify: () => {},
+      reset: () => {
+        events.push("reset");
+        active = false;
+      },
+    }),
+    () => {
+      events.push("navigate");
+    },
+    unexpectedError,
+    () => active,
+  );
+  assert.deepEqual(events, ["reset"]);
+});

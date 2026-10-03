@@ -30,9 +30,6 @@ export const useAuth = () => {
       if (accountScope.current().signingOut) throw new Error("Session changed");
       const data = await api.getCurrentUser();
       if (accountScope.current().generation !== generation) throw new Error("Session changed");
-      if (data.token) {
-        tokenStorage.set(data.token);
-      }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { token, ...user } = data;
       accountScope.set(user.id);
@@ -117,10 +114,9 @@ export const useAuth = () => {
   };
 
   const logoutMutation = useMutation({
-    mutationFn: (generation: number) => api.logout().then((data) => ({ ...data, generation })),
+    mutationFn: (epoch: string) => api.logout(epoch),
     onSuccess: async (data) => {
-      if (data.generation !== accountScope.current().generation) return;
-      tokenStorage.remove();
+      if (tokenStorage.sessionKey() !== data.sessionEpoch) return;
       queryClient.setQueryData(["auth", "me"], null);
 
       await resetAnalyticsAndNavigate(
@@ -129,11 +125,13 @@ export const useAuth = () => {
           window.location.href = data.logoutUrl || "/";
         },
         (error) => console.warn("PostHog reset failed:", error),
+        () => tokenStorage.sessionKey() === data.sessionEpoch,
       );
     },
-    onError: async (_error, generation) => {
-      if (generation !== accountScope.current().generation) return;
+    onError: async (_error, epoch) => {
+      if (tokenStorage.sessionKey() !== epoch) return;
       tokenStorage.remove();
+      const completedEpoch = tokenStorage.sessionKey();
       queryClient.setQueryData(["auth", "me"], null);
 
       await resetAnalyticsAndNavigate(
@@ -142,6 +140,7 @@ export const useAuth = () => {
           window.location.href = "/";
         },
         (error) => console.warn("PostHog reset failed:", error),
+        () => tokenStorage.sessionKey() === completedEpoch,
       );
     },
   });
@@ -160,7 +159,7 @@ export const useAuth = () => {
     if (accountScope.current().accountId !== user?.id) return;
     accountScope.beginSignOut();
     void queryClient.cancelQueries({ queryKey: ["auth", "me"] });
-    logoutMutation.mutate(accountScope.current().generation);
+    logoutMutation.mutate(tokenStorage.sessionKey());
   };
 
   const updateProfileMutation = useMutation({

@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "9df24163-bc49-4af1-ac7f-0b527350eed8",
-  "prevId": "ecee2fd7-759e-453a-8897-732238546394",
+  "id": "9751dfb7-acff-48c8-80de-2630fd0946e7",
+  "prevId": "24a159e6-26e9-43bd-ab0d-e8cba59f2067",
   "tables": {
     "book_club_character_assignments": {
       "name": "book_club_character_assignments",
@@ -81,6 +81,13 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true,
+          "autoincrement": false
+        },
+        "source_clue_id": {
+          "name": "source_clue_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "text": {

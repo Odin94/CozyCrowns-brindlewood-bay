@@ -60,14 +60,26 @@ const cozyItems = (value: unknown): CozyItem[] => {
 };
 
 const abilities = (value: unknown): Ability[] => {
-  if (!Array.isArray(value) || value.length === 0)
-    return DEFAULT_ABILITIES.map((ability) => ({ name: ability.name, value: ability.value }));
-
-  return value.flatMap((ability) =>
-    isRecord(ability) && typeof ability.name === "string" && typeof ability.value === "number"
-      ? [{ name: ability.name, value: ability.value }]
-      : [],
+  const values = Array.isArray(value) ? value : [];
+  // Modern files use canonical names. Older localized files had five entries
+  // in the same fixed order, so retain their values by position only then.
+  const known = values.some(
+    (entry) => isRecord(entry) && DEFAULT_ABILITIES.some((ability) => ability.name === entry.name),
   );
+  return DEFAULT_ABILITIES.map((fallback, index) => {
+    const entry = known
+      ? values.find((candidate) => isRecord(candidate) && candidate.name === fallback.name)
+      : values.length === 5
+        ? values[index]
+        : undefined;
+    return {
+      name: fallback.name,
+      value:
+        isRecord(entry) && typeof entry.value === "number" && Number.isFinite(entry.value)
+          ? Math.max(-3, Math.min(3, Math.trunc(entry.value)))
+          : fallback.value,
+    };
+  });
 };
 
 /** Creates a new, fully-populated editable character document. */
@@ -85,7 +97,10 @@ export const normalizeCharacter = (input: unknown): CharacterData => {
     style: typeof value.style === "string" ? value.style : "",
     activity: typeof value.activity === "string" ? value.activity : "",
     abilities: abilities(value.abilities),
-    xp: typeof value.xp === "number" ? value.xp : 0,
+    xp:
+      typeof value.xp === "number" && Number.isFinite(value.xp)
+        ? Math.max(0, Math.min(5, Math.trunc(value.xp)))
+        : 0,
     conditions: typeof value.conditions === "string" ? value.conditions : "",
     endOfSessionChecks: booleanArray(value.endOfSessionChecks, DEFAULT_LENGTHS.endOfSessionChecks),
     advancementChecks: booleanArray(value.advancementChecks, DEFAULT_LENGTHS.advancementChecks),

@@ -16,6 +16,7 @@ type Ports = {
   ) => void;
   merge: (records: BackendCharacter[], accountId: string) => void;
   list: () => Promise<{ characters: Array<BackendCharacter & { owned: boolean }> }>;
+  write?: (localId: string, payload: Payload, isCurrent: () => boolean) => Promise<Remote>;
   create: (payload: Payload) => Promise<Remote>;
   update: (id: string, payload: Payload) => Promise<Remote>;
   failed: (error: unknown) => void;
@@ -114,9 +115,15 @@ export class MavenPersistence {
           if (!current) return false;
         }
         const id = current.id;
-        const result = id
-          ? await this.ports.update(id, { ...payload, version: current.version ?? 1 })
-          : await this.ports.create({ ...payload, version: 1 });
+        const result = this.ports.write
+          ? await this.ports.write(
+              localId,
+              { ...payload, version: current.version ?? 1 },
+              stillCurrent,
+            )
+          : id
+            ? await this.ports.update(id, { ...payload, version: current.version ?? 1 })
+            : await this.ports.create({ ...payload, version: 1 });
         const latest = this.ports.record(localId);
         if (!latest || latest.ownerId !== scope.accountId || latest.id !== id) return false;
         if (!stillCurrent()) {
@@ -169,7 +176,10 @@ export class MavenPersistence {
   }
 
   canReplace(record: CharacterRecord): boolean {
-    return !this.queues.has(record.localId) && record.syncedContent === content(record);
+    return (
+      !this.queues.has(record.localId) &&
+      (record.syncedContent ?? record.remoteContent) === content(record)
+    );
   }
 }
 

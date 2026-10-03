@@ -26,6 +26,7 @@ type MainMenuViewProps = {
   onLoadFromJSON: () => void;
   onResetClick: () => void;
   onCreditsClick: () => void;
+  onRecoveryClick: () => void;
   onMeClick: () => void;
   onOpenNavigator: () => void;
   onLanguageChange: (locale: string) => void;
@@ -39,6 +40,7 @@ export const MainMenuView = ({
   onLoadFromJSON,
   onResetClick,
   onCreditsClick,
+  onRecoveryClick,
   onMeClick,
   onOpenNavigator,
   onLanguageChange,
@@ -115,6 +117,9 @@ export const MainMenuView = ({
         <p className="text-center text-xs text-muted-foreground">
           <Trans>Drop a save file here, or paste a JSON file.</Trans>
         </p>
+        <Button onClick={onRecoveryClick} variant="dark" className="w-full dark-ring">
+          <Trans>Recently deleted Mavens</Trans>
+        </Button>
         <Button onClick={onResetClick} variant="destructive" className="w-full dark-ring">
           <Trash2 className="w-4 h-4 shrink-0" />
           <Trans>Reset Character</Trans>

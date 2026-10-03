@@ -38,13 +38,14 @@ export const resetAnalyticsAndNavigate = async (
   load: ClientLoader,
   navigate: () => void,
   onError: ErrorHandler,
+  shouldProceed: () => boolean = () => true,
 ) => {
   try {
     const client = await load();
-    client?.reset();
+    if (shouldProceed()) client?.reset();
   } catch (error) {
     onError(error);
   } finally {
-    navigate();
+    if (shouldProceed()) navigate();
   }
 };

@@ -597,9 +597,12 @@ export default function TheorizeBoard({
     () => new Set(edges.map((edge) => JSON.stringify([edge.sourceNodeId, edge.targetNodeId]))),
     [edges],
   );
-  const isReciprocal = (edge: TheoryEdge) =>
-    edge.sourceNodeId !== edge.targetNodeId &&
-    edgeDirections.has(JSON.stringify([edge.targetNodeId, edge.sourceNodeId]));
+  const isReciprocal = useCallback(
+    (edge: TheoryEdge) =>
+      edge.sourceNodeId !== edge.targetNodeId &&
+      edgeDirections.has(JSON.stringify([edge.targetNodeId, edge.sourceNodeId])),
+    [edgeDirections],
+  );
   const existingTags = useMemo(() => [...new Set(nodes.flatMap((node) => node.tags))], [nodes]);
 
   const centerViewport = useCallback((candidates: TheoryNode[]) => {
@@ -1295,7 +1298,7 @@ export default function TheorizeBoard({
     );
   }, [
     edges,
-    edgeDirections,
+    isReciprocal,
     nodeMap,
     visibleIds,
     visibleNodes,

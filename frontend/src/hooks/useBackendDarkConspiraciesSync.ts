@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import {
   hasDarkConspiracyContent,
+  conspiracyContent,
   useDarkConspiracyStore,
   type BackendDarkConspiracy,
   type DarkConspiracyData,
@@ -45,8 +46,10 @@ export const useBackendDarkConspiraciesSync = () => {
   );
   const [isReadyToSave, setIsReadyToSave] = useState(false);
   const syncedUserIdRef = useRef<string | null>(null);
-  const conflictRef = useRef(false);
-  const saveSignature = useMemo(() => JSON.stringify(current), [current]);
+  const conflictRef = useRef(new Set<string>());
+  const saveSignature = useMemo(() => conspiracyContent(current), [current]);
+  const inFlight = useRef(false);
+  const [saveTick, setSaveTick] = useState(0);
 
   useEffect(() => {
     if (!isAuthenticated || !userId) {
@@ -90,30 +93,51 @@ export const useBackendDarkConspiraciesSync = () => {
       !isAuthenticated ||
       !userId ||
       !isReadyToSave ||
-      conflictRef.current ||
-      !hasDarkConspiracyContent(current)
+      conflictRef.current.has(current.localId ?? current.id ?? "local") ||
+      inFlight.current ||
+      saveSignature === current.remoteContent ||
+      (!current.id && !hasDarkConspiracyContent(current))
     ) {
       return;
     }
 
     const saveTimeout = window.setTimeout(async () => {
+      inFlight.current = true;
+      let succeeded = false;
       try {
         const payload = toBackendPayload(current);
         const result = current.id
           ? await api.updateDarkConspiracy(current.id, payload)
           : await api.createDarkConspiracy(payload);
-        updateCurrentDarkConspiracyIdAndVersion(result.id, result.version);
+        updateCurrentDarkConspiracyIdAndVersion(
+          result.id,
+          result.version,
+          current.localId,
+          saveSignature,
+        );
+        succeeded = true;
       } catch (error) {
         console.error("Failed to save dark conspiracy:", error);
         if ((error as Error & { status?: number }).status === 409) {
-          conflictRef.current = true;
+          conflictRef.current.add(current.localId ?? current.id ?? "local");
           toast.error(t`This conspiracy changed elsewhere. Your edits are still here.`, {
             action: {
               label: t`Reload`,
               onClick: () => window.location.reload(),
             },
           });
+        } else {
+          toast.error(t`Could not save the conspiracy. Your edits are still here.`, {
+            action: { label: t`Retry`, onClick: () => setSaveTick((tick) => tick + 1) },
+          });
         }
+      } finally {
+        inFlight.current = false;
+        if (
+          succeeded ||
+          conspiracyContent(useDarkConspiracyStore.getState().current) !== saveSignature
+        )
+          setSaveTick((tick) => tick + 1);
       }
     }, 900);
 
@@ -124,6 +148,7 @@ export const useBackendDarkConspiraciesSync = () => {
     isAuthenticated,
     isReadyToSave,
     saveSignature,
+    saveTick,
     updateCurrentDarkConspiracyIdAndVersion,
     userId,
   ]);

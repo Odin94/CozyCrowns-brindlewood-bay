@@ -1,3 +1,13 @@
+import {
+  loadMysteryDrafts,
+  persistMysteryDraft,
+  storedMysteryDraft,
+  recoverMysteryDraft,
+  completeMysteryRecovery,
+  forgetMysteryDraft,
+  isDirtyMysteryDraft,
+  type MysteryDraft,
+} from "./mystery_drafts.ts";
 import type { Mystery, MysteryData, MysteryVersion } from "../utils/api.ts";
 import type { AccountScope } from "./account_scope.ts";
 
@@ -41,7 +51,11 @@ type Ports = {
   storage: Pick<Storage, "getItem" | "setItem" | "removeItem">;
   remote: {
     getMysteries: () => Promise<{ mysteries: Mystery[] }>;
-    createMystery: (input: { title: string; data: MysteryData }) => Promise<Mystery>;
+    createMystery: (input: {
+      title: string;
+      data: MysteryData;
+      recoveryId?: string;
+    }) => Promise<Mystery>;
     updateMystery: (
       id: string,
       input: { title: string; data: MysteryData; version: number; saveKind: "auto" | "manual" },
@@ -61,6 +75,7 @@ export type MysterySnapshot = {
   selected: Mystery | null;
   versions: MysteryVersion[];
   loaded: boolean;
+  recoveryDrafts?: MysteryDraft[];
 };
 
 /** Owns durable drafts and all operations that consume or replace their contents. */
@@ -114,6 +129,39 @@ export class MysteryPreservation {
     this.state = { ...this.state, ...change };
     for (const listener of this.listeners) listener();
   }
+  private durableStorage(): Storage | null {
+    const storage = this.ports.storage as Storage;
+    return typeof storage.key === "function" && typeof storage.length === "number" ? storage : null;
+  }
+  async retryRecovery(draft: MysteryDraft): Promise<void> {
+    const storage = this.durableStorage();
+    if (!storage || !this.valid() || draft.ownerId !== this.scope.accountId) return;
+    try {
+      const recovered = await recoverMysteryDraft(
+        storage,
+        this.scope.accountId!,
+        draft,
+        `${draft.mystery.title.slice(0, 220)} (Recovered draft)`,
+        this.ports.remote.createMystery,
+      );
+      if (!this.valid()) return;
+      if (completeMysteryRecovery(storage, this.scope.accountId!, draft, recovered)) {
+        this.emit({
+          recoveryDrafts: this.state.recoveryDrafts?.filter((entry) => entry !== draft),
+          mysteries: [
+            recovered,
+            ...this.state.mysteries.filter((entry) => entry.id !== recovered.id),
+          ],
+        });
+        this.saved.set(recovered.id, snapshot(recovered));
+        this.versions.set(recovered.id, recovered.version);
+        if (!this.state.selected || this.state.selected.id === draft.mystery.id)
+          this.choose(recovered);
+      }
+    } catch (error) {
+      if (this.valid()) this.ports.failed(error);
+    }
+  }
   private key(id: string) {
     return `${draftKey}:${this.scope.accountId}:${id}`;
   }
@@ -129,6 +177,14 @@ export class MysteryPreservation {
     this.drafts.set(mystery.id, mystery);
     try {
       this.ports.storage.setItem(this.key(mystery.id), JSON.stringify(mystery));
+      const storage = this.durableStorage();
+      if (storage && this.scope.accountId)
+        persistMysteryDraft(storage, {
+          ownerId: this.scope.accountId,
+          mystery,
+          baseContent: this.saved.get(mystery.id),
+          baseVersion: this.versions.get(mystery.id),
+        });
     } catch (error) {
       this.ports.failed(error);
     }
@@ -185,8 +241,28 @@ export class MysteryPreservation {
     try {
       const result = await this.ports.remote.getMysteries();
       if (!this.valid() || lifetime !== this.lifetime) return;
+      const storage = this.durableStorage();
+      const durable = storage
+        ? loadMysteryDrafts(
+            storage,
+            this.scope.accountId!,
+            new Set(result.mysteries.map((entry) => entry.id)),
+          )
+        : undefined;
+      const recoveryDrafts =
+        durable?.drafts.filter((draft) => {
+          const remote = result.mysteries.find((entry) => entry.id === draft.mystery.id);
+          return (
+            isDirtyMysteryDraft(draft) &&
+            (!remote || (draft.baseVersion ?? draft.mystery.version) !== remote.version)
+          );
+        }) ?? [];
+      this.emit({ recoveryDrafts });
       const legacy = this.read(draftKey);
-      let preferredId = this.read(`${draftKey}:${this.scope.accountId}:selected`);
+      let preferredId =
+        this.read(`${draftKey}:${this.scope.accountId}:selected`) ??
+        durable?.selected?.mystery.id ??
+        null;
       try {
         preferredId ??= (JSON.parse(legacy ?? "null") as Mystery | null)?.id ?? null;
       } catch {
@@ -198,7 +274,13 @@ export class MysteryPreservation {
         const stored = this.read(this.key(mystery.id));
         // Legacy drafts are accepted only if their id occurs in this account's owned list.
         try {
-          const draft = JSON.parse(stored ?? legacy ?? "null") as Mystery | null;
+          const reviewDraft = storage
+            ? storedMysteryDraft(storage, this.scope.accountId!, mystery.id)
+            : undefined;
+          const draft =
+            reviewDraft && isDirtyMysteryDraft(reviewDraft)
+              ? reviewDraft.mystery
+              : (JSON.parse(stored ?? legacy ?? "null") as Mystery | null);
           if (
             draft?.id === mystery.id &&
             typeof draft.title === "string" &&
@@ -212,13 +294,18 @@ export class MysteryPreservation {
             }
           }
         } catch {
-          if (stored) this.ports.storage.removeItem(this.key(mystery.id));
+          /* Malformed originals remain available for recovery. */
         }
       }
       this.emit({ mysteries: result.mysteries });
       const preferred =
         result.mysteries.find((mystery) => mystery.id === preferredId) ?? result.mysteries[0];
       if (!this.state.selected && preferred) this.choose(preferred);
+      for (const draft of recoveryDrafts) {
+        if (!this.valid() || lifetime !== this.lifetime) break;
+        // eslint-disable-next-line no-await-in-loop -- Reconcile each recovery before choosing the next document.
+        await this.retryRecovery(draft);
+      }
     } catch (error) {
       if (this.valid()) this.ports.failed(error);
     } finally {
@@ -446,6 +533,9 @@ export class MysteryPreservation {
         this.saved.delete(selected.id);
         this.versions.delete(selected.id);
         this.ports.storage.removeItem(this.key(selected.id));
+        const storage = this.durableStorage();
+        if (storage && this.scope.accountId)
+          forgetMysteryDraft(storage, this.scope.accountId, selected.id);
         const legacy = this.read(draftKey);
         try {
           if ((JSON.parse(legacy ?? "null") as Mystery | null)?.id === selected.id)

@@ -1,7 +1,24 @@
 import type { CharacterData } from "@/types/characterSchema";
-import { PDFDocument, PDFTextField, PDFCheckBox } from "pdf-lib";
+import { PDFDocument, PDFTextField, PDFCheckBox, StandardFonts } from "pdf-lib";
+
+import fontkit from "@pdf-lib/fontkit";
+import unicodeFontUrl from "../resources/NotoSansSC-Regular.ttf?url";
+import { toast } from "sonner";
+import { t } from "@lingui/core/macro";
 
 import base64PdfData from "../resources/brindlewoodbay-charactersheet_fillable.base64?raw";
+
+let unicodeFontBytes: Promise<ArrayBuffer> | undefined;
+const loadUnicodeFont = () =>
+  (unicodeFontBytes ??= fetch(unicodeFontUrl)
+    .then((response) => {
+      if (!response.ok) throw new Error("Could not load PDF font");
+      return response.arrayBuffer();
+    })
+    .catch((error) => {
+      unicodeFontBytes = undefined;
+      throw error;
+    }));
 
 export const generatePdf = async (character: CharacterData): Promise<Uint8Array> => {
   try {
@@ -32,7 +49,7 @@ export const generatePdf = async (character: CharacterData): Promise<Uint8Array>
     // XP
     for (let i = 0; i < 5; i++) {
       const xpField = form.getField(`XP.${i}`) as PDFCheckBox;
-      if (character.xp >= i) {
+      if (character.xp > i) {
         xpField.check();
       } else {
         xpField.uncheck();
@@ -119,7 +136,27 @@ export const generatePdf = async (character: CharacterData): Promise<Uint8Array>
       }
     }
 
-    const filledPdfBytes = await pdfDoc.save();
+    let appearanceFont = await pdfDoc.embedFont(StandardFonts.Helvetica);
+    const textFields = form
+      .getFields()
+      .filter((field): field is PDFTextField => field instanceof PDFTextField);
+    const needsFont = (supported: Set<number>) =>
+      textFields.some((field) =>
+        Array.from(field.getText() ?? "").some(
+          (char) => !supported.has(char.codePointAt(0)!) && char !== "\n" && char !== "\r",
+        ),
+      );
+    if (needsFont(new Set(appearanceFont.getCharacterSet()))) {
+      pdfDoc.registerFontkit(fontkit);
+      appearanceFont = await pdfDoc.embedFont(await loadUnicodeFont(), { subset: false });
+      if (needsFont(new Set(appearanceFont.getCharacterSet()))) {
+        toast.warning(
+          t`Some symbols cannot be displayed in the PDF font. Their original text is preserved in the form fields.`,
+        );
+      }
+    }
+    form.updateFieldAppearances(appearanceFont);
+    const filledPdfBytes = await pdfDoc.save({ updateFieldAppearances: false });
 
     return filledPdfBytes;
   } catch (error) {

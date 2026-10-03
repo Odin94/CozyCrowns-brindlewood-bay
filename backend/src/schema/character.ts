@@ -2,7 +2,7 @@ import { z } from "zod";
 
 export const abilitySchema = z.object({
   name: z.string(),
-  value: z.number(),
+  value: z.number().int().min(-3).max(3),
 });
 
 export const cozyItemSchema = z.object({
@@ -25,8 +25,8 @@ export const characterDataSchema = z.object({
   name: z.string().optional().default(""),
   style: z.string().optional().default(""),
   activity: z.string().optional().default(""),
-  abilities: z.array(abilitySchema).min(1).optional().default(defaultAbilities),
-  xp: z.number().optional().default(0),
+  abilities: z.array(abilitySchema).length(5).optional().default(defaultAbilities),
+  xp: z.number().int().min(0).max(5).optional().default(0),
   conditions: z.string().optional().default(""),
   endOfSessionChecks: z
     .array(z.boolean())
@@ -53,6 +53,7 @@ export const characterDataSchema = z.object({
 });
 
 export const createCharacterSchema = z.object({
+  creationId: z.string().uuid().optional(),
   name: z.string().min(1).max(255),
   data: characterDataSchema,
   version: z.number().int().positive().optional().default(1),

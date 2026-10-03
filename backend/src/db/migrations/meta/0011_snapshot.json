@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ecee2fd7-759e-453a-8897-732238546394",
+  "id": "24a159e6-26e9-43bd-ab0d-e8cba59f2067",
   "prevId": "40327c6f-f4b1-4e6f-b4f3-2af7f2e33c00",
   "tables": {
     "book_club_character_assignments": {
@@ -83,18 +83,18 @@
           "notNull": true,
           "autoincrement": false
         },
+        "source_clue_id": {
+          "name": "source_clue_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
         "text": {
           "name": "text",
           "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false
-        },
-        "source_text": {
-          "name": "source_text",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
           "autoincrement": false
         },
         "is_void": {

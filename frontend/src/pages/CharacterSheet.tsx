@@ -109,7 +109,8 @@ const CharacterSheet = ({
   const isLargeScreen = useIsLargeScreen();
   const {
     deleteConfirmOpen,
-    deleteConfirmIndex,
+    deleteConfirmName,
+    isDeleting,
     handleDeleteCharacter,
     confirmDelete,
     cancelDelete,
@@ -226,7 +227,8 @@ const CharacterSheet = ({
       {/* Delete confirmation for character tabs */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <DeleteConfirmDialog
-          characterIndex={deleteConfirmIndex}
+          characterName={deleteConfirmName}
+          isDeleting={isDeleting}
           onConfirm={confirmDelete}
           onCancel={cancelDelete}
           isAuthenticated={isAuthenticated}

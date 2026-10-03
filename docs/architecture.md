@@ -95,3 +95,60 @@ CozyCrowns is a Brindlewood Bay character sheet that works offline in the browse
 - Run `cd backend && pnpm build`
 - If frontend behavior changed too, also run `cd frontend && pnpm build`
 - If WorkOS behavior is involved and credentials are unavailable, leave a concrete manual verification note
+
+
+### Conflict-safe local persistence
+
+Maven records retain `remoteContent`, the last confirmed payload. Server revision
+updates never mark newer in-flight edits as confirmed. A divergent newer cloud
+copy preserves the local draft under a new local identity before adopting the
+remote revision. Dark Conspiracies use the same confirmed-content convention.
+
+Maven browser persistence uses a checkpoint and one field journal per browser
+tab. Tabs hydrate each other's operations rather than overwriting whole
+collections. Conflicting fields become independent local recovery records;
+deleted records retain tombstones so late edits cannot restore their server ID.
+Web Locks serialize checkpoint compaction, and writer frontiers prevent replay.
+Storage write failures leave the editable document in memory and show an export
+warning. The original storage key remains a legacy-compatible checkpoint.
+
+Mystery drafts persist their confirmed content baseline. Equal-revision dirty
+drafts resume autosave; drafts that diverge from a newer cloud revision are
+preserved before creating a separate recovered mystery.
+
+Linked Book Club clues retain a nullable source entry ID. Migration 0011 is
+additive and accepts existing rows without backfill. The first source edit maps
+legacy links against the previous source document, consuming duplicate display
+strings once in deterministic clue order. Truly identical historical duplicates
+have no recoverable source ordering. Removed source clues remain Book Club
+history so discoveries and theory-board connections are retained.
+
+PDF exports use Helvetica for supported text and lazily fetch the licensed Noto
+CJK font only for Unicode text that requires it. The Unicode font is embedded in full because fontkit subsets dropped composite CJK glyphs in common readers. This increases Unicode exports to approximately 6.7 MB; Latin exports keep their original size. Unsupported symbols show a warning, with original text retained in the
+editable PDF form fields.
+
+
+### Recovery and deletion follow-up guarantees
+
+Mystery drafts are scoped by owner and document ID. Missing unscoped legacy
+IDs are never automatically uploaded to a different account. Pending conflicting
+drafts remain visible with retry/export controls. Stable recovery request IDs
+make recovery creation idempotent, including Strict Mode and reload retries.
+Obsolete account loads cannot select or overwrite the current account's drafts.
+
+Maven save/delete operations share one per-owner document queue. Deletion intents
+persist before waiting for a create acknowledgement; orphaned late creates are
+removed or retained as a pending cloud deletion. Both account generation and
+live bearer identity gate queued mutations and completion. An idempotent create
+retry compares the actual accepted baseline before updating a newer local draft.
+
+Deleted payload recovery is bounded to the latest 20 documents for 30 days and
+available through the menu. Compaction prunes older payloads while retaining
+small identity tombstones. A stale tab editing a pruned deletion contributes a
+full anonymous recovery snapshot rather than resurrecting the cloud identity.
+Invalid checkpoints are quarantined without blocking valid journal replay.
+
+Legacy source entries use content-derived identities until a source save
+persists explicit IDs. Ambiguous idless duplicate deletions conservatively keep
+prior progress and create a new source identity. Category changes update the
+same Book Club clue and theory node in place.
