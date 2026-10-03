@@ -219,6 +219,7 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
   };
 
   const getMaxWidth = () => {
+    if (showRecovery) return "sm:max-w-[600px]";
     if (showResetConfirm) return "sm:max-w-[525px]";
     if (showMe || showCredits) return "sm:max-w-[500px]";
     return "sm:max-w-[425px]";
@@ -266,8 +267,8 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
         event.preventDefault();
         void importFile(file);
       }}
-      className={`${isDraggingFile ? "ring-2 ring-primary" : ""} ${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : "bg-secondary/90 border-0 shadow-none"}`}
-      style={showResetConfirm ? undefined : { boxShadow: "none" }}
+      className={`${isDraggingFile ? "ring-2 ring-primary" : ""} ${getMaxWidth()} ${showResetConfirm ? "confirmation-dialog" : showRecovery ? "max-h-[calc(100dvh-2rem)] overflow-y-auto bg-secondary text-secondary-foreground border-border shadow-lg" : "bg-secondary/90 border-0 shadow-none"}`}
+      style={showResetConfirm || showRecovery ? undefined : { boxShadow: "none" }}
     >
       <VisuallyHidden.Root asChild>
         <DialogTitle>Menu</DialogTitle>
@@ -278,11 +279,11 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
         </p>
       )}
       {showRecovery ? (
-        <div className="space-y-4 text-white">
+        <div className="min-w-0 space-y-5">
           <h2 className="text-lg font-semibold">
             <Trans>Recently deleted Mavens</Trans>
           </h2>
-          <p className="text-sm text-gray-300">
+          <p className="text-sm leading-relaxed">
             <Trans>
               The most recent 20 deleted Mavens are available for 30 days. Restoring creates a
               separate local copy.
@@ -295,12 +296,16 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
           )}
           {user &&
             characterCoordinator.pending(user.id).map((deletion) => (
-              <div key={deletion.localId} className="flex items-center justify-between gap-3">
+              <div
+                key={deletion.localId}
+                className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between"
+              >
                 <span>
                   <Trans>Pending cloud deletion</Trans>
                 </span>
                 <Button
                   variant="dark"
+                  className="shrink-0"
                   onClick={() =>
                     void characterCoordinator
                       .delete(user.id, deletion.localId)
@@ -316,14 +321,18 @@ const MenuDialog = ({ onOpenChange, open, onBookClubsClick }: MenuDialogProps) =
                 </Button>
               </div>
             ))}
-          <div className="max-h-80 space-y-2 overflow-y-auto">
+          <div className="max-h-80 space-y-4 overflow-y-auto px-1 py-1">
             {archivedCharacters.map((entry) => (
-              <div key={entry.record.localId} className="flex items-center justify-between gap-3">
-                <span className="min-w-0 truncate">
+              <div
+                key={entry.record.localId}
+                className="flex min-w-0 flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between"
+              >
+                <span className="min-w-0 break-words [overflow-wrap:anywhere]">
                   {entry.record.name || i18n._(msg`Unnamed Maven`)}
                 </span>
                 <Button
                   variant="dark"
+                  className="shrink-0"
                   onClick={() => {
                     characterStore.restoreArchived(entry.record.localId);
                     onOpenChange?.(false);

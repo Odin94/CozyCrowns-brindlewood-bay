@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Show theory-note descriptions on the cards without duplicate hover tooltips.
+- Improve deleted-Maven recovery dialog contrast, spacing and mobile layout.
+
 - Preserve unsaved Mavens and Dark Conspiracies when newer cloud copies arrive.
 - Coordinate browser tabs with field journals, conflict recovery copies, and durable deletion history.
 - Recover unsaved mystery drafts and retain a separate copy when their cloud revision diverges.
