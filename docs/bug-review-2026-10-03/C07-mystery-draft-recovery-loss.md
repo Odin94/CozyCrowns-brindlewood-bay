@@ -2,6 +2,8 @@
 
 Severity: **High**. Both paths confirmed in the running editor/API at `0cb664b`.
 
+Revalidated on committed revision `7b88cb2` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+
 ## Reproduction and evidence
 
 1. Create a mystery with introduction `SERVER BASE`. Persist an offline draft for its ID with `UNSAVED OFFLINE DRAFT`, retaining the confirmed `updatedAt`.

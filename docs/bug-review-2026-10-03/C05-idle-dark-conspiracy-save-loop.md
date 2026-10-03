@@ -2,6 +2,8 @@
 
 Severity: **Medium**. Confirmed through local sign-in and real HTTP requests at `0cb664b`; screenshot: `../../../evidence/cozycrowns-dark-conspiracy.png`.
 
+Revalidated on committed revision `7b88cb2` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+
 ## Reproduction and evidence
 
 Sign in and add one first Void Clue, then stop editing. In a 6.5-second window the browser sends one POST and **five successful PUTs** to `/dark-conspiracies/:id`. The server revision remains 1 because the data has not changed. Requests continue approximately every 950 ms, even when the Maven sheet is the active view.

@@ -2,6 +2,8 @@
 
 Severity: **High**. Confirmed against the actual local API at `0cb664b`.
 
+Revalidated on committed revision `7b88cb2` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+
 ## Reproduction and evidence
 
 Create a source mystery containing clue ID `stable-clue-1`, title `Letter`, description `A signed letter`. Add it to a Book Club and activate the mystery. Mark the clue discovered; connect its theory node to a suspect with edge label `signed by`.

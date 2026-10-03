@@ -2,6 +2,8 @@
 
 Severity: **High**. Confirmed using two real anonymous tabs at `0cb664b`; reproduction: `../../../harness/cross-tab.js`.
 
+Revalidated on committed revision `7b88cb2` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+
 ## Reproduction and evidence
 
 Open one local Maven in two tabs. Add a condition in A; B remains stale. Change the name in B. Reload A: its condition is gone. The final localStorage payload contains B's name and the original empty conditions. No account or cloud requests are involved.

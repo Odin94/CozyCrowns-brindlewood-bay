@@ -2,6 +2,8 @@
 
 Severity: **Medium**. Confirmed by calling the actual browser PDF generator at `0cb664b`.
 
+Revalidated on committed revision `7b88cb2` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+
 ## Reproduction and evidence
 
 Export a Maven named `Maven 🧶` or `李华`. The generator throws `WinAnsi cannot encode` and produces no PDF. A Latin-1 control, `Élodie`, succeeds. The problem applies to every free-text field, not just the name.

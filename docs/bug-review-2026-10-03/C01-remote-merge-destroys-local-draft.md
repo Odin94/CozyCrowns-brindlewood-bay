@@ -2,6 +2,8 @@
 
 Severity: **High**. Confirmed using the running browser's actual store at `0cb664b`.
 
+Revalidated on committed revision `7b88cb2` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+
 ## Reproduction and evidence
 
 1. A local Maven has remote ID R and confirmed version 1.
