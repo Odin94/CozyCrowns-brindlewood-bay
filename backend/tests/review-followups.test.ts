@@ -554,3 +554,86 @@ test("a legacy clue's first text correction keeps its prior discovery identity",
   assert.equal(reconciled.updates[0].id, "club-clue");
   assert.equal(reconciled.updates[0].checked, true);
 });
+
+test("logged-out deletion archives a cached cloud Maven without a protected request", async () => {
+  const storage = memory();
+  const cached = {
+    ...normalizeCharacter({ name: "Cached" }),
+    localId: "cached",
+    id: "cloud",
+    version: 1,
+  };
+  let archived: unknown;
+  let calls = 0;
+  const coordinator = createCharacterCoordinator({
+    storage,
+    record: () => cached,
+    creationId: () => undefined,
+    acknowledge: () => {},
+    remove: () => {
+      archived = cached;
+    },
+    create: async () => {
+      throw Error("unexpected");
+    },
+    update: async () => {
+      throw Error("unexpected");
+    },
+    delete: async () => {
+      calls++;
+      throw Object.assign(Error("Unauthorized"), { status: 401 });
+    },
+  });
+  coordinator.setOwner(undefined);
+  await coordinator.delete("anonymous", "cached");
+  assert.equal(calls, 0);
+  assert.equal(archived, cached);
+  assert.equal(coordinator.pending("anonymous").length, 0);
+});
+
+test("local deletion after logout retains a cloud create still awaiting acknowledgement", async () => {
+  const storage = memory();
+  let record = {
+    ...normalizeCharacter({ name: "Maven" }),
+    localId: "a",
+    creationId: crypto.randomUUID(),
+  };
+  let started!: () => void, release!: (result: { id: string; version: number }) => void;
+  const begun = new Promise<void>((resolve) => {
+    started = resolve;
+  });
+  const response = new Promise<{ id: string; version: number }>((resolve) => {
+    release = resolve;
+  });
+  let cloudDeletions = 0;
+  const coordinator = createCharacterCoordinator({
+    storage,
+    record: () => record,
+    creationId: () => record?.creationId,
+    acknowledge: () => {
+      throw Error("obsolete session acknowledgement");
+    },
+    remove: () => {
+      record = undefined as never;
+    },
+    create: async () => {
+      started();
+      return response;
+    },
+    update: async () => {
+      throw Error("unexpected");
+    },
+    delete: async () => {
+      cloudDeletions++;
+    },
+  });
+  coordinator.setOwner("A");
+  const saving = coordinator.save("A", "a", { name: "Maven", data: record }, () => true);
+  await begun;
+  coordinator.setOwner(undefined);
+  await coordinator.delete("anonymous", "a");
+  release({ id: "retained-cloud-row", version: 1 });
+  assert.equal(await saving, false);
+  assert.equal(cloudDeletions, 0);
+  assert.equal(coordinator.pending("A").length, 0);
+});

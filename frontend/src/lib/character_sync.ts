@@ -48,6 +48,7 @@ export function createCharacterCoordinator(deps: Dependencies) {
       throw new Error("The account session changed; deletion is still pending");
   };
   const queues = new Map<string, Promise<unknown>>();
+  const localOnlyDeletions = new Set<string>();
   const enqueue = <T>(ownerId: string, localId: string, task: () => Promise<T>): Promise<T> => {
     const key = `${ownerId}:${localId}`;
     const result = (queues.get(key) ?? Promise.resolve()).catch(() => undefined).then(task);
@@ -55,6 +56,8 @@ export function createCharacterCoordinator(deps: Dependencies) {
     void result
       .finally(() => {
         if (queues.get(key) === result) queues.delete(key);
+        if (![...queues.keys()].some((entry) => entry.endsWith(`:${localId}`)))
+          localOnlyDeletions.delete(localId);
       })
       .catch(() => undefined);
     return result;
@@ -76,7 +79,7 @@ export function createCharacterCoordinator(deps: Dependencies) {
     deps.storage.setItem(deletionKey(value.ownerId, value.localId), JSON.stringify(value));
   const completeDelete = async (value: CharacterDeletion, generation: number) => {
     requireSession(value.ownerId, generation);
-    if (value.remoteId) {
+    if (value.remoteId && value.ownerId !== "anonymous") {
       try {
         await deps.delete(value.remoteId);
       } catch (error) {
@@ -149,6 +152,8 @@ export function createCharacterCoordinator(deps: Dependencies) {
         const deletion = intent(ownerId, localId);
         if (deletion) persist({ ...deletion, remoteId: result.id, awaitingCreate: false });
         if (!deps.record(localId)) {
+          // Logged-out deletion removes this browser copy while retaining cloud data.
+          if (localOnlyDeletions.has(localId)) return allowed(ownerId, generation);
           const orphan = deletion ?? {
             ownerId,
             localId,
@@ -165,6 +170,7 @@ export function createCharacterCoordinator(deps: Dependencies) {
     delete: (ownerId: string, localId: string) => {
       const generation = sessionGeneration;
       const record = deps.record(localId);
+      if (ownerId === "anonymous") localOnlyDeletions.add(localId);
       persist(
         intent(ownerId, localId) ?? {
           ownerId,

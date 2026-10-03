@@ -33,3 +33,9 @@ keeping newer edits and selection changes made while its POST is in flight.
 Verified HTTP/WebSocket token renewal now retains a login identity epoch and
 rejects obsolete response tokens after another sign-in. Legacy mystery reads
 expose their stable identities before the first text correction.
+
+## Frozen review follow-up
+
+Logged-out deletion now archives/removes only the browser's cached Maven and
+retains its cloud row. An obsolete logout response and its hook cleanup cannot
+clear another login's token, user cache or navigation.

@@ -326,13 +326,21 @@ export const api = {
     return data;
   },
 
-  logout: async (): Promise<LogoutResponse> => {
+  logout: async (
+    epoch = tokenStorage.sessionKey(),
+  ): Promise<LogoutResponse & { sessionEpoch: string }> => {
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
     const response = await fetchWithSession(`${API_URL}/auth/logout`, {
       headers: getAuthHeaders({ includeContentType: false }),
     });
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
     const data = await handleResponse<LogoutResponse>(response);
+    if (tokenStorage.sessionKey() !== epoch)
+      throw Object.assign(new Error("The account session changed"), { status: 409 });
     tokenStorage.remove();
-    return data;
+    return { ...data, sessionEpoch: tokenStorage.sessionKey() };
   },
 
   updateUserProfile: async (data: UpdateUserInput): Promise<User> => {

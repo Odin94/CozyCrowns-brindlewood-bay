@@ -13,7 +13,7 @@
     "preview": "vite preview",
     "extract": "lingui extract",
     "compile": "lingui compile --typescript",
-    "test:review": "node benchmarks/review-regressions.mjs && node benchmarks/pdf-regressions.mjs"
+    "test:review": "node benchmarks/review-regressions.mjs && node benchmarks/pdf-regressions.mjs && node benchmarks/auth-session-regressions.mjs"
   },
   "dependencies": {
     "@lingui/core": "^6.0.1",

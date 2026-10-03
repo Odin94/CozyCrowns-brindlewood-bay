@@ -80,9 +80,9 @@ export const useAuth = () => {
   };
 
   const logoutMutation = useMutation({
-    mutationFn: () => api.logout(),
+    mutationFn: (epoch: string) => api.logout(epoch),
     onSuccess: async (data) => {
-      tokenStorage.remove();
+      if (tokenStorage.sessionKey() !== data.sessionEpoch) return;
       queryClient.setQueryData(["auth", "me"], null);
 
       await resetAnalyticsAndNavigate(
@@ -93,7 +93,8 @@ export const useAuth = () => {
         (error) => console.warn("PostHog reset failed:", error),
       );
     },
-    onError: async () => {
+    onError: async (_error, epoch) => {
+      if (tokenStorage.sessionKey() !== epoch) return;
       tokenStorage.remove();
       queryClient.setQueryData(["auth", "me"], null);
 
@@ -118,7 +119,7 @@ export const useAuth = () => {
   });
 
   const signOut = () => {
-    logoutMutation.mutate();
+    logoutMutation.mutate(tokenStorage.sessionKey());
   };
 
   const updateProfileMutation = useMutation({
