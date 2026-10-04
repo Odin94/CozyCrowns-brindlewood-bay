@@ -573,7 +573,7 @@ msgstr ""
 #~ msgid "Browse published mysteries"
 #~ msgstr ""
 
-#: src/lib/character_store.ts:312
+#: src/lib/character_store.ts:317
 msgid "Browser storage is full or unavailable. Keep this page open and export your Maven before reloading."
 msgstr ""
 
@@ -609,6 +609,10 @@ msgstr "Wohltätigkeitsveranstaltungen"
 #: src/components/character/Abilities.tsx:32
 msgid "Charm, confidence, intimidation, and holding the room."
 msgstr "Charme, Selbstvertrauen, Einschüchterung und den Raum für sich einnehmen."
+
+#: src/pages/StageConnect.tsx:23
+msgid "Checking your account…"
+msgstr ""
 
 #: src/pages/BookClubOverview.tsx:416
 msgid "Choose a Book Club"
@@ -722,8 +726,28 @@ msgstr "Zustände"
 msgid "Confirm Reset"
 msgstr "Zurücksetzen bestätigen"
 
+#: src/pages/StageConnect.tsx:23
+msgid "Connect as"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connect CozyCrowns to Stage"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connect to Stage"
+msgstr ""
+
 #: src/pages/TheorizeBoard.tsx:1162
 msgid "Connect to this note"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connected to Stage"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connecting…"
 msgstr ""
 
 #: src/pages/TheorizeBoard.tsx:996
@@ -785,6 +809,10 @@ msgstr ""
 
 #: src/pages/TheorizeBoard.tsx:774
 msgid "Could not connect those notes"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:21
+msgid "Could not connect. Keep Stage open, check your sign-in and local network access, then retry. If the request expired, start again in Stage."
 msgstr ""
 
 #: src/pages/LibraryPage.tsx:141
@@ -2125,6 +2153,14 @@ msgstr ""
 msgid "Retry draft recovery"
 msgstr ""
 
+#: src/pages/StageConnect.tsx:23
+msgid "Return to CozyCrowns"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:23
+msgid "Return to Stage and choose your book club."
+msgstr ""
+
 #: src/pages/BookClubOverview.tsx:1511
 #~ msgid "Reveal"
 #~ msgstr ""
@@ -2304,6 +2340,14 @@ msgstr ""
 msgid "Sign in to write, preserve, and share your mysteries."
 msgstr ""
 
+#: src/pages/StageConnect.tsx:23
+msgid "Sign in with WorkOS"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:17
+msgid "Sign in with WorkOS again."
+msgstr ""
+
 #: src/lib/pdf_generator.ts:154
 msgid "Some symbols cannot be displayed in the PDF font. Their original text is preserved in the form fields."
 msgstr ""
@@ -2327,6 +2371,18 @@ msgstr "Quellcode"
 #: src/game_data.ts:90
 msgid "Speed Walkin'"
 msgstr "Nordic Walking"
+
+#: src/pages/StageConnect.tsx:23
+msgid "Stage can follow your Mavens and book clubs, read GM mystery material, and mark clues found when you choose."
+msgstr ""
+
+#: src/pages/StageConnect.tsx:19
+msgid "Stage could not connect. Start a new connection in Stage."
+msgstr ""
+
+#: src/pages/StageConnect.tsx:23
+msgid "Start a connection from Settings → Integrations in Stage."
+msgstr ""
 
 #: src/components/character/Abilities.tsx:30
 msgid "Steady nerves, fine control, focus, and keeping fear at bay."
@@ -2498,6 +2554,11 @@ msgstr "Dieser Spielzug hat keine Funktion, bis du einen Fall löst und dadurch 
 
 #: src/pages/TheorizeBoard.tsx:827
 msgid "This note is currently locked"
+msgstr ""
+
+#: src/pages/StageConnect.tsx:14
+#: src/pages/StageConnect.tsx:22
+msgid "This request expired. Start sign-in again in Stage."
 msgstr ""
 
 #: src/pages/TheorizeBoard.tsx:1539
@@ -2741,6 +2802,10 @@ msgstr "Du hast früher ein weltenbummelndes Jetset-Leben geführt und hast imme
 #: src/game_data.ts:203
 msgid "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 msgstr "Du bist sehr talentiert darin, dich als jemand auszugeben, der du nicht bist. Wenn es ein Ausweisdokument oder eine Verkleidung gibt, die dir bei deinem Schwindel helfen würde, hast du es. Sage, was es ist, und füge es zu deinem Gemütlichen Zuhause hinzu."
+
+#: src/pages/StageConnect.tsx:16
+msgid "Your account changed. Reload this page before connecting."
+msgstr ""
 
 #: src/pages/BookClubOverview.tsx:844
 msgid "Your cases and the public library"

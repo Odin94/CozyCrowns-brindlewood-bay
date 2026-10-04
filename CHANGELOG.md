@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Connect CozyCrowns accounts to Stage through a consent-based WorkOS handoff, with live book-club Maven sheets and GM mystery pages.
+- Expose a GM-only Stage mystery projection for clues, characters and locations; Stage uses the existing clue discovery controls.
+
 - Keep unsaved Mavens selected as separate recovery copies when any sync entry point receives a newer cloud version.
 - Show theory-note descriptions on the cards without duplicate hover tooltips; keep descriptions readable alongside longer titles, tags and edit indicators.
 - Improve deleted-Maven recovery dialog contrast, spacing and mobile layout.

@@ -20,6 +20,7 @@ const LibraryPage = lazy(() => import("./pages/LibraryPage"));
 const BookClubMaven = lazy(() => import("./pages/BookClubMaven"));
 const BookClubOverview = lazy(() => import("./pages/BookClubOverview"));
 const TheorizeBoard = lazy(() => import("./pages/TheorizeBoard"));
+const StageConnect = lazy(() => import("./pages/StageConnect"));
 const SignInPage = lazy(() => import("./pages/SignInPage"));
 
 const currentLocation = () =>
@@ -97,6 +98,8 @@ function AppRoutes() {
       <Suspense fallback={null}>
         {pathname === "/auth/callback" ? (
           <AuthCallback />
+        ) : pathname === "/stage-connect" ? (
+          <StageConnect />
         ) : pathname === "/sign-in" ? (
           <SignInPage
             returnTo={isSafeAuthReturnTo(signInReturnTo) ? signInReturnTo : "/"}

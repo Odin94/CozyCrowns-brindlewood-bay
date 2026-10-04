@@ -69,8 +69,23 @@ test("prepared clues stay private until revealed and campaign notes survive auth
     intro: "Private setup",
     complexity: 6,
     establishingQuestions: [],
-    locations: [],
-    suspects: [],
+    locations: [
+      {
+        id: "library",
+        title: "Library",
+        description: "Dusty shelves",
+        prompt: "Who studies here?",
+      },
+    ],
+    suspects: [
+      {
+        id: "reed",
+        name: "Mrs Reed",
+        title: "Librarian",
+        description: "Knows everyone",
+        quote: "Hush",
+      },
+    ],
     moments: [],
     clues: [{ id: "source", title: "Secret clue", description: "Private solution" }],
     voidClues: [{ id: "void-source", title: "Secret void", description: "Private void solution" }],
@@ -137,6 +152,41 @@ test("prepared clues stay private until revealed and campaign notes survive auth
     });
   const base = "/book-clubs/club/mysteries/case";
   const board = `${base}/theorize`;
+
+  await context.test(
+    "Stage mystery projection is GM-only, includes all three pages and omits private source identities",
+    async () => {
+      const endpoint = "/book-clubs/club/stage";
+      assert.equal((await request("player", "GET", endpoint)).statusCode, 403);
+      assert.equal((await request("outsider", "GET", endpoint)).statusCode, 403);
+      const response = await request("gm", "GET", endpoint);
+      assert.equal(response.statusCode, 200);
+      const mystery = response.json().mysteries[0];
+      assert.equal(mystery.isActive, true);
+      assert.equal(mystery.clues.length, 2);
+      assert.equal(mystery.characters[0].name, "Mrs Reed");
+      assert.equal(mystery.locations[0].title, "Library");
+      assert(!response.body.includes("sourceText"));
+      assert(!response.body.includes("sourceMysteryId"));
+      db.update(schema.mysteries)
+        .set({
+          data: JSON.stringify({
+            ...data,
+            locations: [{ ...data.locations[0], description: "Changed shelves" }],
+          }),
+        })
+        .where(eq(schema.mysteries.id, "source-mystery"))
+        .run();
+      assert.equal(
+        (await request("gm", "GET", endpoint)).json().mysteries[0].locations[0].description,
+        "Changed shelves",
+      );
+      db.update(schema.mysteries)
+        .set({ data: JSON.stringify(data) })
+        .where(eq(schema.mysteries.id, "source-mystery"))
+        .run();
+    },
+  );
 
   await context.test("overview and boards do not disclose prepared clues", async () => {
     const gm = (await request("gm", "GET", "/book-clubs")).json();

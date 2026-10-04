@@ -3,6 +3,7 @@ import { and, desc, eq, inArray, isNotNull, isNull, or, sql } from "drizzle-orm"
 import { nanoid } from "nanoid";
 import { z } from "zod";
 import { db, schema } from "../db/index.js";
+import { mysteryDataSchema } from "../schema/mystery.js";
 import { storedMysteryClues } from "../lib/mystery-clues.js";
 import { findTheoryNotePlacement } from "../lib/theory-placement.js";
 import { authenticateSealedSession, authenticateUser } from "../middleware/auth.js";
@@ -530,6 +531,66 @@ function syncTheoryClueNode(clue: { id: string; text: string; isVoid: boolean })
 }
 
 export async function bookClubRoutes(fastify: FastifyInstance) {
+  // Keeper-only authoring material for the optional Stage mystery notebook.
+  fastify.get("/book-clubs/:id/stage", { preHandler: authenticateUser }, async (request, reply) => {
+    const params = idInput.safeParse(request.params);
+    if (!params.success) return reply.code(400).send({ error: "Invalid book club" });
+    if (!(await gameMaster(params.data.id, request.userId!)))
+      return reply.code(403).send({ error: "Only the GM can access mystery material" });
+    const rows = await db
+      .select({ mystery: schema.bookClubMysteries, source: schema.mysteries })
+      .from(schema.bookClubMysteries)
+      .leftJoin(
+        schema.mysteries,
+        and(
+          eq(schema.bookClubMysteries.sourceMysteryId, schema.mysteries.id),
+          isNull(schema.mysteries.deletedAt),
+        ),
+      )
+      .where(eq(schema.bookClubMysteries.bookClubId, params.data.id))
+      .orderBy(desc(schema.bookClubMysteries.updatedAt));
+    if (rows.length > 100)
+      return reply.code(413).send({ error: "This book club has too many mysteries for Stage" });
+    const clues = rows.length
+      ? await db
+          .select({
+            id: schema.bookClubClues.id,
+            mysteryId: schema.bookClubClues.mysteryId,
+            text: schema.bookClubClues.text,
+            isVoid: schema.bookClubClues.isVoid,
+            checked: schema.bookClubClues.checked,
+          })
+          .from(schema.bookClubClues)
+          .where(
+            inArray(
+              schema.bookClubClues.mysteryId,
+              rows.map((row) => row.mystery.id),
+            ),
+          )
+          .orderBy(schema.bookClubClues.createdAt)
+      : [];
+    return {
+      mysteries: rows.map(({ mystery, source }) => {
+        let data: ReturnType<typeof mysteryDataSchema.parse> | null = null;
+        try {
+          const parsed = mysteryDataSchema.safeParse(JSON.parse(source?.data ?? "null"));
+          if (parsed.success) data = parsed.data;
+        } catch {
+          /* Legacy data cannot break the book club. */
+        }
+        return {
+          id: mystery.id,
+          title: mystery.title,
+          isActive: mystery.isActive,
+          clues: clues
+            .filter((c) => c.mysteryId === mystery.id)
+            .map(({ mysteryId: _mysteryId, ...clue }) => clue),
+          characters: data?.suspects ?? [],
+          locations: data?.locations ?? [],
+        };
+      }),
+    };
+  });
   fastify.get("/book-clubs/live", { websocket: true }, (socket, request) => {
     let unregister: (() => void) | undefined;
     let authenticatedUserId: string | undefined;

@@ -152,3 +152,24 @@ Legacy source entries use content-derived identities until a source save
 persists explicit IDs. Ambiguous idless duplicate deletions conservatively keep
 prior progress and create a new source identity. Category changes update the
 same Book Club clue and theory node in place.
+
+
+## Stage integration
+
+`/stage-connect` validates a short-lived nonce and a native receiver at
+`http://127.0.0.1:<port>/cozycrowns/callback`. The pending request lives in
+session storage for three minutes. WorkOS login remembers `/stage-connect` as
+its return destination; the callback exchanges the code once. After sign-in,
+the user explicitly chooses Connect to Stage. The page revalidates the displayed
+account and session identity before transferring the sealed session to the native
+receiver. Anonymous character editing and local data are unaffected.
+
+Stage reads the existing character and book-club APIs. The GM-only
+`GET /book-clubs/:id/stage` returns every club mystery's clues (including prepared
+Void clues), characters and locations. Current book-club GM membership is checked
+before reading source content; private authoring/source identities are omitted.
+Character/location descriptions follow the assigned, live source mystery. Clues
+use the existing book-club copies so found state and customized campaign wording
+are preserved. Stage can mark a clue found through the existing permission-checked
+clue PUT endpoint. Manual notes edits in Stage fork locally and never update the
+CozyCrowns source.

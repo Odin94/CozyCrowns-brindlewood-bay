@@ -573,7 +573,7 @@ msgstr "Bring to table"
 #~ msgid "Browse published mysteries"
 #~ msgstr "Browse published mysteries"
 
-#: src/lib/character_store.ts:312
+#: src/lib/character_store.ts:317
 msgid "Browser storage is full or unavailable. Keep this page open and export your Maven before reloading."
 msgstr "Browser storage is full or unavailable. Keep this page open and export your Maven before reloading."
 
@@ -609,6 +609,10 @@ msgstr "Charity Events"
 #: src/components/character/Abilities.tsx:32
 msgid "Charm, confidence, intimidation, and holding the room."
 msgstr "Charm, confidence, intimidation, and holding the room."
+
+#: src/pages/StageConnect.tsx:23
+msgid "Checking your account…"
+msgstr "Checking your account…"
 
 #: src/pages/BookClubOverview.tsx:416
 msgid "Choose a Book Club"
@@ -722,9 +726,29 @@ msgstr "Conditions"
 msgid "Confirm Reset"
 msgstr "Confirm Reset"
 
+#: src/pages/StageConnect.tsx:23
+msgid "Connect as"
+msgstr "Connect as"
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connect CozyCrowns to Stage"
+msgstr "Connect CozyCrowns to Stage"
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connect to Stage"
+msgstr "Connect to Stage"
+
 #: src/pages/TheorizeBoard.tsx:1162
 msgid "Connect to this note"
 msgstr "Connect to this note"
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connected to Stage"
+msgstr "Connected to Stage"
+
+#: src/pages/StageConnect.tsx:23
+msgid "Connecting…"
+msgstr "Connecting…"
 
 #: src/pages/TheorizeBoard.tsx:996
 msgid "Connection removed"
@@ -786,6 +810,10 @@ msgstr "Could not bring that Maven to the club"
 #: src/pages/TheorizeBoard.tsx:774
 msgid "Could not connect those notes"
 msgstr "Could not connect those notes"
+
+#: src/pages/StageConnect.tsx:21
+msgid "Could not connect. Keep Stage open, check your sign-in and local network access, then retry. If the request expired, start again in Stage."
+msgstr "Could not connect. Keep Stage open, check your sign-in and local network access, then retry. If the request expired, start again in Stage."
 
 #: src/pages/LibraryPage.tsx:141
 msgid "Could not copy mystery"
@@ -2129,6 +2157,14 @@ msgstr "Retry"
 msgid "Retry draft recovery"
 msgstr "Retry draft recovery"
 
+#: src/pages/StageConnect.tsx:23
+msgid "Return to CozyCrowns"
+msgstr "Return to CozyCrowns"
+
+#: src/pages/StageConnect.tsx:23
+msgid "Return to Stage and choose your book club."
+msgstr "Return to Stage and choose your book club."
+
 #: src/pages/BookClubOverview.tsx:1511
 #~ msgid "Reveal"
 #~ msgstr "Reveal"
@@ -2308,6 +2344,14 @@ msgstr "Sign in to explore approved mysteries."
 msgid "Sign in to write, preserve, and share your mysteries."
 msgstr "Sign in to write, preserve, and share your mysteries."
 
+#: src/pages/StageConnect.tsx:23
+msgid "Sign in with WorkOS"
+msgstr "Sign in with WorkOS"
+
+#: src/pages/StageConnect.tsx:17
+msgid "Sign in with WorkOS again."
+msgstr "Sign in with WorkOS again."
+
 #: src/lib/pdf_generator.ts:154
 msgid "Some symbols cannot be displayed in the PDF font. Their original text is preserved in the form fields."
 msgstr "Some symbols cannot be displayed in the PDF font. Their original text is preserved in the form fields."
@@ -2331,6 +2375,18 @@ msgstr "Source Code"
 #: src/game_data.ts:90
 msgid "Speed Walkin'"
 msgstr "Speed Walkin'"
+
+#: src/pages/StageConnect.tsx:23
+msgid "Stage can follow your Mavens and book clubs, read GM mystery material, and mark clues found when you choose."
+msgstr "Stage can follow your Mavens and book clubs, read GM mystery material, and mark clues found when you choose."
+
+#: src/pages/StageConnect.tsx:19
+msgid "Stage could not connect. Start a new connection in Stage."
+msgstr "Stage could not connect. Start a new connection in Stage."
+
+#: src/pages/StageConnect.tsx:23
+msgid "Start a connection from Settings → Integrations in Stage."
+msgstr "Start a connection from Settings → Integrations in Stage."
 
 #: src/components/character/Abilities.tsx:30
 msgid "Steady nerves, fine control, focus, and keeping fear at bay."
@@ -2503,6 +2559,11 @@ msgstr "This move has no function until you solve a mystery and put a Suspect be
 #: src/pages/TheorizeBoard.tsx:827
 msgid "This note is currently locked"
 msgstr "This note is currently locked"
+
+#: src/pages/StageConnect.tsx:14
+#: src/pages/StageConnect.tsx:22
+msgid "This request expired. Start sign-in again in Stage."
+msgstr "This request expired. Start sign-in again in Stage."
 
 #: src/pages/TheorizeBoard.tsx:1539
 msgid "This title stays in sync with the mystery clue list."
@@ -2745,6 +2806,10 @@ msgstr "You used to live a globetrotting, jet set life, and you still have a tou
 #: src/game_data.ts:203
 msgid "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 msgstr "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
+
+#: src/pages/StageConnect.tsx:16
+msgid "Your account changed. Reload this page before connecting."
+msgstr "Your account changed. Reload this page before connecting."
 
 #: src/pages/BookClubOverview.tsx:844
 msgid "Your cases and the public library"
