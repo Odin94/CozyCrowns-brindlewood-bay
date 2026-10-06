@@ -14,7 +14,6 @@ import { useBackendCharactersSync } from "@/hooks/useBackendCharactersSync";
 import { useBackendDarkConspiraciesSync } from "@/hooks/useBackendDarkConspiraciesSync";
 import { SaveFailureDialog } from "@/components/MenuDialog/SaveFailureDialog";
 import { useCharacterStore } from "@/lib/character_store";
-import { getSheetRoutePath, parseSheetRoute, type SheetRoute } from "@/lib/sheet_route";
 import { useAuth } from "@/hooks/useAuth";
 import DarkConspiracySheet from "@/pages/DarkConspiracySheet";
 import EndOfSession from "@/components/character/EndOfSession";
@@ -28,11 +27,78 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { useLingui } from "@lingui/react";
 import { Trans } from "@lingui/react/macro";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
-type NavigationMode = "push" | "replace";
+type CharacterSheetProps = {
+  onBookClubsClick: () => void;
+  activeView?: "character" | "darkConspiracy";
+  onSwitchToCharacter: () => void;
+  onSwitchToDarkConspiracy?: () => void;
+};
 
-const CharacterSheet = () => {
+// Keep per-edit subscriptions out of the sheet layout and its sibling sections.
+const CharacterAutoSave = ({
+  saveCurrentCharacter,
+}: {
+  saveCurrentCharacter: () => Promise<boolean>;
+}) => {
+  const currentCharacter = useCharacterStore((state) => state.selected());
+  const { isAuthenticated, user } = useAuth();
+  const lastAutoSaved = useRef<string | null>(null);
+  const autoSaveSignature = useMemo(
+    () =>
+      JSON.stringify({
+        characterKey: currentCharacter.localId,
+        data: currentCharacter && {
+          name: currentCharacter.name,
+          style: currentCharacter.style,
+          activity: currentCharacter.activity,
+          abilities: currentCharacter.abilities,
+          xp: currentCharacter.xp,
+          conditions: currentCharacter.conditions,
+          endOfSessionChecks: currentCharacter.endOfSessionChecks,
+          advancementChecks: currentCharacter.advancementChecks,
+          mavenMoves: currentCharacter.mavenMoves,
+          crownChecks: currentCharacter.crownChecks,
+          voidChecks: currentCharacter.voidChecks,
+          cozyItems: currentCharacter.cozyItems,
+        },
+      }),
+    [currentCharacter],
+  );
+
+  useEffect(() => {
+    lastAutoSaved.current = null;
+  }, [user?.id]);
+
+  useEffect(() => {
+    if (!isAuthenticated || (!currentCharacter.name.trim() && !currentCharacter.id)) return;
+    if (lastAutoSaved.current === autoSaveSignature) return;
+
+    const timer = window.setTimeout(() => {
+      void saveCurrentCharacter().then((saved) => {
+        if (saved) lastAutoSaved.current = autoSaveSignature;
+      });
+    }, 800);
+
+    return () => window.clearTimeout(timer);
+  }, [
+    autoSaveSignature,
+    currentCharacter.id,
+    currentCharacter.name,
+    isAuthenticated,
+    saveCurrentCharacter,
+  ]);
+
+  return null;
+};
+
+const CharacterSheet = ({
+  onBookClubsClick,
+  activeView = "character",
+  onSwitchToCharacter,
+  onSwitchToDarkConspiracy,
+}: CharacterSheetProps) => {
   // useLingui() is Required to ensure component rerenders when locale changes
   useLingui();
   useBackendCharactersSync();
@@ -43,73 +109,16 @@ const CharacterSheet = () => {
   const isLargeScreen = useIsLargeScreen();
   const {
     deleteConfirmOpen,
-    deleteConfirmIndex,
+    deleteConfirmName,
+    isDeleting,
     handleDeleteCharacter,
     confirmDelete,
     cancelDelete,
     setDeleteConfirmOpen,
   } = useDeleteConfirmation();
   const { saveCurrentCharacter } = useCharacterSave();
-  const { characters, currentCharacterIndex, setCurrentCharacter } = useCharacterStore();
+  const setCurrentCharacter = useCharacterStore((state) => state.setCurrentCharacter);
   const { isAuthenticated } = useAuth();
-  const [route, setRoute] = useState<SheetRoute>(() =>
-    parseSheetRoute(window.location.pathname, currentCharacterIndex),
-  );
-
-  const navigateToRoute = useCallback((nextRoute: SheetRoute, mode: NavigationMode = "push") => {
-    const path = getSheetRoutePath(nextRoute);
-    if (window.location.pathname !== path) {
-      const historyMethod = mode === "replace" ? "replaceState" : "pushState";
-      window.history[historyMethod]({}, "", path);
-    }
-    setRoute(nextRoute);
-  }, []);
-
-  const navigateToCharacter = useCallback(
-    (index: number, mode?: NavigationMode) => {
-      navigateToRoute({ view: "character", characterIndex: index }, mode);
-    },
-    [navigateToRoute],
-  );
-
-  const navigateToDarkConspiracy = useCallback(
-    (mode?: NavigationMode) => {
-      navigateToRoute({ view: "darkConspiracy" }, mode);
-    },
-    [navigateToRoute],
-  );
-
-  useEffect(() => {
-    const handlePopState = () => {
-      setRoute(parseSheetRoute(window.location.pathname, currentCharacterIndex));
-    };
-
-    window.addEventListener("popstate", handlePopState);
-    return () => window.removeEventListener("popstate", handlePopState);
-  }, [currentCharacterIndex]);
-
-  useEffect(() => {
-    if (route.view !== "character") return;
-
-    const maxIndex = Math.max(0, characters.length - 1);
-    const routeIndex = Math.min(route.characterIndex, maxIndex);
-
-    if (route.characterIndex !== routeIndex) {
-      navigateToCharacter(routeIndex, "replace");
-      return;
-    }
-
-    if (currentCharacterIndex !== routeIndex) {
-      setCurrentCharacter(routeIndex);
-    }
-  }, [characters.length, currentCharacterIndex, navigateToCharacter, route, setCurrentCharacter]);
-
-  useEffect(() => {
-    const path = getSheetRoutePath(route);
-    if (window.location.pathname !== path) {
-      window.history.replaceState({}, "", path);
-    }
-  }, [route]);
 
   const handleSwitchCharacter = async (index: number): Promise<boolean> => {
     const saveSuccess = await saveCurrentCharacter();
@@ -124,7 +133,6 @@ const CharacterSheet = () => {
   const handleSaveFailureContinue = () => {
     if (pendingSwitchIndex !== null) {
       setCurrentCharacter(pendingSwitchIndex);
-      navigateToCharacter(pendingSwitchIndex);
       setPendingSwitchIndex(null);
     }
     setSaveFailureOpen(false);
@@ -137,10 +145,11 @@ const CharacterSheet = () => {
 
   return (
     <div
-      className={`min-h-screen w-full from-gray-900 to-gray-800 p-4 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
+      className={`min-h-screen w-full from-gray-900 to-gray-800 p-3 sm:p-4 md:p-5 lg:p-6 ${isLargeScreen ? "pb-4" : "pb-20"}`}
     >
+      <CharacterAutoSave saveCurrentCharacter={saveCurrentCharacter} />
       <div className="w-full max-w-none">
-        <div className="text-center mb-8">
+        <div className="mb-5 pt-3 text-center sm:mb-8 md:pt-0">
           <h1 className="text-3xl font-bold text-white mb-0">CozyCrowns 👑</h1>
           <div
             className="text-xs font-normal text-gray-300 font-sans -mt-4"
@@ -150,10 +159,10 @@ const CharacterSheet = () => {
           </div>
         </div>
 
-        {route.view === "character" ? (
-          <div className="conspiracy-view-enter grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 max-w-7xl mx-auto relative">
+        {activeView === "character" ? (
+          <div className="character-sheet conspiracy-view-enter relative mx-auto grid max-w-7xl grid-cols-1 gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-8">
             {/* Column 1 */}
-            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative">
+            <div className="relative col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <div className="absolute top-0 left-0 w-full -mt-8">
                 <Tentacles setMenuOpen={setMenuOpen} />
               </div>
@@ -166,14 +175,14 @@ const CharacterSheet = () => {
             </div>
 
             {/* Column 2 */}
-            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col relative z-20">
+            <div className="relative z-20 col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <EndOfSession />
               <Advancements />
               <MavenMoves />
             </div>
 
             {/* Column 3 */}
-            <div className="col-span-1 bg-gray-800 rounded-lg shadow-lg p-6 space-y-5 min-h-0 flex flex-col">
+            <div className="col-span-1 flex min-h-0 flex-col space-y-4 rounded-lg bg-gray-800 p-4 shadow-lg sm:space-y-5 sm:p-5 lg:p-6">
               <CrownOfTheQueen />
               <CrownOfTheVoid />
               <CozyLittlePlace />
@@ -183,7 +192,8 @@ const CharacterSheet = () => {
             <div className="hidden lg:block absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-full">
               <Button
                 onClick={() => setMenuOpen(true)}
-                className="bg-dark-secondary hover:bg-dark-foreground/90 transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
+                variant="dark"
+                className="transition-all duration-300 origin-top rounded-t-none h-8 dark-ring hover:scale-y-110 -mt-2 relative z-10"
               >
                 <Trans>Menu</Trans>
               </Button>
@@ -191,29 +201,34 @@ const CharacterSheet = () => {
           </div>
         ) : (
           <div className="conspiracy-view-enter">
-            <DarkConspiracySheet />
+            <DarkConspiracySheet onBackToCharacterSheet={onSwitchToCharacter} />
           </div>
         )}
       </div>
 
       {/* Menu Button - Mobile version */}
       <div className="lg:hidden flex justify-center mt-8">
-        <Button
-          onClick={() => setMenuOpen(true)}
-          className="bg-dark-secondary hover:bg-dark-foreground/90"
-        >
+        <Button onClick={() => setMenuOpen(true)} variant="dark">
           <Trans>Menu</Trans>
         </Button>
       </div>
 
       <Dialog open={menuOpen} onOpenChange={setMenuOpen}>
-        <MenuDialog onOpenChange={setMenuOpen} open={menuOpen} />
+        <MenuDialog
+          onOpenChange={setMenuOpen}
+          open={menuOpen}
+          onBookClubsClick={() => {
+            setMenuOpen(false);
+            onBookClubsClick();
+          }}
+        />
       </Dialog>
 
       {/* Delete confirmation for character tabs */}
       <Dialog open={deleteConfirmOpen} onOpenChange={setDeleteConfirmOpen}>
         <DeleteConfirmDialog
-          characterIndex={deleteConfirmIndex}
+          characterName={deleteConfirmName}
+          isDeleting={isDeleting}
           onConfirm={confirmDelete}
           onCancel={cancelDelete}
           isAuthenticated={isAuthenticated}
@@ -231,9 +246,9 @@ const CharacterSheet = () => {
       <CharacterTabs
         onDeleteCharacter={handleDeleteCharacter}
         onSwitchCharacter={handleSwitchCharacter}
-        activeView={route.view}
-        onSwitchToCharacter={navigateToCharacter}
-        onSwitchToDarkConspiracy={navigateToDarkConspiracy}
+        activeView={activeView}
+        onSwitchToCharacter={onSwitchToCharacter}
+        onSwitchToDarkConspiracy={onSwitchToDarkConspiracy}
       />
     </div>
   );

@@ -1,0 +1,642 @@
+.theory-board {
+  height: 100dvh;
+  overflow: hidden;
+  color: #4c3d31;
+  background: #ddd4c1;
+  font-family: system-ui, sans-serif;
+}
+
+.theory-board__header {
+  position: relative;
+  z-index: 40;
+  border-bottom: 1px solid rgb(92 70 48 / 22%);
+  background:
+    linear-gradient(90deg, #f2eddd, #e9e1ce),
+    repeating-linear-gradient(0deg, transparent 0 1.2rem, rgb(91 74 52 / 5%) 1.25rem 1.3rem);
+  box-shadow: 0 0.2rem 0.8rem rgb(58 42 24 / 10%);
+}
+
+.theory-board__header h1 {
+  color: #40352b;
+  font-family: "Patrick Hand", cursive;
+  font-size: 1.65rem;
+  font-weight: 400;
+}
+
+.theory-board__eyebrow {
+  color: #74624e;
+}
+
+.theory-board__header .subtle-back-button:hover,
+.theory-board__header .subtle-back-button:focus-visible {
+  background: rgb(86 68 48 / 10%);
+  color: #44382d;
+}
+
+.theory-board__toolbar {
+  position: relative;
+  z-index: 39;
+  border-bottom: 1px solid rgb(81 61 40 / 22%);
+  background: #e2d8c4;
+  color: #594a3a;
+  box-shadow: inset 0 1px rgb(255 255 255 / 30%);
+}
+
+.theory-board__toolbar .theory-filter {
+  border-color: rgb(86 69 49 / 24%);
+  background: rgb(250 246 233 / 40%);
+  color: #6f6252;
+}
+
+.theory-board__toolbar .theory-filter.is-active {
+  border-color: #9a8870;
+  background: #f4ecd9;
+  color: #4c3d31;
+  box-shadow: inset 0 1px rgb(255 255 255 / 45%);
+}
+
+.theory-board__canvas {
+  overscroll-behavior: none;
+  cursor: grab;
+  background-color: #cfc6b3;
+  background-image:
+    radial-gradient(circle at 18% 28%, rgb(255 251 239 / 16%) 0 1px, transparent 1.5px),
+    radial-gradient(circle at 72% 61%, rgb(82 73 59 / 7%) 0 1px, transparent 1.6px),
+    repeating-radial-gradient(circle at 35% 20%, transparent 0 4px, rgb(82 73 59 / 2%) 5px 6px),
+    linear-gradient(115deg, rgb(255 251 239 / 12%), transparent 45%, rgb(82 73 59 / 4%));
+  background-size:
+    17px 19px,
+    23px 29px,
+    31px 37px,
+    100% 100%;
+  box-shadow: inset 0 0 3rem rgb(69 58 43 / 13%);
+}
+
+.theory-board__canvas:active {
+  cursor: grabbing;
+}
+
+.theory-board__loading {
+  color: #4c3b2b;
+  font-family: "Patrick Hand", cursive;
+  font-size: 1rem;
+}
+
+.theory-edge {
+  stroke: rgb(75 70 63 / 42%);
+  stroke-width: 1.7;
+  vector-effect: non-scaling-stroke;
+  transition:
+    stroke 120ms ease-out,
+    stroke-width 120ms ease-out;
+}
+
+.theory-edge.is-highlighted {
+  stroke: rgb(66 58 49 / 88%);
+  stroke-width: 3;
+}
+
+.theory-edge-preview {
+  stroke: rgb(70 60 48 / 76%);
+  stroke-width: 2.4;
+  stroke-dasharray: 7 6;
+  vector-effect: non-scaling-stroke;
+}
+
+.theory-edge-label {
+  min-width: 1.5rem;
+  border: 1px solid rgb(82 73 62 / 28%);
+  background: rgb(225 218 201 / 82%);
+  color: #62594f;
+  box-shadow: 0 1px 3px rgb(58 42 24 / 16%);
+  font-family: "Patrick Hand", cursive;
+  line-height: 1.1;
+  backdrop-filter: blur(2px);
+}
+
+.theory-edge-label:hover,
+.theory-edge-label.is-highlighted {
+  border-color: rgb(72 59 45 / 58%);
+  background: #ece2cb;
+  color: #3f342a;
+}
+
+.theory-edge-editor {
+  padding: 0.2rem;
+  border: 1px solid rgb(77 62 47 / 38%);
+  border-radius: 0.35rem;
+  background: #e9dfc8;
+  box-shadow: 0 0.25rem 0.7rem rgb(54 38 22 / 28%);
+}
+
+.theory-edge-editor input {
+  border-color: #8c765c;
+  background: #fffbed;
+  color: #44382d;
+}
+
+.theory-edge-editor__delete {
+  color: #853f38;
+}
+
+.theory-edge-editor__delete:hover {
+  background: #ddc3b5;
+}
+
+.theory-node {
+  padding: 12px;
+  overflow: visible;
+  border: 1px solid rgb(84 68 48 / 40%);
+  border-radius: 0.18rem 0.28rem 0.2rem 0.3rem;
+  color: #42382e;
+  box-shadow:
+    0 0.45rem 0.8rem rgb(48 31 16 / 16%),
+    inset 0 1px rgb(255 255 255 / 58%);
+  font-family: system-ui, sans-serif;
+  transition:
+    border-color 120ms ease-out,
+    box-shadow 120ms ease-out;
+}
+
+.theory-node::before {
+  position: absolute;
+  top: -0.42rem;
+  left: 50%;
+  width: 3.2rem;
+  height: 0.85rem;
+  background: rgb(239 228 201 / 72%);
+  box-shadow: 0 1px 2px rgb(65 47 27 / 18%);
+  content: "";
+  pointer-events: none;
+  transform: translateX(-50%) rotate(-1.5deg);
+}
+
+.theory-node:hover {
+  border-color: rgb(72 57 41 / 72%);
+  box-shadow:
+    0 0.55rem 1rem rgb(48 31 16 / 21%),
+    inset 0 1px rgb(255 255 255 / 68%);
+}
+
+.theory-node.is-connection-target {
+  outline: 2px dashed rgb(74 61 46 / 48%);
+  outline-offset: 4px;
+}
+
+.theory-node.is-connection-source {
+  border-color: rgb(68 52 36 / 76%);
+  box-shadow:
+    0 0 0 3px rgb(255 245 213 / 34%),
+    0 0.55rem 1rem rgb(48 31 16 / 21%);
+}
+
+.theory-node--clue {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 1.25rem, rgb(80 71 55 / 7%) 1.3rem 1.35rem),
+    #eee4c7;
+}
+
+.theory-node--void-clue {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 1.25rem, rgb(73 60 75 / 6%) 1.3rem 1.35rem),
+    #e2dde1;
+}
+
+.theory-node--suspect {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 1.25rem, rgb(87 62 43 / 7%) 1.3rem 1.35rem),
+    #e3cec5;
+}
+
+.theory-node--other {
+  background:
+    repeating-linear-gradient(0deg, transparent 0 1.25rem, rgb(57 70 73 / 6%) 1.3rem 1.35rem),
+    #dde1d9;
+}
+
+.theory-node h2 {
+  color: #3d3329;
+  font-family: "Patrick Hand", cursive;
+  font-size: 18px;
+  line-height: 20px;
+  font-weight: 400;
+}
+
+.theory-node__icon {
+  color: #74614b;
+}
+
+.theory-node__pin {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: #6c5944;
+  box-shadow: none;
+  cursor: crosshair;
+  opacity: 0;
+  pointer-events: none;
+  transform: translate(-50%, -50%) scale(var(--theory-inverse-zoom, 1));
+}
+
+.theory-node__pin::before {
+  content: "";
+  position: absolute;
+  inset: 9px;
+  border: 1px solid #aa9679;
+  border-radius: 50%;
+  background: #e9ddc4;
+}
+.theory-node__pin svg {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+
+.theory-node__pin--top {
+  top: 0;
+  left: 50%;
+}
+.theory-node__pin--right {
+  top: 50%;
+  left: 100%;
+}
+.theory-node__pin--bottom {
+  top: 100%;
+  left: 50%;
+}
+.theory-node__pin--left {
+  top: 50%;
+  left: 0;
+}
+
+.theory-node:hover .theory-node__pin,
+.theory-node:focus-within .theory-node__pin,
+.theory-node.is-connection-source .theory-node__pin,
+.theory-node__pin--right {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.theory-node__pin:hover,
+.theory-node__pin:focus-visible {
+  background: transparent;
+  color: #4c3d31;
+  box-shadow: none;
+}
+.theory-node__pin:hover::before,
+.theory-node__pin:focus-visible::before {
+  border-color: #8d775b;
+  background: #f8f2e3;
+}
+.theory-node__pin:focus-visible {
+  box-shadow: none !important;
+  --tw-ring-shadow: none !important;
+}
+.theory-node__pin:focus-visible::before {
+  outline: 1px solid #8d775b;
+  outline-offset: 1px;
+}
+
+@media (hover: none) {
+  .theory-node__pin {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.theory-node__description {
+  flex-shrink: 0;
+  margin-top: 4px;
+  font-size: 12px;
+  line-height: 16px;
+  color: #74614b;
+}
+.theory-description-tooltip {
+  max-height: min(24rem, 60vh);
+  overflow-y: auto;
+  border-color: #a08b6c;
+  background: #fffaf0;
+  color: #4c3d31;
+  box-shadow: 3px 3px 0 rgb(76 61 49 / 18%);
+  --ring: 32 24% 43%;
+}
+
+.theory-node__tags {
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  max-height: 30px;
+  padding-top: 0;
+  gap: 2px;
+}
+
+.theory-node__base-tag,
+.theory-node__tag {
+  padding: 1px 6px;
+  font-size: 9px;
+  line-height: 10px;
+  border: 1px solid rgb(72 61 48 / 24%);
+  background: rgb(255 252 233 / 36%);
+  color: #5f5142;
+}
+
+.theory-node__lock {
+  flex-shrink: 0;
+  margin-top: 4px;
+  font-size: 10px;
+  line-height: 12px;
+  color: #735b3f;
+}
+
+.theory-node__lock svg {
+  width: 12px;
+  height: 12px;
+}
+
+.theory-dialog {
+  border-color: #a08b6c;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 1.3rem, rgb(75 61 45 / 5%) 1.35rem 1.4rem),
+    #eee4c7;
+  color: #4c3d31;
+  box-shadow: 0 1rem 3rem rgb(45 30 17 / 25%);
+}
+
+.theory-dialog__select {
+  border-color: #8c765c;
+  background: #fffbed;
+  color: #44382d;
+}
+
+.theory-type-options {
+  --accent: 39 35% 81%;
+  --accent-foreground: 30 22% 25%;
+  --ring: 32 24% 43%;
+  border-color: #a08b6c;
+  background: #fffbed;
+  color: #4c3d31;
+}
+.theory-type-options [role="option"][data-highlighted],
+.theory-type-options [role="option"][data-state="checked"] {
+  background: #e1d4bc;
+  color: #4c3d31;
+}
+.theory-type-options [role="option"] > span:last-child {
+  width: 100%;
+}
+.theory-type-option {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+}
+.theory-type-option kbd {
+  font-size: 0.65rem;
+  color: #75634d;
+  font-weight: 400;
+}
+
+.theory-tag-choice {
+  border-color: rgb(88 70 51 / 30%);
+  background: #f7f0df;
+  color: #594a3a;
+}
+
+.theory-tag-choice:hover {
+  border-color: #99846a;
+  background: #fdf8ec;
+}
+
+.theory-tag-choice.is-selected {
+  border-color: #aa9679;
+  background: #e1d4bc;
+  color: #4c3d31;
+}
+
+.theory-tag-choice.is-selected:hover {
+  background: #eaddc7;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theory-edge,
+  .theory-node,
+  .theory-node__pin {
+    transition: none;
+  }
+}
+
+/* Board coordinates must stay fixed across the shared button interaction states. */
+.theory-edge-label,
+.theory-edge-label:hover,
+.theory-edge-label:active {
+  translate: -50% -50%;
+  scale: 1;
+  transform: none;
+}
+
+.theory-dialog input,
+.theory-dialog textarea,
+.theory-dialog select {
+  border-color: #a08b6c;
+  background: #fffbed;
+  color: #44382d;
+  --ring: 32 24% 43%;
+  --ring-offset-background: 43 52% 86%;
+}
+.theory-dialog input::placeholder,
+.theory-dialog textarea::placeholder,
+.theory-dialog .text-gray-400 {
+  color: #7b6b57;
+}
+.theory-dialog input:disabled {
+  background: #ded2b8;
+  color: #675945;
+  opacity: 1;
+}
+.theory-tag-entry input,
+.theory-tag-entry button {
+  height: 2.5rem;
+}
+.theory-tag-entry button {
+  flex-shrink: 0;
+}
+.theory-edge-editor input,
+.theory-edge-editor button {
+  height: 2rem;
+}
+
+/* Keep the case-file controls in the same paper and ink palette as the notes. */
+.theory-board,
+.theory-dialog {
+  --ring: 32 24% 43%;
+  --dark-secondary: 30 22% 29%;
+  --selection-background: #d8c7a8;
+  --selection-ink: #4c3d31;
+  --field-background: #fffbed;
+  --field-ink: #4c3d31;
+  --field-placeholder: #7b6b57;
+  --field-border: #a08b6c;
+}
+
+.theory-button {
+  border-color: #a08b6c;
+  box-shadow:
+    0 2px 0 rgb(76 61 49 / 12%),
+    0 0.25rem 0.55rem rgb(76 61 49 / 8%);
+}
+
+.theory-button:hover {
+  box-shadow:
+    0 3px 0 rgb(76 61 49 / 12%),
+    0 0.35rem 0.7rem rgb(76 61 49 / 12%);
+}
+
+.theory-button--primary {
+  border-color: #827059;
+  background: #827059;
+  color: #fffbed;
+}
+
+.theory-button--primary:hover {
+  border-color: #75634d;
+  background: #75634d;
+}
+
+.theory-button--secondary {
+  background: #f8f2e3;
+  color: #4c3d31;
+}
+
+.theory-button--secondary:hover {
+  border-color: #8e785e;
+  background: #fffbed;
+}
+
+.theory-button--toolbar {
+  border-color: rgb(88 70 51 / 24%);
+  background: #f1e8d5;
+  color: #594a3a;
+  box-shadow: none;
+}
+
+.theory-button--toolbar:hover {
+  border-color: #aa9679;
+  background: #f8f2e3;
+  box-shadow: none;
+}
+
+.theory-button--destructive {
+  border-color: #bd9b8d;
+  background: #ebd9cf;
+  color: #7b463c;
+}
+
+.theory-button--destructive:hover {
+  border-color: #a97f70;
+  background: #e3cdc0;
+}
+
+.theory-delete-note {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 0;
+  background: transparent;
+  color: #8b574c;
+  box-shadow: none;
+}
+
+.theory-delete-note:hover {
+  background: #ebd9cf;
+  color: #6f3b32;
+  box-shadow: none;
+}
+
+.theory-button:disabled {
+  border-color: #b8aa93;
+  background: #e5ddcc;
+  color: #695d4c;
+  box-shadow: none;
+  opacity: 1;
+}
+
+.theory-dialog [data-slot="dialog-title"] {
+  color: #4c3d31;
+  font-family: "Patrick Hand", cursive;
+  font-size: 1.4rem;
+  font-weight: 400;
+}
+
+.theory-dialog [data-slot="dialog-description"] {
+  color: #6f604c;
+}
+
+.theory-dialog [data-slot="dialog-close"] {
+  background: transparent;
+  color: #4c3d31;
+  cursor: pointer;
+}
+
+.theory-dialog [data-slot="dialog-close"]:hover {
+  background: rgb(76 61 49 / 8%);
+}
+
+.theory-shortcut {
+  border: 1px solid currentColor;
+  border-radius: 0.2rem;
+  padding: 0.05rem 0.25rem;
+  font-family: inherit;
+  font-size: 0.65rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.theory-dialog__hint {
+  color: #6f604c;
+}
+
+.theory-board .cozy-load-error {
+  max-width: none;
+  display: flex;
+  flex-shrink: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid rgb(115 87 60 / 25%);
+  border-radius: 0;
+  padding: 0.5rem 1rem;
+  background: #ede2ce;
+  color: #684e38;
+  box-shadow: none;
+  font-size: 0.8rem;
+  text-align: left;
+}
+
+.theory-board .cozy-load-error p {
+  margin: 0;
+  font-size: inherit;
+}
+
+.theory-board .cozy-load-error .theory-button {
+  height: 2rem;
+  font-size: 0.75rem;
+  box-shadow: none;
+}
+
+/* Reciprocal lanes are at least 144 board pixels apart; their labels fit within each lane. */
+.theory-edge-label {
+  max-width: 128px;
+}
+.theory-edge-label__text {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

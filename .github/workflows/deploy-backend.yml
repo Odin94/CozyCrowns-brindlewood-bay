@@ -1,0 +1,50 @@
+name: Deploy backend
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - backend/**
+      - .github/workflows/deploy-backend.yml
+  workflow_dispatch:
+
+# This workflow does not need repository contents or a GitHub token.
+permissions: {}
+
+# Let already-started deployments finish: they may be applying a migration.
+concurrency:
+  group: cozycrowns-backend-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Update Hetzner backend
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      HETZNER_HOST: 46.224.62.32
+      HETZNER_SSH_USER: ${{ vars.HETZNER_SSH_USER || 'github-deploy' }}
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.HETZNER_SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.HETZNER_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          install -m 600 /dev/null "$RUNNER_TEMP/hetzner_deploy_key"
+          printf '%s\n' "$SSH_PRIVATE_KEY" > "$RUNNER_TEMP/hetzner_deploy_key"
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      # SSH returns updateCode.sh's exit status, which fails this GitHub Actions
+      # job if updating, migrating, restarting, or checking health fails.
+      - name: Update, migrate, and health-check backend
+        run: |
+          ssh \
+            -i "$RUNNER_TEMP/hetzner_deploy_key" \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "$HETZNER_SSH_USER@$HETZNER_HOST" \
+            'sudo --non-interactive /opt/cozycrowns/backend/scripts/updateCode.sh ${{ github.sha }}'

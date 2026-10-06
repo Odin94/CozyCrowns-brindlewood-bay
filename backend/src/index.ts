@@ -2,11 +2,14 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import rateLimit from "@fastify/rate-limit";
+import websocket from "@fastify/websocket";
 import { readFileSync } from "fs";
 import { characterRoutes } from "./routes/characters.js";
 import { darkConspiracyRoutes } from "./routes/darkConspiracies.js";
 import { shareRoutes } from "./routes/shares.js";
 import { authRoutes } from "./routes/auth.js";
+import { bookClubRoutes } from "./routes/bookClubs.js";
+import { mysteryRoutes } from "./routes/mysteries.js";
 import { env } from "./config/env.js";
 import { generateRequestId, setRequestId } from "./middleware/requestId.js";
 
@@ -20,7 +23,7 @@ const httpsOptions =
 
 const fastify = Fastify({
   https: httpsOptions,
-  trustProxy: true,
+  trustProxy: env.TRUST_PROXY_HOPS || false,
   logger:
     env.NODE_ENV === "development"
       ? {
@@ -36,6 +39,19 @@ const fastify = Fastify({
       : true,
 });
 
+const frontendOrigin = new URL(env.FRONTEND_URL).origin;
+const isLocalDevelopmentOrigin = (origin: string) => {
+  try {
+    const url = new URL(origin);
+    return (
+      (url.protocol === "http:" || url.protocol === "https:") &&
+      (url.hostname === "localhost" || url.hostname === "127.0.0.1" || url.hostname === "::1")
+    );
+  } catch {
+    return false;
+  }
+};
+
 await fastify.register(cors, {
   origin: (origin, callback) => {
     if (!origin) {
@@ -43,16 +59,9 @@ await fastify.register(cors, {
     }
 
     if (
-      origin.startsWith("http://localhost:") ||
-      origin.startsWith("http://127.0.0.1:") ||
-      origin.startsWith("https://localhost:") ||
-      origin.startsWith("https://127.0.0.1:")
+      origin === frontendOrigin ||
+      (env.NODE_ENV !== "production" && isLocalDevelopmentOrigin(origin))
     ) {
-      return callback(null, true);
-    }
-
-    const frontendUrl = new URL(env.FRONTEND_URL);
-    if (origin.startsWith(frontendUrl.origin)) {
       return callback(null, true);
     }
 
@@ -66,6 +75,12 @@ await fastify.register(cors, {
 
 await fastify.register(cookie, {
   secret: env.WORKOS_COOKIE_PASSWORD,
+});
+
+await fastify.register(websocket, {
+  options: {
+    maxPayload: 8 * 1024,
+  },
 });
 
 await fastify.register(rateLimit, {
@@ -83,6 +98,8 @@ await fastify.register(authRoutes);
 await fastify.register(characterRoutes);
 await fastify.register(darkConspiracyRoutes);
 await fastify.register(shareRoutes);
+await fastify.register(bookClubRoutes);
+await fastify.register(mysteryRoutes);
 
 fastify.get(
   "/health",

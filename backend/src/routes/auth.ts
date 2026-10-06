@@ -1,4 +1,5 @@
 import type { FastifyInstance } from "fastify";
+import { timingSafeEqual } from "node:crypto";
 import { eq } from "drizzle-orm";
 import { db, schema } from "../db/index.js";
 import { workos, WORKOS_CLIENT_ID } from "../config/workos.js";
@@ -9,13 +10,78 @@ import { zodToFastifySchema } from "../utils/zodToFastifySchema.js";
 import { authenticateUser, type AuthenticatedRequest } from "../middleware/auth.js";
 import { logger } from "../utils/logger.js";
 import { trackEvent } from "../utils/tracker.js";
+import {
+  getLocalSession,
+  isLocalSessionToken,
+  issueLocalSession,
+  localDevelopmentUser,
+  revokeLocalSession,
+} from "../utils/localAuth.js";
+import { generateNickname } from "../utils/nickname.js";
 
 const callbackQuerySchema = z.object({
   code: z.string().min(1, "Authorization code is required"),
-  state: z.string().optional(),
+  state: z.string().min(1, "Authorization state is required"),
 });
+const authFlowCookie = "auth_flow";
+const authFlowSchema = z.object({
+  state: z.string().min(1),
+  codeVerifier: z.string().min(1),
+});
+const NICKNAME_INSERT_ATTEMPTS = 10;
+
+type NewUser = Pick<typeof schema.users.$inferInsert, "id" | "email" | "firstName" | "lastName">;
+
+const isNicknameConflict = (error: unknown) =>
+  error instanceof Error && error.message.includes("UNIQUE constraint failed: users.nickname");
+
+const createUserWithGeneratedNickname = async (user: NewUser) => {
+  for (let attempt = 0; attempt < NICKNAME_INSERT_ATTEMPTS; attempt += 1) {
+    try {
+      await db.insert(schema.users).values({ ...user, nickname: generateNickname() });
+      return;
+    } catch (error) {
+      if (!isNicknameConflict(error) || attempt === NICKNAME_INSERT_ATTEMPTS - 1) throw error;
+    }
+  }
+};
+
+const statesMatch = (expected: string, actual: string) => {
+  const expectedBytes = Buffer.from(expected);
+  const actualBytes = Buffer.from(actual);
+  return expectedBytes.length === actualBytes.length && timingSafeEqual(expectedBytes, actualBytes);
+};
 
 export async function authRoutes(fastify: FastifyInstance) {
+  fastify.post("/auth/local-login", async (request, reply) => {
+    const token = issueLocalSession(request);
+    if (!token) {
+      reply.code(404).send({ error: "Local sign-in is only available on localhost" });
+      return;
+    }
+
+    const existingUser = await db.query.users.findFirst({
+      where: eq(schema.users.id, localDevelopmentUser.id),
+    });
+    if (!existingUser) {
+      await createUserWithGeneratedNickname(localDevelopmentUser);
+    }
+
+    const dbUser = await db.query.users.findFirst({
+      where: eq(schema.users.id, localDevelopmentUser.id),
+    });
+
+    reply.send({
+      success: true,
+      token,
+      user: {
+        ...localDevelopmentUser,
+        nickname: dbUser?.nickname ?? null,
+        isSuperadmin: dbUser?.isSuperadmin ?? false,
+      },
+    });
+  });
+
   fastify.get("/auth/login", async (request, reply) => {
     try {
       let redirectUri: string;
@@ -40,11 +106,22 @@ export async function authRoutes(fastify: FastifyInstance) {
         }
       }
 
-      const authorizationUrl = workos.userManagement.getAuthorizationUrl({
+      const authorization = await workos.userManagement.getAuthorizationUrlWithPKCE({
         provider: "authkit",
         redirectUri,
         clientId: WORKOS_CLIENT_ID,
       });
+      reply.setCookie(
+        authFlowCookie,
+        JSON.stringify({ state: authorization.state, codeVerifier: authorization.codeVerifier }),
+        {
+          httpOnly: true,
+          sameSite: env.NODE_ENV === "production" ? "none" : "lax",
+          secure: env.NODE_ENV === "production",
+          path: "/auth/callback",
+          maxAge: 10 * 60,
+        },
+      );
 
       await trackEvent(
         "auth_login_initiated",
@@ -56,7 +133,7 @@ export async function authRoutes(fastify: FastifyInstance) {
         request,
       );
 
-      reply.redirect(authorizationUrl);
+      reply.redirect(authorization.url);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : "Failed to initiate sign-in";
       fastify.log.error({ err: error }, "Sign-in initiation error");
@@ -86,13 +163,28 @@ export async function authRoutes(fastify: FastifyInstance) {
         return;
       }
 
-      const { code } = queryResult.data;
+      const { code, state } = queryResult.data;
+      const authFlow = authFlowSchema.safeParse(
+        (() => {
+          try {
+            return JSON.parse(request.cookies[authFlowCookie] ?? "");
+          } catch {
+            return undefined;
+          }
+        })(),
+      );
+      reply.clearCookie(authFlowCookie, { path: "/auth/callback" });
+      if (!authFlow.success || !statesMatch(authFlow.data.state, state)) {
+        reply.code(400).send({ error: "Invalid or expired sign-in request" });
+        return;
+      }
 
       const cookiePassword = env.WORKOS_COOKIE_PASSWORD;
 
       const authenticateResponse = await workos.userManagement.authenticateWithCode({
         code,
         clientId: WORKOS_CLIENT_ID,
+        codeVerifier: authFlow.data.codeVerifier,
         session: {
           sealSession: true,
           cookiePassword,
@@ -130,7 +222,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           })
           .where(eq(schema.users.id, user.id));
       } else {
-        await db.insert(schema.users).values({
+        await createUserWithGeneratedNickname({
           id: user.id,
           email: user.email,
           firstName: user.firstName || null,
@@ -177,6 +269,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           firstName: user.firstName,
           lastName: user.lastName,
           nickname: dbUser?.nickname ?? null,
+          isSuperadmin: dbUser?.isSuperadmin ?? false,
         },
       });
     } catch (error) {
@@ -214,21 +307,25 @@ export async function authRoutes(fastify: FastifyInstance) {
         let logoutUrl: string | null = null;
 
         if (token) {
-          try {
-            const session = workos.userManagement.loadSealedSession({
-              sessionData: token,
-              cookiePassword,
-            });
-
-            const authResult = await session.authenticate();
-            if (authResult.authenticated && "sessionId" in authResult) {
-              logoutUrl = workos.userManagement.getLogoutUrl({
-                sessionId: authResult.sessionId,
-                returnTo: env.FRONTEND_URL,
+          if (getLocalSession(token, request)) {
+            revokeLocalSession(token);
+          } else if (!isLocalSessionToken(token)) {
+            try {
+              const session = workos.userManagement.loadSealedSession({
+                sessionData: token,
+                cookiePassword,
               });
+
+              const authResult = await session.authenticate();
+              if (authResult.authenticated && "sessionId" in authResult) {
+                logoutUrl = workos.userManagement.getLogoutUrl({
+                  sessionId: authResult.sessionId,
+                  returnTo: env.FRONTEND_URL,
+                });
+              }
+            } catch (error) {
+              fastify.log.warn({ err: error }, "Failed to get WorkOS logout URL");
             }
-          } catch (error) {
-            fastify.log.warn({ err: error }, "Failed to get WorkOS logout URL");
           }
         }
 
@@ -287,6 +384,24 @@ export async function authRoutes(fastify: FastifyInstance) {
         return;
       }
 
+      const localSession = getLocalSession(token, request);
+      if (localSession) {
+        const dbUser = await db.query.users.findFirst({
+          where: eq(schema.users.id, localSession.user.id),
+        });
+        reply.send({
+          ...localSession.user,
+          nickname: dbUser?.nickname ?? null,
+          isSuperadmin: dbUser?.isSuperadmin ?? false,
+        });
+        return;
+      }
+
+      if (isLocalSessionToken(token)) {
+        reply.code(401).send({ error: "Unauthorized", message: "Session is invalid" });
+        return;
+      }
+
       const session = workos.userManagement.loadSealedSession({
         sessionData: token,
         cookiePassword,
@@ -326,6 +441,7 @@ export async function authRoutes(fastify: FastifyInstance) {
               firstName: refreshResult.user.firstName,
               lastName: refreshResult.user.lastName,
               nickname: dbUser?.nickname || null,
+              isSuperadmin: dbUser?.isSuperadmin ?? false,
               token: refreshResult.sealedSession,
             });
             return;
@@ -367,6 +483,7 @@ export async function authRoutes(fastify: FastifyInstance) {
           firstName: authResult.user.firstName,
           lastName: authResult.user.lastName,
           nickname: dbUser?.nickname || null,
+          isSuperadmin: dbUser?.isSuperadmin ?? false,
         });
       } else {
         reply.code(401).send({

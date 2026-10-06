@@ -47,6 +47,7 @@ CozyCrowns is a Brindlewood Bay character sheet that works offline in the browse
 3. Backend auth lives in `backend/src/middleware/auth.ts` and `backend/src/routes/auth.ts`.
 4. If a session is stale but refreshable, the backend returns `X-New-Token`; `handleResponse()` in the frontend saves it automatically.
 5. Login starts with a redirect to `/auth/login`, callback handling happens in `/auth/callback`, and logout asks the backend for a WorkOS logout URL.
+6. Local testing can opt into a loopback-only session via `LOCAL_AUTH_ENABLED=true` in the backend. The frontend shows the local sign-in control only on a loopback hostname. It uses `local-development-user`, has an in-memory eight-hour token, and must stay disabled outside local development.
 
 ### Backend Sync Flow
 1. `useBackendCharactersSync` runs once per authenticated user session.
@@ -75,7 +76,6 @@ CozyCrowns is a Brindlewood Bay character sheet that works offline in the browse
 ## Important Architectural Constraints
 - The sheet must remain usable without signing in.
 - Character schema changes are usually cross-cutting even though the database stores JSON; update all validation/default layers together.
-- Backend sharing support exists, but the frontend does not yet expose a complete sharing client/UI path.
 - The frontend uses the `@/` alias for `frontend/src`.
 
 ## Verification Contracts
@@ -95,3 +95,81 @@ CozyCrowns is a Brindlewood Bay character sheet that works offline in the browse
 - Run `cd backend && pnpm build`
 - If frontend behavior changed too, also run `cd frontend && pnpm build`
 - If WorkOS behavior is involved and credentials are unavailable, leave a concrete manual verification note
+
+
+### Conflict-safe local persistence
+
+Maven records retain `remoteContent`, the last confirmed payload. Server revision
+updates never mark newer in-flight edits as confirmed. A divergent newer cloud
+copy preserves the local draft under a new local identity before adopting the
+remote revision. Dark Conspiracies use the same confirmed-content convention.
+
+Maven browser persistence uses a checkpoint and one field journal per browser
+tab. Tabs hydrate each other's operations rather than overwriting whole
+collections. Conflicting fields become independent local recovery records;
+deleted records retain tombstones so late edits cannot restore their server ID.
+Web Locks serialize checkpoint compaction, and writer frontiers prevent replay.
+Storage write failures leave the editable document in memory and show an export
+warning. The original storage key remains a legacy-compatible checkpoint.
+
+Mystery drafts persist their confirmed content baseline. Equal-revision dirty
+drafts resume autosave; drafts that diverge from a newer cloud revision are
+preserved before creating a separate recovered mystery.
+
+Linked Book Club clues retain a nullable source entry ID. Migration 0011 is
+additive and accepts existing rows without backfill. The first source edit maps
+legacy links against the previous source document, consuming duplicate display
+strings once in deterministic clue order. Truly identical historical duplicates
+have no recoverable source ordering. Removed source clues remain Book Club
+history so discoveries and theory-board connections are retained.
+
+PDF exports use Helvetica for supported text and lazily fetch the licensed Noto
+CJK font only for Unicode text that requires it. The Unicode font is embedded in full because fontkit subsets dropped composite CJK glyphs in common readers. This increases Unicode exports to approximately 6.7 MB; Latin exports keep their original size. Unsupported symbols show a warning, with original text retained in the
+editable PDF form fields.
+
+
+### Recovery and deletion follow-up guarantees
+
+Mystery drafts are scoped by owner and document ID. Missing unscoped legacy
+IDs are never automatically uploaded to a different account. Pending conflicting
+drafts remain visible with retry/export controls. Stable recovery request IDs
+make recovery creation idempotent, including Strict Mode and reload retries.
+Obsolete account loads cannot select or overwrite the current account's drafts.
+
+Maven save/delete operations share one per-owner document queue. Deletion intents
+persist before waiting for a create acknowledgement; orphaned late creates are
+removed or retained as a pending cloud deletion. Both account generation and
+live bearer identity gate queued mutations and completion. An idempotent create
+retry compares the actual accepted baseline before updating a newer local draft.
+
+Deleted payload recovery is bounded to the latest 20 documents for 30 days and
+available through the menu. Compaction prunes older payloads while retaining
+small identity tombstones. A stale tab editing a pruned deletion contributes a
+full anonymous recovery snapshot rather than resurrecting the cloud identity.
+Invalid checkpoints are quarantined without blocking valid journal replay.
+
+Legacy source entries use content-derived identities until a source save
+persists explicit IDs. Ambiguous idless duplicate deletions conservatively keep
+prior progress and create a new source identity. Category changes update the
+same Book Club clue and theory node in place.
+
+
+## Stage integration
+
+`/stage-connect` validates a short-lived nonce and a native receiver at
+`http://127.0.0.1:<port>/cozycrowns/callback`. The pending request lives in
+session storage for three minutes. WorkOS login remembers `/stage-connect` as
+its return destination; the callback exchanges the code once. After sign-in,
+the user explicitly chooses Connect to Stage. The page revalidates the displayed
+account and session identity before transferring the sealed session to the native
+receiver. Anonymous character editing and local data are unaffected.
+
+Stage reads the existing character and book-club APIs. The GM-only
+`GET /book-clubs/:id/stage` returns every club mystery's clues (including prepared
+Void clues), characters and locations. Current book-club GM membership is checked
+before reading source content; private authoring/source identities are omitted.
+Character/location descriptions follow the assigned, live source mystery. Clues
+use the existing book-club copies so found state and customized campaign wording
+are preserved. Stage can mark a clue found through the existing permission-checked
+clue PUT endpoint. Manual notes edits in Stage fork locally and never update the
+CozyCrowns source.

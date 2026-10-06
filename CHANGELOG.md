@@ -1,0 +1,21 @@
+# Changelog
+
+## Unreleased
+
+- Connect CozyCrowns accounts to Stage through a consent-based WorkOS handoff, with live book-club Maven sheets and GM mystery pages.
+- Expose a GM-only Stage mystery projection for clues, characters and locations; Stage uses the existing clue discovery controls.
+
+- Keep unsaved Mavens selected as separate recovery copies when any sync entry point receives a newer cloud version.
+- Show theory-note descriptions on the cards without duplicate hover tooltips; keep descriptions readable alongside longer titles, tags and edit indicators.
+- Improve deleted-Maven recovery dialog contrast, spacing and mobile layout.
+- Label mystery entry controls for keyboard and screen-reader navigation.
+- Preserve unsaved Mavens and Dark Conspiracies when newer cloud copies arrive.
+- Coordinate browser tabs with field journals, conflict recovery copies, and durable deletion history.
+- Recover unsaved mystery drafts and retain a separate copy when their cloud revision diverges.
+- Keep Book Club discoveries and theory connections when a source clue is corrected or removed.
+- Stop idle Dark Conspiracy save requests and acknowledge only the document submitted.
+- Normalize partial and legacy ability lists; import into a new Maven without replacing the previous one.
+- Correct PDF XP checks and support CJK text. Warn about unsupported symbols while preserving their original form text.
+- Keep Mavens and their delete confirmation available when cloud deletion fails; serialize deletion with pending creation and retain retry intents across reloads.
+- Restore copies of the latest 20 deleted Mavens for 30 days through the menu.
+- Scope mystery recovery to its owner, expose retry/export for failed recovery, and deduplicate recovery uploads.

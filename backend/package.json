@@ -3,12 +3,15 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "benchmark:book-clubs": "tsx benchmarks/book-clubs.ts",
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
+    "test": "tsx --test tests/*.test.ts",
     "start": "node dist/index.js",
     "lint": "oxlint --fix",
     "fmt": "oxfmt",
     "db:generate": "drizzle-kit generate",
+    "db:validate": "tsx src/db/migrate.ts --validate-only",
     "db:migrate": "tsx src/db/migrate.ts",
     "db:studio": "drizzle-kit studio"
   },
@@ -28,7 +31,8 @@
     "drizzle-orm": "^0.45.2",
     "fastify": "^5.8.5",
     "nanoid": "^5.1.11",
-    "posthog-node": "^5.34.6",
+    "posthog-node": "^5.54.1",
+    "unique-names-generator": "^4.7.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {

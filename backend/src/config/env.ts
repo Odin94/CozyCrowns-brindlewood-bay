@@ -18,8 +18,14 @@ const envSchema = z.object({
   PORT: z.string().regex(/^\d+$/).transform(Number).default(3001),
   HOST: z.string().default("0.0.0.0"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  TRUST_PROXY_HOPS: z.coerce.number().int().min(0).max(10).default(0),
   BACKEND_URL: z.url().optional(),
   FRONTEND_URL: z.url().default("http://localhost:3000"),
+  // A loopback-only test account. This must never be enabled in production.
+  LOCAL_AUTH_ENABLED: z
+    .enum(["true", "false"])
+    .default("false")
+    .transform((value) => value === "true"),
 
   // PostHog (optional)
   PUBLIC_POSTHOG_KEY: z.string().optional(),

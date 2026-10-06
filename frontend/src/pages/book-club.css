@@ -1,0 +1,1463 @@
+.book-club-shell {
+  --club-night: #24182d;
+  --club-deep: #35213f;
+  --club-plum: #5e3d69;
+  --club-lilac: #d9c8e2;
+  --club-paper: #f7efe7;
+  --club-paper-deep: #eadbcf;
+  --club-rose: #d99aaa;
+  --club-sea: #94beb7;
+  --club-gold: #edc17d;
+  --drawer-width: clamp(380px, 34vw, 540px);
+  --field-background: #fffaf3;
+  --field-ink: var(--club-deep);
+  --field-placeholder: #756477;
+  --field-border: #bbaabb;
+  position: relative;
+  min-height: 100svh;
+  overflow: hidden;
+  isolation: isolate;
+  color: var(--club-paper);
+  font-family:
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-size: 16px;
+  background:
+    radial-gradient(circle at 63% 18%, rgb(238 193 125 / 0.18), transparent 24%),
+    linear-gradient(145deg, #795982 0%, #604367 41%, #3e294a 100%);
+}
+
+.book-club-shell--teaGarden {
+  background:
+    radial-gradient(circle at 25% 20%, rgb(217 200 226 / 0.23), transparent 20%),
+    linear-gradient(145deg, #765d7f, #654768 44%, #344b49);
+}
+
+.book-club-shell--midnightMeeting {
+  background:
+    radial-gradient(circle at 76% 19%, rgb(217 200 226 / 0.17), transparent 18%),
+    linear-gradient(155deg, #593f67, #38243f 50%, #20202c);
+}
+
+.book-club-shell--moonlitPier {
+  background:
+    radial-gradient(circle at 24% 18%, rgb(217 200 226 / 0.21), transparent 18%),
+    linear-gradient(150deg, #70517d, #3c354f 53%, #263f48);
+}
+
+.book-club-haze {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgb(27 15 35 / 0.04) 0%,
+    rgb(27 15 35 / 0.1) 54%,
+    rgb(15 13 20 / 0.3) 100%
+  );
+}
+
+.book-club-scenery {
+  position: absolute;
+  z-index: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  height: min(55vh, 620px);
+  color: #1d1624;
+  fill: currentColor;
+  opacity: 0.88;
+  pointer-events: none;
+  filter: drop-shadow(0 -18px 30px rgb(32 20 40 / 0.14));
+}
+
+.book-club-scenery .soft {
+  opacity: 0.27;
+}
+.book-club-scenery .line {
+  fill: none;
+  stroke: var(--club-lilac);
+  stroke-width: 4;
+  opacity: 0.17;
+}
+.book-club-scenery .sun {
+  fill: var(--club-gold);
+  opacity: 0.74;
+}
+.book-club-scenery .moon {
+  fill: var(--club-lilac);
+  opacity: 0.62;
+}
+
+.book-club-shell button,
+.book-club-shell a,
+.book-club-shell select {
+  cursor: pointer;
+}
+.book-club-shell button:active,
+.book-club-shell a:active {
+  transform: scale(0.97);
+}
+
+.book-club-club-picker,
+.book-club-invite-station,
+.book-club-style-switchers,
+.book-club-invitations,
+.book-club-stage,
+.book-club-drawer-rail,
+.book-club-drawer {
+  position: relative;
+  z-index: 3;
+}
+
+.book-club-club-picker {
+  position: fixed;
+  top: 18px;
+  left: 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.book-club-club-picker button {
+  width: 38px;
+  height: 38px;
+  color: var(--club-paper);
+  border: 1px solid rgb(247 239 231 / 0.25);
+  background: rgb(36 24 45 / 0.38);
+  backdrop-filter: blur(10px);
+}
+
+.book-club-club-picker .book-club-picker-field {
+  width: min(260px, 31vw);
+  height: 38px;
+  padding: 0 34px 0 12px;
+  color: var(--field-ink);
+  border: 1px solid var(--field-border);
+  border-radius: 7px;
+  outline: none;
+  background: var(--field-background);
+}
+
+.book-club-invite-station {
+  position: fixed;
+  z-index: 7;
+  top: 18px;
+  right: 18px;
+  display: grid;
+  width: 300px;
+  gap: 7px;
+}
+
+.book-club-invite-station > button,
+.book-club-invite-station form {
+  width: 100%;
+  min-height: 38px;
+  color: var(--club-paper);
+  border: 1px solid rgb(247 239 231 / 0.23);
+  border-radius: 7px;
+  background: rgb(36 24 45 / 0.55);
+  box-shadow: 0 8px 24px rgb(20 12 26 / 0.12);
+  backdrop-filter: blur(11px);
+}
+
+.book-club-invite-station > button {
+  justify-content: flex-start;
+  padding: 8px 12px;
+}
+.book-club-invite-station svg {
+  width: 17px;
+  height: 17px;
+}
+.book-club-invite-station form {
+  display: flex;
+  color: var(--field-ink);
+  border-color: var(--field-border);
+  background: var(--field-background);
+}
+.book-club-invite-station input {
+  height: 36px;
+  color: var(--field-ink);
+  border: 0;
+  background: var(--field-background);
+  box-shadow: none;
+}
+.book-club-invite-station input::placeholder {
+  color: var(--field-placeholder);
+}
+.book-club-invite-station form button {
+  width: 38px;
+  min-width: 38px;
+  color: var(--club-plum);
+}
+
+.book-club-style-switchers {
+  position: fixed;
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+  display: flex;
+  gap: 7px;
+}
+
+.book-club-style-switchers button {
+  gap: 7px;
+  padding: 8px 10px;
+  color: var(--club-paper);
+  border: 1px solid rgb(247 239 231 / 0.19);
+  border-radius: 7px;
+  background: rgb(36 24 45 / 0.58);
+  backdrop-filter: blur(10px);
+}
+.book-club-style-switchers svg {
+  width: 15px;
+  height: 15px;
+}
+.book-club-style-switchers svg:last-child {
+  width: 12px;
+}
+
+.book-club-invitations {
+  position: fixed;
+  top: 100px;
+  left: 50%;
+  width: min(560px, 70vw);
+  transform: translateX(-50%);
+}
+.book-club-invitations > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 11px 14px;
+  color: var(--club-deep);
+  border-left: 4px solid var(--club-gold);
+  background: rgb(247 239 231 / 0.94);
+  box-shadow: 0 12px 28px rgb(27 16 34 / 0.2);
+}
+.book-club-invitations p {
+  margin: 0;
+  font-size: 14px;
+}
+.book-club-invitations span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.book-club-stage {
+  z-index: 2;
+  display: flex;
+  min-height: 100svh;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 116px 92px 92px;
+  transition: transform 240ms ease-in;
+}
+.book-club-shell.has-drawer .book-club-stage {
+  transition-timing-function: ease-out;
+  transform: translateX(calc((var(--drawer-width) + 64px) / 2));
+}
+
+.book-club-title {
+  margin-bottom: 26px;
+  text-align: center;
+  text-shadow: 0 3px 22px rgb(28 16 35 / 0.55);
+}
+.book-club-title p,
+.book-club-eyebrow {
+  margin: 0;
+  color: var(--club-gold);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+.book-club-title h1 {
+  margin: 3px 0 4px;
+  color: var(--club-paper);
+  font-family: "Patrick Hand", Georgia, serif;
+  font-size: clamp(32px, 3.2vw, 48px);
+  font-weight: 500;
+  line-height: 1;
+}
+.book-club-title span {
+  color: rgb(247 239 231 / 0.76);
+  font-size: 13px;
+}
+
+.book-club-characters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  width: min(52vw, 880px);
+  gap: 14px;
+  align-items: stretch;
+}
+
+.book-club-maven-card {
+  position: relative;
+  display: flex;
+  min-width: 0;
+  min-height: 410px;
+  flex-direction: column;
+  gap: 15px;
+  padding: 25px 16px 15px;
+  overflow: hidden;
+  color: var(--club-deep);
+  border: 1px solid rgb(94 61 105 / 0.32);
+  border-radius: 5px;
+  background:
+    linear-gradient(115deg, transparent 0 47%, rgb(94 61 105 / 0.035) 48% 49%, transparent 50%),
+    var(--club-paper);
+  box-shadow:
+    0 6px 0 rgb(35 23 44 / 0.2),
+    0 16px 34px rgb(25 15 31 / 0.22);
+  transform-origin: center bottom;
+  transition: transform 190ms var(--ease-out);
+}
+.book-club-maven-card:hover {
+  z-index: 2;
+  transform: translateY(-9px) rotate(-0.25deg);
+  box-shadow:
+    0 13px 0 rgb(35 23 44 / 0.13),
+    0 28px 50px rgb(24 14 31 / 0.34);
+}
+.book-club-maven-card:nth-child(even):hover {
+  transform: translateY(-9px) rotate(0.25deg);
+}
+.book-club-maven-card header {
+  position: relative;
+  z-index: 1;
+  padding: 9px 10px 11px;
+  text-align: center;
+  border-bottom: 1px solid rgb(94 61 105 / 0.2);
+}
+.book-club-maven-card header span {
+  color: var(--club-plum);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.book-club-maven-card header h2 {
+  margin: 2px 0 0;
+  color: var(--club-deep);
+  font-family: "Patrick Hand", Georgia, serif;
+  font-size: 24px;
+  font-weight: 500;
+  line-height: 1.05;
+}
+.book-club-maven-card section {
+  position: relative;
+  z-index: 1;
+}
+.book-club-maven-card section h3 {
+  margin: 0 0 4px;
+  color: var(--club-plum);
+  font:
+    800 9px/1.2 system-ui,
+    sans-serif;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.book-club-maven-card section p {
+  margin: 0;
+  color: rgb(53 33 63 / 0.54);
+  font-size: 11px;
+  font-style: italic;
+}
+.book-club-maven-card section ul {
+  display: grid;
+  gap: 3px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.book-club-maven-card section li {
+  color: rgb(53 33 63 / 0.86);
+  font-size: 11px;
+  line-height: 1.28;
+  overflow-wrap: anywhere;
+  white-space: normal;
+}
+.book-club-maven-card > button {
+  position: relative;
+  z-index: 1;
+  justify-content: space-between;
+  margin-top: auto;
+  margin-bottom: 24px;
+  padding-top: 10px;
+  color: var(--club-plum);
+  border-top: 1px solid rgb(94 61 105 / 0.18);
+  font-size: 11px;
+}
+.book-club-maven-card > button svg {
+  width: 13px;
+  height: 13px;
+}
+
+.book-club-card-filigree {
+  position: absolute;
+  z-index: 0;
+  inset: 3px;
+  pointer-events: none;
+}
+
+.book-club-card-ornament {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 56px;
+  height: 56px;
+  fill: none;
+  stroke: var(--club-plum);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+  opacity: 0.4;
+}
+
+.book-club-card-ornament .filigree-frame {
+  stroke-width: 1.2;
+  opacity: 0.46;
+}
+
+.book-club-card-ornament .filigree-accent {
+  stroke-width: 2.7;
+  opacity: 0.55;
+}
+
+.book-club-card-ornament.is-top-right {
+  right: 3px;
+  left: auto;
+  transform: scaleX(-1);
+}
+
+.book-club-card-ornament.is-bottom-left {
+  top: auto;
+  bottom: 3px;
+  transform: scaleY(-1);
+}
+
+.book-club-card-ornament.is-bottom-right {
+  inset: auto 3px 3px auto;
+  transform: scale(-1);
+}
+
+.book-club-card-filigree--biscuits circle {
+  fill: rgb(237 193 125 / 0.16);
+}
+
+.book-club-no-characters,
+.book-club-empty-state {
+  grid-column: 1 / -1;
+  width: min(480px, 80vw);
+  margin: auto;
+  padding: 34px;
+  text-align: center;
+  color: var(--club-deep);
+  border-radius: 6px;
+  background: rgb(247 239 231 / 0.9);
+  box-shadow: 0 22px 55px rgb(29 17 36 / 0.25);
+  backdrop-filter: blur(14px);
+}
+.book-club-no-characters > svg,
+.book-club-empty-state > svg {
+  width: 36px;
+  height: 36px;
+  color: var(--club-plum);
+}
+.book-club-no-characters h2,
+.book-club-empty-state h1 {
+  margin: 8px 0;
+  color: var(--club-deep);
+  font:
+    500 31px/1 "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-no-characters p,
+.book-club-empty-state > p:not(.book-club-eyebrow) {
+  margin: 0 auto 20px;
+  max-width: 360px;
+  color: rgb(53 33 63 / 0.72);
+  font-size: 14px;
+}
+.book-club-empty-state form {
+  display: flex;
+  gap: 8px;
+  margin-top: 22px;
+}
+
+.book-club-loading svg {
+  width: 38px;
+  height: 38px;
+  animation: book-club-glimmer 1.3s ease-in-out infinite;
+}
+@keyframes book-club-glimmer {
+  50% {
+    opacity: 0.35;
+    transform: rotate(15deg) scale(0.9);
+  }
+}
+
+.book-club-drawer-track {
+  position: fixed;
+  z-index: 4;
+  inset: 0 auto 0 0;
+  width: var(--drawer-width);
+  pointer-events: none;
+  transform: translateX(-100%);
+  transition: transform 240ms var(--ease-drawer);
+}
+.book-club-drawer-track.is-open {
+  transform: translateX(0);
+}
+.book-club-drawer-rail {
+  position: absolute;
+  z-index: 5;
+  top: 50%;
+  left: 100%;
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  transform: translateY(-50%);
+}
+.book-club-drawer-rail--mobile {
+  display: none;
+}
+
+.book-club-shell.has-drawer .book-club-club-picker {
+  opacity: 0;
+  pointer-events: none;
+}
+.book-club-drawer-rail button {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  overflow: hidden;
+  color: var(--club-lilac);
+  border: 1px solid rgb(217 200 226 / 0.2);
+  border-radius: 0 10px 10px 0;
+  transform-origin: left center;
+  background: rgb(36 24 45 / 0.82);
+  box-shadow: 0 7px 17px rgb(22 13 27 / 0.18);
+  backdrop-filter: blur(12px);
+  transition: transform 170ms var(--ease-out);
+}
+.book-club-drawer-rail button svg {
+  position: absolute;
+  top: 50%;
+  left: 12px;
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  transform: translateY(-50%);
+}
+.book-club-drawer-rail button span {
+  position: absolute;
+  left: 44px;
+  padding-right: 12px;
+  opacity: 0;
+  font-size: 12px;
+  transition: opacity 120ms ease-out;
+}
+.book-club-drawer-rail button:hover {
+  width: 118px;
+}
+.book-club-drawer-rail button:hover span {
+  opacity: 1;
+}
+.book-club-drawer-rail button.is-active {
+  color: var(--club-deep);
+  border-color: var(--club-gold);
+  background: var(--club-gold);
+}
+
+.book-club-drawer {
+  position: absolute;
+  pointer-events: auto;
+  z-index: 4;
+  inset: 0 auto 0 0;
+  width: var(--drawer-width);
+  color: var(--club-deep);
+  border-right: 1px solid rgb(94 61 105 / 0.34);
+  background: var(--club-paper);
+  box-shadow: 18px 0 45px rgb(25 15 31 / 0.24);
+  transform-origin: left center;
+}
+.book-club-drawer > header {
+  display: flex;
+  height: 88px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px 0 28px;
+  border-bottom: 1px solid rgb(94 61 105 / 0.16);
+}
+.book-club-drawer > header span:not(.book-club-close-glyph) {
+  color: var(--club-plum);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.book-club-drawer > header h2 {
+  margin: 0;
+  color: var(--club-deep);
+  font:
+    500 31px/1 "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-close-glyph {
+  color: var(--club-plum);
+  font-size: 27px;
+  line-height: 1;
+}
+.book-club-drawer-scroll {
+  height: calc(100% - 88px);
+  padding: 25px 28px 40px;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+.book-club-panel-stack {
+  display: grid;
+  gap: 27px;
+}
+.book-club-intro {
+  margin: 0;
+  color: rgb(53 33 63 / 0.7);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.book-club-section-title {
+  margin: 0 0 11px;
+  color: var(--club-deep);
+  font:
+    500 22px/1.1 "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-muted {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 9px 0 0;
+  color: rgb(53 33 63 / 0.58);
+  font-size: 12px;
+}
+.book-club-muted svg {
+  width: 13px;
+  height: 13px;
+}
+
+.book-club-feature-card,
+.book-club-roll-maker {
+  padding: 20px;
+  border-left: 4px solid var(--club-gold);
+  border-radius: 0 5px 5px 0;
+  background: var(--club-paper-deep);
+}
+.book-club-feature-card h3,
+.book-club-roll-maker h3 {
+  margin: 4px 0 6px;
+  font:
+    500 27px/1.05 "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-feature-card p {
+  margin: 0;
+  color: rgb(53 33 63 / 0.67);
+  font-size: 13px;
+}
+.book-club-feature-card button {
+  margin-top: 15px;
+}
+
+.book-club-choice-list,
+.book-club-character-list,
+.book-club-gm-list {
+  display: grid;
+  gap: 7px;
+}
+.book-club-choice-list > div,
+.book-club-character-list > div,
+.book-club-gm-list label {
+  display: flex;
+  min-height: 54px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 9px 11px;
+  border-left: 3px solid transparent;
+  background: rgb(94 61 105 / 0.055);
+}
+.book-club-choice-list > div.is-selected,
+.book-club-character-list > div.is-selected,
+.book-club-gm-list label.is-selected {
+  border-color: var(--club-sea);
+  background: rgb(148 190 183 / 0.2);
+}
+.book-club-choice-list span,
+.book-club-character-list span,
+.book-club-gm-list label span {
+  display: grid;
+  gap: 2px;
+}
+.book-club-choice-list strong,
+.book-club-character-list strong,
+.book-club-gm-list strong {
+  font-size: 13px;
+}
+.book-club-choice-list small,
+.book-club-character-list small,
+.book-club-gm-list small {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: rgb(53 33 63 / 0.56);
+  font-size: 10px;
+}
+.book-club-choice-list small svg {
+  width: 11px;
+  height: 11px;
+}
+
+.book-club-link-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 9px;
+}
+.book-club-link-grid a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px;
+  color: var(--club-deep);
+  border: 1px solid rgb(94 61 105 / 0.2);
+  border-radius: 5px;
+  text-decoration: none;
+  transition:
+    border-color 150ms ease-out,
+    background-color 150ms ease-out;
+}
+.book-club-link-grid a:hover {
+  border-color: var(--club-plum);
+  background: rgb(94 61 105 / 0.07);
+}
+.book-club-link-grid > a > svg {
+  width: 19px;
+  height: 19px;
+  color: var(--club-plum);
+}
+.book-club-link-grid span {
+  display: grid;
+  font-size: 12px;
+  font-weight: 700;
+}
+.book-club-link-grid small {
+  color: rgb(53 33 63 / 0.53);
+  font-size: 9px;
+  font-weight: 400;
+}
+
+.book-club-roll-maker {
+  display: grid;
+  justify-items: center;
+  gap: 17px;
+  text-align: center;
+}
+.book-club-stepper {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+.book-club-stepper strong {
+  display: grid;
+  min-width: 66px;
+  font:
+    500 42px/0.8 "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-stepper small {
+  color: var(--club-plum);
+  font:
+    700 10px/1 system-ui,
+    sans-serif;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+.book-club-dice-result {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+  padding: 20px 0;
+}
+.book-club-roll-list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.book-club-roll-list li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 3px 12px;
+  padding: 11px 4px;
+  border-bottom: 1px solid rgb(94 61 105 / 0.12);
+}
+.book-club-roll-list li > span {
+  display: grid;
+}
+.book-club-roll-list strong {
+  font-size: 12px;
+}
+.book-club-roll-list small,
+.book-club-roll-list time {
+  color: rgb(53 33 63 / 0.5);
+  font-size: 9px;
+}
+.book-club-roll-list b {
+  color: var(--club-plum);
+  font:
+    500 17px "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-roll-list time {
+  grid-column: 2;
+}
+
+.book-club-inline-form {
+  display: flex;
+  gap: 8px;
+}
+.book-club-gm-list label {
+  justify-content: flex-start;
+  cursor: pointer;
+}
+.book-club-danger-zone {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 18px;
+  border-left: 4px solid #a74956;
+  background: rgb(167 73 86 / 0.08);
+}
+.book-club-danger-zone .book-club-delete {
+  flex: 0 0 auto;
+  width: 40px;
+  height: 40px;
+  color: #923d4c;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+.book-club-danger-zone .book-club-delete:hover {
+  background: rgb(167 73 86 / 0.1);
+}
+.book-club-delete svg {
+  width: 18px;
+  height: 18px;
+}
+.book-club-danger-zone h3 {
+  margin: 0;
+  font:
+    500 21px "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-danger-zone p {
+  margin: 5px 0 14px;
+  color: rgb(53 33 63 / 0.66);
+  font-size: 12px;
+  line-height: 1.45;
+}
+.book-club-quick-nav {
+  color: var(--club-deep);
+  background: var(--club-paper);
+  font-size: 16px;
+}
+.book-club-note-status {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 7px;
+  color: var(--club-plum);
+  font-size: 10px;
+}
+.book-club-note-status .is-saved::before {
+  content: "✓ ";
+}
+.book-club-note-field {
+  position: relative;
+  display: grid;
+  gap: 9px;
+}
+.book-club-note-field > span {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: 0 7px;
+}
+.book-club-note-field > span svg {
+  grid-row: 1 / 3;
+  width: 18px;
+  height: 18px;
+  color: var(--club-plum);
+}
+.book-club-note-field > span strong {
+  font:
+    500 19px "Patrick Hand",
+    Georgia,
+    serif;
+}
+.book-club-note-field > span small {
+  color: rgb(53 33 63 / 0.54);
+  font-size: 9px;
+}
+.book-club-note-field textarea {
+  min-height: 230px;
+  resize: vertical;
+  padding: 17px;
+  color: var(--club-deep);
+  border: 1px solid rgb(94 61 105 / 0.22);
+  border-radius: 5px;
+  outline: none;
+  background: #fffaf3;
+  box-shadow: inset 0 1px 4px rgb(53 33 63 / 0.05);
+  font:
+    14px/1.58 "Patrick Hand",
+    system-ui,
+    sans-serif;
+  transition:
+    border-color 140ms ease-out,
+    box-shadow 140ms ease-out;
+}
+.book-club-note-field textarea:focus {
+  border-color: var(--club-plum);
+  box-shadow: 0 0 0 3px rgb(94 61 105 / 0.12);
+}
+.book-club-note-field.is-private textarea {
+  min-height: 170px;
+  background: var(--field-background);
+}
+.book-club-live-cursor {
+  position: absolute;
+  top: calc(65px + var(--cursor-position) * 1.45);
+  right: 8px;
+  padding: 2px 5px;
+  color: var(--club-deep);
+  border-left: 2px solid var(--club-rose);
+  background: var(--club-paper);
+  font-size: 8px;
+  font-style: normal;
+  box-shadow: 0 2px 7px rgb(53 33 63 / 0.1);
+}
+
+.book-club-clue-list {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.book-club-clue-list li {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 32px;
+  padding: 5px 8px;
+  border-left: 2px solid var(--club-sea);
+  border-radius: 3px;
+  background: #eef2e8;
+  font-size: 12px;
+  line-height: 1.4;
+}
+.book-club-clue-text {
+  min-width: 0;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.book-club-clue-text:focus-visible {
+  outline: 1px solid var(--club-sea);
+  outline-offset: 0;
+}
+.book-club-clue-list li > svg {
+  width: 13px;
+  height: 13px;
+  flex: 0 0 auto;
+}
+.book-club-clue-list li.is-checked {
+  background: #e2eee7;
+}
+.book-club-clue-list.is-void li,
+.book-club-clue-list li.is-void {
+  border-color: #b29bbd;
+  background: #eee7f1;
+}
+.book-club-clue-list li small {
+  display: block;
+  margin-left: auto;
+  max-width: 28%;
+  flex: 0 0 auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: rgb(53 33 63 / 0.48);
+  font-size: 9px;
+  text-align: right;
+}
+
+.book-club-context-menu {
+  position: fixed;
+  z-index: 20;
+  padding: 5px;
+  color: var(--club-paper);
+  border: 1px solid rgb(217 200 226 / 0.25);
+  border-radius: 5px;
+  background: var(--club-night);
+  box-shadow: 0 12px 30px rgb(25 15 31 / 0.3);
+  transform-origin: top left;
+  animation: book-club-menu-in 120ms ease-out;
+}
+@keyframes book-club-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+}
+.book-club-context-menu button {
+  padding: 7px 10px;
+}
+
+.book-club-search {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.book-club-search > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--club-plum);
+}
+.book-club-quick-list {
+  display: grid;
+  gap: 5px;
+}
+.book-club-quick-list button {
+  justify-content: flex-start;
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  text-align: left;
+}
+.book-club-quick-list button:hover {
+  background: rgb(94 61 105 / 0.08);
+}
+.book-club-quick-list button > svg {
+  width: 18px;
+  height: 18px;
+  color: var(--club-plum);
+}
+.book-club-quick-list button > svg:last-child {
+  margin-left: auto;
+}
+.book-club-quick-list button span {
+  display: grid;
+}
+.book-club-quick-list small {
+  color: rgb(53 33 63 / 0.5);
+  font-size: 9px;
+}
+.book-club-shortcut {
+  color: rgb(53 33 63 / 0.45);
+}
+.book-club-shortcut kbd {
+  margin-right: 2px;
+  padding: 2px 5px;
+  border: 1px solid rgb(94 61 105 / 0.18);
+  border-radius: 3px;
+  background: var(--club-paper-deep);
+}
+
+@media (max-width: 1180px) {
+  .book-club-characters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: min(54vw, 580px);
+  }
+  .book-club-shell.has-drawer .book-club-stage {
+    transform: translateX(calc((var(--drawer-width) + 54px) / 2));
+  }
+}
+
+@media (max-width: 760px) {
+  .book-club-shell {
+    --drawer-width: 100%;
+    min-height: 100dvh;
+    overflow: auto;
+  }
+  .book-club-club-picker {
+    top: 10px;
+    left: 10px;
+  }
+  .book-club-club-picker .book-club-picker-field {
+    width: 42vw;
+  }
+  .book-club-invite-station {
+    top: 10px;
+    right: 10px;
+    width: 46vw;
+  }
+  .book-club-invite-station > button {
+    justify-content: center;
+    font-size: 12px;
+  }
+  .book-club-stage {
+    min-height: 100dvh;
+    padding: 130px 18px 182px;
+  }
+  .book-club-shell.has-drawer .book-club-stage {
+    transform: none;
+  }
+  .book-club-title {
+    margin-bottom: 20px;
+  }
+  .book-club-title h1 {
+    font-size: 34px;
+  }
+  .book-club-characters {
+    grid-template-columns: 1fr;
+    width: min(330px, 88vw);
+  }
+  .book-club-maven-card {
+    min-height: 380px;
+  }
+  .book-club-style-switchers {
+    right: 10px;
+    bottom: calc(82px + env(safe-area-inset-bottom));
+    left: 10px;
+    justify-content: center;
+  }
+  .book-club-style-switchers button {
+    flex: 1;
+    min-width: 0;
+    font-size: 10px;
+  }
+  .book-club-style-switchers button span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .book-club-drawer-track {
+    inset: 0 0 calc(67px + env(safe-area-inset-bottom)) 0;
+    width: 100%;
+    transform: translateY(calc(100% + 67px + env(safe-area-inset-bottom)));
+  }
+  .book-club-drawer-track.is-open {
+    transform: translateY(0);
+  }
+  .book-club-drawer-rail--desktop {
+    display: none;
+  }
+  .book-club-drawer-rail--mobile {
+    position: fixed;
+    z-index: 6;
+    inset: auto 0 0 0;
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1px;
+    padding: 6px 5px calc(7px + env(safe-area-inset-bottom));
+    background: rgb(36 24 45 / 0.96);
+    transform: none;
+    backdrop-filter: blur(14px);
+  }
+  .book-club-shell.has-drawer .book-club-drawer-rail {
+    left: 0;
+    transform: none;
+  }
+  .book-club-drawer-rail button,
+  .book-club-drawer-rail button:hover {
+    width: 100%;
+    height: 54px;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2px;
+    padding: 3px;
+    border: 0;
+    border-radius: 4px;
+    box-shadow: none;
+  }
+  .book-club-drawer-rail button span,
+  .book-club-drawer-rail button:hover span {
+    position: static;
+    padding: 0;
+    opacity: 1;
+    font-size: 8px;
+  }
+  .book-club-drawer-rail button svg {
+    position: static;
+    width: 18px;
+    height: 18px;
+    transform: none;
+  }
+  .book-club-drawer {
+    position: absolute;
+    z-index: 5;
+    inset: 0;
+    width: 100%;
+    height: auto;
+    border: 0;
+    box-shadow: 0 -18px 50px rgb(25 15 31 / 0.25);
+    transform-origin: center bottom;
+  }
+  .book-club-drawer > header {
+    height: 72px;
+    padding: 0 16px 0 20px;
+  }
+  .book-club-drawer-scroll {
+    height: calc(100% - 72px);
+    padding: 20px 20px 42px;
+  }
+  .book-club-drawer > header {
+    height: 145px;
+    padding-top: 88px;
+  }
+  .book-club-drawer-scroll {
+    height: calc(100% - 145px);
+  }
+  .book-club-invitations {
+    top: 103px;
+    width: calc(100vw - 20px);
+  }
+  .book-club-invitations > div {
+    align-items: flex-start;
+  }
+  .book-club-invitations p {
+    font-size: 11px;
+  }
+  .book-club-empty-state,
+  .book-club-no-characters {
+    width: min(420px, 90vw);
+    padding: 26px 20px;
+  }
+  .book-club-empty-state form {
+    flex-direction: column;
+  }
+  .book-club-live-cursor {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-club-stage,
+  .book-club-drawer-track,
+  .book-club-drawer-rail,
+  .book-club-maven-card,
+  .book-club-drawer,
+  .book-club-drawer.is-closing,
+  .book-club-loading svg,
+  .book-club-dice-result span {
+    animation: none;
+    transition: none;
+  }
+}
+
+.book-club-maven-card {
+  text-decoration: none;
+}
+.book-club-maven-card:hover {
+  color: var(--club-deep);
+}
+
+@media (hover: none), (pointer: coarse), (prefers-reduced-motion: reduce) {
+  .book-club-maven-card:hover,
+  .book-club-maven-card:nth-child(even):hover {
+    transform: none;
+  }
+  .book-club-drawer-rail button:hover {
+    width: 46px;
+  }
+}
+@media (max-width: 760px) {
+  .book-club-drawer-rail button:hover {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .book-club-drawer {
+    animation: cozy-reduced-fade 150ms ease-out;
+  }
+  .book-club-drawer.is-closing {
+    animation: cozy-reduced-fade-out 120ms ease-in forwards;
+  }
+}
+
+/* Gold marks the edge of paper; brown ink keeps the small labels readable. */
+.book-club-drawer .book-club-eyebrow,
+.book-club-empty-state .book-club-eyebrow {
+  color: #795229;
+}
+.book-club-drawer .book-club-muted,
+.book-club-note-field > span small {
+  color: #756477;
+}
+.book-club-drawer .book-club-note-field textarea::placeholder {
+  color: #756477;
+  opacity: 1;
+}
+.book-club-club-picker option {
+  color: var(--club-deep);
+  background: var(--club-paper);
+}
+
+.book-club-canvas-link {
+  min-height: 32px;
+  margin: 0;
+  gap: 6px;
+  color: var(--club-plum);
+  font-size: 13px;
+  font-weight: 600;
+  box-shadow: none;
+}
+.book-club-canvas-link svg {
+  width: 15px;
+  height: 15px;
+}
+.book-club-canvas-link:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.book-club-clue-list li.is-checked {
+  text-decoration: none;
+  opacity: 1;
+}
+.book-club-clue-list .book-club-prepared-clue {
+  gap: 8px;
+  padding: 2px 5px 2px 8px;
+  background: #f5f1e7;
+}
+.book-club-clue-list .book-club-prepared-clue.is-checked {
+  background: #e2eee7;
+}
+.book-club-clue-list .book-club-prepared-clue.is-void {
+  background: #eee7f1;
+}
+.book-club-prepared-clue strong {
+  color: var(--club-deep);
+}
+.book-club-clue-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+.book-club-prepared-clue .book-club-clue-actions {
+  flex: 0 0 auto;
+  flex-wrap: nowrap;
+  gap: 2px;
+}
+.book-club-prepared-clue .book-club-clue-actions > span {
+  display: inline-flex;
+}
+.book-club-prepared-clue .book-club-clue-icon {
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
+  min-height: 28px;
+  padding: 6px;
+  color: var(--club-plum);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: transform 150ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+.book-club-clue-icon svg {
+  width: 14px;
+  height: 14px;
+}
+.book-club-clue-icon:active {
+  transform: scale(0.97);
+}
+.book-club-clue-icon:focus-visible {
+  outline: 1px solid #bbaabb;
+  outline-offset: 0;
+}
+@media (hover: hover) and (pointer: fine) {
+  .book-club-clue-icon:hover {
+    background: rgb(53 33 63 / 0.08);
+  }
+}
+@media (max-width: 480px) {
+  .book-club-clue-text {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .book-club-clue-icon:active {
+    transform: none;
+  }
+}
+.book-club-clue-dialog {
+  --field-background: #fffaf3;
+  --field-ink: #35213f;
+  --field-placeholder: #756477;
+  --field-border: #bbaabb;
+  background: #f7efe7;
+  color: #35213f;
+}
+.book-club-clue-dialog h3 {
+  margin: 0 0 12px;
+  font:
+    500 26px/1.2 "Patrick Hand",
+    serif;
+}
+.book-club-clue-description {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+.book-club-reveal-error {
+  color: #923d4c;
+  font-size: 13px;
+}
+
+.book-club-drawer > header {
+  gap: 12px;
+}
+.book-club-drawer > header > div:first-child {
+  min-width: 0;
+  flex: 1;
+}
+.book-club-drawer > header > button {
+  flex: 0 0 auto;
+}
+
+.book-club-picker-options {
+  --accent: 280 20% 85%;
+  --accent-foreground: 280 30% 25%;
+  --ring: 280 25% 60%;
+  border-color: #bbaabb;
+  background: #fffaf3;
+  color: #35213f;
+}
+.book-club-picker-options [role="option"][data-highlighted],
+.book-club-picker-options [role="option"][data-state="checked"] {
+  background: #e2d4e8;
+  color: #35213f;
+}

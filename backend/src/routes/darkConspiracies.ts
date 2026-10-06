@@ -140,16 +140,32 @@ export const darkConspiracyRoutes = async (fastify: FastifyInstance) => {
         updates.data = JSON.stringify(body.data);
       }
 
-      updates.version =
-        hasDataChanges || hasTitleChange
-          ? (body.version ?? existing.version) + 1
-          : existing.version;
+      updates.version = hasDataChanges || hasTitleChange ? existing.version + 1 : existing.version;
 
       const [conspiracy] = await db
         .update(darkConspiracies)
         .set(updates)
-        .where(eq(darkConspiracies.id, id))
+        .where(
+          and(
+            eq(darkConspiracies.id, id),
+            eq(darkConspiracies.userId, userId),
+            eq(darkConspiracies.version, body.version),
+          ),
+        )
         .returning();
+
+      if (!conspiracy) {
+        reply.code(409);
+        return {
+          error: "This conspiracy changed elsewhere. Reload it before saving again.",
+          current: {
+            id: existing.id,
+            title: existing.title,
+            data: existingData,
+            version: existing.version,
+          },
+        };
+      }
 
       return {
         id: conspiracy.id,

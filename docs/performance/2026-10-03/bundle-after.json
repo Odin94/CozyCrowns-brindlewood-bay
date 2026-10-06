@@ -1,0 +1,170 @@
+{
+  "directory": "/Users/odin/Desktop/repos/not-mine/other/performance-2026-10-03/cozycrowns/frontend/dist",
+  "entry": {
+    "file": "/assets/index-DcVZhZeI.js",
+    "bytes": 293963,
+    "gzipBytes": 89332
+  },
+  "chunks": [
+    {
+      "file": "App-Bx92wdh2.js",
+      "bytes": 16629,
+      "gzipBytes": 5519
+    },
+    {
+      "file": "AuthCallback-C_qT2_Me.js",
+      "bytes": 1013,
+      "gzipBytes": 420
+    },
+    {
+      "file": "BookClubMaven-DZyGKYPB.js",
+      "bytes": 3376,
+      "gzipBytes": 1505
+    },
+    {
+      "file": "BookClubOverview-BIYgFiyS.js",
+      "bytes": 35943,
+      "gzipBytes": 10934
+    },
+    {
+      "file": "CharacterSheet-Bal4T6ID.js",
+      "bytes": 100750,
+      "gzipBytes": 29700
+    },
+    {
+      "file": "LibraryPage-DE9V5FVw.js",
+      "bytes": 3826,
+      "gzipBytes": 1272
+    },
+    {
+      "file": "MysteriesPage-DBctRKn5.js",
+      "bytes": 16231,
+      "gzipBytes": 4787
+    },
+    {
+      "file": "SignInPage-P-BEO5cM.js",
+      "bytes": 1246,
+      "gzipBytes": 644
+    },
+    {
+      "file": "TheorizeBoard-Bvuy1hHv.js",
+      "bytes": 25694,
+      "gzipBytes": 8407
+    },
+    {
+      "file": "api-Bd8_xqbX.js",
+      "bytes": 8098,
+      "gzipBytes": 1751
+    },
+    {
+      "file": "book-open-1ex1SRmz.js",
+      "bytes": 279,
+      "gzipBytes": 206
+    },
+    {
+      "file": "check-Bcp61BHw.js",
+      "bytes": 124,
+      "gzipBytes": 140
+    },
+    {
+      "file": "chevron-left-D3OlqMi6.js",
+      "bytes": 32659,
+      "gzipBytes": 9186
+    },
+    {
+      "file": "confirmation-dialog-1Mpp6_bo.js",
+      "bytes": 1515,
+      "gzipBytes": 694
+    },
+    {
+      "file": "createLucideIcon-C1sIJQ_m.js",
+      "bytes": 8979,
+      "gzipBytes": 3726
+    },
+    {
+      "file": "dialog-UHFvC_s-.js",
+      "bytes": 34913,
+      "gzipBytes": 11967
+    },
+    {
+      "file": "dist-SImTNQ8U.js",
+      "bytes": 554,
+      "gzipBytes": 355
+    },
+    {
+      "file": "feather-Vk1PbgPK.js",
+      "bytes": 299,
+      "gzipBytes": 233
+    },
+    {
+      "file": "game_data-DTZ81qcD.js",
+      "bytes": 19568,
+      "gzipBytes": 6955
+    },
+    {
+      "file": "index-DcVZhZeI.js",
+      "bytes": 293963,
+      "gzipBytes": 89332
+    },
+    {
+      "file": "library-B11F_OrW.js",
+      "bytes": 230,
+      "gzipBytes": 180
+    },
+    {
+      "file": "lock-xs9BqWcu.js",
+      "bytes": 206,
+      "gzipBytes": 196
+    },
+    {
+      "file": "log-in-SNuGr2iy.js",
+      "bytes": 231,
+      "gzipBytes": 188
+    },
+    {
+      "file": "messages-CP4es8P3.js",
+      "bytes": 37562,
+      "gzipBytes": 15072
+    },
+    {
+      "file": "messages-Gx8LV4Z6.js",
+      "bytes": 33820,
+      "gzipBytes": 13489
+    },
+    {
+      "file": "module-COL_15J9.js",
+      "bytes": 288983,
+      "gzipBytes": 95072
+    },
+    {
+      "file": "pdf_generator-D585qh70.js",
+      "bytes": 696072,
+      "gzipBytes": 256749
+    },
+    {
+      "file": "scroll-text-nvmUijXt.js",
+      "bytes": 349,
+      "gzipBytes": 234
+    },
+    {
+      "file": "textarea-DL4-IHvZ.js",
+      "bytes": 494,
+      "gzipBytes": 331
+    },
+    {
+      "file": "tooltip-GuwMB8Rp.js",
+      "bytes": 37060,
+      "gzipBytes": 13453
+    },
+    {
+      "file": "useAuth-Ww2Phsnm.js",
+      "bytes": 31377,
+      "gzipBytes": 9695
+    },
+    {
+      "file": "users-Dn0kbMSz.js",
+      "bytes": 306,
+      "gzipBytes": 225
+    }
+  ]
+}

@@ -1,13 +1,43 @@
+import { reconcileMavenRecords } from "./maven_persistence";
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import type { Ability, CozyItem } from "@/types/characterSchema";
+import { persist, createJSONStorage } from "zustand/middleware";
 import {
-  getAdvancementOptions,
-  getCrownsOfTheQueen,
-  getCrownOfTheVoid,
-  getEndOfSessionQuestions,
-} from "@/game_data";
+  createDefaultCharacter,
+  applyCharacterChange,
+  normalizeCharacter,
+  toPersistedCharacter,
+  type Ability,
+  type CharacterData,
+  type CozyItem,
+} from "@/lib/character_document";
+import {
+  createCharacterStorage,
+  MAX_RECOVERABLE_CHARACTERS,
+  RECOVERY_RETENTION_MS,
+} from "@/lib/character_storage";
+import { toast } from "sonner";
 import { t } from "@lingui/core/macro";
+
+export type { Ability, CharacterData, CozyItem } from "@/lib/character_document";
+
+export type CharacterRecord = CharacterData & {
+  /** Stable local identity. A record keeps this when the server assigns an id. */
+  localId: string;
+  id?: string;
+  version?: number;
+  ownerId?: string;
+  syncedContent?: string;
+  remoteContent?: string;
+  creationId?: string;
+};
+
+export type BackendCharacterData = Omit<CharacterData, "schemaVersion">;
+
+export type BackendCharacter = {
+  id: string;
+  version: number;
+  data: BackendCharacterData;
+};
 
 export const getDefaultAbilities = (): Ability[] => [
   { name: t`Vitality`, value: 0 },
@@ -17,66 +47,56 @@ export const getDefaultAbilities = (): Ability[] => [
   { name: t`Sensitivity`, value: -1 },
 ];
 
-export const getDefaultCharacterData = (): CharacterData => ({
-  name: "",
-  style: "",
-  activity: "",
+const newLocalId = () => crypto.randomUUID();
+const newRecord = (): CharacterRecord => ({
+  localId: newLocalId(),
+  ...createDefaultCharacter(),
   abilities: getDefaultAbilities(),
-  xp: 0,
-  conditions: "",
-  endOfSessionChecks: getEndOfSessionQuestions().map(() => false),
-  advancementChecks: getAdvancementOptions().map(() => false),
-  mavenMoves: "",
-  crownChecks: getCrownsOfTheQueen().map(() => false),
-  voidChecks: getCrownOfTheVoid().map(() => false),
-  cozyItems: Array(12)
-    .fill(null)
-    .map(() => ({ checked: false, text: "" })),
+});
+const recordFrom = (
+  input: unknown,
+  metadata: Pick<
+    CharacterRecord,
+    "localId" | "id" | "version" | "ownerId" | "syncedContent" | "remoteContent" | "creationId"
+  >,
+) => ({
+  ...normalizeCharacter(input),
+  ...metadata,
 });
 
-export type CharacterData = {
-  id?: string;
-  version?: number;
-  schemaVersion?: number;
-  name: string;
-  style: string;
-  activity: string;
-  abilities: Ability[];
-  xp: number;
-  conditions: string;
-  endOfSessionChecks: boolean[];
-  advancementChecks: boolean[];
-  mavenMoves: string;
-  crownChecks: boolean[];
-  voidChecks: boolean[];
-  cozyItems: CozyItem[];
-};
-
-export type BackendCharacterData = Omit<CharacterData, "id" | "version">;
-
-export type BackendCharacter = {
-  id: string;
-  version: number;
-  data: BackendCharacterData;
-};
+export type ArchivedCharacter = { record: CharacterRecord; deletedAt: number };
 
 export type CharacterState = {
-  characters: CharacterData[];
-  currentCharacterIndex: number;
+  archivedCharacters: ArchivedCharacter[];
+  restoreArchived: (localId: string) => void;
+  characters: CharacterRecord[];
+  selectedCharacterId: string;
 
-  name: string;
-  style: string;
-  activity: string;
-  abilities: Ability[];
-  xp: number;
-  conditions: string;
-  endOfSessionChecks: boolean[];
-  advancementChecks: boolean[];
-  mavenMoves: string;
-  crownChecks: boolean[];
-  voidChecks: boolean[];
-  cozyItems: CozyItem[];
+  select: (localId: string) => void;
+  create: () => string;
+  ensureCreationId: (localId: string) => string | undefined;
+  remove: (localId: string) => void;
+  updateSelected: (change: Partial<CharacterData>) => void;
+  selected: () => CharacterRecord;
+  record: (localId: string) => CharacterRecord | undefined;
+  claimOwner: (localId: string, ownerId: string) => void;
+  updateRemoteVersion: (
+    localId: string,
+    id: string,
+    version: number,
+    ownerId?: string,
+    syncedContent?: string,
+  ) => void;
+  updateSelectedRemoteVersion: (id: string, version: number) => void;
+  clearSelectedRemoteMetadata: () => void;
+  mergeRemote: (
+    backendCharacters: BackendCharacter[],
+    ownerId?: string,
+    canReplace?: (record: CharacterRecord) => boolean,
+  ) => void;
 
+  // Compatibility helpers keep existing UI modules small while all document
+  // state remains in `characters` instead of mirrored top-level fields.
   setName: (name: string) => void;
   setStyle: (style: string) => void;
   setActivity: (activity: string) => void;
@@ -88,227 +108,272 @@ export type CharacterState = {
   setMavenMoves: (moves: string) => void;
   setCrownChecks: (checks: boolean[]) => void;
   setVoidChecks: (checks: boolean[]) => void;
-  setCozyItems: (items: Array<{ checked: boolean; text: string }>) => void;
-
+  setCozyItems: (items: CozyItem[]) => void;
+  getCharacterData: () => CharacterRecord;
   addCharacter: () => void;
   removeCharacter: (index: number) => void;
   setCurrentCharacter: (index: number) => void;
-  getCharacterData: () => CharacterData;
   updateCharacterIdAndVersion: (index: number, id: string, version: number) => void;
   clearCurrentCharacterIdAndVersion: () => void;
   syncCharactersFromBackend: (backendCharacters: BackendCharacter[]) => void;
 };
 
+const selectedRecord = (state: Pick<CharacterState, "characters" | "selectedCharacterId">) =>
+  state.characters.find((character) => character.localId === state.selectedCharacterId) ??
+  state.characters[0] ??
+  newRecord();
+
 export const useCharacterStore = create<CharacterState>()(
   persist(
     (set, get) => {
-      const getCurrentCharacter = () => {
+      const updateSelected = (change: Partial<CharacterData>) => {
         const state = get();
-        return state.characters[state.currentCharacterIndex] || getDefaultCharacterData();
-      };
-
-      const updateCurrentCharacter = (updates: Partial<CharacterData>) => {
-        const state = get();
-        const newCharacters = [...state.characters];
-        const currentIndex = state.currentCharacterIndex;
-
-        if (!newCharacters[currentIndex]) {
-          newCharacters[currentIndex] = getDefaultCharacterData();
-        }
-
-        newCharacters[currentIndex] = { ...newCharacters[currentIndex], ...updates };
-
-        // Update the top-level state properties to match the current character
-        // top-level state can't be functions because then they don't trigger re-renders
-        const updatedCharacter = newCharacters[currentIndex];
+        const current = selectedRecord(state);
         set({
-          characters: newCharacters,
-          name: updatedCharacter.name,
-          style: updatedCharacter.style,
-          activity: updatedCharacter.activity,
-          abilities: updatedCharacter.abilities,
-          xp: updatedCharacter.xp,
-          conditions: updatedCharacter.conditions,
-          endOfSessionChecks: updatedCharacter.endOfSessionChecks,
-          advancementChecks: updatedCharacter.advancementChecks,
-          mavenMoves: updatedCharacter.mavenMoves,
-          crownChecks: updatedCharacter.crownChecks,
-          voidChecks: updatedCharacter.voidChecks,
-          cozyItems: updatedCharacter.cozyItems,
+          characters: state.characters.map((character) =>
+            character.localId === current.localId
+              ? Object.assign({}, character, applyCharacterChange(character, change))
+              : character,
+          ),
         });
       };
+      const indexFor = (index: number) => get().characters[index]?.localId;
 
+      const initial = newRecord();
       return {
-        characters: [getDefaultCharacterData()],
-        currentCharacterIndex: 0,
-
-        name: getDefaultCharacterData().name,
-        style: getDefaultCharacterData().style,
-        activity: getDefaultCharacterData().activity,
-        abilities: getDefaultCharacterData().abilities,
-        xp: getDefaultCharacterData().xp,
-        conditions: getDefaultCharacterData().conditions,
-        endOfSessionChecks: getDefaultCharacterData().endOfSessionChecks,
-        advancementChecks: getDefaultCharacterData().advancementChecks,
-        mavenMoves: getDefaultCharacterData().mavenMoves,
-        crownChecks: getDefaultCharacterData().crownChecks,
-        voidChecks: getDefaultCharacterData().voidChecks,
-        cozyItems: getDefaultCharacterData().cozyItems,
-
-        setName: (name) => updateCurrentCharacter({ name }),
-        setStyle: (style) => updateCurrentCharacter({ style }),
-        setActivity: (activity) => updateCurrentCharacter({ activity }),
-        setAbilities: (abilities) => updateCurrentCharacter({ abilities }),
-        setXp: (xp) => updateCurrentCharacter({ xp }),
-        setConditions: (conditions) => updateCurrentCharacter({ conditions }),
-        setEndOfSessionChecks: (endOfSessionChecks) =>
-          updateCurrentCharacter({ endOfSessionChecks }),
-        setAdvancementChecks: (advancementChecks) => updateCurrentCharacter({ advancementChecks }),
-        setMavenMoves: (mavenMoves) => updateCurrentCharacter({ mavenMoves }),
-        setCrownChecks: (crownChecks) => updateCurrentCharacter({ crownChecks }),
-        setVoidChecks: (voidChecks) => updateCurrentCharacter({ voidChecks }),
-        setCozyItems: (cozyItems) => updateCurrentCharacter({ cozyItems }),
-
-        addCharacter: () => {
+        characters: [initial],
+        archivedCharacters: [],
+        restoreArchived: (localId) => {
           const state = get();
-          const newCharacter = getDefaultCharacterData();
+          const archive = state.archivedCharacters.find(
+            (entry) => entry.record.localId === localId,
+          );
+          if (!archive) return;
+          const restored = recordFrom(archive.record, { localId: newLocalId() });
           set({
-            characters: [...state.characters, newCharacter],
-            currentCharacterIndex: state.characters.length,
-            name: newCharacter.name,
-            style: newCharacter.style,
-            activity: newCharacter.activity,
-            abilities: newCharacter.abilities,
-            xp: newCharacter.xp,
-            conditions: newCharacter.conditions,
-            endOfSessionChecks: newCharacter.endOfSessionChecks,
-            advancementChecks: newCharacter.advancementChecks,
-            mavenMoves: newCharacter.mavenMoves,
-            crownChecks: newCharacter.crownChecks,
-            voidChecks: newCharacter.voidChecks,
-            cozyItems: newCharacter.cozyItems,
+            characters: [...state.characters, restored],
+            selectedCharacterId: restored.localId,
+            archivedCharacters: state.archivedCharacters.filter((entry) => entry !== archive),
           });
+        },
+        selectedCharacterId: initial.localId,
+        select: (localId) => {
+          if (get().characters.some((character) => character.localId === localId)) {
+            set({ selectedCharacterId: localId });
+          }
+        },
+        create: () => {
+          const character = newRecord();
+          set((state) => ({
+            characters: [...state.characters, character],
+            selectedCharacterId: character.localId,
+          }));
+          return character.localId;
+        },
+        ensureCreationId: (localId) => {
+          const record = get().record(localId);
+          if (!record) return undefined;
+          if (record.creationId) return record.creationId;
+          const creationId = crypto.randomUUID();
+          set((state) => ({
+            characters: state.characters.map((character) =>
+              character.localId === localId ? { ...character, creationId } : character,
+            ),
+          }));
+          return creationId;
+        },
+        remove: (localId) => {
+          const state = get();
+          const index = state.characters.findIndex((character) => character.localId === localId);
+          if (index < 0) return;
+          const characters = state.characters.filter((character) => character.localId !== localId);
+          const next = characters[Math.min(index, characters.length - 1)] ?? newRecord();
+          set({
+            characters: characters.length > 0 ? characters : [next],
+            selectedCharacterId:
+              state.selectedCharacterId === localId ? next.localId : state.selectedCharacterId,
+            archivedCharacters: [
+              { record: state.characters[index], deletedAt: Date.now() },
+              ...state.archivedCharacters,
+            ]
+              .filter((entry) => entry.deletedAt >= Date.now() - RECOVERY_RETENTION_MS)
+              .slice(0, MAX_RECOVERABLE_CHARACTERS),
+          });
+        },
+        updateSelected,
+        selected: () => selectedRecord(get()),
+        record: (localId) => get().characters.find((character) => character.localId === localId),
+        claimOwner: (localId, ownerId) =>
+          set((state) => ({
+            characters: state.characters.map((character) =>
+              character.localId === localId ? { ...character, ownerId } : character,
+            ),
+          })),
+        updateRemoteVersion: (localId, id, version, ownerId, syncedContent) => {
+          if (syncedContent === undefined && ownerId?.startsWith("{")) {
+            syncedContent = ownerId;
+            ownerId = undefined;
+          }
+          set((state) => ({
+            characters: state.characters.map((character) =>
+              character.localId === localId
+                ? {
+                    ...character,
+                    id,
+                    version,
+                    ownerId: ownerId ?? character.ownerId,
+                    syncedContent: syncedContent ?? character.syncedContent,
+                    remoteContent: syncedContent ?? character.remoteContent,
+                  }
+                : character,
+            ),
+          }));
+        },
+        updateSelectedRemoteVersion: (id, version) => {
+          get().updateRemoteVersion(selectedRecord(get()).localId, id, version);
+        },
+        clearSelectedRemoteMetadata: () => {
+          const current = selectedRecord(get());
+          const localId = newLocalId();
+          set((state) => ({
+            selectedCharacterId: localId,
+            characters: state.characters.map((character) => {
+              if (character.localId !== current.localId) return character;
+              const localCharacter = { ...character };
+              delete localCharacter.id;
+              delete localCharacter.version;
+              delete localCharacter.ownerId;
+              delete localCharacter.syncedContent;
+              localCharacter.localId = localId;
+              delete localCharacter.remoteContent;
+              delete localCharacter.creationId;
+              return localCharacter;
+            }),
+          }));
+        },
+        mergeRemote: (
+          backendCharacters,
+          ownerId,
+          canReplace = (record) =>
+            (record.syncedContent ?? record.remoteContent) ===
+            JSON.stringify(toPersistedCharacter(record)),
+        ) => {
+          const state = get();
+          let selectedCharacterId = state.selectedCharacterId;
+          const characters = reconcileMavenRecords(
+            state.characters,
+            backendCharacters,
+            ownerId,
+            canReplace,
+            newLocalId,
+            (original, preserved) => {
+              if (selectedCharacterId === original.localId) selectedCharacterId = preserved.localId;
+            },
+          );
+          set({
+            characters,
+            selectedCharacterId,
+          });
+        },
+        setName: (name) => updateSelected({ name }),
+        setStyle: (style) => updateSelected({ style }),
+        setActivity: (activity) => updateSelected({ activity }),
+        setAbilities: (abilities) => updateSelected({ abilities }),
+        setXp: (xp) => updateSelected({ xp }),
+        setConditions: (conditions) => updateSelected({ conditions }),
+        setEndOfSessionChecks: (endOfSessionChecks) => updateSelected({ endOfSessionChecks }),
+        setAdvancementChecks: (advancementChecks) => updateSelected({ advancementChecks }),
+        setMavenMoves: (mavenMoves) => updateSelected({ mavenMoves }),
+        setCrownChecks: (crownChecks) => updateSelected({ crownChecks }),
+        setVoidChecks: (voidChecks) => updateSelected({ voidChecks }),
+        setCozyItems: (cozyItems) => updateSelected({ cozyItems }),
+        getCharacterData: () => selectedRecord(get()),
+        addCharacter: () => {
+          get().create();
         },
         removeCharacter: (index) => {
-          const state = get();
-          const newCharacters = state.characters.filter((_, i) => i !== index);
-          const newIndex = Math.min(state.currentCharacterIndex, newCharacters.length - 1);
-          const character = newCharacters[newIndex] || getDefaultCharacterData();
-          set({
-            characters: newCharacters,
-            currentCharacterIndex: Math.max(0, newIndex),
-            name: character.name,
-            style: character.style,
-            activity: character.activity,
-            abilities: character.abilities,
-            xp: character.xp,
-            conditions: character.conditions,
-            endOfSessionChecks: character.endOfSessionChecks,
-            advancementChecks: character.advancementChecks,
-            mavenMoves: character.mavenMoves,
-            crownChecks: character.crownChecks,
-            voidChecks: character.voidChecks,
-            cozyItems: character.cozyItems,
-          });
+          const localId = indexFor(index);
+          if (localId) get().remove(localId);
         },
         setCurrentCharacter: (index) => {
-          const state = get();
-          if (index >= 0 && index < state.characters.length) {
-            const character = state.characters[index] || getDefaultCharacterData();
-            set({
-              currentCharacterIndex: index,
-              name: character.name,
-              style: character.style,
-              activity: character.activity,
-              abilities: character.abilities,
-              xp: character.xp,
-              conditions: character.conditions,
-              endOfSessionChecks: character.endOfSessionChecks,
-              advancementChecks: character.advancementChecks,
-              mavenMoves: character.mavenMoves,
-              crownChecks: character.crownChecks,
-              voidChecks: character.voidChecks,
-              cozyItems: character.cozyItems,
-            });
-          }
+          const localId = indexFor(index);
+          if (localId) get().select(localId);
         },
-        getCharacterData: () => getCurrentCharacter(),
         updateCharacterIdAndVersion: (index, id, version) => {
-          const state = get();
-          const newCharacters = [...state.characters];
-          if (newCharacters[index]) {
-            newCharacters[index] = { ...newCharacters[index], id, version };
-            set({ characters: newCharacters });
-          }
+          const localId = indexFor(index);
+          if (localId) get().select(localId);
+          get().updateSelectedRemoteVersion(id, version);
         },
-        clearCurrentCharacterIdAndVersion: () => {
-          const state = get();
-          const newCharacters = [...state.characters];
-          const currentIndex = state.currentCharacterIndex;
-          if (newCharacters[currentIndex]) {
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-            const { id, version, ...rest } = newCharacters[currentIndex];
-            newCharacters[currentIndex] = rest as CharacterData;
-            set({ characters: newCharacters });
-          }
-        },
-        syncCharactersFromBackend: (backendCharacters) => {
-          const state = get();
-          const existingCharacters = state.characters;
-          const updatedCharacters = [...existingCharacters];
-
-          backendCharacters.forEach((backendCharacter) => {
-            const existingIndex = updatedCharacters.findIndex(
-              (character) => character.id === backendCharacter.id,
-            );
-
-            if (existingIndex === -1) {
-              const defaultCharacter = getDefaultCharacterData();
-              updatedCharacters.push({
-                ...defaultCharacter,
-                ...backendCharacter.data,
-                id: backendCharacter.id,
-                version: backendCharacter.version,
-              });
-            } else {
-              const existingCharacter = updatedCharacters[existingIndex];
-              const existingVersion = existingCharacter.version ?? 0;
-
-              if (backendCharacter.version > existingVersion) {
-                updatedCharacters[existingIndex] = {
-                  ...existingCharacter,
-                  ...backendCharacter.data,
-                  id: backendCharacter.id,
-                  version: backendCharacter.version,
-                };
-              }
-            }
-          });
-
-          const newIndex = Math.min(state.currentCharacterIndex, updatedCharacters.length - 1);
-          const currentCharacter = updatedCharacters[newIndex] || getDefaultCharacterData();
-
-          set({
-            characters: updatedCharacters,
-            currentCharacterIndex: Math.max(0, newIndex),
-            name: currentCharacter.name,
-            style: currentCharacter.style,
-            activity: currentCharacter.activity,
-            abilities: currentCharacter.abilities,
-            xp: currentCharacter.xp,
-            conditions: currentCharacter.conditions,
-            endOfSessionChecks: currentCharacter.endOfSessionChecks,
-            advancementChecks: currentCharacter.advancementChecks,
-            mavenMoves: currentCharacter.mavenMoves,
-            crownChecks: currentCharacter.crownChecks,
-            voidChecks: currentCharacter.voidChecks,
-            cozyItems: currentCharacter.cozyItems,
-          });
-        },
+        clearCurrentCharacterIdAndVersion: () => get().clearSelectedRemoteMetadata(),
+        syncCharactersFromBackend: (backendCharacters) => get().mergeRemote(backendCharacters),
       };
     },
     {
       name: "cozycrowns-character-storage",
+      version: 2,
+      storage: createJSONStorage(() =>
+        createCharacterStorage(localStorage, () =>
+          toast.error(
+            t`Browser storage is full or unavailable. Keep this page open and export your Maven before reloading.`,
+          ),
+        ),
+      ),
+      migrate: (persisted) => {
+        const oldState = persisted as Partial<CharacterState> & {
+          currentCharacterIndex?: number;
+          characters?: Array<Record<string, unknown>>;
+        };
+        const migratedCharacters =
+          oldState.characters?.map((character) =>
+            recordFrom(character, {
+              localId: typeof character.localId === "string" ? character.localId : newLocalId(),
+              id: typeof character.id === "string" ? character.id : undefined,
+              version: typeof character.version === "number" ? character.version : undefined,
+            }),
+          ) ?? [];
+        const characters = migratedCharacters.length > 0 ? migratedCharacters : [newRecord()];
+        const selected = characters[oldState.currentCharacterIndex ?? 0] ?? characters[0];
+        return { characters, selectedCharacterId: selected.localId } as CharacterState;
+      },
+      merge: (persisted, current) => {
+        const state = persisted as Partial<CharacterState>;
+        const characters = state.characters?.length
+          ? state.characters.map((character) =>
+              recordFrom(character, {
+                localId: character.localId || newLocalId(),
+                id: character.id,
+                version: character.version,
+                ownerId: character.ownerId,
+                syncedContent: character.syncedContent,
+                remoteContent: character.remoteContent,
+                creationId: character.creationId,
+              }),
+            )
+          : current.characters;
+        const selectedCharacterId = characters.some(
+          (character) => character.localId === state.selectedCharacterId,
+        )
+          ? state.selectedCharacterId!
+          : characters[0].localId;
+        const archivedCharacters = (state.archivedCharacters ?? [])
+          .filter(
+            (entry) =>
+              entry && entry.record && entry.deletedAt >= Date.now() - RECOVERY_RETENTION_MS,
+          )
+          .slice(0, MAX_RECOVERABLE_CHARACTERS)
+          .map((entry) => ({
+            deletedAt: entry.deletedAt,
+            record: recordFrom(entry.record, { localId: entry.record.localId }),
+          }));
+        return { ...current, characters, selectedCharacterId, archivedCharacters };
+      },
     },
   ),
 );
+
+if (typeof window !== "undefined" && window.addEventListener) {
+  window.addEventListener("storage", (event) => {
+    if (event.key?.startsWith("cozycrowns-character-storage"))
+      void useCharacterStore.persist.rehydrate();
+  });
+}

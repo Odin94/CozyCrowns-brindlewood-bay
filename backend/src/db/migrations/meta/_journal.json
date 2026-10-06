@@ -22,6 +22,76 @@
       "when": 1777147200000,
       "tag": "0002_dark_conspiracies",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1788077227865,
+      "tag": "0003_stormy_ultragirl",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1788079306010,
+      "tag": "0004_polite_wild_pack",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "6",
+      "when": 1788094467008,
+      "tag": "0005_condemned_starfox",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1788115221536,
+      "tag": "0006_deep_wolfsbane",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "6",
+      "when": 1788115647669,
+      "tag": "0007_busy_war_machine",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1788721644280,
+      "tag": "0008_unknown_lady_deathstrike",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1788725022891,
+      "tag": "0009_icy_switch",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1788728149992,
+      "tag": "0010_omniscient_ken_ellis",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "6",
+      "when": 1791019673587,
+      "tag": "0011_tense_shriek",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "6",
+      "when": 1791025068418,
+      "tag": "0012_safe_clea",
+      "breakpoints": true
     }
   ]
 }

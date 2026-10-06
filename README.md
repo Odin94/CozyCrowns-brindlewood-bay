@@ -8,7 +8,7 @@ You can run everything locally using `mprocs` (after installing dependencies in 
 * `pnpm add -g mprocs`
 * `cd frontend && pnpm install`
 * `cd backend && pnpm install`
-* `mprocs`
+* `mprocs` (automatically applies any pending local database migrations before starting the backend)
 
 ### Native dependencies
 The backend uses `better-sqlite3`, which ships a native SQLite binding. The backend package is configured with `pnpm.onlyBuiltDependencies` so a normal `pnpm install` inside `backend/` is allowed to run the install/build scripts needed by `better-sqlite3` on fresh installs, including Node 24.
@@ -64,14 +64,3 @@ To add a new language:
 * Brindlewood Bay is published by [The Gauntlet](https://www.gauntlet-rpg.com/brindlewood-bay.html)
 * Queen SVG by [Darius Dan on svgrepo](https://www.svgrepo.com/svg/317455/queen)
 * Tentacles icon by [Teewara soontorn on Noun Project](https://thenounproject.com/icon/tentacles-4112037/)
-<!-- 
-
-TODOdin: Add more eldritch elements to the site as void crowns get checked off
-TODOdin: Add Dark Conspiracy sheet
-TODOdin: Add section for noting down clues, void clues, general notes
-
-TODOdin: Update translations
-TODOdin: Add sessions, allow sharing (read-only) view of characters in same session (add some sort of session view?)
-    Maybe session view could be some popup that contains tabs for dice rolls & friends, and in friends you can roll down a summary of other's characters
-TODOdin: Add dice rolling & sharing dice rolls with session
- -->

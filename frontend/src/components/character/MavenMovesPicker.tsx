@@ -5,6 +5,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { useCharacterStore } from "@/lib/character_store";
 import { getClassicMavenMoves, getAlternateMavenMoves } from "@/game_data";
@@ -15,7 +16,8 @@ import { ScrollText } from "lucide-react";
 type MoveTab = "classic" | "alternate";
 
 const MavenMovesPicker = () => {
-  const { mavenMoves, setMavenMoves } = useCharacterStore();
+  const mavenMoves = useCharacterStore((state) => state.selected().mavenMoves);
+  const setMavenMoves = useCharacterStore((state) => state.setMavenMoves);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<MoveTab>("classic");
 
@@ -50,12 +52,13 @@ const MavenMovesPicker = () => {
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <button
+      <Button
         onClick={() => setIsOpen(true)}
-        className="w-8 h-8 mb-3 cursor-pointer flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors duration-200"
+        variant="bare"
+        className="w-8 h-8 mb-3 cursor-pointer flex items-center justify-center text-sm border rounded-md bg-gray-800 border-gray-600 hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-ring/60 transition-colors duration-200"
       >
         <ScrollText className="w-4 h-4" />
-      </button>
+      </Button>
       {/* flex flex-col lets the inner flex-1 child fill remaining height */}
       <DialogContent
         className="w-96 h-[600px] max-w-[90vw] max-h-[90vh] flex flex-col"
@@ -71,9 +74,10 @@ const MavenMovesPicker = () => {
         <div className="flex flex-col flex-1 min-h-0">
           {/* Tab row */}
           <div className="flex w-full border border-b-0 border-green-200">
-            <button
+            <Button
               onClick={() => setActiveTab("classic")}
-              className={`no-ring flex-1 py-1.5 text-sm font-medium transition-colors
+              variant="bare"
+              className={`no-ring flex-1 rounded-none py-1.5 text-sm font-medium transition-colors
                                 ${
                                   activeTab === "classic"
                                     ? "bg-green-100/30 text-primary"
@@ -81,10 +85,11 @@ const MavenMovesPicker = () => {
                                 }`}
             >
               <Trans>Classic</Trans>
-            </button>
-            <button
+            </Button>
+            <Button
               onClick={() => setActiveTab("alternate")}
-              className={`no-ring flex-1 py-1.5 text-sm font-medium transition-colors border-l border-green-200
+              variant="bare"
+              className={`no-ring flex-1 rounded-none py-1.5 text-sm font-medium transition-colors border-l border-green-200
                                 ${
                                   activeTab === "alternate"
                                     ? "bg-green-100/30 text-primary"
@@ -92,7 +97,7 @@ const MavenMovesPicker = () => {
                                 }`}
             >
               <Trans>Alternate</Trans>
-            </button>
+            </Button>
           </div>
 
           {/* flex-1 + min-h-0 lets ScrollArea fill remaining height without overflowing */}

@@ -1,13 +1,15 @@
 {
   "name": "cozycrowns-repo-scripts",
-  "private": true,
   "version": "0.0.0",
-  "packageManager": "pnpm@10.33.0",
+  "private": true,
   "scripts": {
     "dev:frontend": "pnpm --dir frontend dev",
     "dev:backend": "pnpm --dir backend dev",
     "build": "pnpm --dir frontend build && pnpm --dir backend build",
+    "test": "pnpm test:frontend && pnpm --dir frontend test && pnpm --dir backend test",
     "lint": "pnpm --dir frontend lint && pnpm --dir backend lint",
-    "fmt": "pnpm --dir frontend fmt && pnpm --dir backend fmt"
-  }
+    "fmt": "pnpm --dir frontend fmt && pnpm --dir backend fmt",
+    "test:frontend": "pnpm --dir backend exec tsx --test ../frontend/tests/stage-connection.test.ts ../frontend/tests/preservation.test.ts ../frontend/tests/live-book-club.test.ts ../frontend/tests/library-mysteries.test.ts ../frontend/tests/theory-geometry.test.ts ../frontend/tests/theory-placement.test.ts ../frontend/tests/theory-alignment-undo.test.ts"
+  },
+  "packageManager": "pnpm@10.33.0"
 }

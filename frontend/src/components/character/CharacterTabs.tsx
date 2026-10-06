@@ -1,5 +1,7 @@
 import { useIsLargeScreen } from "@/hooks/useIsLargeScreen";
-import { type CharacterData, useCharacterStore } from "@/lib/character_store";
+import { Button } from "@/components/ui/button";
+import { useCharacterStore } from "@/lib/character_store";
+import { useShallow } from "zustand/react/shallow";
 import { ChevronDown, Eye, Plus, X } from "lucide-react";
 import { useState } from "react";
 
@@ -7,7 +9,7 @@ interface CharacterTabsProps {
   onDeleteCharacter: (index: number) => void;
   onSwitchCharacter?: (index: number) => Promise<boolean>;
   activeView?: "character" | "darkConspiracy";
-  onSwitchToCharacter?: (index: number) => void;
+  onSwitchToCharacter?: () => void;
   onSwitchToDarkConspiracy?: () => void;
 }
 
@@ -18,14 +20,21 @@ const CharacterTabs = ({
   onSwitchToCharacter,
   onSwitchToDarkConspiracy,
 }: CharacterTabsProps) => {
-  const { characters, currentCharacterIndex, setCurrentCharacter, addCharacter } =
-    useCharacterStore();
+  const characters = useCharacterStore(
+    useShallow((state) => state.characters.map(({ localId, name }) => `${localId}\0${name}`)),
+  );
+  const selectedCharacterId = useCharacterStore((state) => state.selectedCharacterId);
+  const select = useCharacterStore((state) => state.select);
+  const create = useCharacterStore((state) => state.create);
   const isLargeScreen = useIsLargeScreen();
   const [isMobileTabsVisible, setIsMobileTabsVisible] = useState(false);
 
   const handleCharacterSwitch = async (index: number) => {
-    if (index === currentCharacterIndex) {
-      onSwitchToCharacter?.(index);
+    const character = characters[index];
+    if (!character) return;
+    const localId = character.split("\0")[0];
+    if (localId === selectedCharacterId) {
+      onSwitchToCharacter?.();
       return;
     }
 
@@ -34,8 +43,8 @@ const CharacterTabs = ({
       if (!canSwitch) return;
     }
 
-    setCurrentCharacter(index);
-    onSwitchToCharacter?.(index);
+    select(localId);
+    onSwitchToCharacter?.();
   };
 
   const handleRemoveCharacter = (index: number, e: React.MouseEvent) => {
@@ -46,21 +55,23 @@ const CharacterTabs = ({
   };
 
   const handleAddCharacter = () => {
-    const nextIndex = characters.length;
-    addCharacter();
-    onSwitchToCharacter?.(nextIndex);
+    create();
+    onSwitchToCharacter?.();
   };
 
-  const renderCharacterTab = (character: CharacterData, index: number) => {
-    const displayName = character.name.split(" ")[0] || `Character ${index + 1}`;
+  const renderCharacterTab = (character: string, index: number) => {
+    const separator = character.indexOf("\0");
+    const localId = character.slice(0, separator);
+    const name = character.slice(separator + 1);
+    const displayName = name.split(" ")[0] || `Character ${index + 1}`;
     const truncatedName =
       displayName.length > 13 ? displayName.substring(0, 11) + "..." : displayName;
 
     return (
       <div
-        key={index}
+        key={localId}
         className={`relative group flex items-center gap-2 pl-6 py-3 w-40 rounded-r-lg cursor-pointer transition-[margin,transform,box-shadow] shadow-xl duration-500 hover:duration-200 animate-in slide-in-from-left-4 fade-in ${
-          activeView === "character" && currentCharacterIndex === index
+          activeView === "character" && selectedCharacterId === localId
             ? "bg-dark-secondary text-tertiary"
             : "bg-dark-secondary/40 hover:bg-dark-secondary/60 text-tertiary/80"
         }
@@ -74,14 +85,15 @@ const CharacterTabs = ({
       >
         <span className={`text-sm font-medium whitespace-nowrap`}>{truncatedName}</span>
         {characters.length > 1 && (
-          <button
+          <Button
+            variant="bare"
             onClick={(e) => handleRemoveCharacter(index, e)}
             className={`${
               isLargeScreen ? "opacity-0" : "opacity-100"
             } group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-500 hover:text-white rounded p-1 ml-2`}
           >
             <X size={12} />
-          </button>
+          </Button>
         )}
       </div>
     );
@@ -103,7 +115,7 @@ const CharacterTabs = ({
               ? "bg-dark-secondary text-tertiary shadow-xl"
               : "bg-dark-secondary/40 text-gray-300 hover:bg-dark-secondary/60"
           }`}
-          onClick={() => onSwitchToDarkConspiracy?.()}
+          onClick={onSwitchToDarkConspiracy}
           title="Dark conspiracy"
         >
           <Eye size={16} />
@@ -128,7 +140,8 @@ const CharacterTabs = ({
         <div className="flex flex-col mt-5">
           {/* Caret button - always visible at bottom */}
           <div className="flex justify-center py-4">
-            <button
+            <Button
+              variant="bare"
               onClick={() => setIsMobileTabsVisible(!isMobileTabsVisible)}
               className="flex items-center justify-center w-10 h-10 rounded-full cursor-pointer transition-all duration-200 bg-gray-700/20 text-gray-300 hover:bg-gray-600/50 hover:scale-110 shadow-lg"
             >
@@ -136,7 +149,7 @@ const CharacterTabs = ({
                 size={16}
                 className={`transition-transform duration-200 ${isMobileTabsVisible ? "rotate-180" : ""}`}
               />
-            </button>
+            </Button>
           </div>
 
           {/* Bottom bar - slides up/down */}

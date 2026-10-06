@@ -50,6 +50,8 @@ This file is the on-demand guide for where changes usually belong. Use it when a
 - Review the SQL under `backend/src/db/migrations/` before applying it.
 - Apply locally with `cd backend && pnpm db:migrate`.
 - If the change affects API payloads or validation, update the matching route/schema files in the same pass.
+- Migration `0011` adds nullable `book_club_clues.source_text` without rewriting existing rows. It preserves the private authored identity when campaign wording changes; Book Club responses explicitly omit this field. Legacy customized rows can recover their identity on authoring saves only when the original heading still matches a unique authored clue; fully rewritten legacy headings remain preserved campaign history without an inferred identity.
+- Migration `0012` adds nullable `book_club_clues.source_entry_id` without rewriting existing rows. Imported clues acquire their stable ids from the owned source document. Authoring saves match the id and clue kind before legacy text, update private baselines, and preserve revealed wording and board annotations. Existing rows adopt ids from an unambiguous previous source baseline. Both private identity fields are excluded from campaign responses.
 
 ## Changing Translations Or User-Facing Copy
 - Wrap UI text with Lingui macros instead of hardcoding plain strings in components.
@@ -64,7 +66,3 @@ This file is the on-demand guide for where changes usually belong. Use it when a
 - The exported PDF is based on `frontend/src/resources/brindlewoodbay-charactersheet_fillable.base64`.
 - Field names in the PDF form are stringly typed, so small naming mistakes surface only at runtime.
 - Verify by downloading a PDF and opening it, not just by building the app.
-
-## Sharing Work
-- Backend sharing API exists in `backend/src/routes/shares.ts` and the `character_shares` table.
-- There is no matching frontend API helper or full sharing UI yet, so sharing tasks usually require both new frontend work and existing backend integration.

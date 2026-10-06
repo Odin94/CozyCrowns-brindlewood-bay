@@ -4,13 +4,16 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "test": "node benchmarks/character-store.mjs --check",
+    "benchmark:store": "node benchmarks/character-store.mjs",
     "dev": "vite",
     "build": "pnpm compile && tsc -b && vite build",
     "lint": "oxlint --fix",
     "fmt": "oxfmt",
     "preview": "vite preview",
     "extract": "lingui extract",
-    "compile": "lingui compile --typescript"
+    "compile": "lingui compile --typescript",
+    "test:review": "node benchmarks/review-regressions.mjs && node benchmarks/pdf-regressions.mjs && node benchmarks/auth-session-regressions.mjs"
   },
   "dependencies": {
     "@lingui/core": "^6.0.1",
@@ -32,7 +35,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",
     "pdf-lib": "^1.17.1",
-    "posthog-js": "^1.374.2",
+    "posthog-js": "^1.434.18",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "sonner": "^2.0.7",

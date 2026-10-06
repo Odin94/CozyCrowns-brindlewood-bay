@@ -14,7 +14,7 @@
 - Frontend translations: `cd frontend && pnpm extract && pnpm compile`
 - Backend dev server: `cd backend && pnpm dev`
 - Backend checks: `cd backend && pnpm build`
-- Database workflow: `cd backend && pnpm db:generate` after schema changes, then `cd backend && pnpm db:migrate`
+- Database workflow: `cd backend && pnpm db:generate` after schema changes, then `cd backend && pnpm db:migrate`. Before committing a migration, run `pnpm db:validate` and apply it to a disposable copy of a production-like SQLite database; inspect the SQL for compatibility with existing rows and schema. Never edit a migration that may already have been applied in production.
 - Linting/formatting is handled by [oxlint](https://oxc.rs/docs/guide/usage/linter) (config at `frontend/.oxlintrc.json`). Use `pnpm run fmt` at the repo root to format both apps.
 - Full smoke verification for most changes: frontend lint + frontend build + backend build
 
@@ -26,6 +26,7 @@
   - backend request validation in `backend/src/schema/character.ts`
 - Backend character rows are soft-deleted through `deletedAt`; routes that fetch live characters should keep filtering deleted rows out.
 - Auth uses a WorkOS sealed session stored in frontend `localStorage` as a bearer token. Backend auth may rotate the token through `X-New-Token`, so frontend and backend auth changes usually span both sides.
+- Local auth for manual and LLM testing is opt-in through `backend/LOCAL_AUTH_ENABLED=true`. The frontend shows the local sign-in control only on a loopback hostname. It creates a `local-development-user` without contacting WorkOS and is accepted only when both browser and backend are on the loopback interface; keep it disabled outside local development.
 - User-facing text should use Lingui macros. If copy changes, regenerate catalogs before finishing.
 
 ## Workflow Triggers
@@ -34,6 +35,5 @@
 - If you change database tables or indexes, update `backend/src/db/schema.ts`, generate a migration, and document compatibility assumptions for existing data.
 - If you add dependencies, large UI restyling, or deployment assumptions, confirm first.
 
-## Known Gaps
-- There is currently no automated test suite. Default verification is targeted builds/lint plus a short manual smoke plan.
-- Sharing endpoints exist in the backend, but the frontend does not yet have a matching API client or full sharing UI flow.
+## Verification
+- Automated coverage is intentionally small. Use targeted builds/lint plus a short manual smoke plan for UI changes.

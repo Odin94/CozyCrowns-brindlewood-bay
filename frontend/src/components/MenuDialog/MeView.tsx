@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Trans, useLingui } from "@lingui/react/macro";
 import { LogOut, Edit, Check, X } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 type User = {
   id: string;
@@ -30,6 +30,7 @@ export const MeView = ({
   isUpdatingProfile,
 }: MeViewProps) => {
   const { i18n } = useLingui();
+  const nicknameInput = useRef<HTMLInputElement>(null);
   const [isEditingNickname, setIsEditingNickname] = useState(false);
   const nickname = user?.nickname || "";
   const [editedNickname, setEditedNickname] = useState(nickname);
@@ -39,6 +40,13 @@ export const MeView = ({
       setEditedNickname(nickname);
     }
   }, [nickname, isEditingNickname]);
+
+  useEffect(() => {
+    if (isEditingNickname) {
+      nicknameInput.current?.focus();
+      nicknameInput.current?.select();
+    }
+  }, [isEditingNickname]);
 
   const handleStartEdit = () => {
     setIsEditingNickname(true);
@@ -95,6 +103,7 @@ export const MeView = ({
               </Label>
               <div className="relative">
                 <Input
+                  ref={nicknameInput}
                   id="nickname"
                   type="text"
                   value={editedNickname}
@@ -111,6 +120,7 @@ export const MeView = ({
                         type="button"
                         size="sm"
                         variant="ghost"
+                        aria-label={i18n._("Save nickname")}
                         onClick={handleConfirmEdit}
                         disabled={isUpdatingProfile}
                         className="h-7 w-7 p-0 hover:bg-dark-secondary/20"
@@ -121,6 +131,7 @@ export const MeView = ({
                         type="button"
                         size="sm"
                         variant="ghost"
+                        aria-label={i18n._("Cancel editing nickname")}
                         onClick={handleCancelEdit}
                         disabled={isUpdatingProfile}
                         className="h-7 w-7 p-0 hover:bg-red-600/20"
@@ -133,6 +144,7 @@ export const MeView = ({
                       type="button"
                       size="sm"
                       variant="ghost"
+                      aria-label={i18n._("Edit nickname")}
                       onClick={handleStartEdit}
                       className="h-7 w-7 p-0 hover:bg-dark-secondary/50"
                     >
@@ -143,10 +155,7 @@ export const MeView = ({
               </div>
             </div>
             <div className="flex gap-2">
-              <Button
-                onClick={onBack}
-                className="flex-1 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
-              >
+              <Button onClick={onBack} variant="dark" className="flex-1 dark-ring">
                 <Trans>Back</Trans>
               </Button>
             </div>
@@ -156,10 +165,7 @@ export const MeView = ({
             <p className="text-gray-800">
               <Trans>Please sign in to view your profile.</Trans>
             </p>
-            <Button
-              onClick={onBack}
-              className="mt-4 text-primary bg-dark-secondary hover:bg-dark-secondary/90 dark-ring"
-            >
+            <Button onClick={onBack} variant="dark" className="mt-4 dark-ring">
               <Trans>Back</Trans>
             </Button>
           </div>

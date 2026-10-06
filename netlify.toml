@@ -1,9 +1,12 @@
 [build]
-# TODOdin: Fix netlify config such that we don't need this file
-# and netlify.toml in frontend/ is enough
 base = "frontend"
 command = "cd frontend;pnpm i && pnpm run build"
 publish = "frontend/dist"
+
+[[headers]]
+for = "/assets/*"
+[headers.values]
+Cache-Control = "public, max-age=31536000, immutable"
 
 [[redirects]]
 from = "/*"

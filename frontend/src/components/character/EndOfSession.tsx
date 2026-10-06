@@ -7,7 +7,8 @@ import { useCharacterStore } from "@/lib/character_store";
 import { Trans } from "@lingui/react/macro";
 
 const EndOfSession = () => {
-  const { endOfSessionChecks, setEndOfSessionChecks } = useCharacterStore();
+  const endOfSessionChecks = useCharacterStore((state) => state.selected().endOfSessionChecks);
+  const setEndOfSessionChecks = useCharacterStore((state) => state.setEndOfSessionChecks);
   const handleCheckChange = (index: number, checked: boolean) => {
     const newChecks = [...endOfSessionChecks];
     newChecks[index] = checked;

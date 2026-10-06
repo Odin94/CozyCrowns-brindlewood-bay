@@ -10,7 +10,7 @@ import {
 import { cn } from "@/lib/utils";
 import { Trans } from "@lingui/react/macro";
 import { Cookie } from "lucide-react";
-import posthog from "posthog-js";
+import { getAnalytics } from "@/lib/analytics";
 import * as React from "react";
 
 type CookieConsentProps = {
@@ -67,9 +67,11 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
       setIsOpen(false);
       setTimeout(() => {
         setHide(true);
-      }, 700);
+      }, 200);
       try {
-        posthog.opt_in_capturing();
+        void getAnalytics()
+          .then((posthog) => posthog?.opt_in_capturing())
+          .catch((error) => console.warn("PostHog opt_in_capturing failed:", error));
       } catch (error) {
         console.warn("PostHog opt_in_capturing failed:", error);
       }
@@ -80,9 +82,11 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
       setIsOpen(false);
       setTimeout(() => {
         setHide(true);
-      }, 700);
+      }, 200);
       try {
-        posthog.opt_out_capturing();
+        void getAnalytics()
+          .then((posthog) => posthog?.opt_out_capturing())
+          .catch((error) => console.warn("PostHog opt_out_capturing failed:", error));
       } catch (error) {
         console.warn("PostHog opt_out_capturing failed:", error);
       }
@@ -90,30 +94,35 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
     }, [onDeclineCallback]);
 
     React.useEffect(() => {
-      try {
-        if (demo) {
-          setIsOpen(true);
-          return;
-        }
-
-        const consentStatus = posthog.get_explicit_consent_status();
-        if (consentStatus === "pending") {
-          setIsOpen(true);
-        } else {
-          setIsOpen(false);
-          setTimeout(() => {
-            setHide(true);
-          }, 700);
-        }
-      } catch (error) {
-        console.warn("Cookie consent error:", error);
+      if (demo) {
+        setIsOpen(true);
+        return;
       }
+      let cancelled = false;
+      let hideTimer: ReturnType<typeof setTimeout> | undefined;
+      void getAnalytics()
+        .then((posthog) => {
+          if (cancelled) return;
+          if (posthog?.get_explicit_consent_status() === "pending") {
+            setIsOpen(true);
+          } else {
+            setIsOpen(false);
+            hideTimer = setTimeout(() => {
+              setHide(true);
+            }, 200);
+          }
+        })
+        .catch((error) => console.warn("Cookie consent error:", error));
+      return () => {
+        cancelled = true;
+        clearTimeout(hideTimer);
+      };
     }, [demo]);
 
     if (hide) return null;
 
     const containerClasses = cn(
-      "fixed z-50 transition-all duration-700",
+      "fixed z-50 transition-[transform,opacity] duration-200 ease-out",
       !isOpen ? "translate-y-full opacity-0" : "translate-y-0 opacity-100",
       className,
     );
@@ -152,14 +161,14 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
                 onClick={handleDecline}
                 variant="secondary"
                 size="sm"
-                className="flex-1 rounded-full bg-[hsl(280_25%_60%)] hover:bg-[hsl(280_25%_55%)] transition-colors"
+                className="flex-1 rounded-full border-[hsl(280_25%_50%)] bg-[hsl(280_25%_60%)] hover:border-[hsl(280_25%_45%)] hover:bg-[hsl(280_25%_55%)] shadow-sm hover:shadow-sm active:shadow-none transition-[transform,opacity]"
               >
                 <Trans>Decline</Trans>
               </Button>
               <Button
                 onClick={handleAccept}
                 size="sm"
-                className="flex-1 rounded-full text-gray-600 bg-[#98DEDE] hover:bg-[#7FD0D0] transition-colors"
+                className="flex-1 rounded-full text-gray-600 border-[#7FD0D0] bg-[#98DEDE] hover:border-[#67BFBF] hover:bg-[#7FD0D0] shadow-sm hover:shadow-sm active:shadow-none transition-[transform,opacity]"
               >
                 <Trans>Accept</Trans>
               </Button>
@@ -185,7 +194,7 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
                   onClick={handleDecline}
                   size="sm"
                   variant="secondary"
-                  className="text-xs h-7 bg-[hsl(280_25%_60%)] hover:bg-[hsl(280_25%_55%)] transition-colors"
+                  className="text-xs h-7 border-[hsl(280_25%_50%)] bg-[hsl(280_25%_60%)] hover:border-[hsl(280_25%_45%)] hover:bg-[hsl(280_25%_55%)] shadow-sm hover:shadow-sm active:shadow-none transition-[transform,opacity]"
                 >
                   <Trans>Decline</Trans>
                   <span className="sr-only sm:hidden">
@@ -195,7 +204,7 @@ const CookieConsent = React.forwardRef<HTMLDivElement, CookieConsentProps>(
                 <Button
                   onClick={handleAccept}
                   size="sm"
-                  className="text-xs h-7 bg-[#98DEDE] hover:bg-[#7FD0D0] transition-colors"
+                  className="text-xs h-7 border-[#7FD0D0] bg-[#98DEDE] hover:border-[#67BFBF] hover:bg-[#7FD0D0] shadow-sm hover:shadow-sm active:shadow-none transition-[transform,opacity]"
                 >
                   <Trans>Accept</Trans>
                   <span className="sr-only sm:hidden">

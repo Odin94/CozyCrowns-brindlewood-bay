@@ -4,7 +4,8 @@ import { useCharacterStore } from "@/lib/character_store";
 import { Trans, useLingui } from "@lingui/react/macro";
 
 const Conditions = () => {
-  const { conditions, setConditions } = useCharacterStore();
+  const conditions = useCharacterStore((state) => state.selected().conditions);
+  const setConditions = useCharacterStore((state) => state.setConditions);
   const { i18n } = useLingui();
   return (
     <div className="flex flex-col h-full">

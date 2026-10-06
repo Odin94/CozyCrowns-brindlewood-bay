@@ -1,10 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useAuth } from "../hooks/useAuth";
 
 export const AuthCallback = () => {
   const { handleCallback, isHandlingCallback, callbackError } = useAuth();
 
+  const started = useRef(false);
   useEffect(() => {
+    if (started.current) return;
+    started.current = true;
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
     const state = params.get("state") || undefined;

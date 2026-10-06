@@ -1,0 +1,11 @@
+{
+  "benchmark": "authenticated GET /book-clubs via Fastify.inject and disposable migrated SQLite",
+  "clubCount": 501,
+  "rollsPerClub": 1,
+  "medianMs": 200.50858300000004,
+  "p95Ms": 200.50858300000004,
+  "responseBytes": 15936404,
+  "samplesMs": [
+    200.50858300000004
+  ]
+}

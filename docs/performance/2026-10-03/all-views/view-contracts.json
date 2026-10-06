@@ -1,0 +1,12 @@
+{
+  "fixture": "faithful API fixtures; actual mounted production view source",
+  "passed": [
+    "library parallel start and public success before slow/rejected moderation",
+    "mystery collection edits survive header changes and synchronous local draft persistence",
+    "cached Mystery collection remove titles and aria labels update on locale change",
+    "all six Book Club drawers mount with Maven cards preserved",
+    "shared Maven read-only sheet",
+    "Dark Conspiracy primitive edit persists and remounts",
+    "theory viewport transform and filter cache invalidation"
+  ]
+}

@@ -7,6 +7,8 @@ export type MysteryRecord = {
 };
 
 export type DarkConspiracyData = {
+  localId?: string;
+  remoteContent?: string;
   id?: string;
   version?: number;
   schemaVersion?: number;
@@ -33,7 +35,18 @@ export type BackendDarkConspiracy = {
   data: BackendDarkConspiracyData;
 };
 
-export type BackendDarkConspiracyData = Omit<DarkConspiracyData, "id" | "version">;
+export type BackendDarkConspiracyData = Omit<
+  DarkConspiracyData,
+  "id" | "version" | "localId" | "remoteContent"
+>;
+export const conspiracyContent = (data: DarkConspiracyData) => {
+  const content = { ...data };
+  delete content.id;
+  delete content.version;
+  delete content.localId;
+  delete content.remoteContent;
+  return JSON.stringify(content);
+};
 
 const blankMysteries = (): MysteryRecord[] =>
   Array(6)
@@ -62,6 +75,7 @@ export const getDefaultDarkConspiracyData = (): DarkConspiracyData => ({
 const normalizeDarkConspiracy = (data: Partial<DarkConspiracyData>): DarkConspiracyData => ({
   ...getDefaultDarkConspiracyData(),
   ...data,
+  localId: data.localId ?? crypto.randomUUID(),
   layerTwoChecks: data.layerTwoChecks?.length ? data.layerTwoChecks : Array(5).fill(false),
   layerThreeChecks: data.layerThreeChecks?.length ? data.layerThreeChecks : Array(4).fill(false),
   mysteries: data.mysteries?.length ? data.mysteries : blankMysteries(),
@@ -84,6 +98,7 @@ export const hasDarkConspiracyContent = (data: DarkConspiracyData): boolean => {
   ];
 
   return (
+    (data.title.trim() !== "" && data.title !== "The Dark Conspiracy") ||
     textFields.some((field) => field.trim().length > 0) ||
     data.layerTwoChecks.some(Boolean) ||
     data.layerThreeChecks.some(Boolean)
@@ -98,7 +113,12 @@ export type DarkConspiracyState = {
   setCurrentDarkConspiracy: (index: number) => void;
   getDarkConspiracyData: () => DarkConspiracyData;
   replaceCurrentDarkConspiracy: (data: DarkConspiracyData) => void;
-  updateCurrentDarkConspiracyIdAndVersion: (id: string, version: number) => void;
+  updateCurrentDarkConspiracyIdAndVersion: (
+    id: string,
+    version: number,
+    localId?: string,
+    savedContent?: string,
+  ) => void;
   syncDarkConspiraciesFromBackend: (backendConspiracies: BackendDarkConspiracy[]) => void;
 };
 
@@ -116,7 +136,7 @@ export const useDarkConspiracyStore = create<DarkConspiracyState>()(
       };
 
       return {
-        darkConspiracies: [getDefaultDarkConspiracyData()],
+        darkConspiracies: [normalizeDarkConspiracy(getDefaultDarkConspiracyData())],
         currentDarkConspiracyIndex: 0,
         current: getDefaultDarkConspiracyData(),
         updateCurrentDarkConspiracy: (updates) => setCurrentData({ ...getCurrent(), ...updates }),
@@ -130,13 +150,20 @@ export const useDarkConspiracyStore = create<DarkConspiracyState>()(
         },
         getDarkConspiracyData: () => getCurrent(),
         replaceCurrentDarkConspiracy: (data) => setCurrentData(normalizeDarkConspiracy(data)),
-        updateCurrentDarkConspiracyIdAndVersion: (id, version) => {
-          const current = getCurrent();
-          setCurrentData({ ...current, id, version });
+        updateCurrentDarkConspiracyIdAndVersion: (id, version, localId, savedContent) => {
+          const state = get();
+          const target = localId ?? getCurrent().localId;
+          const darkConspiracies = state.darkConspiracies.map((record) =>
+            record.localId === target
+              ? { ...record, id, version, remoteContent: savedContent ?? conspiracyContent(record) }
+              : record,
+          );
+          set({ darkConspiracies, current: darkConspiracies[state.currentDarkConspiracyIndex] });
         },
         syncDarkConspiraciesFromBackend: (backendConspiracies) => {
           const state = get();
           const darkConspiracies = [...state.darkConspiracies];
+          let selectedIndex = state.currentDarkConspiracyIndex;
 
           backendConspiracies.forEach((backendConspiracy) => {
             const existingIndex = darkConspiracies.findIndex(
@@ -149,20 +176,33 @@ export const useDarkConspiracyStore = create<DarkConspiracyState>()(
             });
 
             if (existingIndex === -1) {
+              normalized.remoteContent = conspiracyContent(normalized);
               darkConspiracies.push(normalized);
               return;
             }
 
             const existingVersion = darkConspiracies[existingIndex].version ?? 0;
             if (backendConspiracy.version > existingVersion) {
+              const local = darkConspiracies[existingIndex];
+              const content = conspiracyContent(local);
+              if (
+                content !== conspiracyContent(normalized) &&
+                (!local.remoteContent || content !== local.remoteContent)
+              ) {
+                const recovered = { ...local, localId: crypto.randomUUID() };
+                delete recovered.id;
+                delete recovered.version;
+                delete recovered.remoteContent;
+                darkConspiracies.push(recovered);
+                if (selectedIndex === existingIndex) selectedIndex = darkConspiracies.length - 1;
+              }
+              normalized.localId = local.localId;
+              normalized.remoteContent = conspiracyContent(normalized);
               darkConspiracies[existingIndex] = normalized;
             }
           });
 
-          const currentDarkConspiracyIndex = Math.min(
-            state.currentDarkConspiracyIndex,
-            darkConspiracies.length - 1,
-          );
+          const currentDarkConspiracyIndex = Math.min(selectedIndex, darkConspiracies.length - 1);
           set({
             darkConspiracies,
             currentDarkConspiracyIndex,
@@ -175,6 +215,22 @@ export const useDarkConspiracyStore = create<DarkConspiracyState>()(
     },
     {
       name: "cozycrowns-dark-conspiracy-storage",
+      merge: (persisted, current) => {
+        const state = persisted as Partial<DarkConspiracyState>;
+        const darkConspiracies = state.darkConspiracies?.length
+          ? state.darkConspiracies.map(normalizeDarkConspiracy)
+          : current.darkConspiracies;
+        const index = Math.max(
+          0,
+          Math.min(state.currentDarkConspiracyIndex ?? 0, darkConspiracies.length - 1),
+        );
+        return {
+          ...current,
+          darkConspiracies,
+          currentDarkConspiracyIndex: index,
+          current: darkConspiracies[index],
+        };
+      },
     },
   ),
 );

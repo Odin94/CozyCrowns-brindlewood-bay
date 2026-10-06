@@ -6,6 +6,7 @@ import { nanoid } from "nanoid";
 import { trackEvent } from "../utils/tracker.js";
 import { logger } from "../utils/logger.js";
 import { authenticateUser } from "../middleware/auth.js";
+import { notifyCharacterBookClubs } from "../realtime/bookClubNotifications.js";
 import { zodToFastifySchema } from "../utils/zodToFastifySchema.js";
 import {
   createCharacterSchema,
@@ -130,6 +131,15 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
     async (request, reply) => {
       const userId = request.userId!;
       const body = request.body;
+      const id = body.creationId ? `created-${body.creationId}` : nanoid();
+      const previous = body.creationId
+        ? db.select().from(characters).where(eq(characters.id, id)).get()
+        : undefined;
+      if (previous) {
+        if (previous.userId !== userId || previous.deletedAt)
+          return reply.code(409).send({ error: "Creation request is unavailable" });
+        return { ...previous, data: JSON.parse(previous.data) };
+      }
 
       const characterCount = await db
         .select({ count: sql<number>`count(*)` })
@@ -163,10 +173,9 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
         return;
       }
 
-      const id = nanoid();
       const now = new Date();
 
-      const [character] = await db
+      const [inserted] = await db
         .insert(characters)
         .values({
           id,
@@ -178,7 +187,11 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
           createdAt: now,
           updatedAt: now,
         })
+        .onConflictDoNothing()
         .returning();
+      const character = inserted ?? db.select().from(characters).where(eq(characters.id, id)).get();
+      if (!character || character.userId !== userId || character.deletedAt)
+        return reply.code(409).send({ error: "Creation request is unavailable" });
 
       return {
         id: character.id,
@@ -250,7 +263,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
       }
 
       if (hasDataChanges || hasNameChange) {
-        updates.version = (body.version ?? existing.version) + 1;
+        updates.version = existing.version + 1;
       } else {
         updates.version = existing.version;
       }
@@ -258,8 +271,29 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
       const [character] = await db
         .update(characters)
         .set(updates)
-        .where(eq(characters.id, id))
+        .where(
+          and(
+            eq(characters.id, id),
+            eq(characters.userId, userId),
+            eq(characters.version, body.version),
+          ),
+        )
         .returning();
+
+      if (!character) {
+        reply.code(409);
+        return {
+          error: "This Maven changed elsewhere. Reload it before saving again.",
+          current: {
+            id: existing.id,
+            name: existing.name,
+            data: existingData,
+            version: existing.version,
+          },
+        };
+      }
+
+      if (hasDataChanges || hasNameChange) await notifyCharacterBookClubs(character.id);
 
       return {
         id: character.id,
@@ -303,6 +337,7 @@ export const characterRoutes = async (fastify: FastifyInstance) => {
       }
 
       await db.update(characters).set({ deletedAt: new Date() }).where(eq(characters.id, id));
+      await notifyCharacterBookClubs(id);
 
       return { success: true };
     },

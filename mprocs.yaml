@@ -1,6 +1,6 @@
 procs:
   backend:
-    cmd: ["cmd", "/c", "cd backend && pnpm dev"]
+    cmd: ["cmd", "/c", "cd backend && pnpm db:migrate && pnpm dev"]
   frontend:
     cmd: ["cmd", "/c", "cd frontend && pnpm dev"]
   drizzle-studio:

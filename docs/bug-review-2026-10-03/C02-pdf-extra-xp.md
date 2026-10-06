@@ -1,0 +1,25 @@
+# C02 — PDF exports mark one extra XP box
+
+**Status: fixed and verified.** Final source revision `171a372`; [completed review loop](FIX_REVIEW.md).
+
+Severity: **Medium**. Confirmed by generating a PDF with the running frontend and reading its actual AcroForm at `0cb664b`.
+
+Revalidated on committed revision `cd74477` after incorporating the newer local performance work. Uncommitted architecture changes in the primary checkout were outside this review.
+
+## Reproduction and evidence
+
+Export a default Maven with `xp: 0`. Its PDF XP fields are `[true, false, false, false, false]`. The browser correctly displays zero XP. Values 1–4 likewise mark one extra box.
+
+## Cause
+
+`frontend/src/lib/pdf_generator.ts` loops from index 0 and checks `character.xp >= i` rather than comparing XP with the one-based count.
+
+## Suggested fix
+
+Use `character.xp > i` (or `>= i + 1`) and test all values 0–5 against the generated PDF checkbox fields.
+
+## Implementation
+
+Implemented XP checkbox comparison using xp > index, so zero XP checks no boxes and five XP checks all five.
+
+Regression validation is recorded in the repository tests and the final review-loop report.
