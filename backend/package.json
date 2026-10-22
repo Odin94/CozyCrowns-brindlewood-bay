@@ -29,8 +29,8 @@
     "better-sqlite3": "^12.10.0",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
-    "fastify": "^5.8.5",
-    "nanoid": "^5.1.11",
+    "fastify": "^5.12.5",
+    "nanoid": "^5.1.16",
     "posthog-node": "^5.54.1",
     "unique-names-generator": "^4.7.1",
     "zod": "^4.4.3"
@@ -51,6 +51,25 @@
       "better-sqlite3",
       "esbuild",
       "protobufjs"
-    ]
+    ],
+    "overrides": {
+      "esbuild@0": "0.28.1",
+      "@grpc/grpc-js@1": "1.14.5",
+      "tar@7": "7.5.21",
+      "undici@6": "6.28.1",
+      "ws@8": "8.21.0",
+      "protobufjs@7": "7.6.5",
+      "@opentelemetry/propagator-jaeger@2": "2.9.0",
+      "fast-uri@3": "3.1.8",
+      "find-my-way@9": "9.7.0",
+      "nanoid@5": "5.1.16",
+      "@opentelemetry/core@2": "2.8.0",
+      "fastify@5": "5.12.5",
+      "fast-copy@4": "4.1.0",
+      "tinypool@2": "2.1.2"
+    }
+  },
+  "engines": {
+    "node": ">=24.22.1 <25"
   }
 }

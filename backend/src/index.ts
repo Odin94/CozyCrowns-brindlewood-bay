@@ -23,7 +23,8 @@ const httpsOptions =
 
 const fastify = Fastify({
   https: httpsOptions,
-  trustProxy: env.TRUST_PROXY_HOPS || false,
+  // Only the local reverse proxy may supply forwarded client information.
+  trustProxy: env.TRUST_PROXY_HOPS > 0 ? "loopback" : false,
   logger:
     env.NODE_ENV === "development"
       ? {
