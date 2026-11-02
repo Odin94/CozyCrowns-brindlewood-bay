@@ -8,10 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getSampleStyles } from "@/game_data";
 import { useCharacterStore } from "@/lib/character_store";
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
 import { ScrollText } from "lucide-react";
 
 const Style = () => {
+  const { t } = useLingui();
   const style = useCharacterStore((state) => state.selected().style);
   const setStyle = useCharacterStore((state) => state.setStyle);
 
@@ -27,7 +28,7 @@ const Style = () => {
         <Input
           value={style}
           onChange={(e) => setStyle(e.target.value)}
-          placeholder="Enter character style"
+          placeholder={t`Enter character style`}
           className="flex-1"
         />
         <DropdownMenu>

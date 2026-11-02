@@ -540,7 +540,7 @@ msgstr ""
 msgid "Book Club tools"
 msgstr ""
 
-#: src/components/MenuDialog/MainMenuView.tsx:98
+#: src/components/MenuDialog/MainMenuView.tsx:101
 #: src/components/PageNavigator.tsx:16
 msgid "Book Clubs"
 msgstr ""
@@ -610,7 +610,7 @@ msgstr "Wohltätigkeitsveranstaltungen"
 msgid "Charm, confidence, intimidation, and holding the room."
 msgstr "Charme, Selbstvertrauen, Einschüchterung und den Raum für sich einnehmen."
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:95
 msgid "Checking your account…"
 msgstr ""
 
@@ -726,15 +726,15 @@ msgstr "Zustände"
 msgid "Confirm Reset"
 msgstr "Zurücksetzen bestätigen"
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:100
 msgid "Connect as"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:75
 msgid "Connect CozyCrowns to Stage"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:103
 msgid "Connect to Stage"
 msgstr ""
 
@@ -742,11 +742,11 @@ msgstr ""
 msgid "Connect to this note"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:73
 msgid "Connected to Stage"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:103
 msgid "Connecting…"
 msgstr ""
 
@@ -811,7 +811,7 @@ msgstr ""
 msgid "Could not connect those notes"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:21
+#: src/pages/StageConnect.tsx:54
 msgid "Could not connect. Keep Stage open, check your sign-in and local network access, then retry. If the request expired, start again in Stage."
 msgstr ""
 
@@ -964,7 +964,7 @@ msgstr ""
 msgid "Could not update the GM"
 msgstr ""
 
-#: src/components/character/CozyActivity.tsx:24
+#: src/components/character/CozyActivity.tsx:25
 #: src/pages/BookClubMaven.tsx:118
 msgid "Cozy Activity"
 msgstr "Gemütliche Aktivität"
@@ -1011,7 +1011,7 @@ msgid "Create mystery"
 msgstr ""
 
 #: src/components/MenuDialog/CreditsView.tsx:14
-#: src/components/MenuDialog/MainMenuView.tsx:143
+#: src/components/MenuDialog/MainMenuView.tsx:146
 msgid "Credits"
 msgstr "Credits"
 
@@ -1204,11 +1204,11 @@ msgstr "Dorothy Zbornak"
 #~ msgid "Double click to name this connection"
 #~ msgstr ""
 
-#: src/components/MenuDialog/MainMenuView.tsx:93
+#: src/components/MenuDialog/MainMenuView.tsx:96
 msgid "Download PDF"
 msgstr "PDF herunterladen"
 
-#: src/components/MenuDialog/MainMenuView.tsx:111
+#: src/components/MenuDialog/MainMenuView.tsx:114
 msgid "Download save file"
 msgstr "Speicherdatei herunterladen"
 
@@ -1228,7 +1228,7 @@ msgstr "Ziehe die Pinnwand, um dich umzusehen. Ziehe an einem Verbindungspunkt, 
 msgid "Drag to connect notes"
 msgstr "Ziehen, um Notizen zu verbinden"
 
-#: src/components/MenuDialog/MainMenuView.tsx:118
+#: src/components/MenuDialog/MainMenuView.tsx:121
 msgid "Drop a save file here, or paste a JSON file."
 msgstr "Ziehe einen Spielstand hierher oder füge eine JSON-Datei ein."
 
@@ -1264,6 +1264,14 @@ msgstr "Nachts jeden Ort frei betreten"
 #: src/game_data.ts:260
 msgid "Enter any place freely during the day"
 msgstr "Tagsüber jeden Ort frei betreten"
+
+#: src/components/character/Style.tsx:31
+msgid "Enter character style"
+msgstr "Trage den Stil deines Charakters ein"
+
+#: src/components/character/CozyActivity.tsx:31
+msgid "Enter cozy activity"
+msgstr "Wähle eine gemütliche Aktivität"
 
 #: src/pages/MysteriesPage.tsx:447
 msgid "Establishing questions (one per line)"
@@ -1301,6 +1309,10 @@ msgstr ""
 msgid "Found Void Clues"
 msgstr ""
 
+#: src/components/MenuDialog/MainMenuView.tsx:76
+msgid "Français"
+msgstr "Französisch"
+
 #: src/pages/BookClubOverview.tsx:1094
 msgid "Game Master"
 msgstr ""
@@ -1329,8 +1341,8 @@ msgstr ""
 msgid "Go to a Book Club tool"
 msgstr ""
 
-#: src/components/MenuDialog/MainMenuView.tsx:82
-#: src/components/MenuDialog/MainMenuView.tsx:83
+#: src/components/MenuDialog/MainMenuView.tsx:85
+#: src/components/MenuDialog/MainMenuView.tsx:86
 #: src/pages/BookClubOverview.tsx:1788
 msgid "Go to a page"
 msgstr "Seite öffnen"
@@ -1529,7 +1541,7 @@ msgstr "Luxuriöses Gemütliches Zuhause: Gourmet-Vorratskammer, Orchidarium, Vo
 msgid "Little biscuits"
 msgstr ""
 
-#: src/components/MenuDialog/MainMenuView.tsx:115
+#: src/components/MenuDialog/MainMenuView.tsx:118
 msgid "Load from save file"
 msgstr "Von Speicherdatei laden"
 
@@ -1645,7 +1657,7 @@ msgstr ""
 msgid "My mysteries"
 msgstr ""
 
-#: src/components/MenuDialog/MainMenuView.tsx:105
+#: src/components/MenuDialog/MainMenuView.tsx:108
 #: src/pages/MysteriesPage.tsx:336
 msgid "Mysteries"
 msgstr ""
@@ -1814,7 +1826,7 @@ msgstr ""
 msgid "Notes are shared with everyone in this Book Club."
 msgstr ""
 
-#: src/components/MenuDialog/MainMenuView.tsx:130
+#: src/components/MenuDialog/MainMenuView.tsx:133
 msgid "Odin's Blog"
 msgstr "Odins Blog"
 
@@ -2049,7 +2061,7 @@ msgstr ""
 #~ msgid "Recenter and reset zoom"
 #~ msgstr ""
 
-#: src/components/MenuDialog/MainMenuView.tsx:121
+#: src/components/MenuDialog/MainMenuView.tsx:124
 #: src/components/MenuDialog/MenuDialog.tsx:284
 msgid "Recently deleted Mavens"
 msgstr ""
@@ -2113,7 +2125,7 @@ msgstr ""
 msgid "Research, deduction, observation, and putting clues together."
 msgstr "Recherche, Schlussfolgern, Beobachtung und Hinweise zusammensetzen."
 
-#: src/components/MenuDialog/MainMenuView.tsx:125
+#: src/components/MenuDialog/MainMenuView.tsx:128
 #: src/components/MenuDialog/ResetConfirmView.tsx:20
 msgid "Reset Character"
 msgstr "Charakter zurücksetzen"
@@ -2153,11 +2165,11 @@ msgstr ""
 msgid "Retry draft recovery"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:117
 msgid "Return to CozyCrowns"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:80
 msgid "Return to Stage and choose your book club."
 msgstr ""
 
@@ -2340,11 +2352,11 @@ msgstr ""
 msgid "Sign in to write, preserve, and share your mysteries."
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:108
 msgid "Sign in with WorkOS"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:17
+#: src/pages/StageConnect.tsx:40
 msgid "Sign in with WorkOS again."
 msgstr ""
 
@@ -2364,7 +2376,7 @@ msgstr "Etwas an dir sorgt dafür, dass die Elite der Gesellschaft dich nicht al
 msgid "Something about you makes you seem like you have a bit of an edge. What is it? During the night, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "Irgendetwas an dir lässt dich ein wenig gefährlich wirken. Was ist es? Nachts kannst du jeden Ort betreten, den du möchtest, und dich frei bewegen, sobald du drinnen bist, solange du nichts aktiv Feindseliges gegenüber den anwesenden Personen tust."
 
-#: src/components/MenuDialog/MainMenuView.tsx:139
+#: src/components/MenuDialog/MainMenuView.tsx:142
 msgid "Source Code"
 msgstr "Quellcode"
 
@@ -2372,15 +2384,15 @@ msgstr "Quellcode"
 msgid "Speed Walkin'"
 msgstr "Nordic Walking"
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:82
 msgid "Stage can follow your Mavens and book clubs, read GM mystery material, and mark clues found when you choose."
 msgstr ""
 
-#: src/pages/StageConnect.tsx:19
+#: src/pages/StageConnect.tsx:49
 msgid "Stage could not connect. Start a new connection in Stage."
 msgstr ""
 
-#: src/pages/StageConnect.tsx:23
+#: src/pages/StageConnect.tsx:91
 msgid "Start a connection from Settings → Integrations in Stage."
 msgstr ""
 
@@ -2388,7 +2400,7 @@ msgstr ""
 msgid "Steady nerves, fine control, focus, and keeping fear at bay."
 msgstr "Starke Nerven, präzise Kontrolle, Konzentration und Angst in Schach halten."
 
-#: src/components/character/Style.tsx:24
+#: src/components/character/Style.tsx:25
 #: src/pages/BookClubMaven.tsx:117
 msgid "Style"
 msgstr "Stil"
@@ -2413,7 +2425,7 @@ msgstr "Erfolg mit Bonus"
 msgid "Success with cost"
 msgstr "Erfolg mit Kosten"
 
-#: src/components/MenuDialog/MainMenuView.tsx:148
+#: src/components/MenuDialog/MainMenuView.tsx:151
 msgid "Support Me"
 msgstr "Unterstütze mich"
 
@@ -2556,8 +2568,8 @@ msgstr "Dieser Spielzug hat keine Funktion, bis du einen Fall löst und dadurch 
 msgid "This note is currently locked"
 msgstr ""
 
-#: src/pages/StageConnect.tsx:14
-#: src/pages/StageConnect.tsx:22
+#: src/pages/StageConnect.tsx:34
+#: src/pages/StageConnect.tsx:62
 msgid "This request expired. Start sign-in again in Stage."
 msgstr ""
 
@@ -2803,7 +2815,7 @@ msgstr "Du hast früher ein weltenbummelndes Jetset-Leben geführt und hast imme
 msgid "You're very talented at passing yourself off as someone you are not. If there is a piece of identification or a disguise that would help you with your ruse, you have it. Say what it is and add it to your Cozy Little Place."
 msgstr "Du bist sehr talentiert darin, dich als jemand auszugeben, der du nicht bist. Wenn es ein Ausweisdokument oder eine Verkleidung gibt, die dir bei deinem Schwindel helfen würde, hast du es. Sage, was es ist, und füge es zu deinem Gemütlichen Zuhause hinzu."
 
-#: src/pages/StageConnect.tsx:16
+#: src/pages/StageConnect.tsx:38
 msgid "Your account changed. Reload this page before connecting."
 msgstr ""
 

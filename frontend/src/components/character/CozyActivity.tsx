@@ -8,10 +8,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { getSampleActivities } from "@/game_data";
 import { useCharacterStore } from "@/lib/character_store";
-import { Trans } from "@lingui/react/macro";
+import { Trans, useLingui } from "@lingui/react/macro";
 import { ScrollText } from "lucide-react";
 
 const CozyActivity = () => {
+  const { t } = useLingui();
   const activity = useCharacterStore((state) => state.selected().activity);
   const setActivity = useCharacterStore((state) => state.setActivity);
 
@@ -27,7 +28,7 @@ const CozyActivity = () => {
         <Input
           value={activity}
           onChange={(e) => setActivity(e.target.value)}
-          placeholder="Enter cozy activity"
+          placeholder={t`Enter cozy activity`}
           className="flex-1"
         />
         <DropdownMenu>

@@ -72,6 +72,9 @@ export const MainMenuView = ({
             <DropdownMenuItem onClick={() => onLanguageChange("de")}>
               <Trans>Deutsch</Trans>
             </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onLanguageChange("fr")}>
+              <Trans>Français</Trans>
+            </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </div>

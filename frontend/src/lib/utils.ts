@@ -10,6 +10,9 @@ export const loadTranslations = async (locale: string) => {
   if (locale === "de") {
     const { messages } = await import("@/locales/de/messages.ts");
     i18n.load(locale, messages);
+  } else if (locale === "fr") {
+    const { messages } = await import("@/locales/fr/messages.ts");
+    i18n.load(locale, messages);
   } else {
     const { messages } = await import("@/locales/en/messages.ts");
     i18n.load(locale, messages);
