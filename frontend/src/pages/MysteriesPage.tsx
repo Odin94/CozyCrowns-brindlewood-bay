@@ -43,7 +43,7 @@ const defaultMystery = (): MysteryData => ({
 const newEntryId = () => crypto.randomUUID();
 const blankLocation = () => ({ id: newEntryId(), title: "", description: "", prompt: "" });
 const blankSuspect = () => ({ id: newEntryId(), name: "", title: "", description: "", quote: "" });
-const blankClue = () => ({ id: newEntryId(), title: "", description: "" });
+const blankClue = (title = "") => ({ id: newEntryId(), title, description: "" });
 const blankMoment = () => ({ id: newEntryId(), description: "" });
 const hasEnteredInformation = (entry: object) =>
   Object.entries(entry).some(
@@ -467,6 +467,7 @@ const MysteriesPage = () => {
               removeEntry={removeEntry}
             />
             <CluesSections
+              key={selected.id}
               clues={selected.data.clues}
               voidClues={selected.data.voidClues}
               focusedEntryId={focusedEntryId}
@@ -848,53 +849,113 @@ const MomentsSection = memo(function MomentsSection({
     </Section>
   );
 });
-const CluesSections = memo(function CluesSections({
-  clues,
-  voidClues,
-  focusedEntryId,
-  setFocusedEntryId,
-  updateSelected,
-  removeEntry,
-}: {
-  clues: MysteryData["clues"];
-  voidClues: MysteryData["voidClues"];
+type ClueSectionProps = {
+  entries: MysteryData["clues"];
+  kind: "clues" | "voidClues";
   focusedEntryId: string | null;
   setFocusedEntryId: (id: string | null) => void;
   updateSelected: (updates: Partial<MysteryData> & { title?: string }) => void;
   removeEntry: (entry: object, remove: () => void) => void;
-}) {
+};
+
+const ClueSection = ({
+  entries,
+  kind,
+  focusedEntryId,
+  setFocusedEntryId,
+  updateSelected,
+  removeEntry,
+}: ClueSectionProps) => {
+  const [batchOpen, setBatchOpen] = useState(false);
+  const [batchText, setBatchText] = useState("");
+  const titles = batchText
+    .split(/\r\n|[\n\r]/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const tooMany = entries.length + titles.length > 200;
+  const titleTooLong = titles.some((title) => title.length > 255);
+
   return (
-    [
-      ["Clues", "clues"],
-      ["Void Clues", "voidClues"],
-    ] as const
-  ).map(([label, key]) => (
     <Section
-      key={key}
-      title={<Trans>{label}</Trans>}
+      title={kind === "clues" ? <Trans>Clues</Trans> : <Trans>Void Clues</Trans>}
       action={
-        <Button
-          size="sm"
-          aria-label={key === "clues" ? t`Add clue` : t`Add void clue`}
-          title={key === "clues" ? t`Add clue` : t`Add void clue`}
-          onClick={() => {
-            const clue = blankClue();
-            setFocusedEntryId(clue.id);
-            updateSelected({ [key]: [...(key === "clues" ? clues : voidClues), clue] });
-          }}
-        >
-          <Plus className="size-4" />
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            size="sm"
+            variant="dark"
+            aria-expanded={batchOpen}
+            onClick={() => setBatchOpen((open) => !open)}
+          >
+            <Trans>Add multiple clues</Trans>
+          </Button>
+          <Button
+            size="sm"
+            disabled={entries.length >= 200}
+            aria-label={kind === "clues" ? t`Add clue` : t`Add void clue`}
+            title={kind === "clues" ? t`Add clue` : t`Add void clue`}
+            onClick={() => {
+              const clue = blankClue();
+              setFocusedEntryId(clue.id);
+              updateSelected({ [kind]: [...entries, clue] });
+            }}
+          >
+            <Plus className="size-4" />
+          </Button>
+        </div>
       }
     >
-      {(key === "clues" ? clues : voidClues).map((clue, index) => (
+      {batchOpen && (
+        <div className="mystery-card">
+          <Field
+            label={<Trans>Clue titles (one per line)</Trans>}
+            value={batchText}
+            multi
+            autoFocus
+            onChange={setBatchText}
+          />
+          {tooMany && (
+            <p role="alert">
+              <Trans>A maximum of 200 clues is allowed per section.</Trans>
+            </p>
+          )}
+          {titleTooLong && (
+            <p role="alert">
+              <Trans>Each clue title must be 255 characters or fewer.</Trans>
+            </p>
+          )}
+          <div className="flex gap-2">
+            <Button
+              size="sm"
+              disabled={!titles.length || tooMany || titleTooLong}
+              onClick={() => {
+                const additions = titles.map((title) => blankClue(title));
+                updateSelected({ [kind]: [...entries, ...additions] });
+                setFocusedEntryId(additions[0].id);
+                setBatchText("");
+                setBatchOpen(false);
+              }}
+            >
+              <Trans>Add</Trans>
+            </Button>
+            <Button
+              size="sm"
+              variant="dark"
+              onClick={() => {
+                setBatchText("");
+                setBatchOpen(false);
+              }}
+            >
+              <Trans>Cancel</Trans>
+            </Button>
+          </div>
+        </div>
+      )}
+      {entries.map((clue, index) => (
         <div key={clue.id ?? index} className="mystery-card">
           <RemoveCard
             onClick={() =>
               removeEntry(clue, () =>
-                updateSelected({
-                  [key]: (key === "clues" ? clues : voidClues).filter((_, i) => i !== index),
-                }),
+                updateSelected({ [kind]: entries.filter((_, i) => i !== index) }),
               )
             }
           />
@@ -904,26 +965,47 @@ const CluesSections = memo(function CluesSections({
             autoFocus={focusedEntryId === clue.id}
             onChange={(title) =>
               updateSelected({
-                [key]: (key === "clues" ? clues : voidClues).map((item, i) =>
+                [kind]: entries.map((item, i) =>
                   i === index ? patchEntry(item, { title }) : item,
                 ),
               })
             }
           />
-          <Field
-            label={<Trans>Description</Trans>}
-            value={clue.description}
-            multi
-            onChange={(description) =>
-              updateSelected({
-                [key]: (key === "clues" ? clues : voidClues).map((item, i) =>
-                  i === index ? patchEntry(item, { description }) : item,
-                ),
-              })
-            }
-          />
+          <details>
+            <summary className="cursor-pointer text-sm">
+              {clue.description ? <Trans>Description</Trans> : <Trans>Add description</Trans>}
+            </summary>
+            <Field
+              label={<Trans>Description (optional)</Trans>}
+              value={clue.description}
+              multi
+              onChange={(description) =>
+                updateSelected({
+                  [kind]: entries.map((item, i) =>
+                    i === index ? patchEntry(item, { description }) : item,
+                  ),
+                })
+              }
+            />
+          </details>
         </div>
       ))}
     </Section>
-  ));
+  );
+};
+
+const CluesSections = memo(function CluesSections({
+  clues,
+  voidClues,
+  ...props
+}: Omit<ClueSectionProps, "entries" | "kind"> & {
+  clues: MysteryData["clues"];
+  voidClues: MysteryData["voidClues"];
+}) {
+  return (
+    <>
+      <ClueSection {...props} kind="clues" entries={clues} />
+      <ClueSection {...props} kind="voidClues" entries={voidClues} />
+    </>
+  );
 });

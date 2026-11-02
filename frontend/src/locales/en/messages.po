@@ -115,8 +115,8 @@ msgstr "Character reset successfully!"
 #~ msgstr "(owner)"
 
 #: src/pages/MysteriesPage.tsx:874
-msgid "{label}"
-msgstr "{label}"
+#~ msgid "{label}"
+#~ msgstr "{label}"
 
 #: src/game_data.ts:147
 msgid "+1 Presence from jet set lifestyle"
@@ -189,6 +189,10 @@ msgstr "A flashback showing how you were an imperfect sister or daughter."
 msgid "A fresh parchment awaits."
 msgstr "A fresh parchment awaits."
 
+#: src/pages/MysteriesPage.tsx:918
+msgid "A maximum of 200 clues is allowed per section."
+msgstr "A maximum of 200 clues is allowed per section."
+
 #: src/pages/BookClubOverview.tsx:693
 msgid "A player"
 msgstr "A player"
@@ -258,6 +262,7 @@ msgstr "Active conditions"
 #~ msgstr "Active mystery"
 
 #: src/pages/BookClubOverview.tsx:1019
+#: src/pages/MysteriesPage.tsx:938
 #: src/pages/TheorizeBoard.tsx:1759
 msgid "Add"
 msgstr "Add"
@@ -294,20 +299,28 @@ msgstr "Add a Maven from the Characters drawer to bring her into the scene."
 msgid "Add at least two notes to auto-align."
 msgstr "Add at least two notes to auto-align."
 
-#: src/pages/MysteriesPage.tsx:878
-#: src/pages/MysteriesPage.tsx:879
+#: src/pages/MysteriesPage.tsx:894
+#: src/pages/MysteriesPage.tsx:895
 msgid "Add clue"
 msgstr "Add clue"
 
-#: src/pages/MysteriesPage.tsx:639
+#: src/pages/MysteriesPage.tsx:976
+msgid "Add description"
+msgstr "Add description"
+
 #: src/pages/MysteriesPage.tsx:640
+#: src/pages/MysteriesPage.tsx:641
 msgid "Add location"
 msgstr "Add location"
 
-#: src/pages/MysteriesPage.tsx:810
 #: src/pages/MysteriesPage.tsx:811
+#: src/pages/MysteriesPage.tsx:812
 msgid "Add moment"
 msgstr "Add moment"
+
+#: src/pages/MysteriesPage.tsx:889
+msgid "Add multiple clues"
+msgstr "Add multiple clues"
 
 #: src/pages/TheorizeBoard.tsx:1315
 #: src/pages/TheorizeBoard.tsx:1522
@@ -322,8 +335,8 @@ msgstr "Add note (N)"
 msgid "Add one die"
 msgstr "Add one die"
 
-#: src/pages/MysteriesPage.tsx:720
 #: src/pages/MysteriesPage.tsx:721
+#: src/pages/MysteriesPage.tsx:722
 msgid "Add suspect"
 msgstr "Add suspect"
 
@@ -331,8 +344,8 @@ msgstr "Add suspect"
 msgid "Add to the theory board"
 msgstr "Add to the theory board"
 
-#: src/pages/MysteriesPage.tsx:878
-#: src/pages/MysteriesPage.tsx:879
+#: src/pages/MysteriesPage.tsx:894
+#: src/pages/MysteriesPage.tsx:895
 msgid "Add void clue"
 msgstr "Add void clue"
 
@@ -382,7 +395,7 @@ msgstr "All the Cardigans"
 msgid "Alternate"
 msgstr "Alternate"
 
-#: src/pages/MysteriesPage.tsx:560
+#: src/pages/MysteriesPage.tsx:561
 msgid "An admin must check and approve this mystery before it appears in the public library. Review can take up to a week."
 msgstr "An admin must check and approve this mystery before it appears in the public library. Review can take up to a week."
 
@@ -585,7 +598,8 @@ msgstr "by Odin"
 #: src/components/MenuDialog/ResetConfirmView.tsx:21
 #: src/components/MenuDialog/SaveFailureDialog.tsx:22
 #: src/pages/BookClubOverview.tsx:1676
-#: src/pages/MysteriesPage.tsx:589
+#: src/pages/MysteriesPage.tsx:590
+#: src/pages/MysteriesPage.tsx:948
 #: src/pages/TheorizeBoard.tsx:1601
 msgid "Cancel"
 msgstr "Cancel"
@@ -622,7 +636,7 @@ msgstr "Choose a Book Club"
 msgid "Choose a mystery below to begin the evening."
 msgstr "Choose a mystery below to begin the evening."
 
-#: src/pages/MysteriesPage.tsx:499
+#: src/pages/MysteriesPage.tsx:500
 msgid "Choose a mystery or create a new one."
 msgstr "Choose a mystery or create a new one."
 
@@ -699,7 +713,12 @@ msgstr "Clue hidden from players."
 msgid "Clue revealed and added to the canvas."
 msgstr "Clue revealed and added to the canvas."
 
+#: src/pages/MysteriesPage.tsx:910
+msgid "Clue titles (one per line)"
+msgstr "Clue titles (one per line)"
+
 #: src/pages/BookClubOverview.tsx:108
+#: src/pages/MysteriesPage.tsx:880
 msgid "Clues"
 msgstr "Clues"
 
@@ -1079,9 +1098,9 @@ msgstr "Decline"
 msgid "Decrease complexity"
 msgstr "Decrease complexity"
 
-#: src/pages/MysteriesPage.tsx:490
-#: src/pages/MysteriesPage.tsx:543
-#: src/pages/MysteriesPage.tsx:580
+#: src/pages/MysteriesPage.tsx:491
+#: src/pages/MysteriesPage.tsx:544
+#: src/pages/MysteriesPage.tsx:581
 #: src/pages/TheorizeBoard.tsx:1656
 msgid "Delete"
 msgstr "Delete"
@@ -1132,13 +1151,14 @@ msgstr "Delete this note?"
 #~ msgstr "Deleting a Book Club removes its shared mysteries, clues, rolls, and notes for everyone."
 
 #: src/pages/BookClubOverview.tsx:1652
-#: src/pages/MysteriesPage.tsx:675
-#: src/pages/MysteriesPage.tsx:765
-#: src/pages/MysteriesPage.tsx:834
-#: src/pages/MysteriesPage.tsx:914
+#: src/pages/MysteriesPage.tsx:676
+#: src/pages/MysteriesPage.tsx:766
+#: src/pages/MysteriesPage.tsx:835
+#: src/pages/MysteriesPage.tsx:976
 msgid "Description"
 msgstr "Description"
 
+#: src/pages/MysteriesPage.tsx:979
 #: src/pages/TheorizeBoard.tsx:1504
 #: src/pages/TheorizeBoard.tsx:1559
 msgid "Description (optional)"
@@ -1235,6 +1255,10 @@ msgstr "Drop a save file here, or paste a JSON file."
 #: src/game_data.ts:261
 msgid "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
 msgstr "During the day, you can enter any place you wish, and move about freely once you're inside so long as you don't do anything actively hostile to any people who might be there."
+
+#: src/pages/MysteriesPage.tsx:923
+msgid "Each clue title must be 255 characters or fewer."
+msgstr "Each clue title must be 255 characters or fewer."
 
 #: src/pages/TheorizeBoard.tsx:1535
 msgid "Edit note"
@@ -1525,11 +1549,11 @@ msgstr "Language"
 #~ msgid "Last 10 auto-saves and 10 manual saves are preserved."
 #~ msgstr "Last 10 auto-saves and 10 manual saves are preserved."
 
-#: src/pages/MysteriesPage.tsx:510
+#: src/pages/MysteriesPage.tsx:511
 msgid "Last 10 versions preserved."
 msgstr "Last 10 versions preserved."
 
-#: src/pages/MysteriesPage.tsx:512
+#: src/pages/MysteriesPage.tsx:513
 msgid "Latest version is updated with auto-save."
 msgstr "Latest version is updated with auto-save."
 
@@ -1564,7 +1588,7 @@ msgstr "Local Sign In"
 
 #: src/pages/LibraryPage.tsx:226
 #: src/pages/LibraryPage.tsx:289
-#: src/pages/MysteriesPage.tsx:635
+#: src/pages/MysteriesPage.tsx:636
 msgid "Locations"
 msgstr "Locations"
 
@@ -1592,7 +1616,7 @@ msgstr "Manage your character and settings."
 msgid "Manage your profile settings."
 msgstr "Manage your profile settings."
 
-#: src/pages/MysteriesPage.tsx:525
+#: src/pages/MysteriesPage.tsx:526
 msgid "Manual save"
 msgstr "Manual save"
 
@@ -1643,7 +1667,7 @@ msgstr "Menu"
 msgid "Midnight meeting"
 msgstr "Midnight meeting"
 
-#: src/pages/MysteriesPage.tsx:806
+#: src/pages/MysteriesPage.tsx:807
 msgid "Moments"
 msgstr "Moments"
 
@@ -1712,7 +1736,7 @@ msgid "Mystery title"
 msgstr "Mystery title"
 
 #: src/components/character/Name.tsx:21
-#: src/pages/MysteriesPage.tsx:744
+#: src/pages/MysteriesPage.tsx:745
 msgid "Name"
 msgstr "Name"
 
@@ -2016,7 +2040,7 @@ msgstr "Private notebook"
 msgid "Profile"
 msgstr "Profile"
 
-#: src/pages/MysteriesPage.tsx:687
+#: src/pages/MysteriesPage.tsx:688
 msgid "Prompt"
 msgstr "Prompt"
 
@@ -2028,7 +2052,7 @@ msgstr "Public Library"
 msgid "Publish"
 msgstr "Publish"
 
-#: src/pages/MysteriesPage.tsx:545
+#: src/pages/MysteriesPage.tsx:546
 msgid "Publish mystery"
 msgstr "Publish mystery"
 
@@ -2040,7 +2064,7 @@ msgstr "Queen SVG by <0>Darius Dan on svgrepo</0>."
 msgid "Quilting"
 msgstr "Quilting"
 
-#: src/pages/MysteriesPage.tsx:777
+#: src/pages/MysteriesPage.tsx:778
 msgid "Quote"
 msgstr "Quote"
 
@@ -2085,23 +2109,23 @@ msgid "Reload"
 msgstr "Reload"
 
 #: src/pages/BookClubOverview.tsx:1019
-#: src/pages/MysteriesPage.tsx:584
+#: src/pages/MysteriesPage.tsx:585
 msgid "Remove"
 msgstr "Remove"
 
 #. placeholder {0}: confirmation.title
-#: src/pages/MysteriesPage.tsx:555
+#: src/pages/MysteriesPage.tsx:556
 msgid "Remove \"{0}\" from your private library?"
 msgstr "Remove \"{0}\" from your private library?"
 
 #. placeholder {0}: confirmation.title
-#: src/pages/MysteriesPage.tsx:566
+#: src/pages/MysteriesPage.tsx:567
 msgid "Remove \"{0}\"? Any information entered here will be lost."
 msgstr "Remove \"{0}\"? Any information entered here will be lost."
 
 #: src/pages/MysteriesPage.tsx:195
 #: src/pages/MysteriesPage.tsx:196
-#: src/pages/MysteriesPage.tsx:547
+#: src/pages/MysteriesPage.tsx:548
 msgid "Remove entry"
 msgstr "Remove entry"
 
@@ -2117,11 +2141,11 @@ msgstr "Remove one die"
 msgid "Remove tag"
 msgstr "Remove tag"
 
-#: src/pages/MysteriesPage.tsx:570
+#: src/pages/MysteriesPage.tsx:571
 msgid "Remove this entry? Any information entered here will be lost."
 msgstr "Remove this entry? Any information entered here will be lost."
 
-#: src/pages/MysteriesPage.tsx:557
+#: src/pages/MysteriesPage.tsx:558
 msgid "Remove this mystery from your private library?"
 msgstr "Remove this mystery from your private library?"
 
@@ -2142,13 +2166,13 @@ msgstr "Reset Character"
 msgid "Restore copy"
 msgstr "Restore copy"
 
-#: src/pages/MysteriesPage.tsx:573
+#: src/pages/MysteriesPage.tsx:574
 msgid "Restore this saved version? Your current unsaved changes will be replaced."
 msgstr "Restore this saved version? Your current unsaved changes will be replaced."
 
-#: src/pages/MysteriesPage.tsx:529
-#: src/pages/MysteriesPage.tsx:549
-#: src/pages/MysteriesPage.tsx:586
+#: src/pages/MysteriesPage.tsx:530
+#: src/pages/MysteriesPage.tsx:550
+#: src/pages/MysteriesPage.tsx:587
 msgid "Restore this version"
 msgstr "Restore this version"
 
@@ -2413,7 +2437,7 @@ msgstr "Style"
 msgid "Stylish Wardrobe for advantage on rolls that never gets marked"
 msgstr "Stylish Wardrobe for advantage on rolls that never gets marked"
 
-#: src/pages/MysteriesPage.tsx:582
+#: src/pages/MysteriesPage.tsx:583
 msgid "Submit for approval"
 msgstr "Submit for approval"
 
@@ -2439,7 +2463,7 @@ msgstr "Suspect"
 
 #: src/pages/LibraryPage.tsx:232
 #: src/pages/LibraryPage.tsx:295
-#: src/pages/MysteriesPage.tsx:716
+#: src/pages/MysteriesPage.tsx:717
 msgid "Suspects"
 msgstr "Suspects"
 
@@ -2585,9 +2609,9 @@ msgstr "This title stays in sync with the mystery clue list."
 msgid "This will also delete the character from the backend."
 msgstr "This will also delete the character from the backend."
 
-#: src/pages/MysteriesPage.tsx:663
-#: src/pages/MysteriesPage.tsx:754
-#: src/pages/MysteriesPage.tsx:902
+#: src/pages/MysteriesPage.tsx:664
+#: src/pages/MysteriesPage.tsx:755
+#: src/pages/MysteriesPage.tsx:963
 #: src/pages/TheorizeBoard.tsx:1492
 #: src/pages/TheorizeBoard.tsx:1548
 msgid "Title"
@@ -2673,7 +2697,7 @@ msgstr "Up in Pumps"
 msgid "Updating clue…"
 msgstr "Updating clue…"
 
-#: src/pages/MysteriesPage.tsx:507
+#: src/pages/MysteriesPage.tsx:508
 msgid "Version drawer"
 msgstr "Version drawer"
 
@@ -2695,9 +2719,9 @@ msgstr "Vitality"
 msgid "Void Clue"
 msgstr "Void Clue"
 
-#: src/pages/BookClubOverview.tsx:1370
-#~ msgid "Void Clues"
-#~ msgstr "Void Clues"
+#: src/pages/MysteriesPage.tsx:880
+msgid "Void Clues"
+msgstr "Void Clues"
 
 #: src/pages/BookClubOverview.tsx:1594
 msgid "Void Clues from other mysteries"
