@@ -64,3 +64,4 @@ To add a new language:
 * Brindlewood Bay is published by [The Gauntlet](https://www.gauntlet-rpg.com/brindlewood-bay.html)
 * Queen SVG by [Darius Dan on svgrepo](https://www.svgrepo.com/svg/317455/queen)
 * Tentacles icon by [Teewara soontorn on Noun Project](https://thenounproject.com/icon/tentacles-4112037/)
+* French translation provided by Nicolas Boseret
